@@ -1,26 +1,142 @@
 @import "tailwindcss";
 
+/* Self-hosted type: Caslon for the agency's voice, Public Sans for the work,
+   Courier Prime for anything that would have come off the office typewriter. */
+@import "@fontsource/libre-caslon-display/400.css";
+@import "@fontsource/libre-caslon-text/400.css";
+@import "@fontsource/libre-caslon-text/400-italic.css";
+@import "@fontsource/libre-caslon-text/700.css";
+@import "@fontsource-variable/public-sans/index.css";
+@import "@fontsource/courier-prime/400.css";
+@import "@fontsource/courier-prime/700.css";
+
+@theme {
+  --color-ink: #12171d;          /* primary background */
+  --color-ink-2: #1c232a;        /* secondary background */
+  --color-rail: #20262d;         /* navigation surface */
+  --color-card: #252d35;         /* card surface */
+  --color-brass: #c6a472;        /* antique gold accent */
+  --color-brass-dim: #8f7752;
+  --color-paper: #f3ede3;        /* primary text */
+  --color-smoke: #a9afb7;        /* secondary text */
+  --color-rule: #384149;         /* borders */
+  --color-ok: #607d69;
+  --color-caution: #b58b54;
+  --color-fault: #a65a55;
+
+  --font-display: "Libre Caslon Display", "Libre Caslon Text", Georgia, serif;
+  --font-serif: "Libre Caslon Text", Georgia, serif;
+  --font-sans: "Public Sans Variable", "Public Sans", system-ui, sans-serif;
+  --font-mono: "Courier Prime", "Courier New", monospace;
+
+  --radius-file: 3px;
+  --ease-drawer: cubic-bezier(0.2, 0.7, 0.1, 1);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .95 0 0 0 0 .88 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html {
+  background: var(--color-ink);
+  font-size: 100%;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html[data-text-size="large"] { font-size: 112.5%; }
+html[data-text-size="x_large"] { font-size: 125%; }
+
+html[data-contrast="high"] {
+  --color-smoke: #d9dde2;
+  --color-rule: #6b7782;
+  --color-card: #1a2026;
+  --color-brass: #e3c48f;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-sans);
+  font-feature-settings: "kern", "liga";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Archival film grain over the whole experience. Static, so it never moves. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  background-image: var(--grain);
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+}
+html[data-contrast="high"] body::after { opacity: 0; }
+
+::selection { background: var(--color-brass); color: var(--color-ink); }
+
+:focus-visible {
+  outline: 2px solid var(--color-brass);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+html[data-motion="reduced"] *,
+html[data-motion="reduced"] *::before,
+html[data-motion="reduced"] *::after {
+  animation-duration: 0.001ms !important;
+  transition-duration: 0.001ms !important;
+}
+
+/* Colour vision support: status colours shift to a palette distinguishable
+   without red/green, and every status also carries a text label. */
+html[data-vision="protanopia"], html[data-vision="deuteranopia"] {
+  --color-ok: #5b8db8;
+  --color-fault: #c9853a;
+}
+html[data-vision="tritanopia"] {
+  --color-ok: #4f9a94;
+  --color-fault: #c25a7c;
+  --color-caution: #b0707a;
+}
+
+@layer components {
+  .prose-agency p + p { margin-top: 1em; }
+
+  /* Hairline with a short brass lead, used to open major sections. */
+  .rule-lead {
+    height: 1px;
+    background: linear-gradient(90deg, var(--color-brass) 0 48px, var(--color-rule) 48px);
+  }
+
+  .field {
+    width: 100%;
+    background: var(--color-ink);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-file);
+    padding: 0.7rem 0.85rem;
+    color: var(--color-paper);
+    transition: border-color 160ms ease;
+  }
+  .field::placeholder { color: color-mix(in oklab, var(--color-smoke) 60%, transparent); }
+  .field:hover { border-color: color-mix(in oklab, var(--color-rule) 50%, var(--color-smoke)); }
+  .field:focus { outline: none; border-color: var(--color-brass); }
+  .field[aria-invalid="true"] { border-color: var(--color-fault); }
+
+  input[type="range"].dial { accent-color: var(--color-brass); width: 100%; }
+}
+
+/* The light through the blinds: used once, on the public hero. */
+@keyframes blinds-drift {
+  from { transform: translate3d(0, 0, 0) rotate(-14deg); }
+  to   { transform: translate3d(-2%, 1.5%, 0) rotate(-14deg); }
+}
+@keyframes lamp-breathe {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
 }
