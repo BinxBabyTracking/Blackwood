@@ -120,7 +120,7 @@ function Roster({ s, myId }: { s: JointInvestigation; myId: string }) {
             {isHost ? "Close investigation" : "Leave roster"}
           </button>
         </form>
-        <p className="text-xs text-smoke">Starting the investigation becomes available when the investigation desk opens.</p>
+        <p className="text-xs text-smoke">Shared play arrives in a later phase. For now each investigator works the case solo from Available Assignments.</p>
       </div>
     </Panel>
   );

@@ -1,7 +1,9 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { acceptAssignment } from "@/app/actions/game";
+import { isPlayable } from "@/game/registry";
 import { resolveAssignmentAction } from "@/lib/assignment";
 import { formatPrice } from "@/lib/format";
+import { createClient } from "@/lib/supabase/server";
 import type { CatalogCase } from "@/lib/types";
 import { buttonClass } from "./ui";
 
@@ -10,29 +12,29 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
   const supabase = await createClient();
   let signedIn = false;
   let entitled = false;
-  let activeSessionId: string | null = null;
+  let session: "active" | "closed" | null = null;
 
   if (supabase) {
     const { data } = await supabase.auth.getUser();
     if (data.user) {
       signedIn = true;
-      const [{ data: ent }, { data: sessions }] = await Promise.all([
+      const [{ data: ent }, { data: rows }] = await Promise.all([
         supabase.from("case_entitlements").select("id").eq("case_id", c.id).eq("user_id", data.user.id).maybeSingle(),
         supabase
           .from("investigation_participants")
-          .select("session:investigation_sessions!inner(id, case_id, status)")
+          .select("session:investigation_sessions!inner(id, case_id, status, mode)")
           .eq("user_id", data.user.id)
           .eq("session.case_id", c.id)
-          .in("session.status", ["forming", "active"])
-          .limit(1),
+          .eq("session.mode", "solo")
+          .in("session.status", ["active", "closed"]),
       ]);
       entitled = Boolean(ent);
-      const first = (sessions?.[0] as unknown as { session: { id: string } } | undefined)?.session;
-      activeSessionId = first?.id ?? null;
+      const statuses = ((rows ?? []) as unknown as { session: { status: string } }[]).map((r) => r.session.status);
+      session = statuses.includes("active") ? "active" : statuses.includes("closed") ? "closed" : null;
     }
   }
 
-  const action = resolveAssignmentAction(c, { signedIn, entitled, activeSessionId });
+  const action = resolveAssignmentAction(c, { signedIn, entitled, playable: isPlayable(c.id), session });
 
   switch (action.kind) {
     case "in_preparation":
@@ -63,7 +65,7 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
     case "sign_in":
       return (
         <div className="flex flex-wrap gap-3">
-          <Link href={`/login?next=/investigations/${c.id}`} className={buttonClass("primary")}>
+          <Link href={`/login?next=/agency/assignments/${c.id}`} className={buttonClass("primary")}>
             Sign in to accept
           </Link>
           <Link href="/join" className={buttonClass("secondary")}>
@@ -77,11 +79,24 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
           Resume Investigation
         </Link>
       );
+    case "review_closed":
+      return (
+        <div>
+          <p className="text-sm font-semibold text-[color:var(--color-ok)]">You closed this case.</p>
+          <Link href={`/play/${c.id}`} className={buttonClass("secondary", "mt-4")}>
+            Review your case file
+          </Link>
+        </div>
+      );
     case "accept":
       return (
-        <Link href={`/play/${c.id}`} className={buttonClass("primary")}>
-          Accept Assignment
-        </Link>
+        <form action={acceptAssignment}>
+          <input type="hidden" name="caseId" value={c.id} />
+          <button type="submit" className={buttonClass("primary")}>
+            Accept Assignment
+          </button>
+          <p className="mt-3 max-w-[44ch] text-sm text-smoke">Accepting opens the investigation. Your progress is saved as you go.</p>
+        </form>
       );
     case "purchase":
       return (

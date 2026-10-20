@@ -1,6 +1,6 @@
-# Blackwood Investigations: Phase 1
+# Blackwood Investigations
 
-The agency website and detective portal for Blackwood Investigations, a fictional private investigation agency. Phase 1 covers the public site, Supabase authentication, onboarding, Agency Headquarters, the case catalog and account management. Investigation gameplay is Phase 2.
+The agency website, detective portal and investigation engine for Blackwood Investigations, a fictional private investigation agency. Phase 1 built the public site, authentication, onboarding, Agency Headquarters, the case catalog and account management. Phase 2 adds the investigation engine and the first playable case, C001 The Whitmore File.
 
 Built with Next.js 16 (App Router, Cache Components), Tailwind CSS 4 and Supabase.
 
@@ -12,12 +12,13 @@ Built with Next.js 16 (App Router, Cache Components), Tailwind CSS 4 and Supabas
    npm install
    ```
 
-2. **Environment.** Copy `.env.example` to `.env.local` and add your Supabase project URL and publishable (or anon) key.
+2. **Environment.** Copy `.env.example` to `.env.local` and add your Supabase project URL, publishable key and **secret key** (`SUPABASE_SECRET_KEY`, from Project Settings > API Keys). The secret key is used only on the server, to save investigations and update service records; never expose it to the browser.
 
 3. **Database.** Run both files in `supabase/migrations`, in order, in the Supabase SQL editor (or `supabase db push` if the project is linked):
 
    - `20261020000000_agency_platform.sql`: tables, RLS policies, triggers, joint investigation functions and the `avatars` storage bucket
    - `20261020000100_seed_catalog.sql`: pricing tiers, ranks, Case 001, sealed preview files, commendations and agency notices
+   - `20261020000200_open_case_c001.sql`: renames C001 to The Whitmore File, opens it for play and sets the first rank promotion
 
 4. **Auth settings** (Supabase dashboard, Authentication):
 
@@ -66,13 +67,32 @@ Row Level Security is enabled on every table:
 - Service records, entitlements, saves and commendations have no client write policies. Phase 2 writes them server-side with the service role.
 - Joint investigation membership changes only through `open_joint_investigation`, `join_joint_investigation`, `set_investigator_ready` and `leave_joint_investigation`, which check case status, entitlement and the six-seat limit.
 
-## Phase 1 boundaries
+## Investigation engine (Phase 2)
 
-What still needs backend work, and what the UI does meanwhile:
+The game runs at `/play/:caseId` as a full-screen interface outside the portal layout.
 
-- **Gameplay:** Case 001 is Coming Soon. `/play/:caseId` explains that the investigation desk is not open.
-- **Payments:** paid cases would show a disabled Purchase button. No payment code exists yet; entitlements must be granted server-side.
-- **Joint investigations:** opening, joining by code, ready status and leaving work against the database. No case is eligible until one is available. Rosters do not update live.
+- `src/game/engine/`: the engine. `types.ts` defines every game entity; `rules.ts` evaluates conditions and applies effects; `engine.ts` reduces player actions into new state and projects the view the browser is allowed to see.
+- `src/cases/C001/`: the case, as configuration only. `characters.ts` (people and dialogue), `locations.ts` (scenes and hotspots), `evidence.ts` (E01 to E15), `story.ts` (case file, police statements, calls, deliveries, reactive events, objectives), `solution.ts` (deduction rules and the solution, server-only) and `assets.ts` (the asset manifest).
+- `src/game/registry.ts`: loads cases by id. A new case is a new folder plus one line here.
+- `src/game/persistence.ts`: saves, entitlements, sessions and service records via the server-side secret key.
+- `src/app/actions/game.ts`: the single server action every gameplay click goes through.
+- `src/game/ui/`: the scene, inspection view, interviews, notebook, murder board, telephone, conclusion and closure screens.
+
+**Restricted content stays on the server.** Case files import `server-only`, and the browser receives only a projection: no solution, no deduction rules, no unrevealed dialogue or character details. Connections on the murder board are judged on the server; a wrong one is simply left as string.
+
+**Assets.** Every image and sound is referenced through `src/cases/C001/assets.ts` and lives in `public/cases/C001/{locations,characters,evidence,audio}`. To install final art, replace a file with the same name, or point the manifest key at a new file, then adjust hotspot rectangles in `locations.ts` to match. Audio entries are `null` until recordings exist; the game shows transcripts and no play control until then. `npm run assets:placeholders` regenerates the placeholder set.
+
+**Checking a case.** `npm run check:case -- C001` validates every reference in the case (assets, evidence, questions, flags, deductions) and plays the case start to finish with the real engine, including the reactive events, the board deductions, and wrong and right conclusions.
+
+**Draft content.** The C001 timeline, statements, dialogue and forensic details are a consistent working draft built around the solution in the brief. They are marked as draft in the game and should be reviewed before release.
+
+## Current boundaries
+
+What still needs work, and what the UI does meanwhile:
+
+- **Payments:** paid cases would show a disabled Purchase button. No payment code exists yet; entitlements must be granted server-side. The free C001 entitlement is granted when the player accepts the assignment.
+- **Joint investigations:** opening, joining by code, ready status and leaving work against the database, but play itself is solo. Rosters do not update live.
+- **AI interviews:** not connected. Dialogue is authored and data-driven; a free-form fallback can be added behind the conversation engine later without changing case facts.
 - **Notification emails:** preferences are saved, but nothing sends email yet.
-- **Audio settings:** saved now, used by the Phase 2 engine.
+- **Audio:** volume settings are applied to location ambience once recordings are added to the asset manifest.
 - **Legal pages:** marked as drafts that need legal review.

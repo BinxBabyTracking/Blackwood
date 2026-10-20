@@ -60,8 +60,8 @@ async function Record() {
           Agency Rank
         </h2>
         <p className="mt-1 mb-6 max-w-[62ch] text-sm text-smoke">
-          Advancement depends on closed cases and the quality of your findings. Criteria for each rank will be published
-          when the investigation desk opens.
+          Advancement depends on closed cases and the quality of your findings. Ranks without published criteria are
+          awarded as more of the archive opens.
         </p>
         {!ranks.ok ? (
           <SetupNotice reason={ranks.reason} message={ranks.message} compact />
@@ -84,6 +84,12 @@ async function Record() {
                     {current ? <span className="text-xs text-brass">Your current rank</span> : null}
                   </div>
                   <p className="mt-1 max-w-[60ch] text-sm text-smoke">{r.description}</p>
+                  {r.min_cases_closed != null && !reached ? (
+                    <p className="mt-1 font-mono text-xs text-smoke">
+                      Requires {r.min_cases_closed} closed {r.min_cases_closed === 1 ? "case" : "cases"}
+                      {r.min_accuracy != null ? ` at ${r.min_accuracy}% accuracy` : ""}
+                    </p>
+                  ) : null}
                 </li>
               );
             })}

@@ -140,3 +140,13 @@ html[data-vision="tritanopia"] {
   0%, 100% { opacity: 0.85; }
   50% { opacity: 1; }
 }
+
+/* Investigation transitions */
+@keyframes game-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes game-scene-in { from { opacity: 0; filter: brightness(0.4); } to { opacity: 1; filter: none; } }
+@keyframes game-caption { 0% { opacity: 0; transform: translateY(6px); } 15%, 100% { opacity: 1; transform: none; } }
+@keyframes game-closure { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.game-fade { animation: game-fade 220ms ease-out both; }
+.game-scene-in { animation: game-scene-in 700ms ease-out both; }
+.game-caption { animation: game-caption 900ms ease-out both; }
+.game-closure { animation: game-closure 900ms ease-out both; }

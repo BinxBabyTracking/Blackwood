@@ -24,8 +24,8 @@ export function OpenJointForm({ cases }: { cases: { id: string; title: string; c
       </label>
       {none ? (
         <p className="text-sm text-smoke">
-          Joint investigations can be opened for open cases you have access to that support more than one investigator. No
-          case is open for assignment yet; Case 001 opens with the investigation desk.
+          Joint investigations can be opened for open cases you have access to that support more than one investigator.
+          Accept a case in Available Assignments first and it will appear here.
         </p>
       ) : null}
       <FormMessage state={state} />
