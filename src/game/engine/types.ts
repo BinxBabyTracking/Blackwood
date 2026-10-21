@@ -126,6 +126,8 @@ export interface LocationDef {
   available: Condition;
   /** Shown on the map; false for sub-scenes reached from another scene. */
   onMap: boolean;
+  /** Pin position on the travel map, as percentages. */
+  mapPin?: { x: number; y: number };
   hotspots: HotspotDef[];
   effectsOnEnter?: Effect[];
 }
@@ -174,6 +176,10 @@ export interface DeliveryDef {
 export interface DocumentDef {
   id: string;
   title: string;
+  /** Summary fields shown at the top of a dossier. */
+  dossier?: { label: string; value: string }[];
+  /** Characters introduced by this document, shown with portraits. */
+  people?: string[];
   pages: { heading?: string; body: string }[];
   /** Evidence that can be collected from this document. */
   evidence: string[];
@@ -271,6 +277,8 @@ export interface InvestigationState {
   unlocked: string[];
   inspected: string[];
   evidence: string[];
+  /** Where and when each piece of evidence was collected. */
+  discoveries: Record<string, Discovery>;
   flags: string[];
   asked: string[];
   presented: string[]; // `${characterId}:${evidenceId}`
@@ -293,6 +301,15 @@ export interface InvestigationState {
   activeSeconds: number;
   lastActionAt: number;
   closedAt: number | null;
+}
+
+export interface Discovery {
+  locationId: string;
+  /** Environmental state of that location when the evidence was found (A, B...). */
+  sceneState: string;
+  /** How it reached the notebook: a scene hotspot, a document, a delivery or a conversation. */
+  via: "scene" | "document" | "delivery" | "dialogue";
+  at: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -341,6 +358,10 @@ export interface ClientEvidence {
   source: string;
   boardable: boolean;
   audio: string | null;
+  collected: boolean;
+  /** Where the player collected it, once collected. */
+  foundAt: string | null;
+  collectedAt: number | null;
 }
 
 export interface ClientCharacter {
@@ -368,7 +389,7 @@ export interface ClientView {
     ambience: string | null;
     hotspots: { id: string; label: string; rect: HotspotDef["rect"] }[];
   };
-  map: { id: string; name: string; subtitle: string; available: boolean; visited: boolean; current: boolean }[];
+  map: { id: string; name: string; subtitle: string; available: boolean; visited: boolean; current: boolean; pin: { x: number; y: number } | null }[];
   evidence: ClientEvidence[];
   characters: ClientCharacter[];
   notebook: InvestigationState["notebook"];
@@ -394,10 +415,18 @@ export interface ClientView {
 /** One-off payloads returned alongside the view for the action just taken. */
 export type ActionOutcome =
   | { kind: "none" }
-  | { kind: "inspect"; title: string; text: string; image: string | null; evidenceId: string | null; collected: boolean }
+  | { kind: "inspect"; title: string; text: string; image: string | null; evidence: ClientEvidence | null }
   | { kind: "panel"; panel: PanelId }
   | { kind: "conversation"; characterId: string; history: { speaker: string; text: string }[]; questions: { id: string; prompt: string }[]; available: boolean }
-  | { kind: "document"; id: string; title: string; pages: DocumentDef["pages"]; evidence: { id: string; title: string; collected: boolean }[] }
+  | {
+      kind: "document";
+      id: string;
+      title: string;
+      dossier: { label: string; value: string }[];
+      people: { id: string; name: string; role: string; portrait: string }[];
+      pages: DocumentDef["pages"];
+      evidence: { id: string; title: string; collected: boolean }[];
+    }
   | { kind: "call"; title: string; from: string; lines: string[] }
   | { kind: "delivery"; title: string; text: string; evidence: { id: string; title: string; collected: boolean }[] }
   | { kind: "deduction"; id: string; title: string; text: string }

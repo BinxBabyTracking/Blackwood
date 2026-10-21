@@ -1,94 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { ActionOutcome, ClientEvidence, ClientView, GameAction, Theory } from "../engine/types";
+import type { ActionOutcome, ClientView, GameAction, Theory } from "../engine/types";
 import { GameButton, Overlay } from "./overlay";
-import { ZoomImage } from "./zoom-image";
 
 type Dispatch = (a: GameAction) => Promise<unknown>;
 type Out<K extends ActionOutcome["kind"]> = Extract<ActionOutcome, { kind: K }>;
-
-// ---------------------------------------------------------------------------
-// Inspection: hotspots and collected evidence
-// ---------------------------------------------------------------------------
-
-export function InspectPanel({
-  data,
-  view,
-  dispatch,
-  onClose,
-  pending,
-}: {
-  data: Out<"inspect">;
-  view: ClientView;
-  dispatch: Dispatch;
-  onClose: () => void;
-  pending: boolean;
-}) {
-  const ev = data.evidenceId ? view.evidence.find((e) => e.id === data.evidenceId) : undefined;
-  if (ev) return <EvidencePanel ev={ev} view={view} dispatch={dispatch} onClose={onClose} pending={pending} />;
-  return (
-    <Overlay title={data.title} onClose={onClose}>
-      <div className="grid gap-0 sm:grid-cols-[1fr]">
-        {data.image ? <ZoomImage src={data.image} alt={data.title} /> : null}
-        <div className="p-6">
-          <p className="font-serif text-lg leading-relaxed text-paper/90">{data.text}</p>
-          {data.evidenceId && !ev ? (
-            <div className="mt-6 flex flex-wrap gap-3">
-              <GameButton disabled={pending || view.status === "closed"} onClick={() => dispatch({ type: "collect", evidenceId: data.evidenceId! })}>
-                Add to Notebook
-              </GameButton>
-              <GameButton variant="ghost" onClick={onClose}>
-                Return to scene
-              </GameButton>
-            </div>
-          ) : null}
-        </div>
-      </div>
-    </Overlay>
-  );
-}
-
-export function EvidencePanel({
-  ev,
-  view,
-  dispatch,
-  onClose,
-  pending,
-}: {
-  ev: ClientEvidence;
-  view: ClientView;
-  dispatch: Dispatch;
-  onClose: () => void;
-  pending: boolean;
-}) {
-  const pinned = view.board.items.some((i) => i.id === ev.id);
-  return (
-    <Overlay title={`${ev.id}  ${ev.title}`} onClose={onClose} wide>
-      <div className="grid lg:grid-cols-[1.4fr_1fr]">
-        <ZoomImage src={ev.image} alt={ev.title} />
-        <div className="flex flex-col p-6">
-          <p className="text-xs text-smoke">Found at {ev.source}</p>
-          <p className="mt-3 text-paper/90">{ev.description}</p>
-          <p className="mt-4 border-l-2 border-brass/60 pl-4 font-serif leading-relaxed text-paper/90">{ev.inspection}</p>
-          {ev.audio ? <audio controls src={ev.audio} className="mt-4 w-full" /> : null}
-          <div className="mt-6 flex flex-wrap gap-3 lg:mt-auto">
-            <span className="inline-flex items-center gap-2 text-sm text-[color:var(--color-ok)]">In your notebook</span>
-            {ev.boardable ? (
-              <GameButton
-                variant="ghost"
-                disabled={pinned || pending || view.status === "closed"}
-                onClick={() => dispatch({ type: "boardAdd", itemId: ev.id, x: 10 + Math.random() * 70, y: 10 + Math.random() * 60 })}
-              >
-                {pinned ? "On the murder board" : "Add to Murder Board"}
-              </GameButton>
-            ) : null}
-          </div>
-        </div>
-      </div>
-    </Overlay>
-  );
-}
 
 // ---------------------------------------------------------------------------
 // Documents, deliveries, calls
@@ -109,7 +26,7 @@ function CollectList({
 }) {
   if (!items.length) return null;
   return (
-    <ul className="mt-6 space-y-2">
+    <ul className="mt-3 space-y-2">
       {items.map((it) => {
         const have = view.evidence.some((e) => e.id === it.id);
         return (
@@ -121,7 +38,7 @@ function CollectList({
               <span className="text-xs opacity-70">In your notebook</span>
             ) : (
               <GameButton variant={tone === "paper" ? "paper" : "ghost"} disabled={pending || view.status === "closed"} onClick={() => dispatch({ type: "collect", evidenceId: it.id })}>
-                Add to Notebook
+                Collect Evidence
               </GameButton>
             )}
           </li>
@@ -131,17 +48,60 @@ function CollectList({
   );
 }
 
+/** The case dossier: a manila folder with a typed summary sheet, the people involved, and the report. */
 export function DocumentPanel({ data, view, dispatch, onClose, pending }: { data: Out<"document">; view: ClientView; dispatch: Dispatch; onClose: () => void; pending: boolean }) {
   return (
-    <Overlay title={data.title} onClose={onClose} tone="paper" closeLabel="Close the file">
-      <div className="space-y-6 p-6 sm:p-8">
-        {data.pages.map((p, i) => (
-          <section key={i}>
-            {p.heading ? <h3 className="font-mono text-xs font-bold uppercase tracking-[0.14em] text-[#7d3a33]">{p.heading}</h3> : null}
-            <p className="mt-1 font-mono text-[0.95rem] leading-relaxed">{p.body}</p>
+    <Overlay title={data.title} onClose={onClose} tone="paper" closeLabel="Close the file" wide>
+      <div className="relative p-5 sm:p-8">
+        <span aria-hidden className="pointer-events-none absolute right-8 top-6 hidden rotate-[-8deg] border-[3px] border-[#7d3a33]/70 px-3 py-1 font-mono text-sm font-bold tracking-[0.2em] text-[#7d3a33]/70 sm:block">
+          CONFIDENTIAL
+        </span>
+        {data.dossier.length ? (
+          <dl className="grid max-w-2xl grid-cols-[9rem_1fr] gap-x-4 gap-y-1.5 border-b border-dashed border-[#2a241c]/40 pb-5 font-mono text-[0.9rem]">
+            {data.dossier.map((f) => (
+              <div key={f.label} className="contents">
+                <dt className="text-xs uppercase tracking-[0.1em] text-[#2a241c]/60">{f.label}</dt>
+                <dd className={f.label === "Case ID" ? "font-bold text-[#7d3a33]" : ""}>{f.value}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : null}
+
+        {data.people.length ? (
+          <section className="mt-6">
+            <h3 className="font-mono text-xs font-bold uppercase tracking-[0.14em] text-[#7d3a33]">Persons present, Saturday evening</h3>
+            <ul className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              {data.people.map((p) => (
+                <li key={p.id} className="bg-[#f4ecd9] p-2 shadow-[0_2px_6px_rgba(0,0,0,0.18)]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.portrait} alt="" className="aspect-[4/5] w-full object-cover grayscale" />
+                  <p className="mt-2 font-serif text-sm font-bold leading-tight">{p.name}</p>
+                  <p className="font-mono text-[0.68rem] leading-snug opacity-70">{p.role}</p>
+                </li>
+              ))}
+            </ul>
           </section>
-        ))}
-        <CollectList items={data.evidence} dispatch={dispatch} pending={pending} view={view} />
+        ) : null}
+
+        <div className="mt-8 space-y-6">
+          {data.pages.map((p, i) => (
+            <section key={i}>
+              {p.heading ? <h3 className="font-mono text-xs font-bold uppercase tracking-[0.14em] text-[#7d3a33]">{p.heading}</h3> : null}
+              <p className="mt-1 max-w-[70ch] font-mono text-[0.95rem] leading-relaxed">{p.body}</p>
+            </section>
+          ))}
+        </div>
+        {data.evidence.length ? (
+          <section className="mt-8">
+            <h3 className="font-mono text-xs font-bold uppercase tracking-[0.14em] text-[#7d3a33]">Enclosed</h3>
+            <CollectList items={data.evidence} dispatch={dispatch} pending={pending} view={view} />
+          </section>
+        ) : null}
+        <div className="mt-8">
+          <GameButton variant="paper" onClick={onClose}>
+            Close the file
+          </GameButton>
+        </div>
       </div>
     </Overlay>
   );
@@ -251,30 +211,8 @@ export function PhonePanel({ view, dispatch, onClose, pending }: { view: ClientV
 }
 
 // ---------------------------------------------------------------------------
-// Map and police tapes
+// Police tapes
 // ---------------------------------------------------------------------------
-
-export function MapPanel({ view, dispatch, onClose, pending }: { view: ClientView; dispatch: Dispatch; onClose: () => void; pending: boolean }) {
-  return (
-    <Overlay title="Street map: where to next?" onClose={onClose} wide>
-      <div className="grid gap-px bg-white/10 sm:grid-cols-2">
-        {view.map.map((m) => (
-          <button
-            key={m.id}
-            type="button"
-            disabled={!m.available || m.current || pending}
-            onClick={() => dispatch({ type: "travel", locationId: m.id })}
-            className="flex flex-col items-start bg-[#161b20] px-5 py-4 text-left transition-colors enabled:hover:bg-[#1f262d] disabled:cursor-not-allowed"
-          >
-            <span className={`font-serif text-lg ${m.available ? "text-paper" : "text-smoke/50"}`}>{m.name}</span>
-            <span className="text-sm text-smoke">{m.available ? m.subtitle : "You have no reason to go there yet."}</span>
-            <span className="mt-2 font-mono text-xs text-brass">{m.current ? "You are here" : m.visited ? "Visited" : m.available ? "Not visited" : ""}</span>
-          </button>
-        ))}
-      </div>
-    </Overlay>
-  );
-}
 
 export function StatementsPanel({ view, onClose }: { view: ClientView; onClose: () => void }) {
   const [sel, setSel] = useState(view.statements[0]?.characterId ?? "");
@@ -412,178 +350,6 @@ export function ConversationPanel({
               </div>
             )}
           </div>
-        </div>
-      </div>
-    </Overlay>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Notebook
-// ---------------------------------------------------------------------------
-
-const TABS = ["Objectives", "Evidence", "People", "Interviews", "Timeline", "Deductions", "My notes"] as const;
-
-export function NotebookPanel({
-  view,
-  dispatch,
-  onClose,
-  onOpenEvidence,
-  pending,
-}: {
-  view: ClientView;
-  dispatch: Dispatch;
-  onClose: () => void;
-  onOpenEvidence: (id: string) => void;
-  pending: boolean;
-}) {
-  const [tab, setTab] = useState<(typeof TABS)[number]>("Objectives");
-  const [notes, setNotes] = useState(view.playerNotes);
-  const [saved, setSaved] = useState<"idle" | "saved" | "error">("idle");
-  const interviews = view.notebook.filter((n) => n.kind === "interview" || n.kind === "call" || n.kind === "document").slice().reverse();
-
-  return (
-    <Overlay title="Notebook" onClose={onClose} wide tone="paper" closeLabel="Close notebook">
-      <div className="flex min-h-[70vh] flex-col md:flex-row">
-        <nav className="flex shrink-0 gap-1 overflow-x-auto border-b border-[#2a241c]/20 p-2 md:w-44 md:flex-col md:border-b-0 md:border-r">
-          {TABS.map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setTab(t)}
-              aria-current={t === tab}
-              className="whitespace-nowrap px-3 py-2 text-left font-mono text-sm hover:bg-[#2a241c]/10 aria-[current=true]:bg-[#2a241c] aria-[current=true]:text-[#ebe2cd]"
-            >
-              {t}
-            </button>
-          ))}
-        </nav>
-        <div className="min-w-0 flex-1 p-6 font-serif">
-          {tab === "Objectives" ? (
-            <ul className="space-y-3">
-              {view.objectives.map((o) => (
-                <li key={o.id} className={`flex gap-3 ${o.done ? "line-through opacity-60" : ""}`}>
-                  <span aria-hidden>{o.done ? "☑" : "☐"}</span>
-                  <span>
-                    {o.text}
-                    <span className="sr-only">{o.done ? " (done)" : ""}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-          {tab === "Evidence" ? (
-            view.evidence.length ? (
-              <ul className="grid gap-3 sm:grid-cols-2">
-                {view.evidence.map((e) => (
-                  <li key={e.id}>
-                    <button type="button" onClick={() => onOpenEvidence(e.id)} className="flex w-full gap-3 border border-[#2a241c]/20 p-2 text-left hover:border-[#2a241c]">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={e.image} alt="" className="h-14 w-20 shrink-0 object-cover" />
-                      <span>
-                        <span className="block font-mono text-xs text-[#7d3a33]">{e.id}</span>
-                        <span className="text-sm">{e.title}</span>
-                      </span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="opacity-70">No evidence collected yet.</p>
-            )
-          ) : null}
-          {tab === "People" ? (
-            view.characters.length ? (
-              <ul className="space-y-5">
-                {view.characters.map((c) => (
-                  <li key={c.id} className="flex gap-4">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={c.portrait} alt="" className="h-20 w-16 shrink-0 object-cover grayscale-[30%]" />
-                    <div>
-                      <p className="font-bold">{c.name}</p>
-                      <p className="font-mono text-xs opacity-70">{c.role}</p>
-                      {c.bio.map((b, i) => (
-                        <p key={i} className="mt-1 text-sm">
-                          {b}
-                        </p>
-                      ))}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="opacity-70">Read the case file to learn who was there.</p>
-            )
-          ) : null}
-          {tab === "Interviews" ? (
-            interviews.length ? (
-              <ul className="space-y-4">
-                {interviews.map((n) => (
-                  <li key={n.id}>
-                    <p className="font-mono text-xs text-[#7d3a33]">{n.title}</p>
-                    <p className="mt-1 text-sm leading-relaxed">{n.text}</p>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="opacity-70">Your interview notes will be written here.</p>
-            )
-          ) : null}
-          {tab === "Timeline" ? (
-            <ol className="space-y-3 border-l border-[#2a241c]/30 pl-5">
-              {view.timeline.map((t, i) => (
-                <li key={i}>
-                  <span className="font-mono text-sm font-bold">{t.time}</span> <span>{t.text}</span>
-                  <span className="block font-mono text-xs opacity-60">Source: {t.source}</span>
-                </li>
-              ))}
-            </ol>
-          ) : null}
-          {tab === "Deductions" ? (
-            view.deductions.length ? (
-              <ul className="space-y-4">
-                {view.deductions.map((d) => (
-                  <li key={d.id}>
-                    <p className="font-bold">{d.title}</p>
-                    <p className="text-sm leading-relaxed">{d.text}</p>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="opacity-70">Nothing established yet. Connect evidence on the murder board to test your ideas.</p>
-            )
-          ) : null}
-          {tab === "My notes" ? (
-            <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                const r = await dispatch({ type: "saveNotes", text: notes });
-                setSaved(r ? "saved" : "error");
-              }}
-            >
-              <label htmlFor="player-notes" className="font-mono text-xs opacity-70">
-                Your own notes. Only you can see these.
-              </label>
-              <textarea
-                id="player-notes"
-                value={notes}
-                onChange={(e) => {
-                  setNotes(e.target.value);
-                  setSaved("idle");
-                }}
-                maxLength={20000}
-                className="mt-2 h-72 w-full resize-y border border-[#2a241c]/30 bg-[#f4ecd9] p-3 font-mono text-sm outline-none focus:border-[#2a241c]"
-              />
-              <div className="mt-3 flex items-center gap-3">
-                <GameButton type="submit" variant="paper" disabled={pending || notes === view.playerNotes}>
-                  Save notes
-                </GameButton>
-                <span aria-live="polite" className="font-mono text-xs">
-                  {saved === "saved" ? "Notes saved." : saved === "error" ? "Notes were not saved." : ""}
-                </span>
-              </div>
-            </form>
-          ) : null}
         </div>
       </div>
     </Overlay>

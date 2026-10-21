@@ -4,10 +4,10 @@ import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { buttonClass } from "@/components/ui";
 import { Seal } from "@/components/wordmark";
-import { respond } from "@/game/engine/engine";
+import { normalizeState, respond } from "@/game/engine/engine";
 import { findInvestigation } from "@/game/persistence";
 import { loadCase } from "@/game/registry";
-import { Game } from "@/game/ui/game";
+import { InvestigationShell } from "@/game/ui/investigation-shell";
 import { getSettings, requireInvestigator } from "@/lib/investigator";
 import { isAdminConfigured } from "@/lib/supabase/admin";
 
@@ -70,9 +70,10 @@ async function Desk({ params }: { params: Promise<{ caseId: string }> }) {
   const settings = await getSettings(me.id);
   return (
     <main id="main">
-      <Game
+      <InvestigationShell
         caseId={def.id}
-        initial={respond(def, loaded.state).view}
+        homeLocation={def.startLocation}
+        initial={respond(def, normalizeState(def, loaded.state)).view}
         prefs={{
           reducedMotion: settings?.reduced_motion ?? false,
           masterVolume: settings?.master_volume ?? 80,

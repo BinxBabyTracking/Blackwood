@@ -1,5 +1,6 @@
 import { apply, check, collectEvidence, runEvents } from "./rules";
 import type {
+  ClientEvidence,
   ActionOutcome,
   ActionResponse,
   CaseDefinition,
@@ -24,6 +25,7 @@ export function newState(def: CaseDefinition, now = Date.now()): InvestigationSt
     unlocked: [],
     inspected: [],
     evidence: [],
+    discoveries: {},
     flags: [],
     asked: [],
     presented: [],
@@ -69,18 +71,57 @@ function characterHere(def: CaseDefinition, s: InvestigationState, id: string) {
   return Boolean(c && c.locationId === s.location && check(c.available, s));
 }
 
-/** Evidence the player has legitimately uncovered and may now collect. */
-function discoverable(def: CaseDefinition, s: InvestigationState, evidenceId: string) {
+/** How the player legitimately uncovered a piece of evidence, or null if they have not. */
+function discoverable(def: CaseDefinition, s: InvestigationState, evidenceId: string): "scene" | "document" | "delivery" | null {
   for (const l of def.locations) {
     for (const h of l.hotspots) {
       if (h.interaction.type === "inspect" && h.interaction.evidence === evidenceId && s.inspected.includes(h.id) && check(h.visible, s)) {
-        return true;
+        return "scene";
       }
     }
   }
-  if (def.documents.some((d) => d.evidence.includes(evidenceId) && s.readDocuments.includes(d.id))) return true;
-  if (def.deliveries.some((d) => d.evidence.includes(evidenceId) && s.openedDeliveries.includes(d.id))) return true;
-  return false;
+  if (def.documents.some((d) => d.evidence.includes(evidenceId) && s.readDocuments.includes(d.id))) return "document";
+  if (def.deliveries.some((d) => d.evidence.includes(evidenceId) && s.openedDeliveries.includes(d.id))) return "delivery";
+  return null;
+}
+
+/**
+ * Brings a save written by an earlier version up to the current shape without
+ * touching any progress it already holds.
+ */
+export function normalizeState(def: CaseDefinition, raw: InvestigationState): InvestigationState {
+  const fresh = newState(def, raw.lastActionAt ?? Date.now());
+  const s = { ...fresh, ...raw } as InvestigationState;
+  s.discoveries ??= {};
+  for (const id of s.evidence) {
+    s.discoveries[id] ??= {
+      locationId: def.evidence.find((e) => e.id === id)?.sourceLocationId ?? s.location,
+      sceneState: "A",
+      via: "scene",
+      at: s.lastActionAt,
+    };
+  }
+  return s;
+}
+
+/** The browser-safe description of one evidence item. */
+export function evidenceView(def: CaseDefinition, s: InvestigationState, id: string): ClientEvidence | null {
+  const e = def.evidence.find((x) => x.id === id);
+  if (!e) return null;
+  const d = s.discoveries?.[id];
+  return {
+    id: e.id,
+    title: e.title,
+    description: e.description,
+    inspection: e.inspection,
+    image: def.assets.images[e.image] ?? "",
+    source: loc(def, e.sourceLocationId)?.name ?? "",
+    boardable: e.boardable,
+    audio: e.audio ? def.assets.audio[e.audio] ?? null : null,
+    collected: s.evidence.includes(id),
+    foundAt: d ? loc(def, d.locationId)?.name ?? null : null,
+    collectedAt: d?.at ?? null,
+  };
 }
 
 function knownCharacters(def: CaseDefinition, s: InvestigationState) {
@@ -186,21 +227,22 @@ export function reduce(
       if (!s.inspected.includes(h.id)) s.inspected.push(h.id);
       apply(it.effects, s, def);
       const text = [...(it.textAfter ?? [])].reverse().find((t) => check(t.requires, s))?.text ?? it.text;
-      const image = it.image ? def.assets.images[it.image] ?? null : it.evidence ? def.assets.images[def.evidence.find((e) => e.id === it.evidence)!.image] ?? null : null;
+      const ev = it.evidence ? evidenceView(def, s, it.evidence) : null;
       outcome = {
         kind: "inspect",
-        title: it.title,
+        title: ev?.title ?? it.title,
         text,
-        image,
-        evidenceId: it.evidence ?? null,
-        collected: it.evidence ? s.evidence.includes(it.evidence) : false,
+        image: it.image ? def.assets.images[it.image] ?? null : ev?.image ?? null,
+        evidence: ev,
       };
       break;
     }
 
     case "collect": {
-      if (!discoverable(def, s, action.evidenceId)) fail("You have not found that yet.");
-      collectEvidence(s, def, action.evidenceId);
+      const via = discoverable(def, s, action.evidenceId);
+      if (!via) fail("You have not found that yet.");
+      if (s.evidence.includes(action.evidenceId)) fail("That evidence is already in your notebook.");
+      collectEvidence(s, def, action.evidenceId, via, now);
       break;
     }
 
@@ -213,6 +255,11 @@ export function reduce(
         kind: "document",
         id: d.id,
         title: d.title,
+        dossier: d.dossier ?? [],
+        people: (d.people ?? []).map((id) => {
+          const c = char(def, id)!;
+          return { id: c.id, name: c.name, role: c.role, portrait: def.assets.images[c.portrait] ?? "" };
+        }),
         pages: d.pages,
         evidence: d.evidence.map((id) => ({ id, title: def.evidence.find((e) => e.id === id)!.title, collected: s.evidence.includes(id) })),
       };
@@ -417,7 +464,6 @@ export function project(def: CaseDefinition, s: InvestigationState): ClientView 
   const img = (key: string) => def.assets.images[key] ?? "";
   const l = loc(def, s.location)!;
   const bg = typeof l.background === "string" ? l.background : l.background.states[s.env[l.background.env] ?? "A"] ?? Object.values(l.background.states)[0];
-  const evidenceById = new Map(def.evidence.map((e) => [e.id, e]));
 
   return {
     caseId: def.id,
@@ -444,20 +490,9 @@ export function project(def: CaseDefinition, s: InvestigationState): ClientView 
         available: locationAvailable(def, s, x),
         visited: s.visited.includes(x.id),
         current: x.id === s.location,
+        pin: x.mapPin ?? null,
       })),
-    evidence: s.evidence.map((id) => {
-      const e = evidenceById.get(id)!;
-      return {
-        id: e.id,
-        title: e.title,
-        description: e.description,
-        inspection: e.inspection,
-        image: img(e.image),
-        source: loc(def, e.sourceLocationId)?.name ?? "",
-        boardable: e.boardable,
-        audio: e.audio ? def.assets.audio[e.audio] ?? null : null,
-      };
-    }),
+    evidence: s.evidence.map((id) => evidenceView(def, s, id)!),
     characters: knownCharacters(def, s).map((c) => ({
       id: c.id,
       name: c.name,

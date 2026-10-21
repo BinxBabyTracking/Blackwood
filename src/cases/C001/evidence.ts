@@ -89,11 +89,11 @@ export const evidence: EvidenceDef[] = [
   ev({
     id: "E07",
     title: "Overturned Chair",
-    description: "A dining chair lying on its back between the sofa and the sideboard.",
+    description: "A wooden chair overturned near the seating area in Eleanor's living room.",
     sourceLocationId: "living_room",
     image: "ev.e07",
     inspection:
-      "One of the six chairs from the dining set, carried into the living room for coffee. It lies on its back with one rear leg cracked at the joint. The rug beneath it is rucked into folds toward the sideboard.",
+      "A wooden chair lies overturned near the seating area. Its position suggests the room was disturbed during the incident, although the precise sequence of events remains unclear.",
     discovery: "Inspect the chair in the living room.",
     characters: [],
     related: ["E06", "E02"],

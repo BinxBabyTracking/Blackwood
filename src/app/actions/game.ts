@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { GameError, reduce, respond } from "@/game/engine/engine";
+import { GameError, normalizeState, reduce, respond } from "@/game/engine/engine";
 import type { ActionResponse, GameAction } from "@/game/engine/types";
 import { findInvestigation, PersistenceError, recordClosedCase, restartInvestigation, saveState, startInvestigation } from "@/game/persistence";
 import { loadCase } from "@/game/registry";
@@ -37,7 +37,7 @@ export async function restartCase(caseId: string): Promise<ActionResponse | { er
   if (!def || !userId) return { error: "Sign in again to continue." };
   try {
     const loaded = await restartInvestigation(userId, def);
-    return respond(def, loaded.state);
+    return respond(def, normalizeState(def, loaded.state));
   } catch (e) {
     return { error: e instanceof PersistenceError ? e.message : "The investigation could not be restarted." };
   }
@@ -48,23 +48,26 @@ const ACTIONS = new Set<GameAction["type"]>([
   "openDelivery", "boardAdd", "boardMove", "boardRemove", "connect", "disconnect", "saveNotes", "dismissMessages", "submitConclusion",
 ]);
 
+/** `saved: false` means progress may not have been written; a rule refusal changes nothing and keeps `saved: true`. */
+export type PlayResult = ActionResponse | { error: string; saved: boolean };
+
 /**
  * The single entry point for gameplay. The server loads the saved state,
  * applies the action with the case rules, saves, and returns only what the
  * player is allowed to see.
  */
-export async function playAction(caseId: string, action: GameAction): Promise<ActionResponse | { error: string }> {
-  if (!action || typeof action !== "object" || !ACTIONS.has(action.type)) return { error: "Unknown action." };
+export async function playAction(caseId: string, action: GameAction): Promise<PlayResult> {
+  if (!action || typeof action !== "object" || !ACTIONS.has(action.type)) return { error: "Unknown action.", saved: true };
   const def = loadCase(caseId);
   const userId = await currentUserId();
-  if (!def) return { error: "This case is not playable." };
-  if (!userId) return { error: "Your session has ended. Sign in again to continue." };
+  if (!def) return { error: "This case is not playable.", saved: true };
+  if (!userId) return { error: "Your session has ended. Sign in again to continue.", saved: false };
 
   try {
     for (let attempt = 0; attempt < 2; attempt++) {
       const loaded = await findInvestigation(userId, def.id);
-      if (!loaded) return { error: "Accept the assignment before starting the investigation." };
-      const { state, outcome } = reduce(def, loaded.state, action);
+      if (!loaded) return { error: "Accept the assignment before starting the investigation.", saved: true };
+      const { state, outcome } = reduce(def, normalizeState(def, loaded.state), action);
       const saved = await saveState(def, loaded, state);
       if (!saved) continue; // another tab saved first; reload and apply again
       if (outcome.kind === "verdict" && outcome.correct && action.type === "submitConclusion") {
@@ -72,11 +75,11 @@ export async function playAction(caseId: string, action: GameAction): Promise<Ac
       }
       return respond(def, state, outcome);
     }
-    return { error: "Your investigation was updated in another window. Reload to continue." };
+    return { error: "Your investigation was updated in another window. Reload to continue.", saved: false };
   } catch (e) {
-    if (e instanceof GameError) return { error: e.message };
-    if (e instanceof PersistenceError) return { error: e.message };
+    if (e instanceof GameError) return { error: e.message, saved: true };
+    if (e instanceof PersistenceError) return { error: e.message, saved: false };
     console.error("playAction", e);
-    return { error: "Something went wrong saving your investigation. Try again." };
+    return { error: "Something went wrong saving your investigation. Try again.", saved: false };
   }
 }

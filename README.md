@@ -76,7 +76,14 @@ The game runs at `/play/:caseId` as a full-screen interface outside the portal l
 - `src/game/registry.ts`: loads cases by id. A new case is a new folder plus one line here.
 - `src/game/persistence.ts`: saves, entitlements, sessions and service records via the server-side secret key.
 - `src/app/actions/game.ts`: the single server action every gameplay click goes through.
-- `src/game/ui/`: the scene, inspection view, interviews, notebook, murder board, telephone, conclusion and closure screens.
+- `src/game/ui/`: the player-facing components, all driven by case data:
+  - `investigation-shell.tsx` (InvestigationShell): the full-screen frame, save status, HUD and layer routing
+  - `exploration-scene.tsx` (ExplorationScene, SceneHotspot): the 16:9 scene and its hotspots
+  - `evidence-inspection.tsx` (EvidenceInspection): close-up view with zoom, collect and pin
+  - `evidence-inventory.tsx` (EvidenceInventory): collected evidence with location and status
+  - `detective-notebook.tsx` (DetectiveNotebook), `travel-map.tsx` (TravelMap), `board.tsx` (MurderBoard), and `panels.tsx` for the dossier, telephone, interviews, conclusion and closure
+
+To add evidence to a scene: define it in `evidence.ts`, add an `inspect` hotspot with `evidence: "E.."` to the location in `locations.ts`, and add its image to `assets.ts`. Nothing in the components refers to a specific evidence item. Each collected item records where, in which scene state, and how it was found (`discoveries` in the save).
 
 **Restricted content stays on the server.** Case files import `server-only`, and the browser receives only a projection: no solution, no deduction rules, no unrevealed dialogue or character details. Connections on the murder board are judged on the server; a wrong one is simply left as string.
 

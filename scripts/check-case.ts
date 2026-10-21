@@ -5,7 +5,7 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { loadCase } from "../src/game/registry";
-import { newState, reduce, project } from "../src/game/engine/engine";
+import { newState, normalizeState, reduce, project } from "../src/game/engine/engine";
 import type { CaseDefinition, GameAction, InvestigationState } from "../src/game/engine/types";
 
 const id = process.argv[2] ?? "C001";
@@ -60,6 +60,13 @@ hot("office_recorder");
 go("living_room");
 for (const h of ["lr_chair", "lr_glass", "lr_ledger", "lr_drawer", "lr_sideboard"]) hot(h);
 for (const e of ["E07", "E02", "E03", "E08"]) collect(e);
+try { collect("E07"); problems.push("E07 collected twice"); } catch {}
+if (s.evidence.filter((e) => e === "E07").length !== 1) problems.push("E07 duplicated in evidence list");
+const d07 = s.discoveries.E07;
+if (!d07 || d07.locationId !== "living_room" || d07.via !== "scene" || d07.sceneState !== "A") problems.push(`E07 discovery not recorded: ${JSON.stringify(d07)}`);
+if (!s.notebook.some((n) => n.id === "evidence:E07")) problems.push("E07 missing from notebook");
+const v07 = project(def, s).evidence.find((e) => e.id === "E07");
+if (v07?.foundAt !== "Eleanor's Living Room" || !v07.collected) problems.push(`E07 view wrong: ${JSON.stringify(v07)}`);
 hot("lr_to_kitchen");
 for (const h of ["k_window", "k_door", "k_calendar"]) hot(h);
 for (const e of ["E01", "E10", "E09"]) collect(e);
@@ -112,6 +119,12 @@ const weak = run({ type: "submitConclusion", theory: { culprit: "daniel", motive
 if (weak.kind !== "verdict" || weak.correct) problems.push("under-supported theory accepted");
 const good = run({ type: "submitConclusion", theory: { culprit: "daniel", motive: "embezzlement", weapon: "knife", location: "living_room", evidence: ["E11", "E14", "E03", "E13", "E01"] } });
 if (good.kind !== "verdict" || !good.correct) problems.push("correct theory rejected");
+
+// saves from before discovery tracking must load without losing progress
+const legacy = structuredClone(s) as Partial<InvestigationState>;
+delete legacy.discoveries;
+const upgraded = normalizeState(def, legacy as InvestigationState);
+if (upgraded.evidence.length !== s.evidence.length || !upgraded.discoveries.E07 || upgraded.deductions.length !== s.deductions.length) problems.push("legacy save lost progress on upgrade");
 
 // view must not leak restricted content
 const view = JSON.stringify(project(def, newState(def)));

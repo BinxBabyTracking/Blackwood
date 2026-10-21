@@ -29,6 +29,16 @@ export const documents: DocumentDef[] = [
   {
     id: "casefile",
     title: "LAPD case file 85-NE-2291: Whitmore, Eleanor",
+    dossier: [
+      { label: "Case ID", value: "C001" },
+      { label: "Case title", value: "The Whitmore File" },
+      { label: "Classification", value: "Homicide" },
+      { label: "Location", value: "Los Angeles, California" },
+      { label: "Year", value: "1985" },
+      { label: "Victim", value: "Eleanor Whitmore, 64" },
+      { label: "Police contact", value: "Det. Frank Bennett, LAPD Northeast Division" },
+    ],
+    people: ["margaret", "daniel", "robert", "patricia"],
     evidence: ["E06", "E12"],
     effectsOnRead: [{ setFlag: "casefile_read" }],
     pages: [

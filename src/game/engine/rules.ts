@@ -1,4 +1,4 @@
-import type { CaseDefinition, Condition, Effect, InvestigationState } from "./types";
+import type { CaseDefinition, Condition, Discovery, Effect, InvestigationState } from "./types";
 
 /** Evaluates a rule condition against the current investigation state. */
 export function check(c: Condition | undefined, s: InvestigationState): boolean {
@@ -30,7 +30,7 @@ export function apply(effects: Effect[] | undefined, s: InvestigationState, def:
   for (const e of effects ?? []) {
     if ("setFlag" in e) add(s.flags, e.setFlag);
     else if ("clearFlag" in e) s.flags = s.flags.filter((f) => f !== e.clearFlag);
-    else if ("giveEvidence" in e) collectEvidence(s, def, e.giveEvidence);
+    else if ("giveEvidence" in e) collectEvidence(s, def, e.giveEvidence, "dialogue");
     else if ("setEnv" in e) s.env[e.setEnv] = e.to;
     else if ("unlockLocation" in e) add(s.unlocked, e.unlockLocation);
     else if ("note" in e) {
@@ -45,10 +45,13 @@ export function apply(effects: Effect[] | undefined, s: InvestigationState, def:
   }
 }
 
-export function collectEvidence(s: InvestigationState, def: CaseDefinition, id: string) {
+/** Adds evidence to the notebook once. Returns false if it was already collected. */
+export function collectEvidence(s: InvestigationState, def: CaseDefinition, id: string, via: Discovery["via"] = "scene", now = Date.now()) {
   const ev = def.evidence.find((x) => x.id === id);
   if (!ev || s.evidence.includes(id)) return false;
   s.evidence.push(id);
+  s.discoveries ??= {};
+  s.discoveries[id] = { locationId: s.location, sceneState: s.env[s.location] ?? "A", via, at: now };
   if (!s.notebook.some((n) => n.id === `evidence:${id}`)) {
     s.notebook.push({ id: `evidence:${id}`, kind: "observation", title: `${ev.id}: ${ev.title}`, text: ev.description, at: Date.now() });
   }
