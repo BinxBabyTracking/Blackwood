@@ -225,8 +225,6 @@ function clientLines(def: CaseDefinition, s: InvestigationState, characterId: st
 function conversationOutcome(def: CaseDefinition, s: InvestigationState, characterId: string, latest: number[] = []): ActionOutcome {
   const c = char(def, characterId)!;
   const d = demeanorOf(def, s, characterId);
-  const fu = followUps(def);
-  const questions = availableQuestions(def, s, characterId).map((q) => ({ id: q.id, prompt: q.prompt, topic: q.topic ?? "Questions", followUp: fu.has(q.id) }));
   return {
     kind: "conversation",
     characterId,
@@ -239,7 +237,7 @@ function conversationOutcome(def: CaseDefinition, s: InvestigationState, charact
     refusing: Boolean(d?.refuses),
     history: clientLines(def, s, characterId),
     latest,
-    questions,
+    canAsk: characterHere(def, s, characterId) && s.status !== "closed",
     idle: d?.refuses ?? d?.idleLine ?? c.idleLine,
     available: characterHere(def, s, characterId),
     voiced: voiced(c),
@@ -255,6 +253,51 @@ function say(s: InvestigationState, characterId: string, you: string, lines: str
     latest.push(log.length);
     log.push({ speaker: characterId, text: l, kind: kinds.them, q });
   }
+  return latest;
+}
+
+/**
+ * Questions a character can answer right now, in the player's own words: the
+ * entries currently open, including ones already asked (asking again gets the
+ * same answer). Locked entries are never candidates, so wording a question
+ * cleverly cannot reach information the investigation has not earned.
+ */
+export function interviewCandidates(def: CaseDefinition, s: InvestigationState, characterId: string) {
+  const refuse = refusing(def, s, characterId);
+  return def.questions.filter((q) => q.characterId === characterId && questionOpen(def, s, q) && (!refuse || q.allowWhenRefusing));
+}
+
+/** Tidies a composed answer: plain text, no em dashes, a sensible length. */
+function cleanComposed(t: unknown) {
+  if (typeof t !== "string") return "";
+  return t
+    .replace(/[\u2014\u2013]/g, ", ")
+    .replace(/\s+/g, " ")
+    .replace(/^["'\s]+|["'\s]+$/g, "")
+    .slice(0, 480)
+    .trim();
+}
+
+/** What a character knows right now: the facts whose conditions hold. Server-side only. */
+export function characterKnowledge(def: CaseDefinition, s: InvestigationState, characterId: string) {
+  const c = char(def, characterId);
+  return (c?.knowledge ?? []).filter((k) => check(k.requires, s)).map((k) => k.text);
+}
+
+/** Answers one dialogue entry: transcript, notebook, unlocks and effects. `asked` is the investigator's own words. */
+function answerQuestion(def: CaseDefinition, s: InvestigationState, q: DialogueQuestion, asked: string) {
+  const c = char(def, q.characterId)!;
+  const first = !s.asked.includes(q.id);
+  if (first) s.asked.push(q.id);
+  if (!s.talkedTo.includes(c.id)) s.talkedTo.push(c.id);
+  const r = replyFor(s, q);
+  const latest = say(s, c.id, asked, r.lines, { you: "question", them: "answer" }, q.id);
+  if (!q.repeatable && first) {
+    apply([{ note: { id: `q:${q.id}`, kind: "interview", title: `${c.name}: ${asked}`, text: q.reveals ?? r.lines.join(" "), characterId: c.id, important: Boolean(q.reveals) } }], s, def);
+  }
+  for (const u of q.unlocks ?? []) if (!s.unlockedQuestions.includes(u)) s.unlockedQuestions.push(u);
+  apply(q.effects, s, def);
+  apply(r.effects, s, def);
   return latest;
 }
 
@@ -387,17 +430,33 @@ export function reduce(
       const q = def.questions.find((x) => x.id === action.questionId) ?? fail("Unknown question.");
       if (!characterHere(def, s, q.characterId)) fail("They are not here.");
       if (!availableQuestions(def, s, q.characterId).some((x) => x.id === q.id)) fail("That question is not available.");
-      const c = char(def, q.characterId)!;
-      if (!s.asked.includes(q.id)) s.asked.push(q.id);
+      const latest = answerQuestion(def, s, q, q.prompt);
+      finish(s, def);
+      outcome = conversationOutcome(def, s, q.characterId, latest);
+      break;
+    }
+
+    case "askFree": {
+      const c = char(def, action.characterId) ?? fail("Unknown person.");
+      if (!characterHere(def, s, c.id)) fail(c.medium === "telephone" ? `${c.name} can be reached from your office telephone.` : `${c.name} is not here.`);
+      const text = String(action.text ?? "").replace(/\s+/g, " ").trim().slice(0, 300);
+      if (!text) fail("Ask a question first.");
       if (!s.talkedTo.includes(c.id)) s.talkedTo.push(c.id);
-      const r = replyFor(s, q);
-      const latest = say(s, c.id, q.prompt, r.lines, { you: "question", them: "answer" }, q.id);
-      if (!q.repeatable) {
-        apply([{ note: { id: `q:${q.id}`, kind: "interview", title: `${c.name}: ${q.prompt}`, text: q.reveals ?? r.lines.join(" "), characterId: c.id, important: Boolean(q.reveals) } }], s, def);
+      // The match was chosen on the server from this character's current candidates; check it again here.
+      const q = action.match ? interviewCandidates(def, s, c.id).find((x) => x.id === action.match) : undefined;
+      const composed = cleanComposed(action.composed);
+      let latest: number[];
+      if (q) latest = answerQuestion(def, s, q, text);
+      else if (composed && !refusing(def, s, c.id)) {
+        // An answer composed on the server from this character's available knowledge.
+        latest = say(s, c.id, text, [composed], { you: "question", them: "answer" }, "composed");
+      } else {
+        const d = demeanorOf(def, s, c.id);
+        const unknown = c.noAnswer?.length ? c.noAnswer : [c.idleLine];
+        const asked = (s.conversations[c.id] ?? []).filter((l) => l.q === "none" && l.speaker !== "you").length;
+        const line = d?.refuses ?? unknown[asked % unknown.length];
+        latest = say(s, c.id, text, [line], { you: "question", them: d?.refuses ? "refusal" : "answer" }, "none");
       }
-      for (const u of q.unlocks ?? []) if (!s.unlockedQuestions.includes(u)) s.unlockedQuestions.push(u);
-      apply(q.effects, s, def);
-      apply(r.effects, s, def);
       finish(s, def);
       outcome = conversationOutcome(def, s, c.id, latest);
       break;

@@ -5,7 +5,9 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { loadCase } from "../src/game/registry";
-import { newState, normalizeState, reduce, project, spokenLine, questionOpen } from "../src/game/engine/engine";
+import { newState, normalizeState, reduce, project, spokenLine, questionOpen, interviewCandidates, characterKnowledge } from "../src/game/engine/engine";
+import { bestMatch } from "../src/game/engine/matcher";
+import { CASES as MATCH_CASES } from "./match-eval";
 import type { CaseDefinition, GameAction, InvestigationState } from "../src/game/engine/types";
 
 const id = process.argv[2] ?? "C001";
@@ -107,8 +109,8 @@ for (const e of ["E01", "E10", "E06"]) collect(e);
 // RE01: available after Margaret's first interview, rings only in the office
 go("margaret_house");
 run({ type: "talk", characterId: "margaret" });
+if (s.eventStates.RE01) problems.push("RE01 available before Margaret was interviewed");
 ask("margaret_evening");
-if (s.eventStates.RE01) problems.push("RE01 left locked before Margaret's initial interview was complete");
 ask("margaret_departure"); ask("margaret_eleanor_mood"); ask("margaret_daniel");
 if (s.eventStates.RE01 !== "available") problems.push(`RE01 should be available, is ${s.eventStates.RE01}`);
 if (s.pendingCalls.length) problems.push("the telephone rang away from the office");
@@ -139,7 +141,7 @@ if (missingInitial.length) problems.push(`initially discoverable evidence not co
 // RE03 becomes available after Patricia's financial answer
 go("patricia_office");
 run({ type: "talk", characterId: "patricia" });
-try { ask("patricia_money"); problems.push("follow-up question asked before it was unlocked"); } catch {}
+if (questionOpen(def, { ...s, evidence: s.evidence.filter((e) => e !== "E03" && e !== "E08"), asked: s.asked.filter((a) => a !== "margaret_eleanor_mood") }, def.questions.find((q) => q.id === "patricia_money")!)) problems.push("Patricia discusses money before the investigator has seen the accounts");
 ask("patricia_evening"); ask("patricia_concerns");
 if (s.eventStates.RE03) problems.push("RE03 available before Patricia was asked about money");
 ask("patricia_money");
@@ -199,7 +201,7 @@ if (again2.kind !== "conversation" || !again2.history.at(-1)?.text.startsWith("L
 ask("robert_cars");
 go("office");
 const bennett = run({ type: "talk", characterId: "bennett" });
-if (bennett.kind !== "conversation" || bennett.medium !== "telephone" || !bennett.questions.some((x) => x.id === "bennett_jacket")) problems.push("Bennett telephone interview missing the jacket request");
+if (bennett.kind !== "conversation" || bennett.medium !== "telephone" || !interviewCandidates(def, s, "bennett").some((x) => x.id === "bennett_jacket")) problems.push("Bennett telephone interview missing the jacket request");
 ask("bennett_jacket");
 if (s.evidence.includes("E05")) problems.push("E05 appeared in the inventory without a recovery interaction");
 try { collect("E05"); problems.push("E05 collectable before the evidence bag was opened"); } catch {}
@@ -329,13 +331,14 @@ if (JSON.stringify(rt.conversations) !== JSON.stringify(s.conversations)) proble
   for (const c of interviewees) {
     const here = { ...f, location: c.locationId ?? f.location };
     const o = reduce(def, here, { type: "talk", characterId: c.id }, 1).outcome;
-    if (o.kind !== "conversation" || o.questions.length === 0) problems.push(`${c.id} has no opening questions`);
+    if (o.kind !== "conversation" || interviewCandidates(def, here, c.id).length === 0) problems.push(`${c.id} has no opening questions`);
     if (o.kind === "conversation") {
       const shown = JSON.stringify(o);
       for (const q of def.questions.filter((x) => x.characterId === c.id && !questionOpen(def, here, x))) {
         if (shown.includes(q.prompt)) problems.push(`locked question ${q.id} visible`);
       }
-      if (/requires|unlocks|variants|knowledge/.test(shown)) problems.push(`${c.id} conversation leaks rule data`);
+      if (/requires|unlocks|variants|knowledge|"prompt"|keywords/.test(shown)) problems.push(`${c.id} conversation leaks rule data`);
+      for (const q of def.questions.filter((x) => x.characterId === c.id)) if (shown.includes(q.prompt)) problems.push(`authored question ${q.id} sent to the browser`);
     }
   }
   const has = (id: string, st = f) => questionOpen(def, st, def.questions.find((q) => q.id === id)!);
@@ -348,7 +351,7 @@ if (JSON.stringify(rt.conversations) !== JSON.stringify(s.conversations)) proble
   // E05 makes Daniel refuse, but his alibi stays on record
   const ref = { ...f, location: "daniel_apartment", flags: [...f.flags, "daniel_lawyered"] };
   const o = reduce(def, ref, { type: "talk", characterId: "daniel" }, 1).outcome;
-  if (o.kind !== "conversation" || !o.refusing || o.questions.some((x) => x.id !== "daniel_evening")) problems.push("Daniel's refusal not applied");
+  if (o.kind !== "conversation" || !o.refusing || interviewCandidates(def, ref, "daniel").some((x) => x.id !== "daniel_evening")) problems.push("Daniel's refusal not applied");
 }
 
 // ---- interviews in any reasonable order: random walks never hit an error ----
@@ -383,7 +386,8 @@ for (let seed = 1; seed <= 40; seed++) {
         if (!c) continue;
         const o = W({ type: "talk", characterId: c.id });
         if (o.kind !== "conversation") continue;
-        if (o.questions.length && rnd(4)) W({ type: "ask", questionId: o.questions[rnd(o.questions.length)].id });
+        const qs = interviewCandidates(def, w, c.id);
+        if (qs.length && rnd(4)) W({ type: "askFree", characterId: c.id, text: qs[rnd(qs.length)].prompt, match: qs[rnd(qs.length)].id });
         else if (w.evidence.length) W({ type: "present", characterId: c.id, evidenceId: w.evidence[rnd(w.evidence.length)] });
       }
       if (rnd(6) === 0 && w.evidence.length > 1) {
@@ -476,7 +480,7 @@ for (let seed = 1; seed <= 40; seed++) {
   if (project(def, g.state()).developments.find((d) => d.id === "RE02")?.learned.some((l) => l.includes("you saw"))) problems.push("notebook claims an unseen jacket");
   g.at("office");
   const b1 = g.A({ type: "talk", characterId: "bennett" });
-  if (b1.kind === "conversation" && b1.questions.some((x) => x.id === "bennett_jacket")) problems.push("Bennett offers a jacket search with no reason to ask");
+  if (b1.kind === "conversation" && interviewCandidates(def, g.state(), "bennett").some((x) => x.id === "bennett_jacket")) problems.push("Bennett offers a jacket search with no reason to ask");
   g.at("margaret_house"); g.A({ type: "talk", characterId: "margaret" }); g.ask("margaret_evening"); g.ask("margaret_daniel");
   g.at("office"); g.A({ type: "talk", characterId: "bennett" });
   const b2 = g.A({ type: "ask", questionId: "bennett_jacket" });
@@ -500,6 +504,43 @@ for (let seed = 1; seed <= 40; seed++) {
   // Event rules never reach the browser
   const vjson = JSON.stringify(project(def, m.state()));
   for (const secret of ["requiresInterviews", "onActivate", "unlocksQuestions", "eventStates", "D_INJURED"]) if (vjson.includes(secret)) problems.push(`view leaks ${secret}`);
+}
+
+// ---- Questions in the player's own words ----
+{
+  let x = newState(def, 0);
+  const X = (a: GameAction) => {
+    const r = reduce(def, x, a, 1);
+    x = r.state;
+    return r.outcome;
+  };
+  X({ type: "dismissIntro" }); X({ type: "readDocument", documentId: "casefile" }); X({ type: "travel", locationId: "margaret_house" });
+  const ask = (text: string) => X({ type: "askFree", characterId: "margaret", text, match: bestMatch(text, interviewCandidates(def, x, "margaret")) });
+  const o1 = ask("Did you see anything that night after you went home?");
+  if (o1.kind !== "conversation" || !o1.history.some((l) => l.text.includes("late news finished"))) problems.push("free question did not reach Margaret's answer");
+  if (o1.kind === "conversation" && o1.history[0].text !== "Did you see anything that night after you went home?") problems.push("transcript does not keep the investigator's own words");
+  const o2 = ask("What's your favorite color?");
+  if (o2.kind !== "conversation" || !def.characters.find((c) => c.id === "margaret")!.noAnswer!.includes(o2.history.at(-1)!.text)) problems.push("unanswerable question did not get an in-character 'I don't know'");
+  // a locked answer cannot be reached by wording, even if the browser claims a match
+  X({ type: "askFree", characterId: "margaret", text: "Describe the car you saw after midnight.", match: "margaret_sedan_more" });
+  if (x.asked.includes("margaret_sedan_more")) problems.push("locked answer reached through a free question");
+  // a composed answer is recorded and voiceable, but cannot be smuggled past a refusal
+  X({ type: "askFree", characterId: "margaret", text: "Was Eleanor a good cook?", composed: "She was. Her lemon cake was the best on the street." });
+  const last = x.conversations.margaret.at(-1)!;
+  if (last.text !== "She was. Her lemon cake was the best on the street." || spokenLine(def, x, { kind: "conversation", id: "margaret", n: x.conversations.margaret.length - 1 })?.text !== last.text) problems.push("composed answer not recorded or not voiceable");
+  X({ type: "askFree", characterId: "margaret", text: "Anything?", composed: "Some \u2014 dash" });
+  if (x.conversations.margaret.at(-1)!.text.includes("\u2014")) problems.push("composed answer kept an em dash");
+  // knowledge is gated like the answers
+  const facts = characterKnowledge(def, x, "margaret").join(" ");
+  if (/sedan|jacaranda|fender/i.test(facts)) problems.push("Margaret's sedan knowledge available before she remembers it");
+  const later = { ...x, eventStates: { ...x.eventStates, RE01: "completed" as const } };
+  if (!/sedan/.test(characterKnowledge(def, later, "margaret").join(" "))) problems.push("Margaret's sedan knowledge missing after her call");
+  if (/killed|murdered|stabbed her|I did it/i.test(def.characters.find((c) => c.id === "daniel")!.knowledge!.map((k) => k.text).join(" "))) problems.push("Daniel's knowledge confesses");
+  for (const c of interviewees) if (!c.knowledge?.length || !c.persona || !c.noAnswer?.length) problems.push(`${c.id} lacks knowledge, persona or no-answer lines`);
+  // the built-in matcher on everyday phrasings
+  let hits = 0;
+  for (const [cid, q, want] of MATCH_CASES) if (bestMatch(q, def.questions.filter((d) => d.characterId === cid)) === want) hits++;
+  if (hits / MATCH_CASES.length < 0.9) problems.push(`matcher accuracy ${hits}/${MATCH_CASES.length}`);
 }
 
 // view must not leak restricted content

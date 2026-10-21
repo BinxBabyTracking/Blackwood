@@ -116,10 +116,20 @@ export interface CharacterDef {
   defaultEvidenceReply: string;
   /** Reply used when no questions remain. */
   idleLine: string;
+  /** In-character replies to a question the character has no answer for, used in turn. */
+  noAnswer?: string[];
   voice?: VoiceProfile;
   demeanor?: DemeanorDef[];
-  /** Canonical knowledge for a future free-form interview fallback. Never shown directly. */
-  knowledge?: string[];
+  /** How the character speaks, for answers composed from their knowledge. */
+  persona?: string;
+  /**
+   * Everything the character knows and will say, in their own version of
+   * events (a liar's facts are his story, not the truth). Each fact is only
+   * available once its condition holds, exactly like the authored answers, so
+   * a composed answer can never reach what the investigation has not earned.
+   * Server-only; never sent to the browser.
+   */
+  knowledge?: { text: string; requires?: Condition }[];
 }
 
 /**
@@ -131,8 +141,13 @@ export interface DialogueQuestion {
   characterId: string;
   /** Groups questions in the interview, e.g. "The evening". */
   topic?: string;
-  /** What the investigator says. */
+  /**
+   * The question this answer responds to, in a neutral wording. Players never
+   * see it; it is what free-form questions are matched against.
+   */
   prompt: string;
+  /** Extra words and phrases a player might use to ask this, for matching. */
+  keywords?: string[];
   /** The character's answer, line by line. */
   reply: string[];
   /** Deterministic alternatives; the last whose condition holds replaces `reply`. */
@@ -541,6 +556,11 @@ export type GameAction =
   | { type: "readDocument"; documentId: string }
   | { type: "talk"; characterId: string }
   | { type: "ask"; questionId: string }
+  /**
+   * A question in the player's own words, typed or spoken. The server decides
+   * which authored answer it matches (`match`), never the browser.
+   */
+  | { type: "askFree"; characterId: string; text: string; match?: string | null; composed?: string | null }
   | { type: "present"; characterId: string; evidenceId: string }
   | { type: "answerCall"; callId: string }
   | { type: "placeCall"; callId: string }
@@ -721,7 +741,8 @@ export type ActionOutcome =
       history: ClientLine[];
       /** Transcript positions added by the action just taken. */
       latest: number[];
-      questions: { id: string; prompt: string; topic: string; followUp: boolean }[];
+      /** Whether the investigator can ask anything right now. Authored questions are never sent. */
+      canAsk: boolean;
       idle: string;
       available: boolean;
       voiced: boolean;

@@ -1,4 +1,5 @@
 import type { CharacterDef, ContradictionDef, DialogueQuestion, EvidenceReaction } from "@/game/engine/types";
+import { KNOWLEDGE, PERSONA } from "./knowledge";
 
 /*
  * C001 interviews. DRAFT CASE CONTENT, written against the canonical
@@ -51,6 +52,7 @@ export const characters: CharacterDef[] = [
     onBoard: true,
     defaultEvidenceReply: "I'm sorry, I don't know what to make of that. You'd know better than I would.",
     idleLine: "I've told you everything I can think of. If anything else comes back to me, I'll telephone your office.",
+    noAnswer: ["I'm sorry, I don't know anything about that.", "I couldn't tell you. I'd rather not guess.", "That's not something I would know, I'm afraid."],
     voice: {
       voiceId: "XrExE9yKIg1WjnnlVkGX",
       direction: "Mature woman, measured speech, slightly guarded. American.",
@@ -64,15 +66,6 @@ export const characters: CharacterDef[] = [
         requires: { any: [{ eventState: "RE01", is: "completed" }, { asked: "margaret_sedan_more" }, { asked: "margaret_eleanor_mood" }] },
         cue: "Margaret seems more at ease with you now.",
       },
-    ],
-    knowledge: [
-      "Neighbour of twenty years; exchanged the newspaper with Eleanor on Saturday mornings.",
-      "Arrived first at about 7:00 PM. Left at about 10:10 PM, after Robert; Patricia and Daniel were still there.",
-      "Saw Eleanor take Daniel to her writing desk with the ledger at about 9:15 for about ten minutes. Could not hear them.",
-      "Eleanor told her she was seeing Harold's lawyer on Monday.",
-      "Daniel wore a tan windbreaker all evening.",
-      "Watched television until the news ended at 11:30, then dozed. Woke at 12:10 when the cat scratched; saw a dark four-door sedan, lights off, under the jacaranda, rear fender on the street side crumpled. Gone by 12:30.",
-      "Will not guess whose car it was. Found Eleanor at 7:40 Saturday morning using her spare key.",
     ],
   },
   {
@@ -91,6 +84,7 @@ export const characters: CharacterDef[] = [
     onBoard: true,
     defaultEvidenceReply: "I don't see what that has to do with me.",
     idleLine: "I gave the police a full statement. I don't have anything to add.",
+    noAnswer: ["I have no idea what you mean.", "I don't see how that's any concern of mine.", "You'd have to ask someone else about that."],
     voice: {
       voiceId: "cjVigY5qzO86Huf0OWal",
       direction: "Adult man, composed and articulate, increasingly defensive when challenged. American.",
@@ -120,15 +114,6 @@ export const characters: CharacterDef[] = [
         cue: "Mercer has stopped answering questions.",
       },
     ],
-    knowledge: [
-      "Kept Harold's company books from 1979; managed the estate for Eleanor from 1981. Sent her quarterly reports.",
-      "Says the estate is in excellent order. Says the 9:15 conversation at the desk was a routine question about a bank statement's format.",
-      "Says he left at about 10:25, the last guest, after helping carry cups to the kitchen.",
-      "Says he drove to the Maple Street Diner, had coffee and pie and read the paper until about 1:00 AM, served by a redheaded waitress named Linda. Then home to bed.",
-      "Right hand bandaged; says a pickle jar broke in his hand early Saturday morning; bought gauze at the Rexall on Sunset.",
-      "Drives a dark green 1981 Buick LeSabre. Denies owning a windbreaker once the jacket disappears.",
-      "Never admits anything. Becomes guarded, then defensive, then refers questions to his attorney.",
-    ],
   },
   {
     id: "robert",
@@ -145,6 +130,7 @@ export const characters: CharacterDef[] = [
     onBoard: true,
     defaultEvidenceReply: "Can't help you there. I know engines, not police work.",
     idleLine: "Look, I've got a pickup on the lift. I told the detective everything already.",
+    noAnswer: ["Couldn't tell you.", "No idea. I fix cars.", "That's not something I'd know about."],
     voice: {
       voiceId: "pqHfZKP75CvOlQylNhV4",
       direction: "Middle-aged man, direct, slightly rough voice. American.",
@@ -153,15 +139,6 @@ export const characters: CharacterDef[] = [
     demeanor: [
       { id: "plain", label: "Plain-spoken", requires: { always: true } },
       { id: "impatient", label: "Impatient", requires: { flag: "robert_impatient" }, cue: "Hale wipes his hands and looks at the clock on the wall." },
-    ],
-    knowledge: [
-      "Mechanic. Kept Harold's trucks and Eleanor's Oldsmobile running; did odd jobs at the house.",
-      "Left first, at about 10:00, because he opens at seven on Saturdays. Saw Patricia's Datsun and Daniel's big green Buick outside.",
-      "Saw Eleanor take Mercer to her desk with her account book after the plates were cleared.",
-      "Fitted the kitchen door bolt two years ago: thumb-turn inside only, no keyhole outside. Eleanor bolted it every night.",
-      "Knows how a cut screen looks depending on which side the blade was on.",
-      "Quoted Mercer $240 to fix a crumpled rear fender on his 1981 Buick LeSabre in June; Mercer declined.",
-      "Impatient with repeated questions. Will not speculate about people.",
     ],
   },
   {
@@ -179,6 +156,7 @@ export const characters: CharacterDef[] = [
     onBoard: true,
     defaultEvidenceReply: "I'm not sure what that tells us. Aunt Eleanor kept everything; that could have come from anywhere in the house.",
     idleLine: "Please, find out what happened to her. Call me if you need anything from the bank.",
+    noAnswer: ["I don't know. I'm sorry.", "I wouldn't know anything about that.", "I can't help you with that one."],
     voice: {
       voiceId: "EXAVITQu4vr4xnSDxMaL",
       direction: "Adult woman, emotional but controlled. American.",
@@ -187,15 +165,6 @@ export const characters: CharacterDef[] = [
     demeanor: [
       { id: "hesitant", label: "Hesitant", requires: { always: true } },
       { id: "forthcoming", label: "Forthcoming", requires: { asked: "patricia_money" }, cue: "Patricia seems to have decided to trust you." },
-    ],
-    knowledge: [
-      "Niece and main heir; loan officer at Pacific Crest, which holds the estate account.",
-      "Arrived about 7:15. Left about 10:20; Eleanor saw her out; Daniel was still in the house carrying cups. Home by 10:45; a neighbour heard her keys.",
-      "Eleanor had told her she meant to ask Daniel about the statements; saw the 9:15 conversation at the desk; Eleanor came back pale.",
-      "Three weeks earlier Eleanor asked her to pull the estate account statements; she made copies; Eleanor's ledger did not match Daniel's reports.",
-      "The estate folder in the desk held Daniel's quarterly reports.",
-      "Cheques she saw were payable to D. Mercer Management without Eleanor's signed authorisation. She had not finished reviewing them.",
-      "Hesitant to discuss family money until she sees the investigator has found something.",
     ],
   },
   {
@@ -213,19 +182,13 @@ export const characters: CharacterDef[] = [
     onBoard: false,
     defaultEvidenceReply: "Send it over and I'll have a look. Over the telephone it doesn't tell me much.",
     idleLine: "That's all I have for you right now. Call me when you've got something I can use.",
+    noAnswer: ["Nothing on that in my file.", "I can't help you there. Find me something and I'll run it down.", "That's not something I've got."],
     voice: {
       voiceId: "nPczCjzI2devNBz1zQrb",
       direction: "Middle-aged man, professional, calm, authoritative. American.",
       settings: { stability: 0.65, similarity_boost: 0.8, style: 0.05 },
     },
     demeanor: [{ id: "professional", label: "Professional", requires: { always: true } }],
-    knowledge: [
-      "Lead detective. Took all four statements on Saturday 8/17.",
-      "Scene: body between sofa and overturned chair, single stab wound, carving knife recovered beside her, broken crystal glass, kitchen screen cut, back door unbolted, front door locked, nothing taken.",
-      "Coroner's preliminary estimate: about 11:00 PM Friday to 1:00 AM Saturday. Will not go beyond what reports say.",
-      "Mercer's right hand was bandaged when he gave his statement; he said a jar.",
-      "His captain prefers a burglary. He wants it right, and will help with searches and checks when given a reason.",
-    ],
   },
   {
     id: "rosa",
@@ -238,16 +201,12 @@ export const characters: CharacterDef[] = [
     onBoard: true,
     defaultEvidenceReply: "Honey, I pour coffee. I wouldn't know.",
     idleLine: "I've got tables waiting. Holler if you need anything else.",
+    noAnswer: ["Honey, I wouldn't know.", "No idea. I just pour the coffee.", "Couldn't tell you, sorry."],
     voice: {
       voiceId: "cgSgspJ2msm6clMCkdW9",
       direction: "Woman in her thirties, warm, quick, a little tired. American.",
       settings: { stability: 0.45, similarity_boost: 0.8, style: 0.25 },
     },
-    knowledge: [
-      "Works 11:00 PM to 7:00 AM. Linda works the evening shift and clocks out at 11:00 sharp.",
-      "A man in a tan jacket at the window booth was finishing when she came on and left at about 11:05 without paying for a refill; she wrote it on a ticket for the manager.",
-      "He did not come back on her shift.",
-    ],
   },
 ];
 
@@ -273,8 +232,8 @@ export const questions: DialogueQuestion[] = [
   q("margaret", "The evening", "margaret_evening", "Tell me about Friday evening.", [
     "Eleanor had four of us for supper. A roast, and a lemon cake she cut herself at the sideboard. I came over at seven, before the others.",
     "It was a pleasant evening. Mostly.",
-  ], { unlocks: ["margaret_mostly", "margaret_guests"], effects: [tl("7:00 PM", "Margaret Ellis arrives, the first guest.", "Margaret Ellis")] }),
-  q("margaret", "The evening", "margaret_mostly", "You said mostly.", [
+  ], { effects: [tl("7:00 PM", "Margaret Ellis arrives, the first guest.", "Margaret Ellis")] }),
+  q("margaret", "The evening", "margaret_mostly", "Did anything spoil the evening or seem out of place?", [
     "At about a quarter past nine Eleanor asked Daniel to come over to her writing desk. She had her ledger open. They talked for ten minutes or so with their backs to the table.",
     "I couldn't hear what was said, and I don't want to make more of it than it was. But she was quiet for the rest of the evening.",
   ], {
@@ -289,25 +248,24 @@ export const questions: DialogueQuestion[] = [
     "Robert went first, about ten. I left ten minutes after him. I only had to cross the street.",
     "Patricia and Daniel were still there when I went. A little later I saw Patricia's car pull away from my front window.",
   ], {
-    requires: { asked: "margaret_evening" },
     reveals: "Robert left about 10:00, Margaret about 10:10. Patricia and Daniel were still in the house when Margaret left.",
     effects: [tl("10:00 PM", "Robert Hale leaves, the first to go.", "Margaret Ellis"), tl("10:10 PM", "Margaret Ellis walks home across the street.", "Margaret Ellis")],
   }),
   q("margaret", "Relationship", "margaret_eleanor_mood", "How did Eleanor seem that night?", [
     "Cheerful at the table, until the business at the desk. When I helped her clear the plates she said something odd.",
     "She said, 'I'm seeing Harold's lawyer on Monday, Maggie, and I should have done it a year ago.' I didn't press her. I wish I had.",
-  ], { requires: { asked: "margaret_evening" }, reveals: "Eleanor told Margaret she was seeing Harold's lawyer on Monday." }),
+  ], { reveals: "Eleanor told Margaret she was seeing Harold's lawyer on Monday." }),
   q("margaret", "Other guests", "margaret_daniel", "What do you know about Daniel Mercer?", [
     "He has handled Harold's estate since the funeral. Very polished. Eleanor trusted him completely. At least, she used to.",
     "He wore one of those tan windbreakers all evening, even at the table. I thought it was a little warm for it.",
-  ], { requires: { asked: "margaret_evening" }, reveals: "Daniel Mercer wore a tan windbreaker all evening.", effects: [{ setFlag: "knows_tan_jacket" }] }),
+  ], { reveals: "Daniel Mercer wore a tan windbreaker all evening.", effects: [{ setFlag: "knows_tan_jacket" }] }),
   q("margaret", "Unusual observations", "margaret_noise", "Did you hear anything after you got home?", [
     "No. I had the television on until the late news finished at half past eleven, and then I'm afraid I dozed off in my chair.",
     "With the windows shut and the set on, I don't think I'd have heard much from across the street.",
-  ], { requires: { asked: "margaret_evening" }, effects: [tl("11:30 PM", "The late news ends. Margaret dozes in her chair.", "Margaret Ellis")] }),
+  ], { effects: [tl("11:30 PM", "The late news ends. Margaret dozes in her chair.", "Margaret Ellis")] }),
   q("margaret", "Unusual observations", "margaret_unusual", "Was anything out of the ordinary about the house?", [
     "Not that I saw. Eleanor was a creature of habit. She had Robert put a bolt on the kitchen door after Harold died, and she checked it every night like a ritual.",
-  ], { requires: { asked: "margaret_evening" }, reveals: "Eleanor bolted her kitchen door every night." }),
+  ], { reveals: "Eleanor bolted her kitchen door every night." }),
   q("margaret", "Unusual observations", "margaret_hands", "Did anyone at supper have an injury? A bandage, a cut hand?", [
     "No. Daniel passed the plates round and poured the coffee with both hands. I'd have noticed a bandage.",
   ], { requiresEvidence: ["E14"], reveals: "Margaret saw no injury on Daniel Mercer's hands at supper." }),
@@ -320,11 +278,10 @@ export const questions: DialogueQuestion[] = [
     "The back fender on the street side was crumpled in. I noticed because it caught the light.",
   ], {
     // Unlocked by RE01, Margaret's telephone call.
-    unlocks: ["margaret_sedan_driver"],
     reveals: "The sedan Margaret saw at 12:10 AM was dark green or black, a large four-door, lights off, with a crumpled rear fender on the street side.",
     effects: [{ setFlag: "knows_fender" }],
   }),
-  q("margaret", "The sedan", "margaret_sedan_driver", "Did you see anyone in it, or near it?", [
+  q("margaret", "The sedan", "margaret_sedan_driver", "Did you see anyone in the car, or near it?", [
     "No one. It just sat there. When I came down for a glass of water at half past twelve, it was gone.",
     "Please don't ask me whose car it was. I couldn't tell you, and I won't guess about something like that.",
   ]),
@@ -356,7 +313,6 @@ export const questions: DialogueQuestion[] = [
     "She had a question about a bank statement. The bank changed its format this year and she found it confusing. I explained it.",
     "Ten minutes. Routine.",
   ], {
-    requires: { any: [{ asked: "margaret_mostly" }, { asked: "patricia_desk" }, { asked: "robert_evening" }] },
     reveals: "Daniel says the 9:15 conversation at the desk was a routine question about a bank statement's format.",
   }),
   q("daniel", "Departure", "daniel_departure", "What time did you leave?", [
@@ -368,24 +324,22 @@ export const questions: DialogueQuestion[] = [
     "The waitress, a redhead called Linda, kept my cup filled the whole time. Ask her.",
   ], {
     allowWhenRefusing: true,
-    unlocks: ["daniel_afterwards"],
     reveals: "Daniel says he was at the Maple Street Diner from about 10:40 PM until about 1:00 AM, served throughout by a waitress named Linda.",
     variants: [{ requires: { flag: "daniel_lawyered" }, reply: ["I told the police where I was. The Maple Street Diner, until about one. That is all I will say without my attorney."] }],
     effects: [{ setFlag: "daniel_alibi_given" }, { unlockLocation: "diner" }, tl("10:40 PM", "Daniel Mercer says he arrives at the Maple Street Diner and stays until about 1:00 AM.", "Daniel Mercer")],
   }),
-  q("daniel", "Afterwards", "daniel_afterwards", "And after one?", ["Home. Bed. I didn't sleep much, if you want to know."]),
+  q("daniel", "Afterwards", "daniel_afterwards", "What did you do after you left the diner?", ["Home. Bed. I didn't sleep much, if you want to know."]),
   q("daniel", "The injury", "daniel_hand", "What happened to your hand?", [
     "This? A pickle jar broke in my hand on Saturday morning. Clumsy of me. I cleaned it up and bandaged it myself.",
     "I didn't bother with a doctor.",
   ], {
     requires: { any: [{ inspected: "da_hand" }, { hasEvidence: "E14" }] },
-    unlocks: ["daniel_hand_when"],
     reveals: "Daniel says a jar broke in his right hand on Saturday morning.",
     effects: [{ giveEvidence: "E14" }],
   }),
-  q("daniel", "The injury", "daniel_hand_when", "What time on Saturday morning?", [
+  q("daniel", "The injury", "daniel_hand_when", "What time on Saturday morning did you cut your hand?", [
     "Early. Before nine. I bought gauze at the Rexall on Sunset on my way back from the newsstand.",
-  ]),
+  ], { requires: { any: [{ inspected: "da_hand" }, { hasEvidence: "E14" }] } }),
   q("daniel", "Financial records", "daniel_accounts", "Tell me about Eleanor's accounts.", [
     "Harold's estate is in excellent order. Conservative investments, steady income. Eleanor never wanted for anything.",
     "I sent her a report every quarter. She kept copies of all of them in her desk.",
@@ -416,10 +370,10 @@ export const questions: DialogueQuestion[] = [
   }),
   q("daniel", "Inconsistencies", "daniel_alibi_broken", "Linda went home at eleven. Who kept your cup filled until one?", [
     "Then I have the name wrong. It was a long night and I was upset. What does a waitress's name matter?",
-  ], { requiresDeductions: ["D_ALIBI"], unlocks: ["daniel_left_early"] }),
+  ], { requiresDeductions: ["D_ALIBI"] }),
   q("daniel", "Inconsistencies", "daniel_left_early", "The night waitress saw a man in a tan jacket leave just after eleven.", [
     "Perhaps I stepped out to the car. I don't account for every minute of my evenings, and I don't see why I should.",
-  ], { reveals: "Asked about leaving the diner just after eleven, Daniel says he may have stepped out to his car." }),
+  ], { requiresDeductions: ["D_ALIBI"], reveals: "Asked about leaving the diner just after eleven, Daniel says he may have stepped out to his car." }),
   q("daniel", "Inconsistencies", "daniel_sedan", "A dark sedan with a crumpled rear fender was parked by Eleanor's house at ten past twelve.", [
     "There are a great many dark cars in Los Angeles.",
     "I was at the diner. I've told you that.",
@@ -440,7 +394,6 @@ export const questions: DialogueQuestion[] = [
     "Albright was Harold's man. Eleanor didn't need him. She had me.",
   ], { requiresDeductions: ["D_LAWYER"] }),
   q("daniel", "The evening", "daniel_again", "Is there anything you left out of your statement?", ["No. I've been completely open with the police."], {
-    requires: { asked: "daniel_gathering" },
     repeatable: true,
     variants: [{ requires: { any: [{ contradiction: "X_LINDA" }, { contradiction: "X_DINER_TIME" }, { deduction: "D_ALIBI" }] }, reply: ["I've answered your questions. I'd like you to leave now."] }],
   }),
@@ -462,12 +415,12 @@ export const questions: DialogueQuestion[] = [
   }),
   q("robert", "Vehicles", "robert_cars_night", "Did you notice the cars outside when you left?", [
     "Margaret walks, so hers wasn't there. Patricia's little Datsun, and Mercer's big green Buick behind it. I pulled out round them.",
-  ], { requires: { asked: "robert_departure" } }),
+  ], {}),
   q("robert", "The house", "robert_property", "How well do you know the house?", [
     "Every pipe and hinge. I put the bolt on her kitchen door myself, two years ago, after Harold passed. Thumb-turn on the inside, no keyhole outside. She asked for it that way.",
     "She bolted it every night. Told me so.",
-  ], { unlocks: ["robert_reardoor"], reveals: "Robert fitted the kitchen door bolt: a thumb-turn on the inside only, with no keyhole outside." }),
-  q("robert", "Rear entrance", "robert_reardoor", "Could anyone open that bolt from the yard?", [
+  ], { reveals: "Robert fitted the kitchen door bolt: a thumb-turn on the inside only, with no keyhole outside." }),
+  q("robert", "Rear entrance", "robert_reardoor", "Could anyone open the kitchen door bolt from the yard?", [
     "Not without breaking the door or the frame. That's the whole point of it.",
   ]),
   q("robert", "Rear entrance", "robert_screen", "What would a cut screen look like if someone came in from the yard?", [
@@ -479,18 +432,16 @@ export const questions: DialogueQuestion[] = [
     "I quoted him two-forty to fix it. He said he'd think about it. Never came back.",
   ], {
     requires: { any: [{ eventState: "RE01", is: "completed" }, { flag: "knows_fender" }, { asked: "robert_cars_night" }] },
-    unlocks: ["robert_buick"],
     reveals: "Daniel Mercer drives a green 1981 Buick LeSabre with a crumpled rear fender. Robert quoted $240 to fix it; Mercer declined.",
     effects: [{ setFlag: "fender_identified" }],
   }),
   q("robert", "Vehicles", "robert_buick", "Did Mercer say how he damaged the fender?", [
     "Said he backed into a pole in a parking structure downtown. Could be. A fender doesn't tell you who was driving.",
-  ]),
+  ], { requires: { any: [{ eventState: "RE01", is: "completed" }, { flag: "knows_fender" }, { asked: "robert_cars_night" }] } }),
   q("robert", "Rear entrance", "robert_staged", "So nobody came in through the kitchen.", ["You said that, not me. But I won't argue with you."], { requiresDeductions: ["D_STAGED"] }),
   q("robert", "The evening", "robert_again", "Anything else you remember about the evening?", [
     "Like I told the detective. Dinner, cake, coffee, home. Nothing happened while I was there that I'd call happening.",
   ], {
-    requires: { asked: "robert_evening" },
     repeatable: true,
     effects: [{ setFlag: "robert_impatient" }],
     variants: [{ requires: { flag: "robert_impatient" }, reply: ["Look, I've told you the same thing three ways now. Ask me something new or let me get back to this pickup."] }],
@@ -514,19 +465,17 @@ export const questions: DialogueQuestion[] = [
     "At a quarter past nine she took Daniel over to her desk with her ledger. She'd told me she was going to ask him about the statements.",
     "When she came back to the table she was pale, and he was smiling. I remember thinking that was strange.",
   ], {
-    requires: { asked: "patricia_evening" },
     reveals: "Eleanor had told Patricia she meant to ask Daniel about the statements. After the 9:15 talk at the desk Eleanor came back pale.",
     effects: [tl("9:15 PM", "Eleanor speaks privately with Daniel Mercer at her writing desk, ledger open.", "Patricia Wells")],
   }),
   q("patricia", "Relationship", "patricia_inheritance", "Who inherits Eleanor's estate?", [
     "I do, mostly. I know how that sounds. The police have already asked me where I was.",
     "I was home by a quarter to eleven. My downstairs neighbour heard me drop my keys on the landing and complained about it the next day.",
-  ], { requires: { asked: "patricia_evening" } }),
+  ], {}),
   q("patricia", "Eleanor's concerns", "patricia_concerns", "Was your aunt worried about anything lately?", [
     "She'd been quiet. Distracted. I told the police I thought she was tired.",
     "It was more than that, but it's family business, and I'd rather not go into money with a stranger. I'm sorry.",
   ], {
-    unlocks: ["patricia_money"],
     variants: [
       {
         requires: { any: [{ hasEvidence: "E03" }, { hasEvidence: "E08" }, { asked: "margaret_eleanor_mood" }] },
@@ -569,7 +518,7 @@ export const questions: DialogueQuestion[] = [
   q("patricia", "Other guests", "patricia_daniel", "How well do you know Daniel Mercer?", [
     "Well enough to be polite. He's charming. Aunt Eleanor called him 'my Mr. Mercer' for years.",
     "Lately she stopped calling him that.",
-  ], { requires: { asked: "patricia_evening" } }),
+  ], {}),
   q("patricia", "Other guests", "patricia_hands", "Did you notice anyone hurt at supper? A cut hand?", [
     "No. Daniel served the cake while Aunt Eleanor cut it. Both his hands were fine, I'm certain.",
   ], { requiresEvidence: ["E14"], reveals: "Patricia saw no injury on Daniel Mercer's hands at supper." }),
@@ -592,7 +541,7 @@ export const questions: DialogueQuestion[] = [
   q("bennett", "Evidence reports", "bennett_reports", "What reports have come back?", [
     "The coroner's preliminary, and one sheet from the lab. The lab sheet is in the folder on your desk.",
     "I'll tell you what I tell my captain. Preliminary means preliminary. I won't read more into those pages than the people who wrote them.",
-  ], { unlocks: ["bennett_forensics"] }),
+  ]),
   q("bennett", "Forensic findings", "bennett_forensics", "What does the coroner's preliminary say?", [
     "An estimate. Somewhere between about eleven on Friday night and one on Saturday morning. One wound, consistent with a blade like the knife we recovered.",
     "Anything finer than that, they haven't given me, and I'm not going to guess.",
@@ -675,11 +624,10 @@ export const questions: DialogueQuestion[] = [
     "Tan jacket, window booth? He was finishing up when I came on. Left about five past eleven without paying for his refill.",
     "I wrote it on a ticket for the manager. It's still on the spike by the register if you want it.",
   ], {
-    requires: { asked: "rosa_friday" },
     reveals: "A man in a tan jacket left the window booth at about 11:05 PM without paying for a refill.",
     effects: [{ setFlag: "rosa_note" }, tl("11:05 PM", "A man in a tan jacket leaves the diner without paying for a refill.", "Rosa Delgado")],
   }),
-  q("rosa", "That night", "rosa_return", "Did he come back later that night?", ["Not on my shift. It was dead after midnight. I'd remember."], { requires: { asked: "rosa_customer" } }),
+  q("rosa", "That night", "rosa_return", "Did he come back later that night?", ["Not on my shift. It was dead after midnight. I'd remember."], {}),
 ];
 
 const r = (characterId: string, evidenceId: string, reply: string[], extra: Partial<EvidenceReaction> = {}): EvidenceReaction => ({
@@ -772,3 +720,98 @@ export const contradictions: ContradictionDef[] = [
     when: { all: [{ asked: "daniel_desk" }, { asked: "patricia_desk" }] },
   },
 ];
+
+/*
+ * Other ways a player might ask for each answer, in their own words. Used
+ * only to match free-form questions; never shown.
+ */
+const KEYWORDS: Record<string, string> = {
+  margaret_relationship: "how long have you known eleanor her friends neighbour across the street",
+  margaret_evening: "what happened at the party supper dinner that night tell me about the evening",
+  margaret_mostly: "what was not pleasant anything happen mostly why",
+  margaret_guests: "how was everyone acting other guests behave mood",
+  margaret_departure: "when did you leave what time did people go home who left first who was still there",
+  margaret_eleanor_mood: "how was eleanor behaving acting how was eleanor did she seem worried upset anything on her mind say anything",
+  margaret_daniel: "what about daniel mercer what do you think of him wearing jacket",
+  margaret_noise: "were you awake asleep did anything catch your attention after you got back home did you see or hear anything after you went home that night later noise sounds",
+  margaret_unusual: "did eleanor lock her doors at night anything unusual about the house back door bolt locks habits",
+  margaret_hands: "anyone injured bandage cut hand hurt at supper",
+  margaret_screen: "worried about burglars prowlers break in garden window back of the house",
+  margaret_sedan_more: "tell me about the car you saw describe what the car looked like what kind of car colour fender details describe the car what did the car look like colour make model which car sedan details",
+  margaret_sedan_driver: "did you see who was in the car anyone get in or out driver whose car",
+  margaret_confidence: "are you sure about the time how certain clock how do you know it was ten past twelve",
+  margaret_struggle: "would you have heard a fight struggle argument screams",
+  margaret_money: "did eleanor talk about money finances estate trouble with money",
+  daniel_relationship: "how do you know the whitmores harold and eleanor how long have you worked for her what do you do for her",
+  daniel_gathering: "tell me about the evening the party supper friday night what happened",
+  daniel_desk: "what did you and eleanor talk about at the desk private conversation nine fifteen aside",
+  daniel_departure: "when did you leave eleanor's house what time did you go who left last",
+  daniel_evening: "what did you do once you left hollister avenue where did you go next where did you go after where were you that night alibi what did you do after you left",
+  daniel_afterwards: "what did you do after the diner after one when did you get home",
+  daniel_hand: "what happened to your hand bandage injury cut how did you hurt yourself",
+  daniel_hand_when: "when did that happen what time did you cut it gauze pharmacy",
+  daniel_accounts: "how are the accounts the estate finances money is everything in order",
+  daniel_folder: "the folder is missing from her desk your reports where are the papers",
+  daniel_screen: "was she worried about break ins burglars window",
+  daniel_suitcase: "going somewhere are you leaving town trip packed bag",
+  daniel_jacket_found: "we found the jacket in the trash dumpster police recovered windbreaker",
+  daniel_jacket_b: "where is your jacket the windbreaker on the coat rack where did the coat go do you own a windbreaker",
+  daniel_alibi_broken: "linda clocked out at eleven who poured your coffee kept your cup filled who served you the waitress was not there your story does not add up",
+  daniel_left_early: "you left the diner at eleven the night waitress saw you leave early tan jacket",
+  daniel_sedan: "your car was seen outside her house after midnight buick crumpled fender parked",
+  daniel_hand_glass: "the blood on the glass your cut hand broken glass",
+  daniel_money_confront: "the ledger and bank statements do not match explain the missing money cheques",
+  daniel_lawyer_appt: "did you know about her lawyer appointment albright monday",
+  daniel_again: "anything else you left out of your statement anything to add",
+  robert_relationship: "how do you know the whitmores harold and eleanor how long did you know them",
+  robert_evening: "tell me about the evening the party supper friday night what happened",
+  robert_departure: "when did you leave what time did you go home",
+  robert_cars_night: "what cars were outside parked when you left did you see anyone's car",
+  robert_property: "who fixed the bolt who installed put in the lock on the kitchen door how well do you know the house have you worked on the house odd jobs",
+  robert_reardoor: "can the back door be opened from outside the yard bolt from outside",
+  robert_screen: "how can you tell which side a screen was cut from window screen cut outside inside",
+  robert_cars: "does mercer bring his car here what does daniel drive his car fender damage",
+  robert_buick: "how did he damage the fender what happened to his car",
+  robert_staged: "nobody broke in it was staged the break in was fake",
+  robert_again: "anything else you remember about the evening",
+  patricia_relationship: "were you close to your aunt what was she like your relationship",
+  patricia_evening: "what time did you go home when did you leave tell me about friday night the evening when did you leave what happened",
+  patricia_desk: "did anything worry you at the party desk conversation daniel aside nine fifteen",
+  patricia_inheritance: "who gets eleanor's money now who inherits the estate the will who gets the money where were you",
+  patricia_concerns: "was something bothering her recently troubling her was your aunt worried about anything lately concerns on her mind",
+  patricia_money: "did she ask you for help with money bank statements accounts",
+  patricia_missing: "the estate folder is missing from her desk drawer papers missing",
+  patricia_ledger: "her ledger two columns figures do not agree",
+  patricia_more: "how much money is missing how much was taken cheques",
+  patricia_lawyer: "she had an appointment with a lawyer albright monday",
+  patricia_daniel: "what do you think of daniel mercer how well do you know him",
+  patricia_hands: "was anyone injured at supper bandage cut hand",
+  patricia_envelope: "the envelope you sent me where did you find this page",
+  patricia_circled: "what are the marked lines on the statement circled lines",
+  bennett_scene: "what did you find at the scene the crime scene what did police find",
+  bennett_interviews: "how did the interviews go the statements what did the guests say",
+  bennett_timeline: "what is the timeline when did things happen sequence of events",
+  bennett_reports: "what reports have come back lab results coroner reports",
+  bennett_forensics: "when did she die time of death what does the coroner say time of death autopsy cause of death",
+  bennett_glass: "the blood on the glass is not hers lab typing second person",
+  bennett_hand: "did mercer have an injury bandage when you interviewed him his hand",
+  bennett_staged: "the break in was staged nobody came through the window",
+  bennett_struggle: "it happened in the living room struggle",
+  bennett_alibi: "check the diner waitress linda alibi can you talk to the waitress",
+  bennett_sedan: "run the plates check the car registration buick lesabre who owns the car",
+  bennett_jacket: "can you search for the jacket windbreaker find the coat search his trash",
+  bennett_jacket_where: "where did they find the jacket where was it recovered",
+  bennett_jacket_lab: "what did the lab say about the jacket results on the windbreaker",
+  bennett_motive: "the money does not add up ledger statements disagree financial motive",
+  bennett_lawyer: "she had an appointment with a lawyer albright",
+  bennett_again: "anything new any news updates on your side",
+  rosa_friday: "were you working friday night your shift who was working",
+  rosa_customer: "do you remember a man alone around eleven customer tan jacket",
+  rosa_return: "did he come back later return that night",
+};
+for (const q of questions) if (KEYWORDS[q.id]) q.keywords = [KEYWORDS[q.id]];
+
+for (const c of characters) {
+  c.knowledge = KNOWLEDGE[c.id];
+  c.persona = PERSONA[c.id];
+}

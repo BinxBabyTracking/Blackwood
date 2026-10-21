@@ -5,6 +5,7 @@ import { GameError, normalizeState, reduce, respond } from "@/game/engine/engine
 import type { ActionResponse, GameAction } from "@/game/engine/types";
 import { findInvestigation, investigatorName, PersistenceError, recordClosedCase, restartInvestigation, saveState, startInvestigation } from "@/game/persistence";
 import { loadCase } from "@/game/registry";
+import { interpretQuestion } from "@/lib/interview/understand";
 import { createClient } from "@/lib/supabase/server";
 
 async function currentUserId() {
@@ -44,7 +45,8 @@ export async function restartCase(caseId: string): Promise<ActionResponse | { er
 }
 
 const ACTIONS = new Set<GameAction["type"]>([
-  "dismissIntro", "travel", "hotspot", "collect", "readDocument", "talk", "ask", "present", "answerCall", "placeCall",
+  // Interviews are asked in the player's own words ("askFree"); authored question ids are never accepted from the browser.
+  "dismissIntro", "travel", "hotspot", "collect", "readDocument", "talk", "askFree", "present", "answerCall", "placeCall",
   "openDelivery", "boardAdd", "boardMove", "boardRemove", "connect", "disconnect", "saveNotes", "saveEvidenceNote", "setNarration", "setVoices",
   "dismissMessages", "saveReport", "submitConclusion",
 ]);
@@ -70,7 +72,16 @@ export async function playAction(caseId: string, action: GameAction): Promise<Pl
     for (let attempt = 0; attempt < 2; attempt++) {
       const loaded = await findInvestigation(userId, def.id);
       if (!loaded) return { error: "Accept the assignment before starting the investigation.", saved: true };
-      const { state, outcome } = reduce(def, normalizeState(def, loaded.state), act);
+      const current = normalizeState(def, loaded.state);
+      // Which authored answer a free-form question asks for is decided here, on the server.
+      // Anything the browser put in match or composed is discarded and decided here.
+      let step: GameAction = act;
+      if (act.type === "askFree") {
+        const text = String(act.text ?? "").slice(0, 300);
+        const r = await interpretQuestion(def, current, String(act.characterId ?? ""), text);
+        step = { type: "askFree", characterId: String(act.characterId ?? ""), text, match: r.match, composed: r.composed };
+      }
+      const { state, outcome } = reduce(def, current, step);
       const saved = await saveState(def, loaded, state);
       if (!saved) continue; // another tab saved first; reload and apply again
       if (outcome.kind === "verdict" && outcome.correct) {

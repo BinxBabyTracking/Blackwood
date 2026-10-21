@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ActionOutcome, ActionResponse, ClientLine, ClientView, GameAction } from "../engine/types";
+import { QuestionBar } from "./question-bar";
 import { useLinePlayer } from "./use-line-player";
 
 type Conversation = Extract<ActionOutcome, { kind: "conversation" }>;
@@ -12,7 +13,7 @@ export function voiceSrc(caseId: string, kind: "conversation" | "statement" | "c
 
 /**
  * The interview room. Full screen and lit like a film still: the witness on
- * the left, the words on the right, the questions laid out as typed cards.
+ * the left, the words on the right, and a line for your own questions, typed or spoken.
  * Every new answer is spoken in the character's own voice (when voices are
  * on) and the line being spoken is highlighted in the subtitles.
  */
@@ -64,12 +65,6 @@ export function InterviewScreen({
   const lastAsk = findLastIndex(data.history, (l) => l.kind === "question" || l.kind === "present");
   const stage = lastAsk >= 0 ? data.history.slice(lastAsk) : data.history.filter((l) => l.kind === "cue");
   const speaking = player.status === "playing" || player.status === "loading";
-
-  const topics = useMemo(() => {
-    const m = new Map<string, Conversation["questions"]>();
-    for (const q of data.questions) m.set(q.topic, [...(m.get(q.topic) ?? []), q]);
-    return [...m.entries()];
-  }, [data.questions]);
 
   const ask = async (a: GameAction) => {
     stop();
@@ -140,7 +135,7 @@ export function InterviewScreen({
               <Transcript lines={data.history} current={player.current} voiced={voiced} onReplay={(n) => play(n, srcs, n + 1)} />
             ) : stage.length === 0 ? (
               <p className="font-serif text-xl italic text-paper/60">
-                {data.medium === "telephone" ? `${data.name} is on the line.` : `${first} waits for your first question.`}
+                {data.medium === "telephone" ? `${data.name} is on the line. Ask what you need to know.` : `${first} waits for your first question.`}
               </p>
             ) : (
               <div className="max-w-3xl space-y-5">
@@ -200,33 +195,12 @@ export function InterviewScreen({
             ) : (
               <>
                 {!data.available ? <p className="mb-3 text-sm text-smoke">{data.name} is not here. You can read the transcript, but not ask anything new.</p> : null}
-                {topics.length === 0 ? (
-                  <p className="font-serif text-lg italic text-paper/70">&ldquo;{data.idle}&rdquo;</p>
-                ) : (
-                  <div className="grid gap-x-6 gap-y-4 lg:grid-cols-2">
-                    {topics.map(([topic, qs]) => (
-                      <div key={topic}>
-                        <p className="mb-1.5 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-smoke">{topic}</p>
-                        <ul className="space-y-1.5">
-                          {qs.map((q) => (
-                            <li key={q.id}>
-                              <button
-                                type="button"
-                                data-question={q.id}
-                                disabled={pending || closed || !data.available}
-                                onClick={() => ask({ type: "ask", questionId: q.id })}
-                                className="group flex w-full items-start gap-2 border-l-2 border-white/10 bg-white/[0.03] px-3 py-2 text-left font-serif text-[1.02rem] leading-snug text-paper/90 transition-colors hover:border-brass hover:bg-white/[0.06] hover:text-paper disabled:opacity-40"
-                              >
-                                {q.followUp ? <span aria-label="Follow-up" className="mt-0.5 font-mono text-xs text-brass">↳</span> : null}
-                                <span>{q.prompt}</span>
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <QuestionBar
+                  name={first}
+                  disabled={pending || !data.canAsk}
+                  onListen={stop}
+                  onAsk={(text) => ask({ type: "askFree", characterId: data.characterId, text })}
+                />
                 <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-white/5 pt-3">
                   <button
                     type="button"

@@ -194,9 +194,13 @@ export const events: ReactiveEventDef[] = [
     caseId: "C001",
     title: "Margaret's telephone call",
     characterId: "margaret",
-    // Margaret's first interview is done and the investigator has the guests' timeline in hand.
-    requiresInterviews: ["margaret_evening", "margaret_departure"],
-    requires: { any: [{ hasEvidence: "E12" }, { inspected: "office_recorder" }, { deduction: "D_ALIBI" }] },
+    // Margaret has been interviewed about that night, and the investigator has the guests' timeline in hand.
+    requires: {
+      all: [
+        { any: [{ asked: "margaret_evening" }, { asked: "margaret_departure" }, { asked: "margaret_noise" }, { asked: "margaret_mostly" }, { asked: "margaret_guests" }] },
+        { any: [{ hasEvidence: "E12" }, { inspected: "office_recorder" }, { deduction: "D_ALIBI" }] },
+      ],
+    },
     // The telephone rings when the investigator is next in the office.
     activate: { at: "office" },
     onActivate: [{ incomingCall: "call_margaret_sedan" }, { message: "Agency telephone ringing." }],
@@ -214,7 +218,7 @@ export const events: ReactiveEventDef[] = [
         },
       },
     ],
-    unlocksQuestions: ["margaret_sedan_more", "margaret_confidence"],
+    unlocksQuestions: ["margaret_sedan_more", "margaret_sedan_driver", "margaret_confidence"],
     notebook: {
       call: "call_margaret_sedan",
       learned: [
@@ -230,8 +234,7 @@ export const events: ReactiveEventDef[] = [
     title: "Daniel's apartment changes",
     characterId: "daniel",
     // He has been interviewed in his apartment, and the investigation has started to point at an injury or at his account of the night.
-    requiresInterviews: ["daniel_evening"],
-    requires: { all: [{ visited: "daniel_apartment" }, { any: [{ deduction: "D_INJURED" }, { deduction: "D_HAND" }, { deduction: "D_ALIBI" }] }] },
+    requires: { all: [{ visited: "daniel_apartment" }, { any: [{ asked: "daniel_evening" }, { asked: "daniel_departure" }, { asked: "daniel_afterwards" }, { asked: "daniel_gathering" }] }, { any: [{ deduction: "D_INJURED" }, { deduction: "D_HAND" }, { deduction: "D_ALIBI" }] }] },
     // The change happens while the investigator is elsewhere.
     activate: { not: { at: "daniel_apartment" } },
     onActivate: [{ setEnv: "daniel_apartment", to: "B" }],
@@ -258,7 +261,7 @@ export const events: ReactiveEventDef[] = [
     title: "Patricia's envelope",
     characterId: "patricia",
     // Patricia has been interviewed and asked about money, and the investigator has seen the ledger or established the irregularities.
-    requiresInterviews: ["patricia_evening", "patricia_money"],
+    requiresInterviews: ["patricia_money"],
     requires: { any: [{ hasEvidence: "E03" }, { deduction: "D_MOTIVE" }] },
     activate: { at: "office" },
     onActivate: [{ delivery: "patricia_envelope" }, { message: "An item has been delivered." }],
