@@ -243,7 +243,9 @@ function StageLine({ line, current, dim }: { line: ClientLine; current: boolean;
 
 function Transcript({ lines, current, voiced, onReplay }: { lines: ClientLine[]; current: number | null; voiced: boolean; onReplay: (n: number) => void }) {
   const end = useRef<HTMLDivElement>(null);
-  useEffect(() => end.current?.scrollIntoView({ block: "end" }), [lines.length]);
+  useEffect(() => {
+    end.current?.scrollIntoView({ block: "end" });
+  }, [lines.length]);
   if (!lines.length) return <p className="font-mono text-sm text-smoke">Nothing has been said yet.</p>;
   return (
     <div className="max-w-3xl">

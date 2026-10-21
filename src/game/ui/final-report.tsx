@@ -43,7 +43,10 @@ export function FinalReport({
   const label = (set: (typeof ANSWERS)[number], id?: string) => c.choices.find((x) => x.id === set)?.options.find((o) => o.id === id)?.label ?? "Not answered";
   const evidenceTitle = (id: string) => view.evidence.find((e) => e.id === id)?.title ?? id;
 
-  useEffect(() => top.current?.scrollIntoView({ block: "start" }), [mode]);
+  // scrollIntoView returns a Promise in current browsers; an effect must not return it.
+  useEffect(() => {
+    top.current?.scrollIntoView({ block: "start" });
+  }, [mode]);
 
   const save = async () => {
     if (!dirty) return true;

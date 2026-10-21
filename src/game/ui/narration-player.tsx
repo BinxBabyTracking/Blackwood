@@ -32,7 +32,9 @@ export function NarrationPlayer({ src, volume, onPlayingChange }: { src: string;
     if (audio.current) audio.current.volume = volume;
   }, [volume]);
 
-  useEffect(() => onPlayingChange?.(status === "playing"), [status, onPlayingChange]);
+  useEffect(() => {
+    onPlayingChange?.(status === "playing");
+  }, [status, onPlayingChange]);
 
   async function load() {
     setStatus("loading");
