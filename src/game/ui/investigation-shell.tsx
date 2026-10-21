@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { playAction, restartCase } from "@/app/actions/game";
 import type { ActionOutcome, ActionResponse, ClientEvidence, ClientView, GameAction, PanelId } from "../engine/types";
@@ -10,10 +9,10 @@ import { DetectiveNotebook } from "./detective-notebook";
 import { EvidenceInspection } from "./evidence-inspection";
 import { EvidenceInventory } from "./evidence-inventory";
 import { ExplorationScene } from "./exploration-scene";
+import { CaseResolution } from "./case-resolution";
+import { FinalReport } from "./final-report";
 import {
   CallPanel,
-  ClosureSequence,
-  ConclusionPanel,
   DeliveryPanel,
   DocumentPanel,
   IntroSequence,
@@ -27,13 +26,13 @@ import { TravelMap } from "./travel-map";
 
 type Layer =
   | { k: "inspect"; text: string; title: string; evidence: ClientEvidence | null }
-  | { k: "evidence"; id: string; back: "notebook" | "inventory" }
+  | { k: "evidence"; id: string; back: "notebook" | "inventory" | "conclusion" }
   | { k: "panel"; panel: PanelId | "inventory" }
   | { k: "conversation"; data: Extract<ActionOutcome, { kind: "conversation" }> }
   | { k: "document"; data: Extract<ActionOutcome, { kind: "document" }> }
   | { k: "call"; data: Extract<ActionOutcome, { kind: "call" }> }
   | { k: "delivery"; data: Extract<ActionOutcome, { kind: "delivery" }> }
-  | { k: "closure" }
+  | { k: "closure"; record?: Extract<ActionOutcome, { kind: "verdict" }>["record"] }
   | null;
 
 type SaveStatus = { state: "saved" | "saving" | "failed"; at: number | null; detail?: string };
@@ -51,18 +50,28 @@ export interface GamePrefs {
  * the case rules, saves, and returns the view the player may see. This
  * component only renders that view and routes outcomes to the right layer.
  */
-export function InvestigationShell({ caseId, initial, prefs, homeLocation }: { caseId: string; initial: ClientView; prefs: GamePrefs; homeLocation: string }) {
+export function InvestigationShell({
+  caseId,
+  initial,
+  prefs,
+  homeLocation,
+  investigator,
+}: {
+  caseId: string;
+  initial: ClientView;
+  prefs: GamePrefs;
+  homeLocation: string;
+  investigator: string;
+}) {
   const [view, setView] = useState(initial);
   const [layer, setLayer] = useState<Layer>(null);
   const [pending, setPending] = useState(false);
   const [save, setSave] = useState<SaveStatus>({ state: "saved", at: null });
   const [toast, setToast] = useState<{ text: string; tone: "info" | "error" | "deduction" } | null>(null);
-  const [verdictFeedback, setVerdictFeedback] = useState<string | null>(null);
   const [menu, setMenu] = useState(false);
   /** A call the player chose to let ring. It stays pending and rings again on the next visit to the office. */
   const [deferredCall, setDeferredCall] = useState<string | null>(null);
   const busy = useRef(false);
-  const router = useRouter();
 
   const show = useCallback((text: string, tone: "info" | "error" | "deduction" = "info") => setToast({ text, tone }), []);
 
@@ -99,10 +108,8 @@ export function InvestigationShell({ caseId, initial, prefs, homeLocation }: { c
           show(`New deduction: ${o.title}`, "deduction");
           break;
         case "verdict":
-          if (o.correct) {
-            setVerdictFeedback(null);
-            setLayer({ k: "closure" });
-          } else setVerdictFeedback(o.feedback);
+          // A returned report is shown by the report itself; an accepted one starts the conclusion.
+          if (o.correct) setLayer({ k: "closure", record: o.record });
           break;
         case "error":
           show(o.message, "error");
@@ -159,6 +166,23 @@ export function InvestigationShell({ caseId, initial, prefs, homeLocation }: { c
   );
 
   const close = useCallback(() => setLayer(null), []);
+
+  /** A replay is a new investigation; a closed case and its report stay on file and keep their credit. */
+  const replay = useCallback(async () => {
+    const closedCase = view.status === "closed";
+    const msg = closedCase
+      ? "Start a new investigation of this case? Your closed case and its final report stay on file, and you keep the credit. The replay starts with a clean file."
+      : "Restart the investigation from the beginning? Your current progress will be archived.";
+    if (!window.confirm(msg)) return;
+    setMenu(false);
+    const res = await restartCase(caseId);
+    if ("error" in res) show(res.error, "error");
+    else {
+      setView(res.view);
+      setLayer(null);
+      setSave({ state: "saved", at: Date.now() });
+    }
+  }, [caseId, show, view.status]);
 
   // Ambient sound, only when a recording exists for this location.
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -271,17 +295,7 @@ export function InvestigationShell({ caseId, initial, prefs, homeLocation }: { c
                 <button
                   type="button"
                   className="block w-full px-3 py-2 text-left hover:bg-white/5"
-                  onClick={async () => {
-                    if (!window.confirm("Restart the investigation from the beginning? Your current progress will be archived.")) return;
-                    setMenu(false);
-                    const res = await restartCase(caseId);
-                    if ("error" in res) show(res.error, "error");
-                    else {
-                      setView(res.view);
-                      setLayer(null);
-                      setSave({ state: "saved", at: Date.now() });
-                    }
-                  }}
+                  onClick={replay}
                 >
                   Restart investigation
                   <span className="block text-xs text-smoke">Start the case again with a clean file.</span>
@@ -361,7 +375,7 @@ export function InvestigationShell({ caseId, initial, prefs, homeLocation }: { c
           onPin={() => pin(fromNotebook.id)}
           pinned={pinned(fromNotebook.id)}
           onClose={() => setLayer({ k: "panel", panel: layer.back })}
-          closeLabel={layer.back === "notebook" ? "Back to notebook" : "Back to evidence"}
+          closeLabel={layer.back === "notebook" ? "Back to notebook" : layer.back === "conclusion" ? "Back to the report" : "Back to evidence"}
           pending={pending}
           locked={locked}
         />
@@ -397,17 +411,47 @@ export function InvestigationShell({ caseId, initial, prefs, homeLocation }: { c
       ) : null}
       {panel === "statements" ? <StatementsPanel caseId={caseId} view={view} onClose={close} volume={dialogueVolume} /> : null}
       {panel === "delivery" ? <MailPanel view={view} dispatch={dispatch} onClose={close} pending={pending} /> : null}
-      {panel === "conclusion" ? <ConclusionPanel view={view} dispatch={dispatch} onClose={close} pending={pending} feedback={verdictFeedback} /> : null}
+      {panel === "conclusion" ? (
+        <FinalReport
+          view={view}
+          dispatch={dispatch}
+          pending={pending}
+          investigator={investigator}
+          onClose={close}
+          onExamine={(id) => setLayer({ k: "evidence", id, back: "conclusion" })}
+        />
+      ) : null}
       {panel === "board" ? <MurderBoard view={view} dispatch={dispatch} onClose={close} onLocalBoard={(board) => setView((v) => ({ ...v, board }))} /> : null}
 
-      {layer?.k === "closure" && view.closure ? <ClosureSequence pages={view.closure} onDone={() => router.push("/agency/service-record")} /> : null}
+      {layer?.k === "closure" && view.closure ? (
+        <CaseResolution
+          caseId={caseId}
+          view={view}
+          closure={view.closure}
+          record={layer.record}
+          volume={dialogueVolume}
+          reducedMotion={prefs.reducedMotion}
+          onReviewReport={() => setLayer({ k: "panel", panel: "conclusion" })}
+          onEvidence={() => setLayer({ k: "panel", panel: "inventory" })}
+          onReplay={replay}
+          onClose={close}
+        />
+      ) : null}
       {locked && layer === null ? (
         <div className="fixed right-4 top-12 z-20 max-w-xs border border-[color:var(--color-ok)] bg-[#141a17]/95 p-4 text-sm shadow-lg">
           <p className="font-serif text-lg">Case closed</p>
           <p className="mt-1 text-smoke">You can still look through the scenes, your notebook and the board.</p>
-          <button type="button" className="mt-3 text-brass hover:underline" onClick={() => setLayer({ k: "closure" })}>
-            Replay the closing report
-          </button>
+          <div className="mt-3 flex flex-col items-start gap-1.5">
+            <button type="button" className="text-brass hover:underline" onClick={() => setLayer({ k: "panel", panel: "conclusion" })}>
+              Review the final report
+            </button>
+            <button type="button" className="text-brass hover:underline" onClick={() => setLayer({ k: "closure" })}>
+              Replay the conclusion
+            </button>
+            <button type="button" className="text-brass hover:underline" onClick={replay}>
+              Start a new investigation (replay)
+            </button>
+          </div>
         </div>
       ) : null}
     </div>

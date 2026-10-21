@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { GameError, normalizeState, reduce, respond } from "@/game/engine/engine";
 import type { ActionResponse, GameAction } from "@/game/engine/types";
-import { findInvestigation, PersistenceError, recordClosedCase, restartInvestigation, saveState, startInvestigation } from "@/game/persistence";
+import { findInvestigation, investigatorName, PersistenceError, recordClosedCase, restartInvestigation, saveState, startInvestigation } from "@/game/persistence";
 import { loadCase } from "@/game/registry";
 import { createClient } from "@/lib/supabase/server";
 
@@ -46,7 +46,7 @@ export async function restartCase(caseId: string): Promise<ActionResponse | { er
 const ACTIONS = new Set<GameAction["type"]>([
   "dismissIntro", "travel", "hotspot", "collect", "readDocument", "talk", "ask", "present", "answerCall", "placeCall",
   "openDelivery", "boardAdd", "boardMove", "boardRemove", "connect", "disconnect", "saveNotes", "saveEvidenceNote", "setNarration", "setVoices",
-  "dismissMessages", "submitConclusion",
+  "dismissMessages", "saveReport", "submitConclusion",
 ]);
 
 /** `saved: false` means progress may not have been written; a rule refusal changes nothing and keeps `saved: true`. */
@@ -65,14 +65,17 @@ export async function playAction(caseId: string, action: GameAction): Promise<Pl
   if (!userId) return { error: "Your session has ended. Sign in again to continue.", saved: false };
 
   try {
+    // The investigator's name on a filed report comes from their profile, never from the browser.
+    const act: GameAction = action.type === "submitConclusion" ? { ...action, investigator: await investigatorName(userId) } : action;
     for (let attempt = 0; attempt < 2; attempt++) {
       const loaded = await findInvestigation(userId, def.id);
       if (!loaded) return { error: "Accept the assignment before starting the investigation.", saved: true };
-      const { state, outcome } = reduce(def, normalizeState(def, loaded.state), action);
+      const { state, outcome } = reduce(def, normalizeState(def, loaded.state), act);
       const saved = await saveState(def, loaded, state);
       if (!saved) continue; // another tab saved first; reload and apply again
-      if (outcome.kind === "verdict" && outcome.correct && action.type === "submitConclusion") {
-        await recordClosedCase(userId, def, loaded, state, action.theory);
+      if (outcome.kind === "verdict" && outcome.correct) {
+        const record = await recordClosedCase(userId, def, loaded, state);
+        if (record) outcome.record = { first: record.first, awarded: record.awarded, rank: record.rank };
       }
       return respond(def, state, outcome);
     }

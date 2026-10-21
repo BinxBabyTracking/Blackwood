@@ -287,5 +287,14 @@ export const objectives: CaseDefinition["objectives"] = [
     done: { all: [{ talkedTo: "margaret" }, { talkedTo: "daniel" }, { talkedTo: "robert" }, { talkedTo: "patricia" }] },
   },
   { id: "o_board", text: "Connect evidence on the murder board to establish what happened", visible: { evidenceCount: 3 }, done: { any: [{ deduction: "D_STAGED" }, { deduction: "D_STRUGGLE" }, { deduction: "D_INJURED" }, { deduction: "D_MOTIVE" }, { deduction: "D_LAWYER" }, { deduction: "D_ALIBI" }, { deduction: "D_JACKET" }, { deduction: "D_HAND" }] } },
-  { id: "o_conclude", text: "File your conclusion with the agency", visible: { flag: "casefile_read" }, done: { flag: "case_closed" } },
+  { id: "o_conclude", text: "Prepare and file your final report from the office desk", visible: { evidenceCount: 6 }, done: { flag: "case_closed" } },
 ];
+
+/** The final report can be opened once the investigation has real substance: briefed, evidence in hand, and at least one guest interviewed. */
+export const reportAvailable: CaseDefinition["reportAvailable"] = {
+  all: [
+    { flag: "casefile_read" },
+    { evidenceCount: 6 },
+    { any: [{ talkedTo: "margaret" }, { talkedTo: "daniel" }, { talkedTo: "robert" }, { talkedTo: "patricia" }] },
+  ],
+};

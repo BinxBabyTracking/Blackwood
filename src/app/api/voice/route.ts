@@ -16,7 +16,7 @@ function rateLimited(userId: string) {
   return hits.length > LIMIT;
 }
 
-const KINDS = new Set(["conversation", "statement", "call", "delivery"]);
+const KINDS = new Set(["conversation", "statement", "call", "delivery", "resolution"]);
 
 /**
  * Character voices. GET /api/voice?caseId=C001&kind=conversation&id=margaret&n=3

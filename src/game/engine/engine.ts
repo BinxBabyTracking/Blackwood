@@ -1,3 +1,4 @@
+import { evaluateReport, reportProblem, REVIEW_FEEDBACK } from "./evaluation";
 import { apply, check, collectEvidence, demeanorOf, runContradictions, runDemeanor, runEvents } from "./rules";
 import type {
   CharacterDef,
@@ -57,6 +58,7 @@ export function newState(def: CaseDefinition, now = Date.now()): InvestigationSt
     readDocuments: [],
     messages: [],
     attempts: 0,
+    report: { draft: { evidence: [] }, submissions: [], final: null },
     activeSeconds: 0,
     lastActionAt: now,
     closedAt: null,
@@ -118,6 +120,7 @@ export function normalizeState(def: CaseDefinition, raw: InvestigationState): In
   s.demeanor ??= {};
   s.conversations ??= {};
   s.eventStates ??= {};
+  s.report ??= { draft: { evidence: [] }, submissions: [], final: null };
   // Saves from before the event lifecycle recorded only which events had fired.
   for (const id of s.events ?? []) s.eventStates[id] ??= "active";
   for (const id of s.evidence) {
@@ -269,13 +272,6 @@ export class GameError extends Error {}
 
 function fail(message: string): never {
   throw new GameError(message);
-}
-
-function evaluateTheory(def: CaseDefinition, t: Theory) {
-  const sol = def.solution;
-  const core = t.culprit === sol.culprit && t.motive === sol.motive && t.weapon === sol.weapon && t.location === sol.location;
-  const covered = sol.evidenceGroups.filter((g) => g.anyOf.some((id) => t.evidence.includes(id))).length;
-  return { core, supported: covered >= sol.minGroups, covered };
 }
 
 /**
@@ -540,33 +536,45 @@ export function reduce(
       s.messages = [];
       break;
 
+    case "saveReport": {
+      if (!check(def.reportAvailable, s)) fail("You are not ready to write the final report yet.");
+      const d = action.draft ?? { evidence: [] };
+      const pick = (id: Theory["culprit"] | undefined, set: string) => {
+        const c = def.conclusionChoices.find((x) => x.id === set)!;
+        return typeof id === "string" && c.options.some((o) => o.id === id) ? id : undefined;
+      };
+      const evidence = [...new Set(Array.isArray(d.evidence) ? d.evidence : [])]
+        .filter((id) => typeof id === "string" && s.evidence.includes(id))
+        .slice(0, def.solution.standard.maxItems);
+      s.report.draft = {
+        culprit: pick(d.culprit, "culprit"),
+        motive: pick(d.motive, "motive"),
+        weapon: pick(d.weapon, "weapon"),
+        location: pick(d.location, "location"),
+        evidence,
+      };
+      break;
+    }
+
     case "submitConclusion": {
+      if (!check(def.reportAvailable, s)) fail("You are not ready to write the final report yet.");
       const t = action.theory;
-      if (!t || ![t.culprit, t.motive, t.weapon, t.location].every((v) => typeof v === "string" && v)) {
-        fail("Answer every question before submitting.");
-      }
-      if (!Array.isArray(t.evidence) || t.evidence.length === 0) fail("Select the evidence that supports your theory.");
-      if (t.evidence.some((id) => !s.evidence.includes(id))) fail("You can only cite evidence you have collected.");
+      const problem = reportProblem(def, s, t);
+      if (problem) fail(problem);
+      const theory: Theory = { culprit: t.culprit, motive: t.motive, weapon: t.weapon, location: t.location, evidence: [...t.evidence] };
       s.attempts += 1;
-      const r = evaluateTheory(def, t);
-      if (r.core && r.supported) {
+      s.report.draft = { ...theory, evidence: [...theory.evidence] };
+      const review = evaluateReport(def, theory);
+      s.report.submissions.push({ at: now, theory, accepted: review.accepted, note: review.note });
+      if (review.accepted) {
         s.status = "closed";
         s.closedAt = now;
         if (!s.flags.includes("case_closed")) s.flags.push("case_closed");
         s.messages = [];
-        outcome = { kind: "verdict", correct: true, feedback: "Case closed.", closure: def.solution.closure };
-      } else if (r.core) {
-        outcome = {
-          kind: "verdict",
-          correct: false,
-          feedback: "The agency agrees with the substance of your theory, but the evidence you cited would not hold up. Build a stronger case before resubmitting.",
-        };
+        s.report.final = { theory, investigator: (action.investigator ?? "").trim() || "Investigator", filedAt: now, attempts: s.attempts };
+        outcome = { kind: "verdict", correct: true, feedback: def.solution.resolution.accepted, note: "" };
       } else {
-        outcome = {
-          kind: "verdict",
-          correct: false,
-          feedback: "The agency reviewed your theory and it does not hold up against the file. Keep investigating and submit again when you are ready.",
-        };
+        outcome = { kind: "verdict", correct: false, feedback: REVIEW_FEEDBACK, note: review.note };
       }
       break;
     }
@@ -699,8 +707,21 @@ export function project(def: CaseDefinition, s: InvestigationState): ClientView 
     messages: s.messages,
     narration: s.narration,
     voices: s.voices,
-    conclusion: { choices: def.conclusionChoices, attempts: s.attempts },
-    closure: s.status === "closed" ? def.solution.closure : null,
+    conclusion: {
+      available: check(def.reportAvailable, s),
+      choices: def.conclusionChoices,
+      minItems: def.solution.standard.minItems,
+      maxItems: def.solution.standard.maxItems,
+      attempts: s.attempts,
+      draft: { ...s.report.draft, evidence: s.report.draft.evidence.filter((id) => s.evidence.includes(id)) },
+      review: (() => {
+        const last = s.report.submissions.at(-1);
+        return last && !last.accepted ? { at: last.at, note: last.note, attempt: s.report.submissions.length } : null;
+      })(),
+      final: s.report.final,
+    },
+    // The solution, the reconstruction and Bennett's response exist in the view only once the case is closed.
+    closure: s.status === "closed" ? { ...def.solution.resolution, final: s.report.final, closedAt: s.closedAt } : null,
   };
 }
 
@@ -748,7 +769,7 @@ function interviewsView(def: CaseDefinition, s: InvestigationState): ClientInter
 export function spokenLine(
   def: CaseDefinition,
   s: InvestigationState,
-  ref: { kind: "conversation" | "statement" | "call" | "delivery"; id: string; n: number },
+  ref: { kind: "conversation" | "statement" | "call" | "delivery" | "resolution"; id: string; n: number },
 ): { speakerId: string; text: string } | null {
   if (ref.kind === "conversation") {
     const line = s.conversations[ref.id]?.[ref.n];
@@ -759,6 +780,15 @@ export function spokenLine(
     if (!s.flags.includes("casefile_read")) return null;
     const line = def.statements.find((x) => x.characterId === ref.id)?.transcript[ref.n];
     return line ? { speakerId: line.speakerId, text: line.text } : null;
+  }
+  if (ref.kind === "resolution") {
+    // Nothing from the solution is spoken, or sent to the voice service, before the case is closed.
+    if (s.status !== "closed") return null;
+    const r = def.solution.resolution;
+    if (ref.id === "accepted" && ref.n === 0) return { speakerId: "narrator", text: r.accepted };
+    if (ref.id === "reconstruction" && r.reconstruction[ref.n]) return { speakerId: "narrator", text: r.reconstruction[ref.n].body };
+    if (ref.id === "bennett" && r.bennett[ref.n]) return { speakerId: "bennett", text: r.bennett[ref.n] };
+    return null;
   }
   if (ref.kind === "delivery") {
     // An opened note can be read aloud by the narrator.

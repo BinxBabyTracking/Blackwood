@@ -244,27 +244,70 @@ for (const [a, b] of [["E01", "E10"], ["E02", "E11"], ["E14", "E11"], ["E03", "E
 }
 if (s.deductions.length !== def.deductions.length) problems.push(`deductions ${s.deductions.length}/${def.deductions.length}`);
 
-// conclusion
-const bad = run({ type: "submitConclusion", theory: { culprit: "robert", motive: "debt", weapon: "poker", location: "kitchen", evidence: ["E01"] } });
-if (bad.kind !== "verdict" || bad.correct) problems.push("wrong theory accepted");
-const weak = run({ type: "submitConclusion", theory: { culprit: "daniel", motive: "embezzlement", weapon: "knife", location: "living_room", evidence: ["E01"] } });
-if (weak.kind !== "verdict" || weak.correct) problems.push("under-supported theory accepted");
-const good = run({ type: "submitConclusion", theory: { culprit: "daniel", motive: "embezzlement", weapon: "knife", location: "living_room", evidence: ["E11", "E14", "E03", "E13", "E01"] } });
-if (good.kind !== "verdict" || !good.correct) problems.push("correct theory rejected");
+// ---- Step 8: final report and evaluation ----
+{
+  const T = (culprit: string, motive: string, weapon: string, location: string, evidence: string[]) => ({ culprit, motive, weapon, location, evidence });
+  const submit = (st: InvestigationState, t: ReturnType<typeof T>) => reduce(def, st, { type: "submitConclusion", theory: t, investigator: "Sam Calloway" }, 2);
+  const right = (ev: string[]) => T("daniel", "financial", "knife", "living_room", ev);
+  const rejects = (st: InvestigationState, t: ReturnType<typeof T>, why: string) => {
+    try { submit(st, t); problems.push(`accepted a malformed report: ${why}`); } catch {}
+  };
+  // Not available before meaningful investigation
+  try { reduce(def, newState(def), { type: "saveReport", draft: { evidence: [] } }, 1); problems.push("report opened with no investigation"); } catch {}
+  if (project(def, newState(def)).conclusion.available) problems.push("report available at the start");
+  if (!project(def, s).conclusion.available) problems.push("report not available after investigating");
+  // Only legitimately collected evidence, between three and six items, every section answered
+  rejects(s, right(["E14", "E03"]), "two items");
+  rejects(s, right(["E01", "E02", "E03", "E04", "E05", "E06", "E07"]), "seven items");
+  rejects({ ...s, evidence: s.evidence.filter((e) => e !== "E05") }, right(["E05", "E03", "E13"]), "uncollected evidence");
+  rejects(s, right(["E14", "E14", "E03"]), "duplicate evidence");
+  rejects(s, { ...right(["E14", "E03", "E13"]), weapon: "spoon" }, "unknown answer id");
+  // Drafts are sanitised and survive a reload
+  const d = reduce(def, s, { type: "saveReport", draft: { culprit: "robert", motive: "nonsense", evidence: ["E03", "E99", "E03", "E14"] } }, 2).state;
+  const dr = normalizeState(def, JSON.parse(JSON.stringify(d))).report.draft;
+  if (dr.culprit !== "robert" || dr.motive !== undefined || JSON.stringify(dr.evidence) !== '["E03","E14"]') problems.push(`draft not sanitised or saved: ${JSON.stringify(dr)}`);
+  // Wrong, undecided and unsupported reports are returned without revealing the solution
+  const solutionText = [def.solution.resolution.accepted, ...def.solution.resolution.reconstruction.map((r) => r.body), ...def.solution.resolution.bennett];
+  const returned = (t: ReturnType<typeof T>, label: string, expectNote: RegExp) => {
+    const r = submit(s, t);
+    if (r.outcome.kind !== "verdict" || r.outcome.correct || r.state.status === "closed") problems.push(`${label}: accepted`);
+    else {
+      if (!expectNote.test(r.outcome.note)) problems.push(`${label}: unexpected note "${r.outcome.note}"`);
+      const shown = JSON.stringify(r.outcome) + JSON.stringify(project(def, r.state));
+      if (solutionText.some((x) => shown.includes(x)) || /daniel|mercer|financial|living_room/i.test(r.outcome.note)) problems.push(`${label}: response reveals the solution`);
+      if (r.state.attempts !== s.attempts + 1 || r.state.report.submissions.length !== 1) problems.push(`${label}: attempt not recorded`);
+    }
+    return r.state;
+  };
+  returned(T("robert", "revenge", "blunt", "kitchen", ["E14", "E03", "E13", "E06"]), "wrong theory", /do not hold together/);
+  returned(T("daniel", "financial", "knife", "unknown", ["E14", "E03", "E13"]), "undecided", /open/);
+  returned(right(["E07", "E01", "E10"]), "correct guess, unrelated evidence", /lines of inquiry/);
+  returned(right(["E02", "E03", "E01"]), "correct guess, nothing linking the suspect", /connects the person/);
+  const afterWrong = returned(T("patricia", "financial", "knife", "living_room", ["E14", "E03", "E13"]), "wrong suspect", /do not hold together/);
+  // A returned report can be revised, and several different supported reports are accepted
+  for (const ev of [["E14", "E03", "E01"], ["E04", "E15", "E06"], ["E05", "E13", "E08", "E02"], ["E11", "E14", "E03", "E13", "E01", "E06"]]) {
+    const r = submit(afterWrong, right(ev));
+    if (r.outcome.kind !== "verdict" || !r.outcome.correct || r.state.status !== "closed") problems.push(`supported report rejected: ${ev}`);
+  }
+  for (const id of ["E02", "E03", "E04", "E05", "E06", "E11", "E13", "E14", "E15"]) {
+    if (!def.solution.standard.lines.some((l) => l.anyOf.includes(id))) problems.push(`${id} counts toward no line of support`);
+  }
+  // Nothing about the resolution is visible or speakable until the case is closed
+  if (spokenLine(def, s, { kind: "resolution", id: "bennett", n: 0 })) problems.push("Bennett's conclusion voiceable before closing");
+  const openView = JSON.stringify(project(def, s));
+  if (solutionText.some((x) => openView.includes(x)) || openView.includes("linkToSuspect")) problems.push("open view leaks the resolution or the standard");
+}
 
-// interview record and voices
-const pv = project(def, s);
-const dan = pv.interviews.find((i) => i.characterId === "daniel");
-if (!dan || dan.transcript.length < 4) problems.push("Daniel's transcript missing from the notebook view");
-if (!pv.interviews.every((i) => ["margaret", "daniel", "robert", "patricia", "bennett", "rosa"].includes(i.characterId))) problems.push("unexpected interview");
-if (!s.contradictions.includes("X_LINDA")) problems.push(`contradiction X_LINDA not recorded: ${s.contradictions}`);
-if (s.demeanor.daniel === "composed") problems.push("Daniel's manner never changed");
-const firstDanielLine = (s.conversations.daniel ?? []).findIndex((l) => l.speaker === "daniel");
-const sp = spokenLine(def, s, { kind: "conversation", id: "daniel", n: firstDanielLine });
-if (!sp || sp.text !== s.conversations.daniel[firstDanielLine].text || sp.speakerId !== "daniel") problems.push("voice line does not match the subtitle");
-if (spokenLine(def, s, { kind: "conversation", id: "daniel", n: 0 })) problems.push("investigator's own line would be voiced");
-if (spokenLine(def, newState(def), { kind: "statement", id: "margaret", n: 1 })) problems.push("statement voiced before the case file was read");
-if (!spokenLine(def, s, { kind: "statement", id: "margaret", n: 1 })) problems.push("statement line not voiceable");
+// conclusion
+const good = run({ type: "submitConclusion", theory: { culprit: "daniel", motive: "financial", weapon: "knife", location: "living_room", evidence: ["E11", "E14", "E03", "E13", "E01"] }, investigator: "Sam Calloway" });
+if (good.kind !== "verdict" || !good.correct) problems.push("correct theory rejected");
+if (s.report.final?.investigator !== "Sam Calloway" || s.report.final.attempts !== s.attempts) problems.push("final report not recorded");
+const closedView = project(def, s);
+if (!closedView.closure || closedView.closure.reconstruction.length !== def.solution.resolution.reconstruction.length || !closedView.conclusion.final) problems.push("closure not shown after closing");
+if (!spokenLine(def, s, { kind: "resolution", id: "bennett", n: 0 })) problems.push("Bennett's conclusion not voiceable after closing");
+try { run({ type: "submitConclusion", theory: { culprit: "daniel", motive: "financial", weapon: "knife", location: "living_room", evidence: ["E11", "E14", "E03"] } }); problems.push("closed case accepted another report"); } catch {}
+const reloaded = normalizeState(def, JSON.parse(JSON.stringify(s)));
+if (reloaded.status !== "closed" || !reloaded.report.final || reloaded.evidence.length !== 15 || reloaded.deductions.length !== s.deductions.length) problems.push("completion lost on reload");
 
 // saves from before discovery tracking must load without losing progress
 const legacy = structuredClone(s) as Partial<InvestigationState>;
@@ -461,7 +504,7 @@ for (let seed = 1; seed <= 40; seed++) {
 
 // view must not leak restricted content
 const view = JSON.stringify(project(def, newState(def)));
-for (const secret of ["embezzlement\",\"weapon", "evidenceGroups", "D_HAND", "Type B", "Friday, 11:05 PM", "knowledge", "11:35"]) if (view.includes(secret)) problems.push(`initial view leaks ${secret}`);
+for (const secret of ["\"standard\"", "linkToSuspect", "D_HAND", "Type B", "Friday, 11:35 PM", "knowledge", "reconstruction", "District Attorney"]) if (view.includes(secret)) problems.push(`initial view leaks ${secret}`);
 
 console.log(`${id}: ${def.evidence.length} evidence, ${def.locations.length} locations, ${def.questions.length} questions, ${def.deductions.length} deductions`);
 console.log(`playthrough: status=${s.status} attempts=${s.attempts} events=${s.events.join(",")} active=${s.activeSeconds}s`);

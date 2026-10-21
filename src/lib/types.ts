@@ -116,6 +116,18 @@ export interface InvestigationSession {
   last_activity_at: string;
   completed_at: string | null;
   created_at: string;
+  /** The report filed when the investigation was closed. */
+  final_report?: FiledReport | null;
+}
+
+export interface FiledReport {
+  caseId: string;
+  title: string;
+  investigator: string;
+  filedAt: string;
+  attempts: number;
+  sections: { section: string; title: string; question: string; answer: string }[];
+  evidence: { id: string; title: string }[];
 }
 
 export interface Participant {

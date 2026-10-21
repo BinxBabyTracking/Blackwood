@@ -179,3 +179,15 @@ export async function getEntitlement(userId: string, caseId: string) {
   const { data } = await supabase.from("case_entitlements").select("id").eq("user_id", userId).eq("case_id", caseId).maybeSingle();
   return Boolean(data);
 }
+
+/** One investigation's filed final report, if the investigator took part in it. RLS limits this to members. */
+export async function getFiledReport(sessionId: string) {
+  const supabase = (await createClient())!;
+  const { data, error } = await supabase
+    .from("investigation_sessions")
+    .select("id, case_id, status, completed_at, final_report, case:cases(id, title)")
+    .eq("id", sessionId)
+    .maybeSingle();
+  if (error) throw new Error(`Could not load the report: ${error.message}`);
+  return data as unknown as (Pick<InvestigationSession, "id" | "case_id" | "status" | "completed_at" | "final_report"> & { case: { id: string; title: string } | null }) | null;
+}

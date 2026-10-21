@@ -19,6 +19,7 @@ Built with Next.js 16 (App Router, Cache Components), Tailwind CSS 4 and Supabas
    - `20261020000000_agency_platform.sql`: tables, RLS policies, triggers, joint investigation functions and the `avatars` storage bucket
    - `20261020000100_seed_catalog.sql`: pricing tiers, ranks, Case 001, sealed preview files, commendations and agency notices
    - `20261020000200_open_case_c001.sql`: renames C001 to The Whitmore File, opens it for play and sets the first rank promotion
+   - later files in the folder add hardening, the narration cache and case resolution (`20261021000000_case_resolution.sql`); run them all, in order
 
 4. **Auth settings** (Supabase dashboard, Authentication):
 
@@ -113,6 +114,15 @@ To add evidence to a scene: define it in `evidence.ts`, add an `inspect` hotspot
 - The events are independent and can happen in any order; the office can show a ringing telephone, an envelope and an evidence bag at the same time. `npm run check:case` plays all three orders the brief lists and checks they end with the same facts.
 - *World changes* are configured per hotspot: `visible` (objects appear and disappear), `sprite` (objects drawn over the scene, changing with state), `attention` (a subtle cue), `textAfter` (updated descriptions) and conditional effects (`{ when, then }`), plus location backgrounds that vary with environment state.
 - *Notebook.* The Developments tab lists each event the player has encountered, with its status, the person involved, what has been learned, the evidence found, the call transcript or enclosed note, and a link to the interview transcript. Events the player has not encountered, and anything not yet learned, are not shown.
+
+**Final report and case resolution (Step 8).** Once the investigation has substance (the case file read, six pieces of evidence, at least one guest interviewed; `reportAvailable` in `story.ts`), a final report folder appears on the office desk beside the typewriter.
+
+- *The report* (`src/game/ui/final-report.tsx`) is a typed agency form: letterhead, case details, sections A to D (suspect, motive, weapon, location) and section E (three to six pieces of collected evidence, each of which can be examined from the report). Drafts save to the investigation, survive a refresh, and are saved automatically on leaving. A review page and a confirmation come before submission.
+- *Evaluation* (`src/game/engine/evaluation.ts`) is deterministic and runs only on the server. It checks the report is complete and cites only evidence collected in this investigation, then judges the answers and the evidence against `solution.standard` in `solution.ts`: the attached items must cover at least `minLines` independent lines of inquiry (physical, timeline, financial, staged entry), include something that links the named person to the night, and leave no question open. Many different evidence sets pass; a right guess with unrelated evidence does not.
+- *A returned report* gets the agency's standard response and a reviewer's note that never says which answer is wrong. The player keeps everything and can revise and resubmit any number of times; each submission is kept in the save.
+- *An accepted report* closes the case and plays the conclusion (`case-resolution.tsx`): the acceptance memo, six reconstruction pages read by the narrator, Det. Bennett's response in his voice (he takes it to the District Attorney; no conviction is claimed), and the CASE CLOSED card. The reconstruction and Bennett's lines are only sent to the browser, or to ElevenLabs, after the server has closed the case.
+- *Service record.* Closing runs one database transaction, `record_case_completion` (migration `20261021000000`). It closes the session, files the report on it, records the first completion of the case, updates Cases Closed, accuracy and hours, awards commendations and checks rank thresholds (now defined for every grade in `agency_ranks`). It is idempotent: repeating it changes nothing, and closing a replay adds time but never a second closed case or a duplicate commendation. If a report is accepted but the record could not be written, it is finished the next time the case is opened.
+- *Afterwards* the player can reread the filed report, review the evidence, open the service record, or start a replay, which is a new investigation; the closed one stays on file under Closed Cases in My Case Files, with its report at `/agency/cases/<investigation id>`.
 
 **Timeline.** The canonical C001 timeline, and the contradictions found and fixed in Step 6, are in `docs/C001-timeline.md`.
 

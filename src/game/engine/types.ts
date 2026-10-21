@@ -355,8 +355,33 @@ export interface ObjectiveDef {
 
 export interface ChoiceSet {
   id: "culprit" | "motive" | "weapon" | "location";
+  /** Report section letter and heading, e.g. "A", "Primary Suspect". */
+  section: string;
+  title: string;
   question: string;
   options: { id: string; label: string }[];
+}
+
+/**
+ * The evidentiary standard a final report must meet. Configured per case and
+ * judged only on the server. A report is supported when its attached evidence
+ * covers enough independent lines of inquiry and ties the named person to the
+ * events; no single combination of items is required.
+ */
+export interface EvidenceStandard {
+  minItems: number;
+  maxItems: number;
+  /** Independent lines of support, e.g. physical, timeline, financial. */
+  lines: { id: string; label: string; anyOf: string[] }[];
+  minLines: number;
+  /** At least one attached item must connect the named person to the events. */
+  linkToSuspect: string[];
+  /** Relevant items that belong to no line and are not held against the report. */
+  supporting: string[];
+  /** How many attached items may have no bearing on the conclusions. */
+  maxUnrelated: number;
+  /** Answers that leave a question open; a report containing one is never accepted. */
+  undecided: string[];
 }
 
 export interface SolutionDef {
@@ -364,10 +389,37 @@ export interface SolutionDef {
   motive: string;
   weapon: string;
   location: string;
-  /** The submitted evidence must cover at least `minGroups` of these groups (one item from each). */
-  evidenceGroups: { id: string; label: string; anyOf: string[] }[];
-  minGroups: number;
-  closure: { heading: string; body: string }[];
+  standard: EvidenceStandard;
+  /** Revealed only after the report is accepted. */
+  resolution: {
+    accepted: string;
+    reconstruction: { heading: string; body: string }[];
+    /** Det. Bennett's response, spoken in his voice. */
+    bennett: string[];
+  };
+}
+
+export interface ReportDraft {
+  culprit?: string;
+  motive?: string;
+  weapon?: string;
+  location?: string;
+  evidence: string[];
+}
+
+export interface ReportSubmission {
+  at: number;
+  theory: Theory;
+  accepted: boolean;
+  /** The agency reviewer's note, written so it never says which answer is wrong. */
+  note: string;
+}
+
+export interface FinalReport {
+  theory: Theory;
+  investigator: string;
+  filedAt: number;
+  attempts: number;
 }
 
 export interface CaseDefinition {
@@ -393,6 +445,8 @@ export interface CaseDefinition {
   deductions: DeductionDef[];
   objectives: ObjectiveDef[];
   conclusionChoices: ChoiceSet[];
+  /** When the final report may be opened and filed. */
+  reportAvailable: Condition;
   solution: SolutionDef;
   /** Seed timeline entries the player starts with. */
   timeline: { time: string; text: string; source: string }[];
@@ -448,6 +502,8 @@ export interface InvestigationState {
   readDocuments: string[];
   messages: string[];
   attempts: number;
+  /** The final report: the working draft, every submission, and the accepted report. */
+  report: { draft: ReportDraft; submissions: ReportSubmission[]; final: FinalReport | null };
   activeSeconds: number;
   lastActionAt: number;
   closedAt: number | null;
@@ -497,7 +553,9 @@ export type GameAction =
   | { type: "setNarration"; enabled: boolean }
   | { type: "setVoices"; enabled: boolean }
   | { type: "dismissMessages" }
-  | { type: "submitConclusion"; theory: Theory };
+  | { type: "saveReport"; draft: ReportDraft }
+  /** `investigator` is set by the server from the signed-in profile, never by the browser. */
+  | { type: "submitConclusion"; theory: Theory; investigator?: string };
 
 export interface Theory {
   culprit: string;
@@ -625,9 +683,19 @@ export interface ClientView {
   messages: string[];
   narration: boolean;
   voices: boolean;
-  conclusion: { choices: ChoiceSet[]; attempts: number };
+  conclusion: {
+    available: boolean;
+    choices: ChoiceSet[];
+    minItems: number;
+    maxItems: number;
+    attempts: number;
+    draft: ReportDraft;
+    /** The agency's response to the latest returned report. */
+    review: { at: number; note: string; attempt: number } | null;
+    final: FinalReport | null;
+  };
   /** Only present once the case is closed. */
-  closure: SolutionDef["closure"] | null;
+  closure: (SolutionDef["resolution"] & { final: FinalReport | null; closedAt: number | null }) | null;
 }
 
 /** One-off payloads returned alongside the view for the action just taken. */
@@ -675,7 +743,14 @@ export type ActionOutcome =
       evidence: { id: string; title: string; collected: boolean }[];
     }
   | { kind: "deduction"; id: string; title: string; text: string }
-  | { kind: "verdict"; correct: boolean; feedback: string; closure?: SolutionDef["closure"] }
+  | {
+      kind: "verdict";
+      correct: boolean;
+      feedback: string;
+      note: string;
+      /** Filled in by the server after the service record is updated. */
+      record?: { first: boolean; awarded: string[]; rank: string | null };
+    }
   | { kind: "error"; message: string };
 
 export interface ActionResponse {

@@ -5,7 +5,7 @@ import { characters, contradictions, questions, reactions } from "./characters";
 import { evidence } from "./evidence";
 import { locations } from "./locations";
 import { conclusionChoices, deductions, solution } from "./solution";
-import { calls, deliveries, documents, events, intro, objectives, outgoingCalls, statements, timeline } from "./story";
+import { calls, deliveries, documents, events, intro, objectives, outgoingCalls, reportAvailable, statements, timeline } from "./story";
 
 export const C001: CaseDefinition = {
   id: "C001",
@@ -30,6 +30,7 @@ export const C001: CaseDefinition = {
   deductions,
   objectives,
   conclusionChoices,
+  reportAvailable,
   solution,
   timeline,
 };

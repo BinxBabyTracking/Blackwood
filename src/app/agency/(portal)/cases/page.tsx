@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 import { sessionStatusLabel } from "@/components/portal/active-list";
 import { PortalHeading } from "@/components/portal/heading";
@@ -79,10 +80,10 @@ async function Files() {
 function FileTable({ rows }: { rows: CaseFile[] }) {
   return (
     <div className="overflow-x-auto border-y border-rule">
-      <table className="w-full min-w-[56rem] text-left text-sm">
+      <table className="w-full min-w-[62rem] text-left text-sm">
         <thead className="text-xs text-smoke">
           <tr className="border-b border-rule">
-            {["Case", "Investigation ID", "Status", "Started", "Last activity", "Completed", "Save reference", "Replay"].map((h) => (
+            {["Case", "Investigation ID", "Status", "Started", "Last activity", "Completed", "Save reference", "Replay", "Report"].map((h) => (
               <th key={h} scope="col" className="px-3 py-3 font-normal first:pl-0">
                 {h}
               </th>
@@ -113,6 +114,15 @@ function FileTable({ rows }: { rows: CaseFile[] }) {
                 <Ref>{f.latest_save_id ? f.latest_save_id.slice(0, 8).toUpperCase() : "No save yet"}</Ref>
               </td>
               <td className="px-3 py-3 text-smoke">{f.replay_eligible ? "Eligible" : "Not eligible"}</td>
+              <td className="px-3 py-3">
+                {f.final_report ? (
+                  <Link href={`/agency/cases/${f.id}`} className="text-brass underline-offset-4 hover:underline">
+                    Final report
+                  </Link>
+                ) : (
+                  <span className="text-smoke">None filed</span>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>

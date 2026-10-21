@@ -159,6 +159,14 @@ html[data-vision="tritanopia"] {
   68%, 76%, 84%, 92% { transform: rotate(2.5deg); }
 }
 [data-attention][data-hotspot$="phone"] { animation: game-ring 2.4s ease-in-out infinite; }
+/* A rubber stamp coming down once: restrained, no bounce. */
+@keyframes game-stamp {
+  0%, 55% { opacity: 0; transform: scale(1.5) rotate(-16deg); }
+  80% { opacity: 1; transform: scale(0.98) rotate(-10deg); }
+  100% { opacity: 1; transform: scale(1) rotate(-10deg); }
+}
+.game-stamp { animation: game-stamp 1.4s ease-out both; }
+@media (prefers-reduced-motion: reduce) { .game-stamp { animation: none; transform: rotate(-10deg); } }
 @media (prefers-reduced-motion: reduce) { .game-attention, [data-attention][data-hotspot$="phone"] { animation: none; } }
 .game-scene-in { animation: game-scene-in 700ms ease-out both; }
 .game-caption { animation: game-caption 900ms ease-out both; }

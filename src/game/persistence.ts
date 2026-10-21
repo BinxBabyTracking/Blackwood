@@ -1,7 +1,7 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { newState, progressOf } from "./engine/engine";
-import type { CaseDefinition, InvestigationState, Theory } from "./engine/types";
+import type { CaseDefinition, InvestigationState } from "./engine/types";
 
 /*
  * Save-state management. All writes go through the service-role client on the
@@ -140,44 +140,65 @@ export async function saveState(def: CaseDefinition, loaded: Loaded, state: Inve
   return true;
 }
 
-/** Closes the case and updates the service record, commendations and rank. */
-export async function recordClosedCase(userId: string, def: CaseDefinition, loaded: Loaded, state: InvestigationState, theory: Theory) {
+/** The investigator's name as it appears on reports. */
+export async function investigatorName(userId: string): Promise<string> {
+  const { data } = await admin().from("detective_profiles").select("display_name").eq("id", userId).maybeSingle();
+  return data?.display_name?.trim() || "Investigator";
+}
+
+/** The filed report as stored with the closed investigation: answers in words, evidence by id and title. */
+function filedReport(def: CaseDefinition, state: InvestigationState) {
+  const f = state.report.final!;
+  const label = (set: string, id: string) => def.conclusionChoices.find((c) => c.id === set)?.options.find((o) => o.id === id)?.label ?? id;
+  return {
+    caseId: def.id,
+    title: def.title,
+    investigator: f.investigator,
+    filedAt: new Date(f.filedAt).toISOString(),
+    attempts: f.attempts,
+    sections: def.conclusionChoices.map((c) => ({ section: c.section, title: c.title, question: c.question, answer: label(c.id, f.theory[c.id]) })),
+    evidence: f.theory.evidence.map((id) => ({ id, title: def.evidence.find((e) => e.id === id)?.title ?? id })),
+  };
+}
+
+/**
+ * Records a closed case against the investigator's career in one database
+ * transaction (record_case_completion). Safe to call any number of times for
+ * the same investigation: only the first call changes anything, and a replay
+ * of a case already closed adds time spent but never a second closed case.
+ */
+export async function recordClosedCase(userId: string, def: CaseDefinition, loaded: Loaded, state: InvestigationState) {
+  if (state.status !== "closed" || !state.report?.final) return null;
   const db = admin();
-  const now = new Date().toISOString();
-  await db.from("investigation_sessions").update({ status: "closed", completed_at: now, progress: 100, last_activity_at: now }).eq("id", loaded.sessionId);
-
-  const caseAccuracy = Math.max(40, 100 - 20 * (state.attempts - 1));
-  const { data: rec } = await db.from("service_records").select("*").eq("user_id", userId).maybeSingle();
-  const closedBefore = rec?.cases_closed ?? 0;
-  const closed = closedBefore + 1;
-  const accuracy = rec?.accuracy == null ? caseAccuracy : Math.round(((Number(rec.accuracy) * closedBefore + caseAccuracy) / closed) * 100) / 100;
-  await db
-    .from("service_records")
-    .update({
-      cases_closed: closed,
-      total_investigation_seconds: (rec?.total_investigation_seconds ?? 0) + state.activeSeconds,
-      accuracy,
-      updated_at: now,
-    })
-    .eq("user_id", userId);
-
+  const attempts = state.report.final.attempts;
+  const accuracy = Math.max(40, 100 - 20 * (attempts - 1));
+  const covered = def.solution.standard.lines.filter((l) => l.anyOf.some((id) => state.report.final!.theory.evidence.includes(id)));
   const awards = ["first_case_closed"];
   if (state.evidence.length === def.evidence.length) awards.push("thorough_investigator");
-  if (def.solution.evidenceGroups.every((g) => g.anyOf.some((id) => theory.evidence.includes(id)))) awards.push("evidence_specialist");
-  if (state.attempts === 1) awards.push("exceptional_deduction");
-  await db.from("user_achievements").upsert(
-    awards.map((a) => ({ user_id: userId, achievement_id: a })),
-    { onConflict: "user_id,achievement_id", ignoreDuplicates: true },
-  );
+  if (covered.length === def.solution.standard.lines.length) awards.push("evidence_specialist");
+  if (attempts === 1) awards.push("exceptional_deduction");
 
-  const { data: ranks } = await db.from("agency_ranks").select("level, min_cases_closed").order("level");
-  const eligible = (ranks ?? []).filter((r) => r.min_cases_closed != null && closed >= r.min_cases_closed).map((r) => r.level);
-  if (eligible.length) {
-    const { data: profile } = await db.from("detective_profiles").select("rank_level").eq("id", userId).maybeSingle();
-    const target = Math.max(...eligible);
-    if (profile && target > profile.rank_level) {
-      await db.from("detective_profiles").update({ rank_level: target }).eq("id", userId);
-    }
-  }
-  return { awards, accuracy: caseAccuracy };
+  const { data, error } = await db.rpc("record_case_completion", {
+    p_user: userId,
+    p_case: def.id,
+    p_session: loaded.sessionId,
+    p_report: filedReport(def, state),
+    p_seconds: state.activeSeconds,
+    p_accuracy: accuracy,
+    p_attempts: attempts,
+    p_awards: awards,
+  });
+  if (error) throw new PersistenceError(error.message);
+  const r = data as { recorded: boolean; first: boolean; awarded: string[]; rank_level: number | null };
+
+  const [{ data: titles }, { data: rank }] = await Promise.all([
+    r.awarded.length ? db.from("achievements").select("id, title").in("id", r.awarded) : Promise.resolve({ data: [] as { id: string; title: string }[] }),
+    r.rank_level != null ? db.from("agency_ranks").select("title").eq("level", r.rank_level).maybeSingle() : Promise.resolve({ data: null }),
+  ]);
+  return {
+    recorded: r.recorded,
+    first: r.first,
+    awarded: (titles ?? []).map((t) => t.title),
+    rank: (rank as { title: string } | null)?.title ?? null,
+  };
 }

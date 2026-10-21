@@ -22,7 +22,7 @@ const locations = [
 ];
 const characters = ["eleanor", "margaret", "daniel", "robert", "patricia", "bennett", "rosa"];
 /** Scene objects that appear or change with events, drawn over the background. */
-const objects = ["envelope_sealed", "envelope_open", "evidence_bag", "evidence_bag_open"];
+const objects = ["envelope_sealed", "envelope_open", "evidence_bag", "evidence_bag_open", "report_folder"];
 const evidence = Array.from({ length: 15 }, (_, i) => `e${String(i + 1).padStart(2, "0")}`);
 
 export const assets: AssetManifest = {

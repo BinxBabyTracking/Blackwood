@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { buttonClass } from "@/components/ui";
 import { Seal } from "@/components/wordmark";
 import { normalizeState, respond } from "@/game/engine/engine";
-import { findInvestigation } from "@/game/persistence";
+import { findInvestigation, recordClosedCase } from "@/game/persistence";
 import { loadCase } from "@/game/registry";
 import { InvestigationShell } from "@/game/ui/investigation-shell";
 import { getSettings, requireInvestigator } from "@/lib/investigator";
@@ -67,13 +67,20 @@ async function Desk({ params }: { params: Promise<{ caseId: string }> }) {
   const loaded = await findInvestigation(me.id, def.id);
   if (!loaded) redirect(`/agency/assignments/${def.id}`);
 
+  const state = normalizeState(def, loaded.state);
+  if (state.status === "closed" && loaded.sessionStatus !== "closed") {
+    // The report was accepted but the service record was not written (for example the connection dropped).
+    // Recording is idempotent, so finishing it here can never count the case twice.
+    await recordClosedCase(me.id, def, loaded, state).catch((e) => console.error("recordClosedCase", e));
+  }
   const settings = await getSettings(me.id);
   return (
     <main id="main">
       <InvestigationShell
         caseId={def.id}
         homeLocation={def.startLocation}
-        initial={respond(def, normalizeState(def, loaded.state)).view}
+        initial={respond(def, state).view}
+        investigator={me.profile.display_name ?? "Investigator"}
         prefs={{
           reducedMotion: settings?.reduced_motion ?? false,
           masterVolume: settings?.master_volume ?? 80,

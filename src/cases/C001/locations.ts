@@ -1,4 +1,5 @@
 import type { Condition, HotspotDef, LocationDef } from "@/game/engine/types";
+import { reportAvailable } from "./story";
 
 /*
  * Scene layout for C001. Hotspot rectangles are percentages of a 16:9 frame
@@ -81,7 +82,12 @@ export const locations: LocationDef[] = [
       // Event objects: they appear on the desk when a delivery arrives and stay until their evidence is collected.
       deskItem("office_envelope", "Manila envelope", "patricia_envelope", "E15", { x: 57, y: 67, w: 7, h: 7 }, "obj.envelope_sealed", "obj.envelope_open"),
       deskItem("office_evidencebag", "Police evidence bag", "jacket_recovered", "E05", { x: 65, y: 63, w: 6, h: 11 }, "obj.evidence_bag", "obj.evidence_bag_open"),
-      panel("office_typewriter", "Typewriter: file your conclusion", "typewriter", { x: 86, y: 58, w: 11, h: 13 }, "conclusion", briefed),
+      panel("office_typewriter", "Typewriter: final report", "typewriter", { x: 86, y: 58, w: 11, h: 13 }, "conclusion", reportAvailable),
+      // The final report folder appears on the desk once the investigation has enough substance to report on.
+      {
+        ...panel("office_report", "Final report folder", "sprite", { x: 76, y: 69, w: 9, h: 7 }, "conclusion", reportAvailable),
+        sprite: [{ image: "obj.report_folder" }],
+      },
     ],
   },
   {

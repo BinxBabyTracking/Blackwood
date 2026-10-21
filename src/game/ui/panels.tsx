@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import type { ActionOutcome, ClientView, GameAction, Theory } from "../engine/types";
+import { useEffect, useMemo, useState } from "react";
+import type { ActionOutcome, ClientView, GameAction } from "../engine/types";
 import { voiceSrc } from "./interview-screen";
 import { NarrationPlayer } from "./narration-player";
 import { GameButton, Overlay } from "./overlay";
@@ -407,114 +407,6 @@ function Cassette({ label, spinning }: { label: string; spinning: boolean }) {
 // ---------------------------------------------------------------------------
 // Conclusion and closure
 // ---------------------------------------------------------------------------
-
-export function ConclusionPanel({
-  view,
-  dispatch,
-  onClose,
-  pending,
-  feedback,
-}: {
-  view: ClientView;
-  dispatch: Dispatch;
-  onClose: () => void;
-  pending: boolean;
-  feedback: string | null;
-}) {
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [evidence, setEvidence] = useState<string[]>([]);
-  const ready = view.conclusion.choices.every((c) => answers[c.id]) && evidence.length > 0;
-  const feedbackRef = useRef<HTMLParagraphElement>(null);
-  useEffect(() => {
-    feedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, [feedback, view.conclusion.attempts]);
-  const theory = useMemo<Theory>(
-    () => ({ culprit: answers.culprit ?? "", motive: answers.motive ?? "", weapon: answers.weapon ?? "", location: answers.location ?? "", evidence }),
-    [answers, evidence],
-  );
-
-  return (
-    <Overlay title="Report to the agency: conclusion" onClose={onClose} wide tone="paper" closeLabel="Keep investigating">
-      <form
-        className="space-y-8 p-6 sm:p-8"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (ready) dispatch({ type: "submitConclusion", theory });
-        }}
-      >
-        <p className="font-serif">
-          Submit only when you can support every answer. An unsupported report will be returned, and you can keep investigating.
-          {view.conclusion.attempts ? <span className="font-mono text-xs"> Reports returned so far: {view.conclusion.attempts}.</span> : null}
-        </p>
-        {feedback ? (
-          <p ref={feedbackRef} role="alert" className="border-l-4 border-[#7d3a33] bg-[#7d3a33]/10 p-4 font-serif">
-            {feedback}
-          </p>
-        ) : null}
-        {view.conclusion.choices.map((c) => (
-          <fieldset key={c.id}>
-            <legend className="font-mono text-sm font-bold">{c.question}</legend>
-            <div className="mt-2 grid gap-2 sm:grid-cols-2">
-              {c.options.map((o) => (
-                <label key={o.id} className="flex cursor-pointer items-center gap-3 border border-[#2a241c]/25 px-3 py-2 has-[:checked]:border-[#2a241c] has-[:checked]:bg-[#2a241c]/10">
-                  <input type="radio" name={c.id} value={o.id} checked={answers[c.id] === o.id} onChange={() => setAnswers((a) => ({ ...a, [c.id]: o.id }))} className="accent-[#2a241c]" />
-                  {o.label}
-                </label>
-              ))}
-            </div>
-          </fieldset>
-        ))}
-        <fieldset>
-          <legend className="font-mono text-sm font-bold">Which evidence supports your conclusion?</legend>
-          {view.evidence.length ? (
-            <div className="mt-2 grid gap-2 sm:grid-cols-2">
-              {view.evidence.map((e) => (
-                <label key={e.id} className="flex cursor-pointer items-center gap-3 border border-[#2a241c]/25 px-3 py-2 text-sm has-[:checked]:border-[#2a241c] has-[:checked]:bg-[#2a241c]/10">
-                  <input
-                    type="checkbox"
-                    checked={evidence.includes(e.id)}
-                    onChange={(ev) => setEvidence((list) => (ev.target.checked ? [...list, e.id] : list.filter((x) => x !== e.id)))}
-                    className="accent-[#2a241c]"
-                  />
-                  <span className="font-mono text-xs">{e.id}</span> {e.title}
-                </label>
-              ))}
-            </div>
-          ) : (
-            <p className="mt-2 text-sm">You have not collected any evidence.</p>
-          )}
-        </fieldset>
-        <GameButton type="submit" variant="paper" disabled={!ready || pending || view.status === "closed"}>
-          {pending ? "Filing report" : "File my conclusion"}
-        </GameButton>
-      </form>
-    </Overlay>
-  );
-}
-
-export function ClosureSequence({ pages, onDone }: { pages: NonNullable<ClientView["closure"]>; onDone: () => void }) {
-  const [i, setI] = useState(0);
-  const last = i === pages.length - 1;
-  const p = pages[i];
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black px-6" role="dialog" aria-modal="true" aria-label="Case closure">
-      <div key={i} className="max-w-2xl text-center game-closure">
-        <p className="font-mono text-sm tracking-[0.2em] text-brass">{p.heading.toUpperCase()}</p>
-        <p className="mt-6 font-serif text-2xl leading-relaxed text-paper/90 sm:text-3xl">{p.body}</p>
-        <div className="mt-12 flex justify-center gap-4">
-          {last ? (
-            <GameButton onClick={onDone}>Close the file</GameButton>
-          ) : (
-            <GameButton onClick={() => setI(i + 1)}>Continue</GameButton>
-          )}
-        </div>
-        <p className="mt-6 font-mono text-xs text-smoke">
-          {i + 1} / {pages.length}
-        </p>
-      </div>
-    </div>
-  );
-}
 
 export function IntroSequence({ view, onDone, pending }: { view: ClientView; onDone: () => void; pending: boolean }) {
   const [i, setI] = useState(0);

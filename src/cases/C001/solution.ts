@@ -70,80 +70,117 @@ export const deductions: DeductionDef[] = [
 export const conclusionChoices: CaseDefinition["conclusionChoices"] = [
   {
     id: "culprit",
-    question: "Who killed Eleanor Whitmore?",
+    section: "A",
+    title: "Primary Suspect",
+    question: "Who do you believe was responsible for Eleanor Whitmore's death?",
     options: [
       { id: "margaret", label: "Margaret Ellis" },
       { id: "daniel", label: "Daniel Mercer" },
       { id: "robert", label: "Robert Hale" },
       { id: "patricia", label: "Patricia Wells" },
-      { id: "intruder", label: "An intruder" },
+      { id: "unknown", label: "Unknown / Insufficient Evidence" },
     ],
   },
   {
     id: "motive",
-    question: "Why?",
+    section: "B",
+    title: "Motive",
+    question: "What was the primary motive behind the murder?",
     options: [
-      { id: "robbery", label: "A burglary that went wrong" },
-      { id: "inheritance", label: "To inherit her estate sooner" },
-      { id: "embezzlement", label: "To stop her exposing stolen money" },
-      { id: "debt", label: "A dispute over an unpaid debt" },
-      { id: "grievance", label: "A personal grievance" },
+      { id: "financial", label: "Financial dispute" },
+      { id: "jealousy", label: "Personal jealousy" },
+      { id: "revenge", label: "Revenge" },
+      { id: "accident", label: "Accidental confrontation" },
+      { id: "robbery", label: "Robbery" },
+      { id: "unknown", label: "Unknown" },
     ],
   },
   {
     id: "weapon",
-    question: "What was the weapon?",
+    section: "C",
+    title: "Murder Weapon",
+    question: "What weapon was used in the fatal attack?",
     options: [
-      { id: "knife", label: "The carving knife" },
-      { id: "glass", label: "The broken glass" },
-      { id: "poker", label: "The fireplace poker" },
-      { id: "bottle", label: "The wine bottle" },
+      { id: "knife", label: "Kitchen knife" },
+      { id: "glass", label: "Broken glass" },
+      { id: "blunt", label: "Blunt object" },
+      { id: "firearm", label: "Firearm" },
+      { id: "unknown", label: "Unknown" },
     ],
   },
   {
     id: "location",
-    question: "Where did the attack take place?",
+    section: "D",
+    title: "Location of Murder",
+    question: "Where did the fatal confrontation occur?",
     options: [
-      { id: "living_room", label: "The living room" },
-      { id: "kitchen", label: "The kitchen" },
-      { id: "rear_door", label: "At the rear door" },
-      { id: "front_hall", label: "The front hall" },
+      { id: "living_room", label: "Eleanor's living room" },
+      { id: "kitchen", label: "Eleanor's kitchen" },
+      { id: "rear_entrance", label: "Rear entrance" },
+      { id: "outside", label: "Outside the property" },
+      { id: "unknown", label: "Unknown" },
     ],
   },
 ];
 
+/*
+ * Canonical solution: Daniel Mercer, a financial dispute over irregularities
+ * Eleanor had discovered, the kitchen knife (E06), in her living room. The
+ * cut screen and drawn bolt were staged to misdirect the investigation.
+ */
 export const solution: CaseDefinition["solution"] = {
   culprit: "daniel",
-  motive: "embezzlement",
+  motive: "financial",
   weapon: "knife",
   location: "living_room",
-  evidenceGroups: [
-    { id: "injury", label: "Physical and blood evidence", anyOf: ["E11", "E05", "E14"] },
-    { id: "motive", label: "Financial motive", anyOf: ["E03", "E08", "E15", "E09"] },
-    { id: "alibi", label: "False account of his movements", anyOf: ["E04", "E13"] },
-    { id: "staging", label: "Staged entry", anyOf: ["E01", "E10"] },
-  ],
-  minGroups: 3,
-  closure: [
-    {
-      heading: "Friday, 11:05 PM",
-      body: "Daniel Mercer did not stay at the Maple Street Diner until one. Linda went home at eleven, and five minutes later he left too, in the tan windbreaker he had worn all evening, without paying for his refill. By twenty past eleven he was back on Hollister Avenue, his green Buick under the jacaranda with the lights off.",
-    },
-    {
-      heading: "Friday, 11:35 PM",
-      body: "Eleanor let him in. At a quarter past nine she had shown him her ledger. On Monday she was taking it, with Patricia's copies of the bank statements, to Mr. Albright, and she told him so. The cheques to D. Mercer Management had never been authorised.",
-    },
-    {
-      heading: "The living room",
-      body: "The argument turned into a struggle. A chair went over. A crystal glass broke in Mercer's hand and opened his palm. The carving knife was still on the sideboard where Eleanor had left it after cutting the cake.",
-    },
-    {
-      heading: "Saturday, 12:15 AM",
-      body: "He took the folder of his own reports from her desk. In the kitchen he cut the window screen from the inside and drew back the bolt on the rear door, so it would look as though someone had broken in. At ten past twelve Margaret Ellis saw his car still at the kerb. Five minutes later he drove away. In the morning he bought gauze at the Rexall on Sunset, and when an investigator started asking questions, he threw the jacket away.",
-    },
-    {
-      heading: "Case closed",
-      body: "Detective Bennett arrested Daniel Mercer on the strength of your report. The agency's file on Eleanor Whitmore is closed.",
-    },
-  ],
+  standard: {
+    minItems: 3,
+    maxItems: 6,
+    lines: [
+      { id: "physical", label: "Physical and blood evidence", anyOf: ["E02", "E05", "E06", "E11", "E14"] },
+      { id: "timeline", label: "Timeline and movements", anyOf: ["E04", "E13", "E12"] },
+      { id: "financial", label: "Financial motive", anyOf: ["E03", "E15", "E08", "E09"] },
+      { id: "staging", label: "Staged entry", anyOf: ["E01", "E10"] },
+    ],
+    minLines: 3,
+    linkToSuspect: ["E04", "E13", "E14", "E05"],
+    supporting: ["E07"],
+    maxUnrelated: 0,
+    undecided: ["unknown"],
+  },
+  resolution: {
+    accepted:
+      "Your investigative findings have been accepted. The agency has forwarded your report to Detective Frank Bennett, LAPD Northeast Division.",
+    reconstruction: [
+      {
+        heading: "The money",
+        body: "Cheques drawn on Harold Whitmore's estate account had been made out to D. Mercer Management without Eleanor's authorisation. She kept her own ledger beside Daniel Mercer's quarterly reports, asked Patricia for the bank's statements, and found that the figures did not agree. She made an appointment with Harold's attorney for Monday the 19th.",
+      },
+      {
+        heading: "Friday, 9:15 PM",
+        body: "At supper Eleanor took Mercer to her writing desk with the ledger open. He would later call it a routine question about a bank statement. She came back to the table pale.",
+      },
+      {
+        heading: "Friday, 10:25 to 11:20 PM",
+        body: "Mercer left last, at twenty-five past ten, and drove to the Maple Street Diner. Linda, the waitress he named, went home at eleven. Five minutes later he left too, in the tan windbreaker he had worn all evening, without paying for his refill. By twenty past eleven his green Buick was parked under the jacaranda on Hollister Avenue, lights off.",
+      },
+      {
+        heading: "Friday, 11:35 PM",
+        body: "Eleanor let him in. In the living room the argument became a struggle. A chair went over, and a crystal glass broke in his hand and cut his palm. The kitchen knife she had used to cut the cake was still on the sideboard. It was the weapon, and it was found beside her.",
+      },
+      {
+        heading: "The break-in that never happened",
+        body: "He took the folder of his own reports from her desk. In the kitchen he cut the window screen from the inside, so the mesh bent outward, and drew back the bolt that could only be opened from within. At ten past twelve Margaret Ellis saw his car still at the kerb. At a quarter past, he drove away.",
+      },
+      {
+        heading: "What he left behind",
+        body: "On Saturday morning he bought gauze at the Rexall on Sunset and bandaged his right hand. When the investigation reached his apartment, the tan windbreaker disappeared from his coat rack. The police recovered it from the dumpster behind his building, its right cuff stained and scrubbed.",
+      },
+    ],
+    bennett: [
+      "I read your report twice. It holds up. The diner, the cheques, the screen cut from the inside, the jacket in his trash.",
+      "This afternoon it goes to the District Attorney's office with my request for a warrant for Daniel Mercer's arrest. After that it's up to the D.A., and in the end a jury. Nothing on paper is a conviction.",
+      "But Eleanor Whitmore's file is not going in the drawer marked burglary. That's your doing. Thank you.",
+    ],
+  },
 };
