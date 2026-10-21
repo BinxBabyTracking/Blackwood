@@ -26,6 +26,8 @@ export type Condition =
   | { env: string; is: string } // environmental state
   | { evidenceCount: number }
   | { at: string } // player's current location
+  | { presented: string } // `${characterId}:${evidenceId}`
+  | { contradiction: string } // contradiction id has been recorded
   | { always: true };
 
 export type Effect =
@@ -42,10 +44,12 @@ export type Effect =
 
 export interface NotebookEntryInput {
   id: string;
-  kind: "interview" | "observation" | "call" | "event" | "document";
+  kind: "interview" | "observation" | "call" | "event" | "document" | "contradiction";
   title: string;
   text: string;
   characterId?: string;
+  /** Marks a statement worth highlighting in the interview notebook. */
+  important?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -59,6 +63,30 @@ export interface AssetManifest {
   audio: Record<string, string | null>;
 }
 
+/** A consistent ElevenLabs voice for one character. Never changes between scenes. */
+export interface VoiceProfile {
+  /** ElevenLabs voice id. Can be overridden per deployment with ELEVENLABS_VOICE_<CHARACTER>. */
+  voiceId: string;
+  /** Casting note, for designers. */
+  direction: string;
+  /** Optional ElevenLabs voice settings that shape the delivery. */
+  settings?: { stability?: number; similarity_boost?: number; style?: number; use_speaker_boost?: boolean };
+}
+
+/** A deterministic manner a character adopts once a condition holds. The last matching entry wins. */
+export interface DemeanorDef {
+  id: string;
+  /** Shown to the player, e.g. "Guarded". */
+  label: string;
+  requires: Condition;
+  /** Replaces the idle line while active. */
+  idleLine?: string;
+  /** While active, only questions marked allowWhenRefusing are offered, and evidence gets this reply. */
+  refuses?: string;
+  /** Written into the transcript once, when the manner first changes. */
+  cue?: string;
+}
+
 export interface CharacterDef {
   id: string;
   name: string;
@@ -68,26 +96,51 @@ export interface CharacterDef {
   bio: { text: string; requires?: Condition }[];
   /** Whether the character can be met or interviewed right now. */
   available: Condition;
-  /** Where the character can be interviewed. Null means by telephone only. */
+  /** Where the character can be interviewed. Null means nowhere. */
   locationId: string | null;
+  /** How the interview happens. Telephone interviews are opened from the office phone. */
+  medium?: "in person" | "telephone";
   /** Characters that the player may pin to the murder board. */
   onBoard: boolean;
   /** Reply used when the player presents evidence with no authored reaction. */
   defaultEvidenceReply: string;
   /** Reply used when no questions remain. */
   idleLine: string;
+  voice?: VoiceProfile;
+  demeanor?: DemeanorDef[];
+  /** Canonical knowledge for a future free-form interview fallback. Never shown directly. */
+  knowledge?: string[];
 }
 
+/**
+ * One authored dialogue entry: what the investigator asks and how the
+ * character answers. Entries are data; the engine decides what is offered.
+ */
 export interface DialogueQuestion {
   id: string;
   characterId: string;
+  /** Groups questions in the interview, e.g. "The evening". */
+  topic?: string;
   /** What the investigator says. */
   prompt: string;
   /** The character's answer, line by line. */
   reply: string[];
+  /** Deterministic alternatives; the last whose condition holds replaces `reply`. */
+  variants?: { requires: Condition; reply: string[]; effects?: Effect[] }[];
   requires?: Condition;
+  requiresEvidence?: string[];
+  requiresDeductions?: string[];
+  requiresFlags?: string[];
+  /** Follow-up questions this entry unlocks once asked. A question listed here is hidden until then. */
+  unlocks?: string[];
+  /** Information this answer reveals, recorded in the notebook as an important statement. */
+  reveals?: string;
+  /** Voice override for this entry; defaults to the character's voice. */
+  voice?: string;
   /** Questions that can be asked again stay in the list after being asked. */
   repeatable?: boolean;
+  /** Still offered while the character refuses to cooperate. */
+  allowWhenRefusing?: boolean;
   effects?: Effect[];
 }
 
@@ -97,6 +150,21 @@ export interface EvidenceReaction {
   reply: string[];
   requires?: Condition;
   effects?: Effect[];
+  /** Recorded as an important statement. */
+  reveals?: string;
+}
+
+/**
+ * A discrepancy between testimony and what the investigator has established.
+ * Recorded only when `when` holds, so nobody is labelled inconsistent
+ * without supporting evidence. Written neutrally; it never says who lied.
+ */
+export interface ContradictionDef {
+  id: string;
+  characterId: string;
+  title: string;
+  text: string;
+  when: Condition;
 }
 
 export interface HotspotDef {
@@ -181,6 +249,8 @@ export interface DocumentDef {
   /** Characters introduced by this document, shown with portraits. */
   people?: string[];
   pages: { heading?: string; body: string }[];
+  /** Heading above the people list. */
+  peopleHeading?: string;
   /** Evidence that can be collected from this document. */
   evidence: string[];
   effectsOnRead?: Effect[];
@@ -189,8 +259,13 @@ export interface DocumentDef {
 export interface StatementDef {
   characterId: string;
   recordedAt: string;
-  audio: string; // audio key, may resolve to null
-  transcript: { speaker: string; text: string }[];
+  officer: string;
+  /** Tape label, e.g. "85-NE-2291 / Tape 1". */
+  tape: string;
+  /** Audio key for a real recording; when null the tape is voiced with the character voices on request. */
+  audio: string;
+  /** Each line names its speaker by character id so it can be voiced consistently. */
+  transcript: { speakerId: string; speaker: string; text: string }[];
 }
 
 export interface ReactiveEventDef {
@@ -202,6 +277,8 @@ export interface ReactiveEventDef {
 
 export interface DeductionDef {
   id: string;
+  /** Design code from the brief, e.g. "D02". */
+  code?: string;
   title: string;
   /** Recorded in the notebook once confirmed. Written so it never names the culprit outright. */
   text: string;
@@ -249,6 +326,7 @@ export interface CaseDefinition {
   evidence: EvidenceDef[];
   questions: DialogueQuestion[];
   reactions: EvidenceReaction[];
+  contradictions: ContradictionDef[];
   documents: DocumentDef[];
   statements: StatementDef[];
   calls: CallDef[];
@@ -287,7 +365,15 @@ export interface InvestigationState {
   asked: string[];
   presented: string[]; // `${characterId}:${evidenceId}`
   talkedTo: string[];
-  conversations: Record<string, { speaker: "you" | string; text: string }[]>;
+  conversations: Record<string, ConversationLine[]>;
+  /** Follow-up questions unlocked by earlier answers. */
+  unlockedQuestions: string[];
+  /** Contradictions the investigator has established. */
+  contradictions: string[];
+  /** Each character's current manner, so changes are noticed once. */
+  demeanor: Record<string, string>;
+  /** Whether characters speak aloud during interviews. */
+  voices: boolean;
   notebook: (NotebookEntryInput & { at: number })[];
   timeline: { time: string; text: string; source: string }[];
   playerNotes: string;
@@ -305,6 +391,15 @@ export interface InvestigationState {
   activeSeconds: number;
   lastActionAt: number;
   closedAt: number | null;
+}
+
+export interface ConversationLine {
+  /** "you", a character id, or "cue" for a stage note. */
+  speaker: "you" | "cue" | string;
+  text: string;
+  /** The question or evidence that produced this line. */
+  q?: string;
+  kind?: "question" | "answer" | "present" | "reaction" | "refusal" | "cue";
 }
 
 export interface Discovery {
@@ -340,6 +435,7 @@ export type GameAction =
   | { type: "saveNotes"; text: string }
   | { type: "saveEvidenceNote"; evidenceId: string; text: string }
   | { type: "setNarration"; enabled: boolean }
+  | { type: "setVoices"; enabled: boolean }
   | { type: "dismissMessages" }
   | { type: "submitConclusion"; theory: Theory };
 
@@ -383,6 +479,32 @@ export interface ClientCharacter {
   onBoard: boolean;
 }
 
+export interface ClientLine {
+  /** Position in the character's transcript; used to request the spoken audio. */
+  n: number;
+  speakerId: string;
+  speaker: string;
+  text: string;
+  kind: NonNullable<ConversationLine["kind"]>;
+}
+
+export interface ClientInterview {
+  characterId: string;
+  name: string;
+  role: string;
+  portrait: string;
+  where: string;
+  medium: "in person" | "telephone";
+  demeanor: string | null;
+  /** "Not interviewed", "In progress", "No further questions for now", "Declining to answer". */
+  status: string;
+  asked: number;
+  transcript: ClientLine[];
+  statements: { id: string; title: string; text: string }[];
+  contradictions: { id: string; title: string; text: string }[];
+  voiced: boolean;
+}
+
 export interface ClientView {
   caseId: string;
   title: string;
@@ -415,9 +537,21 @@ export interface ClientView {
   };
   deliveries: { id: string; title: string }[];
   documents: { id: string; title: string; read: boolean }[];
-  statements: { characterId: string; name: string; recordedAt: string; audio: string | null; transcript: StatementDef["transcript"] }[];
+  statements: {
+    characterId: string;
+    name: string;
+    recordedAt: string;
+    officer: string;
+    tape: string;
+    status: string;
+    audio: string | null;
+    voiced: boolean;
+    transcript: StatementDef["transcript"];
+  }[];
+  interviews: ClientInterview[];
   messages: string[];
   narration: boolean;
+  voices: boolean;
   conclusion: { choices: ChoiceSet[]; attempts: number };
   /** Only present once the case is closed. */
   closure: SolutionDef["closure"] | null;
@@ -428,17 +562,35 @@ export type ActionOutcome =
   | { kind: "none" }
   | { kind: "inspect"; title: string; text: string; image: string | null; evidence: ClientEvidence | null }
   | { kind: "panel"; panel: PanelId }
-  | { kind: "conversation"; characterId: string; history: { speaker: string; text: string }[]; questions: { id: string; prompt: string }[]; available: boolean }
+  | {
+      kind: "conversation";
+      characterId: string;
+      name: string;
+      role: string;
+      portrait: string;
+      where: string;
+      medium: "in person" | "telephone";
+      demeanor: string | null;
+      refusing: boolean;
+      history: ClientLine[];
+      /** Transcript positions added by the action just taken. */
+      latest: number[];
+      questions: { id: string; prompt: string; topic: string; followUp: boolean }[];
+      idle: string;
+      available: boolean;
+      voiced: boolean;
+    }
   | {
       kind: "document";
       id: string;
       title: string;
       dossier: { label: string; value: string }[];
+      peopleHeading: string;
       people: { id: string; name: string; role: string; portrait: string }[];
       pages: DocumentDef["pages"];
       evidence: { id: string; title: string; collected: boolean }[];
     }
-  | { kind: "call"; title: string; from: string; lines: string[] }
+  | { kind: "call"; id: string; title: string; from: string; fromId: string; lines: string[]; voiced: boolean }
   | { kind: "delivery"; title: string; text: string; evidence: { id: string; title: string; collected: boolean }[] }
   | { kind: "deduction"; id: string; title: string; text: string }
   | { kind: "verdict"; correct: boolean; feedback: string; closure?: SolutionDef["closure"] }

@@ -16,13 +16,13 @@ export const intro: CaseDefinition["intro"] = [
     text: "A folder from LAPD Northeast Division is waiting on your desk. Clipped to the front is a note from Detective Frank Bennett:",
   },
   {
-    text: "'Eleanor Whitmore, 64, killed in her own living room nine days ago after a supper for four guests. We have a cut screen, an open back door, and four statements that all hang together. Something doesn't. The department wants it closed. I want it right. Take a look. F.B.'",
+    text: "'Eleanor Whitmore, 64, killed in her own living room ten days ago, on Friday night, after a supper for four guests. We have a cut screen, an open back door, and four statements that all hang together. Something doesn't. The department wants it closed. I want it right. Take a look. F.B.'",
   },
 ];
 
 export const timeline: CaseDefinition["timeline"] = [
-  { time: "7:30 PM", text: "Eleanor Whitmore's supper begins. Four guests attend.", source: "Case file" },
-  { time: "7:40 AM (Sun)", text: "Margaret Ellis finds Eleanor in the living room.", source: "Case file" },
+  { time: "7:00 PM", text: "Friday, August 16. Guests begin arriving for supper at Eleanor Whitmore's.", source: "Case file" },
+  { time: "7:40 AM (Sat)", text: "Saturday, August 17. Margaret Ellis finds Eleanor in the living room.", source: "Case file" },
 ];
 
 export const documents: DocumentDef[] = [
@@ -39,20 +39,21 @@ export const documents: DocumentDef[] = [
       { label: "Police contact", value: "Det. Frank Bennett, LAPD Northeast Division" },
     ],
     people: ["margaret", "daniel", "robert", "patricia"],
+    peopleHeading: "Persons present, Friday evening",
     evidence: ["E12"],
     effectsOnRead: [{ setFlag: "casefile_read" }],
     pages: [
       {
         heading: "Summary",
-        body: "Victim: Eleanor Ruth Whitmore, 64, widow, 1418 Hollister Avenue. Found deceased in her living room at 0740 hours Sunday 8/18/85 by neighbour Margaret Ellis. Cause of death: stab wound to the chest. Coroner estimates death between 2330 Saturday and 0130 Sunday.",
+        body: "Victim: Eleanor Ruth Whitmore, 64, widow, 1418 Hollister Avenue. Found deceased in her living room at 0740 hours Saturday 8/17/85 by neighbour Margaret Ellis. Cause of death: stab wound to the chest. Coroner's preliminary estimate of time of death: approximately 2300 Friday 8/16 to 0100 Saturday 8/17.",
       },
       {
         heading: "Scene",
         body: "Signs of a struggle in the living room. Kitchen window screen cut. Rear door to yard found unlocked. Working theory: intruder entered through kitchen. No property reported missing; jewellery and $140 in the victim's handbag untouched.",
       },
       {
-        heading: "Persons present Saturday evening",
-        body: "Margaret Ellis, neighbour. Daniel Mercer, manages the late husband's estate. Robert Hale, mechanic and family friend. Patricia Wells, niece. All four gave statements on 8/18. Tapes and transcripts attached.",
+        heading: "Persons present Friday evening",
+        body: "Margaret Ellis, neighbour. Daniel Mercer, manages the late husband's estate. Robert Hale, mechanic and family friend. Patricia Wells, niece. Supper from approximately 1900; all four guests state they had left by 2230. All four gave recorded statements on 8/17. Tapes and transcripts attached.",
       },
       {
         heading: "Addresses",
@@ -64,58 +65,74 @@ export const documents: DocumentDef[] = [
       },
       {
         heading: "Attached",
-        body: "My notes on when each guest left. The laboratory folder is on your desk. One shard of the broken glass is bagged and held at the scene for you; the knife block in the kitchen is tagged.",
+        body: "My notes on when each guest left. The laboratory folder is on your desk. One shard of the broken glass is bagged and held at the scene for you; the knife block in the kitchen is tagged. Call me any time on the office line. F.B.",
       },
     ],
   },
 ];
 
+const B = (text: string) => ({ speakerId: "bennett", speaker: "Det. Bennett", text });
+const officer = "Det. Frank Bennett, LAPD Northeast Division";
+
+/* Initial statements, Saturday 8/17/85. Consistent with the timeline; none names the culprit. */
 export const statements: StatementDef[] = [
   {
     characterId: "margaret",
-    recordedAt: "Sun 8/18/85, 11:10 AM",
+    recordedAt: "Sat 8/17/85, 10:15 AM",
+    officer,
+    tape: "85-NE-2291 / Tape 1",
     audio: "rec.margaret",
     transcript: [
-      { speaker: "Det. Bennett", text: "Take your time, Mrs. Ellis. When did you leave last night?" },
-      { speaker: "Margaret Ellis", text: "About half past ten. I walked home. I only live across the street." },
-      { speaker: "Det. Bennett", text: "Did you see or hear anything unusual after that?" },
-      { speaker: "Margaret Ellis", text: "No. I watched the news and went to bed. This morning I went over with the paper like I always do, and the door was locked, so I used my key, and..." },
-      { speaker: "Det. Bennett", text: "That's all right. That's enough for now." },
+      B("This is Detective Bennett, Northeast Division, Saturday the seventeenth. Mrs. Ellis, take your time. When did you leave last night?"),
+      { speakerId: "margaret", speaker: "Margaret Ellis", text: "About ten past ten. I walked home. I live just across the street." },
+      B("Who was still there when you left?"),
+      { speakerId: "margaret", speaker: "Margaret Ellis", text: "Patricia and Daniel. Robert had gone a few minutes before me." },
+      B("Did you see or hear anything unusual after that?"),
+      { speakerId: "margaret", speaker: "Margaret Ellis", text: "No. I watched the news, and I'm afraid I fell asleep in my chair. This morning I went over with the paper like I always do. The door was locked, so I used my key, and then I saw her." },
+      B("That's all right. That's enough for now."),
     ],
   },
   {
     characterId: "daniel",
-    recordedAt: "Sun 8/18/85, 2:30 PM",
+    recordedAt: "Sat 8/17/85, 2:30 PM",
+    officer,
+    tape: "85-NE-2291 / Tape 2",
     audio: "rec.daniel",
     transcript: [
-      { speaker: "Det. Bennett", text: "Mr. Mercer, what time did you leave Mrs. Whitmore's?" },
-      { speaker: "Daniel Mercer", text: "A quarter to eleven, give or take. I drove to the Maple Street Diner on Sunset." },
-      { speaker: "Det. Bennett", text: "How long were you there?" },
-      { speaker: "Daniel Mercer", text: "Until about one. I couldn't sleep, so I had pie and read the paper. The waitress, Linda, she'll remember me." },
-      { speaker: "Det. Bennett", text: "And Mrs. Whitmore's finances? You managed them." },
-      { speaker: "Daniel Mercer", text: "I managed her late husband's estate. Everything is in order. You're welcome to see my reports." },
+      B("Mr. Mercer, what time did you leave Mrs. Whitmore's last night?"),
+      { speakerId: "daniel", speaker: "Daniel Mercer", text: "About twenty-five past ten. I was the last to go." },
+      B("And after that?"),
+      { speakerId: "daniel", speaker: "Daniel Mercer", text: "I drove to the Maple Street Diner on Sunset. I couldn't sleep, so I had pie and read the paper until about one. The waitress, Linda, she'll remember me." },
+      B("You managed Mrs. Whitmore's finances."),
+      { speakerId: "daniel", speaker: "Daniel Mercer", text: "I managed her late husband's estate. Everything is in order. You're welcome to see my reports." },
     ],
   },
   {
     characterId: "robert",
-    recordedAt: "Sun 8/18/85, 4:05 PM",
+    recordedAt: "Sat 8/17/85, 4:05 PM",
+    officer,
+    tape: "85-NE-2291 / Tape 3",
     audio: "rec.robert",
     transcript: [
-      { speaker: "Det. Bennett", text: "Mr. Hale, you left first?" },
-      { speaker: "Robert Hale", text: "Ten twenty or so. I open the shop at seven on Sundays." },
-      { speaker: "Det. Bennett", text: "Anything strike you as wrong during the evening?" },
-      { speaker: "Robert Hale", text: "No. It was a nice supper. Eleanor was a good woman. That's all I know." },
+      B("Mr. Hale, you were the first to leave?"),
+      { speakerId: "robert", speaker: "Robert Hale", text: "Ten o'clock or so. I open the shop at seven on Saturdays." },
+      B("Anything strike you as wrong during the evening?"),
+      { speakerId: "robert", speaker: "Robert Hale", text: "No. It was a nice supper. Eleanor was a good woman. That's all I know." },
     ],
   },
   {
     characterId: "patricia",
-    recordedAt: "Sun 8/18/85, 5:20 PM",
+    recordedAt: "Sat 8/17/85, 5:20 PM",
+    officer,
+    tape: "85-NE-2291 / Tape 4",
     audio: "rec.patricia",
     transcript: [
-      { speaker: "Det. Bennett", text: "Miss Wells, I'm sorry for your loss. When did you leave?" },
-      { speaker: "Patricia Wells", text: "Ten to eleven. Aunt Eleanor walked me to the door. Daniel had already gone." },
-      { speaker: "Det. Bennett", text: "Was your aunt worried about anything?" },
-      { speaker: "Patricia Wells", text: "She'd been quiet lately. Distracted. I thought she was tired." },
+      B("Miss Wells, I'm sorry for your loss. When did you leave your aunt's house?"),
+      { speakerId: "patricia", speaker: "Patricia Wells", text: "About twenty past ten. Aunt Eleanor walked me to the door." },
+      B("Who was still in the house?"),
+      { speakerId: "patricia", speaker: "Patricia Wells", text: "Only Daniel. He was helping her clear up." },
+      B("Was your aunt worried about anything?"),
+      { speakerId: "patricia", speaker: "Patricia Wells", text: "She'd been quiet lately. Distracted. I thought she was tired." },
     ],
   },
 ];
@@ -127,39 +144,23 @@ export const calls: CallDef[] = [
     title: "Call from Margaret Ellis",
     lines: [
       "It's Margaret Ellis. I hope I'm not being silly, but after you left I kept thinking about that night, and something came back to me.",
-      "After the news I let the cat in. That would have been a quarter past twelve. There was a car parked under the jacaranda by Eleanor's house with its lights off. A big dark sedan.",
-      "When I came down for a glass of water at half past twelve, it was gone. I didn't think anything of it. People park there.",
+      "I'd dozed off in my chair after the news, and the cat woke me scratching at the door. Ten past twelve by the mantel clock. When I let him in, there was a car parked under the jacaranda by Eleanor's house with its lights off. A big dark sedan.",
+      "When I came down for a glass of water at half past twelve, it was gone. I didn't think anything of it at the time. People do park there.",
     ],
     effects: [
-      { timeline: { time: "12:15 AM", text: "Margaret sees a dark sedan, lights off, parked by Eleanor's house.", source: "Margaret Ellis (telephone)" } },
+      { timeline: { time: "12:10 AM", text: "Margaret sees a dark sedan, lights off, parked under the jacaranda by Eleanor's house.", source: "Margaret Ellis (telephone)" } },
       { timeline: { time: "12:30 AM", text: "The sedan is gone.", source: "Margaret Ellis (telephone)" } },
     ],
   },
 ];
 
+/*
+ * Det. Bennett is now interviewed by telephone (see characters.ts). These
+ * entries remain only so older call logs keep their titles; they are never offered.
+ */
 export const outgoingCalls: OutgoingCallDef[] = [
-  {
-    id: "call_bennett_jacket",
-    to: "bennett",
-    label: "Tell Det. Bennett the jacket at Mercer's apartment has disappeared",
-    available: { all: [{ flag: "saw_jacket" }, { flag: "jacket_missing" }] },
-    done: { flag: "jacket_search" },
-    lines: [
-      "Bennett: A tan windbreaker with a wet cuff, and now it's gone. That's enough for me to take a look at the trash.",
-      "Bennett: ...You were right. Two of my officers just pulled it out of the dumpster behind his building, under a sack of grass clippings. It's gone to the lab, and I'll have it sent to you with their notes.",
-    ],
-    effects: [{ setFlag: "jacket_search" }, { setFlag: "has_mail" }, { delivery: "jacket_recovered" }],
-  },
-  {
-    id: "call_bennett_general",
-    to: "bennett",
-    label: "Call Det. Bennett for an update",
-    available: { flag: "casefile_read" },
-    done: { not: { always: true } },
-    lines: [
-      "Bennett: Nothing new on our side. The captain wants it filed as a burglary gone wrong. If you find something that says otherwise, I'm listening.",
-    ],
-  },
+  { id: "call_bennett_jacket", to: "bennett", label: "Asked Det. Bennett to search for the jacket", available: { not: { always: true } }, done: { always: true }, lines: [] },
+  { id: "call_bennett_general", to: "bennett", label: "Called Det. Bennett for an update", available: { not: { always: true } }, done: { always: true }, lines: [] },
 ];
 
 export const deliveries: DeliveryDef[] = [
@@ -208,6 +209,7 @@ export const events: ReactiveEventDef[] = [
 export const objectives: CaseDefinition["objectives"] = [
   { id: "o_casefile", text: "Read Detective Bennett's case file", visible: { always: true }, done: { flag: "casefile_read" } },
   { id: "o_scene", text: "Examine the Whitmore residence, inside and out", visible: { flag: "casefile_read" }, done: { all: [{ visited: "living_room" }, { visited: "kitchen" }] } },
+  { id: "o_bennett", text: "Speak with Det. Bennett on the office telephone", visible: { flag: "casefile_read" }, done: { talkedTo: "bennett" } },
   { id: "o_tapes", text: "Review the recorded police statements", visible: { flag: "casefile_read" }, done: { inspected: "office_recorder" } },
   {
     id: "o_guests",

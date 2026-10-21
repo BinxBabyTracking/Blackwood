@@ -1,15 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { claim, loadAudio, release } from "./audio-bus";
 
 /*
  * Player-initiated narration. Audio is fetched only when the player presses
  * Play, cached per page session, and only one narration plays at a time.
  * If anything fails, the text is still on screen and nothing else is affected.
  */
-
-let active: HTMLAudioElement | null = null;
-const cache = new Map<string, string>(); // request URL -> object URL
 
 function rewind(el: HTMLAudioElement) {
   el.currentTime = 0;
@@ -25,7 +23,7 @@ export function NarrationPlayer({ src, volume, onPlayingChange }: { src: string;
   useEffect(
     () => () => {
       audio.current?.pause();
-      if (active === audio.current) active = null;
+      if (audio.current) release(audio.current);
     },
     [],
   );
@@ -37,17 +35,8 @@ export function NarrationPlayer({ src, volume, onPlayingChange }: { src: string;
   useEffect(() => onPlayingChange?.(status === "playing"), [status, onPlayingChange]);
 
   async function load() {
-    let url = cache.get(src);
-    if (!url) {
-      setStatus("loading");
-      const res = await fetch(src, { credentials: "same-origin" });
-      if (!res.ok) {
-        const body = (await res.json().catch(() => null)) as { error?: string } | null;
-        throw new Error(body?.error ?? "Narration is unavailable right now.");
-      }
-      url = URL.createObjectURL(await res.blob());
-      cache.set(src, url);
-    }
+    setStatus("loading");
+    const url = await loadAudio(src);
     const a = new Audio(url);
     a.volume = volume;
     a.onplay = () => setStatus("playing");
@@ -65,8 +54,7 @@ export function NarrationPlayer({ src, volume, onPlayingChange }: { src: string;
     setError(null);
     try {
       const a = audio.current ?? (await load());
-      if (active && active !== a) active.pause();
-      active = a;
+      claim(a);
       if (fromStart) rewind(a);
       await a.play();
     } catch (e) {

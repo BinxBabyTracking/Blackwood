@@ -1,7 +1,7 @@
 import "server-only";
 import type { CaseDefinition } from "@/game/engine/types";
 import { assets } from "./assets";
-import { characters, questions, reactions } from "./characters";
+import { characters, contradictions, questions, reactions } from "./characters";
 import { evidence } from "./evidence";
 import { locations } from "./locations";
 import { conclusionChoices, deductions, solution } from "./solution";
@@ -20,6 +20,7 @@ export const C001: CaseDefinition = {
   evidence,
   questions,
   reactions,
+  contradictions,
   documents,
   statements,
   calls,

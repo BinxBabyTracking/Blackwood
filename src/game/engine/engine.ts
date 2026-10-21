@@ -1,6 +1,10 @@
-import { apply, check, collectEvidence, runEvents } from "./rules";
+import { apply, check, collectEvidence, demeanorOf, runContradictions, runDemeanor, runEvents } from "./rules";
 import type {
+  CharacterDef,
   ClientEvidence,
+  ClientInterview,
+  ClientLine,
+  DialogueQuestion,
   ActionOutcome,
   ActionResponse,
   CaseDefinition,
@@ -33,6 +37,10 @@ export function newState(def: CaseDefinition, now = Date.now()): InvestigationSt
     presented: [],
     talkedTo: [],
     conversations: {},
+    unlockedQuestions: [],
+    contradictions: [],
+    demeanor: {},
+    voices: true,
     notebook: [],
     timeline: [...def.timeline],
     playerNotes: "",
@@ -102,6 +110,11 @@ export function normalizeState(def: CaseDefinition, raw: InvestigationState): In
   s.discoveries ??= {};
   s.evidenceNotes ??= {};
   s.narration ??= true;
+  s.voices ??= true;
+  s.unlockedQuestions ??= [];
+  s.contradictions ??= [];
+  s.demeanor ??= {};
+  s.conversations ??= {};
   for (const id of s.evidence) {
     s.discoveries[id] ??= {
       locationId: def.evidence.find((e) => e.id === id)?.sourceLocationId ?? s.location,
@@ -145,28 +158,102 @@ function knownCharacters(def: CaseDefinition, s: InvestigationState) {
 // Conversation helpers
 // ---------------------------------------------------------------------------
 
+/** Question ids that only appear once an earlier answer unlocks them. */
+function followUps(def: CaseDefinition) {
+  return new Set(def.questions.flatMap((q) => q.unlocks ?? []));
+}
+
+/** Whether a dialogue entry's requirements are met. Never sent to the browser. */
+export function questionOpen(def: CaseDefinition, s: InvestigationState, q: DialogueQuestion) {
+  if (!check(q.requires, s)) return false;
+  if (q.requiresEvidence?.some((e) => !s.evidence.includes(e))) return false;
+  if (q.requiresDeductions?.some((d) => !s.deductions.includes(d))) return false;
+  if (q.requiresFlags?.some((f) => !s.flags.includes(f))) return false;
+  if (followUps(def).has(q.id) && !s.unlockedQuestions.includes(q.id)) return false;
+  return true;
+}
+
+function refusing(def: CaseDefinition, s: InvestigationState, characterId: string) {
+  return Boolean(demeanorOf(def, s, characterId)?.refuses);
+}
+
 function availableQuestions(def: CaseDefinition, s: InvestigationState, characterId: string) {
+  const refuse = refusing(def, s, characterId);
   return def.questions.filter(
-    (q) => q.characterId === characterId && check(q.requires, s) && (q.repeatable || !s.asked.includes(q.id)),
+    (q) =>
+      q.characterId === characterId &&
+      questionOpen(def, s, q) &&
+      (q.repeatable || !s.asked.includes(q.id)) &&
+      (!refuse || q.allowWhenRefusing),
   );
 }
 
-function conversationOutcome(def: CaseDefinition, s: InvestigationState, characterId: string): ActionOutcome {
+function shortName(c: CharacterDef) {
+  const parts = c.name.split(" ");
+  return parts[0].endsWith(".") ? `${parts[0]} ${parts[parts.length - 1]}` : parts[0];
+}
+
+function whereOf(def: CaseDefinition, c: CharacterDef) {
+  if (c.medium === "telephone") return "By telephone from your office";
+  return c.locationId ? loc(def, c.locationId)?.name ?? "" : "";
+}
+
+/** Whether a character has a voice. The browser combines this with the player's voices setting. */
+function voiced(c: CharacterDef | undefined) {
+  return Boolean(c?.voice);
+}
+
+function clientLines(def: CaseDefinition, s: InvestigationState, characterId: string): ClientLine[] {
+  const c = char(def, characterId);
+  return (s.conversations[characterId] ?? []).map((h, n) => ({
+    n,
+    speakerId: h.speaker,
+    speaker: h.speaker === "you" ? "You" : h.speaker === "cue" ? "" : c?.name ?? h.speaker,
+    text: h.text,
+    kind: h.kind ?? (h.speaker === "you" ? "question" : h.speaker === "cue" ? "cue" : "answer"),
+  }));
+}
+
+function conversationOutcome(def: CaseDefinition, s: InvestigationState, characterId: string, latest: number[] = []): ActionOutcome {
   const c = char(def, characterId)!;
-  const questions = availableQuestions(def, s, characterId).map((q) => ({ id: q.id, prompt: q.prompt }));
+  const d = demeanorOf(def, s, characterId);
+  const fu = followUps(def);
+  const questions = availableQuestions(def, s, characterId).map((q) => ({ id: q.id, prompt: q.prompt, topic: q.topic ?? "Questions", followUp: fu.has(q.id) }));
   return {
     kind: "conversation",
     characterId,
-    history: (s.conversations[characterId] ?? []).map((h) => ({ speaker: h.speaker === "you" ? "You" : c.name, text: h.text })),
+    name: c.name,
+    role: c.role,
+    portrait: def.assets.images[c.portrait] ?? "",
+    where: whereOf(def, c),
+    medium: c.medium ?? "in person",
+    demeanor: d?.label ?? null,
+    refusing: Boolean(d?.refuses),
+    history: clientLines(def, s, characterId),
+    latest,
     questions,
+    idle: d?.refuses ?? d?.idleLine ?? c.idleLine,
     available: characterHere(def, s, characterId),
+    voiced: voiced(c),
   };
 }
 
-function say(s: InvestigationState, characterId: string, you: string, lines: string[]) {
+/** Appends an exchange and returns the transcript positions of the character's new lines. */
+function say(s: InvestigationState, characterId: string, you: string, lines: string[], kinds: { you: "question" | "present"; them: "answer" | "reaction" | "refusal" }, q?: string) {
   const log = (s.conversations[characterId] ??= []);
-  log.push({ speaker: "you", text: you });
-  for (const l of lines) log.push({ speaker: characterId, text: l });
+  log.push({ speaker: "you", text: you, kind: kinds.you, q });
+  const latest: number[] = [];
+  for (const l of lines) {
+    latest.push(log.length);
+    log.push({ speaker: characterId, text: l, kind: kinds.them, q });
+  }
+  return latest;
+}
+
+/** The answer a character gives right now: the last variant whose condition holds, else the base reply. */
+function replyFor(s: InvestigationState, q: DialogueQuestion) {
+  const v = [...(q.variants ?? [])].reverse().find((x) => check(x.requires, s));
+  return { lines: v?.reply ?? q.reply, effects: v?.effects ?? [] };
 }
 
 // ---------------------------------------------------------------------------
@@ -201,7 +288,7 @@ export function reduce(
   if (idle > 0 && idle < IDLE_CAP_MS) s.activeSeconds += Math.round(idle / 1000);
   s.lastActionAt = now;
 
-  if (s.status === "closed" && !["saveNotes", "saveEvidenceNote", "setNarration", "dismissMessages"].includes(action.type)) {
+  if (s.status === "closed" && !["saveNotes", "saveEvidenceNote", "setNarration", "setVoices", "dismissMessages"].includes(action.type)) {
     fail("This case is closed.");
   }
 
@@ -269,6 +356,7 @@ export function reduce(
         id: d.id,
         title: d.title,
         dossier: d.dossier ?? [],
+        peopleHeading: d.peopleHeading ?? "Persons involved",
         people: (d.people ?? []).map((id) => {
           const c = char(def, id)!;
           return { id: c.id, name: c.name, role: c.role, portrait: def.assets.images[c.portrait] ?? "" };
@@ -281,7 +369,7 @@ export function reduce(
 
     case "talk": {
       const c = char(def, action.characterId) ?? fail("Unknown person.");
-      if (!characterHere(def, s, c.id)) fail(`${c.name} is not here.`);
+      if (!characterHere(def, s, c.id)) fail(c.medium === "telephone" ? `${c.name} can be reached from your office telephone.` : `${c.name} is not here.`);
       if (!s.talkedTo.includes(c.id)) s.talkedTo.push(c.id);
       outcome = conversationOutcome(def, s, c.id);
       break;
@@ -290,16 +378,20 @@ export function reduce(
     case "ask": {
       const q = def.questions.find((x) => x.id === action.questionId) ?? fail("Unknown question.");
       if (!characterHere(def, s, q.characterId)) fail("They are not here.");
-      if (!check(q.requires, s) || (!q.repeatable && s.asked.includes(q.id))) fail("That question is not available.");
+      if (!availableQuestions(def, s, q.characterId).some((x) => x.id === q.id)) fail("That question is not available.");
       const c = char(def, q.characterId)!;
       if (!s.asked.includes(q.id)) s.asked.push(q.id);
       if (!s.talkedTo.includes(c.id)) s.talkedTo.push(c.id);
-      say(s, c.id, q.prompt, q.reply);
+      const r = replyFor(s, q);
+      const latest = say(s, c.id, q.prompt, r.lines, { you: "question", them: "answer" }, q.id);
       if (!q.repeatable) {
-        apply([{ note: { id: `q:${q.id}`, kind: "interview", title: `${c.name}: ${q.prompt}`, text: q.reply.join(" "), characterId: c.id } }], s, def);
+        apply([{ note: { id: `q:${q.id}`, kind: "interview", title: `${c.name}: ${q.prompt}`, text: q.reveals ?? r.lines.join(" "), characterId: c.id, important: Boolean(q.reveals) } }], s, def);
       }
+      for (const u of q.unlocks ?? []) if (!s.unlockedQuestions.includes(u)) s.unlockedQuestions.push(u);
       apply(q.effects, s, def);
-      outcome = conversationOutcome(def, s, c.id);
+      apply(r.effects, s, def);
+      finish(s, def);
+      outcome = conversationOutcome(def, s, c.id, latest);
       break;
     }
 
@@ -308,17 +400,20 @@ export function reduce(
       if (!characterHere(def, s, c.id)) fail(`${c.name} is not here.`);
       if (!s.evidence.includes(action.evidenceId)) fail("You do not have that evidence.");
       const ev = def.evidence.find((e) => e.id === action.evidenceId)!;
-      const r = [...def.reactions].reverse().find((x) => x.characterId === c.id && x.evidenceId === ev.id && check(x.requires, s));
+      const d = demeanorOf(def, s, c.id);
+      const r = d?.refuses ? undefined : [...def.reactions].reverse().find((x) => x.characterId === c.id && x.evidenceId === ev.id && check(x.requires, s));
       const key = `${c.id}:${ev.id}`;
       if (!s.presented.includes(key)) s.presented.push(key);
       if (!s.talkedTo.includes(c.id)) s.talkedTo.push(c.id);
-      const lines = r ? r.reply : [c.defaultEvidenceReply];
-      say(s, c.id, `[You show ${c.name.split(" ")[0]} the ${ev.title.toLowerCase()}.]`, lines);
+      const lines = d?.refuses ? [d.refuses] : r ? r.reply : [c.defaultEvidenceReply];
+      const verb = c.medium === "telephone" ? "read" : "show";
+      const latest = say(s, c.id, `You ${verb} ${shortName(c)} ${ev.id}, the ${ev.title.toLowerCase()}.`, lines, { you: "present", them: d?.refuses ? "refusal" : "reaction" }, ev.id);
       if (r) {
-        apply([{ note: { id: `p:${key}:${def.reactions.indexOf(r)}`, kind: "interview", title: `${c.name} on ${ev.title}`, text: r.reply.join(" "), characterId: c.id } }], s, def);
+        apply([{ note: { id: `p:${key}:${def.reactions.indexOf(r)}`, kind: "interview", title: `${c.name} on ${ev.title}`, text: r.reveals ?? r.reply.join(" "), characterId: c.id, important: Boolean(r.reveals) } }], s, def);
         apply(r.effects, s, def);
       }
-      outcome = conversationOutcome(def, s, c.id);
+      finish(s, def);
+      outcome = conversationOutcome(def, s, c.id, latest);
       break;
     }
 
@@ -330,7 +425,7 @@ export function reduce(
       s.answeredCalls.push(call.id);
       apply([{ note: { id: `call:${call.id}`, kind: "call", title: call.title, text: call.lines.join(" "), characterId: call.from } }], s, def);
       apply(call.effects, s, def);
-      outcome = { kind: "call", title: call.title, from: char(def, call.from)?.name ?? "Caller", lines: call.lines };
+      outcome = { kind: "call", id: call.id, title: call.title, from: char(def, call.from)?.name ?? "Caller", fromId: call.from, lines: call.lines, voiced: voiced(char(def, call.from)) };
       break;
     }
 
@@ -341,7 +436,7 @@ export function reduce(
       apply([{ note: { id: `call:${call.id}`, kind: "call", title: call.label, text: call.lines.join(" "), characterId: call.to } }], s, def);
       apply(call.effects, s, def);
       if (!s.answeredCalls.includes(call.id)) s.answeredCalls.push(call.id);
-      outcome = { kind: "call", title: call.label, from: char(def, call.to)?.name ?? "", lines: call.lines };
+      outcome = { kind: "call", id: call.id, title: call.label, from: char(def, call.to)?.name ?? "", fromId: call.to, lines: call.lines, voiced: false };
       break;
     }
 
@@ -426,6 +521,10 @@ export function reduce(
       s.narration = Boolean(action.enabled);
       break;
 
+    case "setVoices":
+      s.voices = Boolean(action.enabled);
+      break;
+
     case "dismissMessages":
       s.messages = [];
       break;
@@ -465,8 +564,15 @@ export function reduce(
       fail("Unknown action.");
   }
 
-  runEvents(s, def);
+  finish(s, def);
   return { state: s, outcome };
+}
+
+/** Rules that run after every action: reactive events, established contradictions, changes of manner. */
+function finish(s: InvestigationState, def: CaseDefinition) {
+  runEvents(s, def);
+  runContradictions(s, def);
+  runDemeanor(s, def);
 }
 
 function clamp(n: number) {
@@ -556,16 +662,26 @@ export function project(def: CaseDefinition, s: InvestigationState): ClientView 
     deliveries: [...s.pendingDeliveries, ...s.openedDeliveries].map((id) => ({ id, title: def.deliveries.find((d) => d.id === id)!.title })),
     documents: def.documents.map((d) => ({ id: d.id, title: d.title, read: s.readDocuments.includes(d.id) })),
     statements: s.flags.includes("casefile_read")
-      ? def.statements.map((st) => ({
-          characterId: st.characterId,
-          name: char(def, st.characterId)?.name ?? "",
-          recordedAt: st.recordedAt,
-          audio: def.assets.audio[st.audio] ?? null,
-          transcript: st.transcript,
-        }))
+      ? def.statements.map((st) => {
+          const audio = def.assets.audio[st.audio] ?? null;
+          const canVoice = st.transcript.every((l) => char(def, l.speakerId)?.voice);
+          return {
+            characterId: st.characterId,
+            name: char(def, st.characterId)?.name ?? "",
+            recordedAt: st.recordedAt,
+            officer: st.officer,
+            tape: st.tape,
+            status: audio ? "Original recording on file" : canVoice ? "Cassette on file. Transcript verified" : "Transcript only. Tape not yet digitised",
+            audio,
+            voiced: !audio && canVoice,
+            transcript: st.transcript,
+          };
+        })
       : [],
+    interviews: interviewsView(def, s),
     messages: s.messages,
     narration: s.narration,
+    voices: s.voices,
     conclusion: { choices: def.conclusionChoices, attempts: s.attempts },
     closure: s.status === "closed" ? def.solution.closure : null,
   };
@@ -578,4 +694,57 @@ export function respond(def: CaseDefinition, s: InvestigationState, outcome: Act
 /** Recomputes a conversation for reopening an interview panel without a state change. */
 export function conversationFor(def: CaseDefinition, s: InvestigationState, characterId: string) {
   return conversationOutcome(def, s, characterId);
+}
+
+function interviewsView(def: CaseDefinition, s: InvestigationState): ClientInterview[] {
+  return def.characters
+    .filter((c) => def.questions.some((q) => q.characterId === c.id) && (s.talkedTo.includes(c.id) || knownCharacters(def, s).some((k) => k.id === c.id)))
+    .map((c) => {
+      const d = demeanorOf(def, s, c.id);
+      const open = availableQuestions(def, s, c.id).filter((q) => !q.repeatable).length;
+      const talked = s.talkedTo.includes(c.id);
+      const status = !talked ? "Not interviewed" : d?.refuses ? "Declining to answer" : open ? "Open lines of questioning" : "No further questions for now";
+      const notes = s.notebook.filter((n) => n.characterId === c.id);
+      return {
+        characterId: c.id,
+        name: c.name,
+        role: c.role,
+        portrait: def.assets.images[c.portrait] ?? "",
+        where: whereOf(def, c),
+        medium: c.medium ?? "in person",
+        demeanor: talked ? d?.label ?? null : null,
+        status,
+        asked: def.questions.filter((q) => q.characterId === c.id && s.asked.includes(q.id)).length,
+        transcript: clientLines(def, s, c.id),
+        statements: notes.filter((n) => n.kind === "interview" && n.important).map((n) => ({ id: n.id, title: n.title, text: n.text })),
+        contradictions: notes.filter((n) => n.kind === "contradiction").map((n) => ({ id: n.id, title: n.title, text: n.text })),
+        voiced: voiced(c),
+      };
+    });
+}
+
+/**
+ * The exact text a player has been given for one line of dialogue, and who
+ * speaks it. Voice audio is generated only for text returned here, so it
+ * always matches the subtitle and never reveals anything unheard.
+ */
+export function spokenLine(
+  def: CaseDefinition,
+  s: InvestigationState,
+  ref: { kind: "conversation" | "statement" | "call"; id: string; n: number },
+): { speakerId: string; text: string } | null {
+  if (ref.kind === "conversation") {
+    const line = s.conversations[ref.id]?.[ref.n];
+    if (!line || line.speaker === "you" || line.speaker === "cue") return null;
+    return { speakerId: line.speaker, text: line.text };
+  }
+  if (ref.kind === "statement") {
+    if (!s.flags.includes("casefile_read")) return null;
+    const line = def.statements.find((x) => x.characterId === ref.id)?.transcript[ref.n];
+    return line ? { speakerId: line.speakerId, text: line.text } : null;
+  }
+  if (!s.answeredCalls.includes(ref.id)) return null;
+  const call = def.calls.find((c) => c.id === ref.id);
+  const text = call?.lines[ref.n];
+  return call && text ? { speakerId: call.from, text } : null;
 }

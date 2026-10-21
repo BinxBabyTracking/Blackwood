@@ -5,7 +5,7 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { loadCase } from "../src/game/registry";
-import { newState, normalizeState, reduce, project } from "../src/game/engine/engine";
+import { newState, normalizeState, reduce, project, spokenLine, questionOpen } from "../src/game/engine/engine";
 import type { CaseDefinition, GameAction, InvestigationState } from "../src/game/engine/types";
 
 const id = process.argv[2] ?? "C001";
@@ -37,6 +37,39 @@ const json = JSON.stringify(def);
 for (const m of json.matchAll(/"asked":"([^"]+)"/g)) if (!qIds.has(m[1])) problems.push(`condition references unknown question ${m[1]}`);
 const flagsSet = new Set([...json.matchAll(/"setFlag":"([^"]+)"/g)].map((m) => m[1]).concat(["casefile_read", "case_closed"]));
 for (const m of json.matchAll(/"flag":"([^"]+)"/g)) if (!flagsSet.has(m[1])) problems.push(`flag never set: ${m[1]}`);
+
+// dialogue references
+const dedIds = new Set(def.deductions.map((d) => d.id));
+for (const q of def.questions) {
+  if (!charIds.has(q.characterId)) problems.push(`question ${q.id} unknown character`);
+  for (const u of q.unlocks ?? []) if (!qIds.has(u)) problems.push(`question ${q.id} unlocks unknown ${u}`);
+  for (const e of q.requiresEvidence ?? []) if (!evIds.has(e)) problems.push(`question ${q.id} requires unknown evidence ${e}`);
+  for (const d of q.requiresDeductions ?? []) if (!dedIds.has(d)) problems.push(`question ${q.id} requires unknown deduction ${d}`);
+}
+for (const m of json.matchAll(/"deduction":"([^"]+)"/g)) if (!dedIds.has(m[1])) problems.push(`condition references unknown deduction ${m[1]}`);
+const xIds = new Set(def.contradictions.map((c) => c.id));
+for (const m of json.matchAll(/"contradiction":"([^"]+)"/g)) if (!xIds.has(m[1])) problems.push(`condition references unknown contradiction ${m[1]}`);
+for (const r of def.reactions) if (!evIds.has(r.evidenceId) || !charIds.has(r.characterId)) problems.push(`reaction ${r.characterId}:${r.evidenceId}`);
+// every interviewable character has one consistent, distinct voice
+const interviewees = def.characters.filter((c) => def.questions.some((q) => q.characterId === c.id));
+const voiceIds = interviewees.map((c) => c.voice?.voiceId);
+if (voiceIds.some((v) => !v)) problems.push(`characters without a voice: ${interviewees.filter((c) => !c.voice).map((c) => c.id)}`);
+if (new Set(voiceIds).size !== voiceIds.length) problems.push("two characters share a voice");
+for (const st of def.statements) for (const l of st.transcript) if (!def.characters.find((c) => c.id === l.speakerId)?.voice) problems.push(`statement ${st.characterId} speaker ${l.speakerId} has no voice`);
+for (const st of def.statements) if (!st.officer || !st.tape || !st.recordedAt) problems.push(`statement ${st.characterId} missing metadata`);
+if (def.statements.length !== 4) problems.push("expected four police statements");
+// house style and no premature solution in anything a character says
+const spoken = [
+  ...def.questions.flatMap((q) => [q.prompt, ...q.reply, ...(q.variants ?? []).flatMap((v) => v.reply)]),
+  ...def.reactions.flatMap((r) => r.reply),
+  ...def.statements.flatMap((st) => st.transcript.map((l) => l.text)),
+  ...def.calls.flatMap((c) => c.lines),
+];
+for (const line of spoken) {
+  if (line.includes("\u2014")) problems.push(`em dash in dialogue: ${line.slice(0, 60)}`);
+  if (/\b(murderer|killed her|he killed|mercer killed|daniel killed)\b/i.test(line)) problems.push(`dialogue may reveal the solution: ${line.slice(0, 80)}`);
+}
+if (JSON.stringify(def).includes("\u2014")) problems.push("em dash somewhere in case content");
 
 // ---- playthrough ----
 let s: InvestigationState = newState(def, 0);
@@ -90,20 +123,28 @@ go("diner");
 if (s.env.daniel_apartment !== "B") problems.push("RE02 did not fire");
 hot("d_spike"); hot("d_schedule"); collect("E04"); collect("E13");
 run({ type: "talk", characterId: "rosa" });
-ask("rosa_saturday"); ask("rosa_customer");
+ask("rosa_friday"); ask("rosa_customer");
 const initial = [...evIds].filter((e) => e !== "E05" && e !== "E15");
 const missingInitial = initial.filter((e) => !s.evidence.includes(e));
 if (missingInitial.length) problems.push(`initially discoverable evidence not collected: ${missingInitial}`);
 if (s.evidence.includes("E05") || s.evidence.includes("E15")) problems.push("reserved evidence collected early");
 go("patricia_office");
-ask("patricia_evening"); ask("patricia_money");
+run({ type: "talk", characterId: "patricia" });
+try { ask("patricia_money"); problems.push("follow-up question asked before it was unlocked"); } catch {}
+ask("patricia_evening"); ask("patricia_concerns"); ask("patricia_money");
 if (!s.events.includes("RE03")) problems.push("RE03 did not fire");
-go("robert_garage"); ask("robert_evening"); ask("robert_cars");
+go("robert_garage"); ask("robert_evening");
+ask("robert_again");
+const again2 = run({ type: "ask", questionId: "robert_again" });
+if (again2.kind !== "conversation" || !again2.history.at(-1)?.text.startsWith("Look,")) problems.push("Robert did not grow impatient with repetition");
+ask("robert_cars");
 go("daniel_apartment"); hot("da_coats_b");
 go("office");
 const call = run({ type: "answerCall", callId: "call_margaret_sedan" });
 if (call.kind !== "call") problems.push("call not answered");
-run({ type: "placeCall", callId: "call_bennett_jacket" });
+const bennett = run({ type: "talk", characterId: "bennett" });
+if (bennett.kind !== "conversation" || bennett.medium !== "telephone" || !bennett.questions.some((x) => x.id === "bennett_jacket")) problems.push("Bennett telephone interview missing the jacket request");
+ask("bennett_jacket");
 for (const d of ["jacket_recovered", "patricia_envelope"]) run({ type: "openDelivery", deliveryId: d });
 for (const e of ["E05", "E15"]) collect(e);
 if (s.evidence.length !== 15) problems.push(`collected ${s.evidence.length}/15: missing ${[...evIds].filter((e) => !s.evidence.includes(e))}`);
@@ -143,15 +184,116 @@ if (weak.kind !== "verdict" || weak.correct) problems.push("under-supported theo
 const good = run({ type: "submitConclusion", theory: { culprit: "daniel", motive: "embezzlement", weapon: "knife", location: "living_room", evidence: ["E11", "E14", "E03", "E13", "E01"] } });
 if (good.kind !== "verdict" || !good.correct) problems.push("correct theory rejected");
 
+// interview record and voices
+const pv = project(def, s);
+const dan = pv.interviews.find((i) => i.characterId === "daniel");
+if (!dan || dan.transcript.length < 4) problems.push("Daniel's transcript missing from the notebook view");
+if (!pv.interviews.every((i) => ["margaret", "daniel", "robert", "patricia", "bennett", "rosa"].includes(i.characterId))) problems.push("unexpected interview");
+if (!s.contradictions.includes("X_LINDA")) problems.push(`contradiction X_LINDA not recorded: ${s.contradictions}`);
+if (s.demeanor.daniel === "composed") problems.push("Daniel's manner never changed");
+const firstDanielLine = (s.conversations.daniel ?? []).findIndex((l) => l.speaker === "daniel");
+const sp = spokenLine(def, s, { kind: "conversation", id: "daniel", n: firstDanielLine });
+if (!sp || sp.text !== s.conversations.daniel[firstDanielLine].text || sp.speakerId !== "daniel") problems.push("voice line does not match the subtitle");
+if (spokenLine(def, s, { kind: "conversation", id: "daniel", n: 0 })) problems.push("investigator's own line would be voiced");
+if (spokenLine(def, newState(def), { kind: "statement", id: "margaret", n: 1 })) problems.push("statement voiced before the case file was read");
+if (!spokenLine(def, s, { kind: "statement", id: "margaret", n: 1 })) problems.push("statement line not voiceable");
+
 // saves from before discovery tracking must load without losing progress
 const legacy = structuredClone(s) as Partial<InvestigationState>;
 delete legacy.discoveries;
 const upgraded = normalizeState(def, legacy as InvestigationState);
 if (upgraded.evidence.length !== s.evidence.length || !upgraded.discoveries.E07 || upgraded.deductions.length !== s.deductions.length) problems.push("legacy save lost progress on upgrade");
 
+// a save round-trips through JSON with every interview detail intact
+const rt = normalizeState(def, JSON.parse(JSON.stringify(s)));
+for (const k of ["asked", "unlockedQuestions", "contradictions", "presented"] as const) if (JSON.stringify(rt[k]) !== JSON.stringify(s[k])) problems.push(`${k} not preserved`);
+if (JSON.stringify(rt.conversations) !== JSON.stringify(s.conversations)) problems.push("transcripts not preserved");
+
+// ---- unlock rules, from a fresh briefed state ----
+{
+  let f = newState(def, 0);
+  const R = (a: GameAction) => (f = reduce(def, f, a, 1).state);
+  R({ type: "dismissIntro" }); R({ type: "readDocument", documentId: "casefile" });
+  // every interviewee offers opening questions
+  for (const c of interviewees) {
+    const here = { ...f, location: c.locationId ?? f.location };
+    const o = reduce(def, here, { type: "talk", characterId: c.id }, 1).outcome;
+    if (o.kind !== "conversation" || o.questions.length === 0) problems.push(`${c.id} has no opening questions`);
+    if (o.kind === "conversation") {
+      const shown = JSON.stringify(o);
+      for (const q of def.questions.filter((x) => x.characterId === c.id && !questionOpen(def, here, x))) {
+        if (shown.includes(q.prompt)) problems.push(`locked question ${q.id} visible`);
+      }
+      if (/requires|unlocks|variants|knowledge/.test(shown)) problems.push(`${c.id} conversation leaks rule data`);
+    }
+  }
+  const has = (id: string, st = f) => questionOpen(def, st, def.questions.find((q) => q.id === id)!);
+  if (has("margaret_hands")) problems.push("evidence question visible before evidence");
+  if (!has("margaret_hands", { ...f, evidence: [...f.evidence, "E14"] })) problems.push("evidence question did not unlock");
+  for (const [qid, d] of [["margaret_struggle", "D_STRUGGLE"], ["robert_staged", "D_STAGED"], ["patricia_more", "D_MOTIVE"], ["daniel_alibi_broken", "D_ALIBI"], ["daniel_hand_glass", "D_HAND"], ["patricia_lawyer", "D_LAWYER"]]) {
+    if (has(qid)) problems.push(`${qid} visible before ${d}`);
+    if (!has(qid, { ...f, deductions: [d] })) problems.push(`${qid} did not unlock with ${d}`);
+  }
+  // E05 makes Daniel refuse, but his alibi stays on record
+  const ref = { ...f, location: "daniel_apartment", flags: [...f.flags, "daniel_lawyered"] };
+  const o = reduce(def, ref, { type: "talk", characterId: "daniel" }, 1).outcome;
+  if (o.kind !== "conversation" || !o.refusing || o.questions.some((x) => x.id !== "daniel_evening")) problems.push("Daniel's refusal not applied");
+}
+
+// ---- interviews in any reasonable order: random walks never hit an error ----
+for (let seed = 1; seed <= 40; seed++) {
+  let x = seed * 9973;
+  const rnd = (n: number) => ((x = (x * 1103515245 + 12345) % 2147483648), x % n);
+  let w = newState(def, 0);
+  const W = (a: GameAction) => {
+    const r = reduce(def, w, a, 1);
+    w = r.state;
+    return r.outcome;
+  };
+  W({ type: "dismissIntro" }); W({ type: "readDocument", documentId: "casefile" });
+  try {
+    for (let step = 0; step < 500; step++) {
+      const v = project(def, w);
+      const roll = rnd(10);
+      if (roll < 2) {
+        const dest = v.map.filter((m) => m.available && !m.current);
+        if (dest.length) W({ type: "travel", locationId: dest[rnd(dest.length)].id });
+      } else if (roll < 5) {
+        const h = v.location.hotspots[rnd(v.location.hotspots.length)];
+        if (h) {
+          const o = W({ type: "hotspot", hotspotId: h.id });
+          if (o.kind === "inspect" && o.evidence && !w.evidence.includes(o.evidence.id)) W({ type: "collect", evidenceId: o.evidence.id });
+          if (o.kind === "panel" && o.panel === "phone" && w.pendingCalls.length) W({ type: "answerCall", callId: w.pendingCalls[0] });
+          if (o.kind === "panel" && o.panel === "delivery") for (const d of [...w.pendingDeliveries]) W({ type: "openDelivery", deliveryId: d });
+        }
+      } else {
+        const people = def.characters.filter((c) => c.locationId === w.location && def.questions.some((q) => q.characterId === c.id));
+        const c = people[rnd(people.length)];
+        if (!c) continue;
+        const o = W({ type: "talk", characterId: c.id });
+        if (o.kind !== "conversation") continue;
+        if (o.questions.length && rnd(4)) W({ type: "ask", questionId: o.questions[rnd(o.questions.length)].id });
+        else if (w.evidence.length) W({ type: "present", characterId: c.id, evidenceId: w.evidence[rnd(w.evidence.length)] });
+      }
+      if (rnd(6) === 0 && w.evidence.length > 1) {
+        // occasionally try a board connection
+        const a = w.evidence[rnd(w.evidence.length)], b = w.evidence[rnd(w.evidence.length)];
+        if (a !== b) { W({ type: "boardAdd", itemId: a, x: 10, y: 10 }); W({ type: "boardAdd", itemId: b, x: 20, y: 20 }); W({ type: "connect", a, b }); }
+      }
+    }
+  } catch (e) {
+    problems.push(`random order seed ${seed} failed: ${(e as Error).message}`);
+  }
+  for (const [cid, lines] of Object.entries(w.conversations)) {
+    lines.forEach((l, n) => {
+      if (l.speaker !== "you" && l.speaker !== "cue" && spokenLine(def, w, { kind: "conversation", id: cid, n })?.text !== l.text) problems.push("subtitle mismatch in random walk");
+    });
+  }
+}
+
 // view must not leak restricted content
 const view = JSON.stringify(project(def, newState(def)));
-for (const secret of ["embezzlement\",\"weapon", "evidenceGroups", "D_HAND", "Type B", "Saturday, 11:20 PM"]) if (view.includes(secret)) problems.push(`initial view leaks ${secret}`);
+for (const secret of ["embezzlement\",\"weapon", "evidenceGroups", "D_HAND", "Type B", "Friday, 11:05 PM", "knowledge", "11:35"]) if (view.includes(secret)) problems.push(`initial view leaks ${secret}`);
 
 console.log(`${id}: ${def.evidence.length} evidence, ${def.locations.length} locations, ${def.questions.length} questions, ${def.deductions.length} deductions`);
 console.log(`playthrough: status=${s.status} attempts=${s.attempts} events=${s.events.join(",")} active=${s.activeSeconds}s`);

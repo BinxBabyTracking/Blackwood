@@ -14,7 +14,6 @@ import {
   CallPanel,
   ClosureSequence,
   ConclusionPanel,
-  ConversationPanel,
   DeliveryPanel,
   DocumentPanel,
   IntroSequence,
@@ -22,6 +21,7 @@ import {
   PhonePanel,
   StatementsPanel,
 } from "./panels";
+import { InterviewScreen } from "./interview-screen";
 import { TravelMap } from "./travel-map";
 
 type Layer =
@@ -168,6 +168,7 @@ export function InvestigationShell({ caseId, initial, prefs, homeLocation }: { c
   const locked = view.status === "closed";
   const pin = (id: string) => dispatch({ type: "boardAdd", itemId: id, x: 10 + Math.random() * 70, y: 10 + Math.random() * 60 });
   const pinned = (id: string) => view.board.items.some((i) => i.id === id);
+  const dialogueVolume = Math.max(0, Math.min(1, (prefs.masterVolume / 100) * (prefs.dialogueVolume / 100)));
   const narrationFor = (id: string) =>
     view.narration
       ? {
@@ -247,6 +248,16 @@ export function InvestigationShell({ caseId, initial, prefs, homeLocation }: { c
                 >
                   Evidence narration: {view.narration ? "On" : "Off"}
                   <span className="block text-xs text-smoke">Shows a Read aloud control on evidence. Audio only plays when you press Play.</span>
+                </button>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={view.voices}
+                  className="block w-full px-3 py-2 text-left hover:bg-white/5"
+                  onClick={() => dispatch({ type: "setVoices", enabled: !view.voices })}
+                >
+                  Character voices: {view.voices ? "On" : "Off"}
+                  <span className="block text-xs text-smoke">Interviews, police tapes and calls are spoken aloud, with subtitles.</span>
                 </button>
                 <button
                   type="button"
@@ -347,9 +358,11 @@ export function InvestigationShell({ caseId, initial, prefs, homeLocation }: { c
         />
       ) : null}
 
-      {layer?.k === "conversation" ? <ConversationPanel data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} /> : null}
+      {layer?.k === "conversation" ? (
+        <InterviewScreen key={layer.data.characterId} caseId={caseId} data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} volume={dialogueVolume} />
+      ) : null}
       {layer?.k === "document" ? <DocumentPanel data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} /> : null}
-      {layer?.k === "call" ? <CallPanel data={layer.data} onClose={() => setLayer({ k: "panel", panel: "phone" })} /> : null}
+      {layer?.k === "call" ? <CallPanel caseId={caseId} data={layer.data} voices={view.voices} volume={dialogueVolume} onClose={() => setLayer({ k: "panel", panel: "phone" })} /> : null}
       {layer?.k === "delivery" ? <DeliveryPanel data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} /> : null}
 
       {panel === "notebook" ? (
@@ -360,7 +373,7 @@ export function InvestigationShell({ caseId, initial, prefs, homeLocation }: { c
       ) : null}
       {panel === "map" ? <TravelMap view={view} onTravel={(id) => dispatch({ type: "travel", locationId: id })} onClose={close} pending={pending} /> : null}
       {panel === "phone" ? <PhonePanel view={view} dispatch={dispatch} onClose={close} pending={pending} /> : null}
-      {panel === "statements" ? <StatementsPanel view={view} onClose={close} /> : null}
+      {panel === "statements" ? <StatementsPanel caseId={caseId} view={view} onClose={close} volume={dialogueVolume} /> : null}
       {panel === "delivery" ? <MailPanel view={view} dispatch={dispatch} onClose={close} pending={pending} /> : null}
       {panel === "conclusion" ? <ConclusionPanel view={view} dispatch={dispatch} onClose={close} pending={pending} feedback={verdictFeedback} /> : null}
       {panel === "board" ? <MurderBoard view={view} dispatch={dispatch} onClose={close} onLocalBoard={(board) => setView((v) => ({ ...v, board }))} /> : null}

@@ -17,6 +17,8 @@ export function check(c: Condition | undefined, s: InvestigationState): boolean 
   if ("env" in c) return (s.env[c.env] ?? "A") === c.is; // every environment starts in state A
   if ("at" in c) return s.location === c.at;
   if ("evidenceCount" in c) return s.evidence.length >= c.evidenceCount;
+  if ("presented" in c) return s.presented.includes(c.presented);
+  if ("contradiction" in c) return (s.contradictions ?? []).includes(c.contradiction);
   if ("always" in c) return true;
   return false;
 }
@@ -70,5 +72,34 @@ export function runEvents(s: InvestigationState, def: CaseDefinition) {
       apply(ev.effects, s, def);
       fired = true;
     }
+  }
+}
+
+/** Records every contradiction whose supporting evidence is now established. Each is recorded once. */
+export function runContradictions(s: InvestigationState, def: CaseDefinition) {
+  s.contradictions ??= [];
+  for (const c of def.contradictions ?? []) {
+    if (s.contradictions.includes(c.id) || !check(c.when, s)) continue;
+    s.contradictions.push(c.id);
+    apply([{ note: { id: `contradiction:${c.id}`, kind: "contradiction", title: c.title, text: c.text, characterId: c.characterId } }], s, def);
+  }
+}
+
+/** The manner a character currently shows: the last demeanor whose condition holds. */
+export function demeanorOf(def: CaseDefinition, s: InvestigationState, characterId: string) {
+  const c = def.characters.find((x) => x.id === characterId);
+  return [...(c?.demeanor ?? [])].reverse().find((d) => check(d.requires, s)) ?? null;
+}
+
+/** Notices changes of manner and writes a stage cue into that character's transcript once. */
+export function runDemeanor(s: InvestigationState, def: CaseDefinition) {
+  s.demeanor ??= {};
+  for (const c of def.characters) {
+    if (!c.demeanor?.length) continue;
+    const d = demeanorOf(def, s, c.id);
+    const id = d?.id ?? "";
+    if ((s.demeanor[c.id] ?? "") === id) continue;
+    s.demeanor[c.id] = id;
+    if (d?.cue && s.conversations[c.id]?.length) s.conversations[c.id].push({ speaker: "cue", text: d.cue, kind: "cue" });
   }
 }

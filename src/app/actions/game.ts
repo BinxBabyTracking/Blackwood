@@ -45,7 +45,7 @@ export async function restartCase(caseId: string): Promise<ActionResponse | { er
 
 const ACTIONS = new Set<GameAction["type"]>([
   "dismissIntro", "travel", "hotspot", "collect", "readDocument", "talk", "ask", "present", "answerCall", "placeCall",
-  "openDelivery", "boardAdd", "boardMove", "boardRemove", "connect", "disconnect", "saveNotes", "saveEvidenceNote", "setNarration",
+  "openDelivery", "boardAdd", "boardMove", "boardRemove", "connect", "disconnect", "saveNotes", "saveEvidenceNote", "setNarration", "setVoices",
   "dismissMessages", "submitConclusion",
 ]);
 
