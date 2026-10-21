@@ -171,3 +171,26 @@ html[data-vision="tritanopia"] {
 .game-scene-in { animation: game-scene-in 700ms ease-out both; }
 .game-caption { animation: game-caption 900ms ease-out both; }
 .game-closure { animation: game-closure 900ms ease-out both; }
+
+/* Travel scenes: parallax layers, the car, the walker. */
+@keyframes travel-scroll { from { transform: translateX(0); } to { transform: translateX(calc(-1 * var(--tile))); } }
+.travel-scroll { animation: travel-scroll linear infinite; }
+@keyframes travel-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+.travel-bob { animation: travel-bob 0.55s ease-in-out infinite; }
+@keyframes travel-spin { to { transform: rotate(360deg); } }
+.travel-spin { animation: travel-spin 0.35s linear infinite; }
+@keyframes travel-step { 0%, 50%, 100% { transform: translate(700px, 0); } 25%, 75% { transform: translate(700px, -6px); } }
+.travel-step { animation: travel-step 1.04s ease-in-out infinite; }
+@keyframes travel-leg-a { 0%, 100% { transform: rotate(18deg); } 50% { transform: rotate(-18deg); } }
+@keyframes travel-leg-b { 0%, 100% { transform: rotate(-18deg); } 50% { transform: rotate(18deg); } }
+.travel-leg-a { animation: travel-leg-a 1.04s ease-in-out infinite; }
+.travel-leg-b { animation: travel-leg-b 1.04s ease-in-out infinite; }
+@keyframes travel-arm { 0%, 100% { transform: rotate(-14deg); } 50% { transform: rotate(14deg); } }
+.travel-arm { animation: travel-arm 1.04s ease-in-out infinite; }
+.travel-arm-b { animation: travel-arm 1.04s ease-in-out infinite reverse; }
+@keyframes travel-fade { from { opacity: 0; } to { opacity: 1; } }
+.travel-fade { animation: travel-fade 350ms ease-out both; }
+.travel-caption { animation: game-caption 2.4s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .travel-scroll, .travel-bob, .travel-spin, .travel-step, .travel-leg-a, .travel-leg-b, .travel-arm, .travel-arm-b { animation: none; }
+}

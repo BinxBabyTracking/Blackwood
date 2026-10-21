@@ -37,6 +37,9 @@ export const assets: AssetManifest = {
     "amb.whitmore": null,
     "amb.diner": null,
     "amb.garage": null,
+    // Travel scenes. Null means the game synthesizes the sound; point these at recordings to replace it.
+    "sfx.travel_drive": null,
+    "sfx.travel_walk": null,
     "rec.margaret": null,
     "rec.daniel": null,
     "rec.robert": null,

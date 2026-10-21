@@ -63,6 +63,7 @@ const deskItem = (id: string, label: string, deliveryId: string, evidenceId: str
 export const locations: LocationDef[] = [
   {
     id: "office",
+    area: "wilshire",
     name: "Detective's Office",
     subtitle: "Blackwood Investigations, Wilshire Boulevard",
     mapPin: { x: 34, y: 66 },
@@ -92,6 +93,7 @@ export const locations: LocationDef[] = [
   },
   {
     id: "living_room",
+    area: "hollister",
     name: "Eleanor's Living Room",
     subtitle: "Whitmore residence, Hollister Avenue, Los Feliz",
     mapPin: { x: 52, y: 30 },
@@ -115,6 +117,7 @@ export const locations: LocationDef[] = [
   },
   {
     id: "kitchen",
+    area: "hollister",
     name: "Eleanor's Kitchen",
     subtitle: "Whitmore residence, kitchen and rear entrance",
     background: "loc.kitchen",
@@ -133,6 +136,7 @@ export const locations: LocationDef[] = [
   },
   {
     id: "diner",
+    area: "sunset",
     name: "Maple Street Diner",
     subtitle: "Open 24 hours, Silver Lake",
     mapPin: { x: 44, y: 44 },
@@ -151,6 +155,7 @@ export const locations: LocationDef[] = [
   },
   {
     id: "daniel_apartment",
+    area: "griffith_park",
     name: "Daniel Mercer's Apartment",
     subtitle: "Second floor, Griffith Park Boulevard, Silver Lake",
     mapPin: { x: 47, y: 37 },
@@ -171,6 +176,7 @@ export const locations: LocationDef[] = [
   },
   {
     id: "margaret_house",
+    area: "hollister",
     name: "Margaret Ellis's House",
     subtitle: "Across the street from the Whitmore residence",
     mapPin: { x: 55, y: 27 },
@@ -187,6 +193,7 @@ export const locations: LocationDef[] = [
   },
   {
     id: "robert_garage",
+    area: "atwater",
     name: "Hale Automotive",
     subtitle: "Fletcher Drive, Atwater Village",
     mapPin: { x: 62, y: 22 },
@@ -203,6 +210,7 @@ export const locations: LocationDef[] = [
   },
   {
     id: "patricia_office",
+    area: "vermont",
     name: "Pacific Crest Savings & Loan",
     subtitle: "Loan department, Vermont Avenue",
     mapPin: { x: 46, y: 56 },

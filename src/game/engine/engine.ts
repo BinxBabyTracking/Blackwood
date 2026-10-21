@@ -625,6 +625,7 @@ export function project(def: CaseDefinition, s: InvestigationState): ClientView 
     intro: def.intro,
     location: {
       id: l.id,
+      area: l.area ?? null,
       name: l.name,
       subtitle: l.subtitle,
       background: img(bg),
@@ -648,6 +649,7 @@ export function project(def: CaseDefinition, s: InvestigationState): ClientView 
         id: x.id,
         name: x.name,
         subtitle: x.subtitle,
+        area: x.area ?? null,
         available: locationAvailable(def, s, x),
         visited: s.visited.includes(x.id),
         current: x.id === s.location,
@@ -707,6 +709,7 @@ export function project(def: CaseDefinition, s: InvestigationState): ClientView 
     messages: s.messages,
     narration: s.narration,
     voices: s.voices,
+    travelAudio: { drive: def.assets.audio["sfx.travel_drive"] ?? null, walk: def.assets.audio["sfx.travel_walk"] ?? null },
     conclusion: {
       available: check(def.reportAvailable, s),
       choices: def.conclusionChoices,

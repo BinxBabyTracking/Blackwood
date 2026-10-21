@@ -22,6 +22,8 @@ import {
 } from "./panels";
 import { InterviewScreen } from "./interview-screen";
 import { useTelephoneRing } from "./telephone-ring";
+import { playTravelSound, type TravelMode } from "./travel-audio";
+import { setTravelScenes, TravelScene, useTravelScenes } from "./travel-scene";
 import { TravelMap } from "./travel-map";
 
 type Layer =
@@ -71,6 +73,10 @@ export function InvestigationShell({
   const [menu, setMenu] = useState(false);
   /** A call the player chose to let ring. It stays pending and rings again on the next visit to the office. */
   const [deferredCall, setDeferredCall] = useState<string | null>(null);
+  /** The journey being shown, if any. */
+  const [trip, setTrip] = useState<{ mode: TravelMode; to: string; subtitle: string } | null>(null);
+  const skipTrip = useRef<(() => void) | null>(null);
+  const travelScenes = useTravelScenes();
   const busy = useRef(false);
 
   const show = useCallback((text: string, tone: "info" | "error" | "deduction" = "info") => setToast({ text, tone }), []);
@@ -167,6 +173,37 @@ export function InvestigationShell({
 
   const close = useCallback(() => setLayer(null), []);
 
+  /**
+   * Travel with a short journey scene: on foot within a neighbourhood, by car
+   * between neighbourhoods. The move is saved on the server while the scene
+   * plays; the scene ends when both are done, or sooner if the player skips.
+   */
+  const travelTo = useCallback(
+    async (locationId: string) => {
+      const dest = view.map.find((m) => m.id === locationId);
+      if (!travelScenes || !dest || pending || dest.current) return dispatch({ type: "travel", locationId });
+      const mode: TravelMode = dest.area && dest.area === view.location.area ? "walk" : "drive";
+      const seconds = prefs.reducedMotion ? 1.4 : mode === "drive" ? 4.2 : 3.2;
+      setLayer(null);
+      setTrip({ mode, to: dest.name, subtitle: dest.subtitle });
+      const stop = playTravelSound(mode, seconds, (prefs.masterVolume / 100) * (prefs.sfxVolume / 100), view.travelAudio[mode]);
+      const minimum = new Promise<void>((resolve) => {
+        const t = setTimeout(resolve, seconds * 1000);
+        skipTrip.current = () => {
+          clearTimeout(t);
+          resolve();
+        };
+      });
+      const res = await dispatch({ type: "travel", locationId });
+      if (res) await minimum;
+      stop();
+      skipTrip.current = null;
+      setTrip(null);
+      return res;
+    },
+    [view.map, view.location.area, view.travelAudio, travelScenes, pending, prefs.reducedMotion, prefs.masterVolume, prefs.sfxVolume, dispatch],
+  );
+
   /** A replay is a new investigation; a closed case and its report stay on file and keep their credit. */
   const replay = useCallback(async () => {
     const closedCase = view.status === "closed";
@@ -196,7 +233,7 @@ export function InvestigationShell({
   const panel = layer?.k === "panel" ? layer.panel : null;
   const atHome = view.location.id === homeLocation;
   // The telephone rings only in the office, and never over an interview, a document or an inspection.
-  const ringing = Boolean(view.phone.ringing && atHome && view.introSeen && (layer === null || panel === "phone") && deferredCall !== view.phone.ringing.id);
+  const ringing = Boolean(!trip && view.phone.ringing && atHome && view.introSeen && (layer === null || panel === "phone") && deferredCall !== view.phone.ringing.id);
   useTelephoneRing(ringing, (prefs.masterVolume / 100) * (prefs.sfxVolume / 100));
   const locked = view.status === "closed";
   const pin = (id: string) => dispatch({ type: "boardAdd", itemId: id, x: 10 + Math.random() * 70, y: 10 + Math.random() * 60 });
@@ -252,7 +289,7 @@ export function InvestigationShell({
           <HudButton onClick={() => setLayer({ k: "panel", panel: "map" })}>Map</HudButton>
           <HudButton onClick={() => setLayer({ k: "panel", panel: "board" })}>Murder Board</HudButton>
           {!atHome ? (
-            <HudButton disabled={pending || !view.map.find((m) => m.id === homeLocation)?.available} onClick={() => dispatch({ type: "travel", locationId: homeLocation })}>
+            <HudButton disabled={pending || !view.map.find((m) => m.id === homeLocation)?.available} onClick={() => travelTo(homeLocation)}>
               Back to the office
             </HudButton>
           ) : null}
@@ -291,6 +328,16 @@ export function InvestigationShell({
                 >
                   Character voices: {view.voices ? "On" : "Off"}
                   <span className="block text-xs text-smoke">Interviews, police tapes and calls are spoken aloud, with subtitles.</span>
+                </button>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={travelScenes}
+                  className="block w-full px-3 py-2 text-left hover:bg-white/5"
+                  onClick={() => setTravelScenes(!travelScenes)}
+                >
+                  Travel scenes: {travelScenes ? "On" : "Off"}
+                  <span className="block text-xs text-smoke">A short drive or walk, with sound, between locations. Click to skip.</span>
                 </button>
                 <button
                   type="button"
@@ -396,7 +443,8 @@ export function InvestigationShell({
       {panel === "inventory" ? (
         <EvidenceInventory items={view.evidence} onOpen={(id) => setLayer({ k: "evidence", id, back: "inventory" })} onClose={close} />
       ) : null}
-      {panel === "map" ? <TravelMap view={view} onTravel={(id) => dispatch({ type: "travel", locationId: id })} onClose={close} pending={pending} /> : null}
+      {panel === "map" ? <TravelMap view={view} onTravel={(id) => travelTo(id)} onClose={close} pending={pending} /> : null}
+      {trip ? <TravelScene mode={trip.mode} to={trip.to} subtitle={trip.subtitle} reducedMotion={prefs.reducedMotion} onSkip={() => skipTrip.current?.()} /> : null}
       {panel === "phone" ? (
         <PhonePanel
           view={view}

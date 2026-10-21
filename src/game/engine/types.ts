@@ -211,6 +211,8 @@ export interface LocationDef {
   onMap: boolean;
   /** Pin position on the travel map, as percentages. */
   mapPin?: { x: number; y: number };
+  /** Neighbourhood. Travel within one area is on foot; between areas, by car. */
+  area?: string;
   hotspots: HotspotDef[];
   effectsOnEnter?: Effect[];
 }
@@ -645,13 +647,16 @@ export interface ClientView {
   intro: CaseDefinition["intro"];
   location: {
     id: string;
+    area: string | null;
     name: string;
     subtitle: string;
     background: string;
     ambience: string | null;
     hotspots: { id: string; label: string; rect: HotspotDef["rect"]; inspected: boolean; collected: boolean; sprite: string | null; attention: boolean }[];
   };
-  map: { id: string; name: string; subtitle: string; available: boolean; visited: boolean; current: boolean; pin: { x: number; y: number } | null }[];
+  map: { id: string; name: string; subtitle: string; area: string | null; available: boolean; visited: boolean; current: boolean; pin: { x: number; y: number } | null }[];
+  /** Optional recordings for travel scenes; when null the game synthesizes the sound. */
+  travelAudio: { drive: string | null; walk: string | null };
   evidence: ClientEvidence[];
   characters: ClientCharacter[];
   notebook: InvestigationState["notebook"];
