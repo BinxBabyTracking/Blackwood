@@ -28,7 +28,15 @@ export type Condition =
   | { at: string } // player's current location
   | { presented: string } // `${characterId}:${evidenceId}`
   | { contradiction: string } // contradiction id has been recorded
+  | { eventState: string; is: EventState | EventState[] } // reactive event lifecycle
+  | { callPending: string }
+  | { callAnswered: string }
+  | { deliveryPending: string }
+  | { deliveryOpened: string }
   | { always: true };
+
+/** Reactive event lifecycle. An event with no recorded state is "locked". */
+export type EventState = "locked" | "available" | "active" | "completed";
 
 export type Effect =
   | { setFlag: string }
@@ -40,7 +48,9 @@ export type Effect =
   | { timeline: { time: string; text: string; source: string } }
   | { incomingCall: string } // call id, rings at the office telephone
   | { delivery: string } // delivery id, appears at the office
-  | { message: string }; // shown once to the player as a notice
+  | { message: string } // shown once to the player as a notice
+  | { unlockQuestion: string } // reveals a follow-up dialogue entry
+  | { when: Condition; then: Effect[] }; // applies only if the condition holds at that moment
 
 export interface NotebookEntryInput {
   id: string;
@@ -179,7 +189,12 @@ export interface HotspotDef {
     | { type: "inspect"; title: string; text: string; image?: string; evidence?: string; effects?: Effect[]; textAfter?: { requires: Condition; text: string }[] }
     | { type: "panel"; panel: PanelId }
     | { type: "talk"; characterId: string }
-    | { type: "travel"; locationId: string };
+    | { type: "travel"; locationId: string }
+    | { type: "delivery"; deliveryId: string };
+  /** Draws a sprite in the scene at this rectangle; the first entry whose condition holds is shown. */
+  sprite?: { image: string; when?: Condition }[];
+  /** A subtle cue (a ringing telephone, something new on the desk) while the condition holds. */
+  attention?: Condition;
 }
 
 export type PanelId = "casefile" | "board" | "notebook" | "map" | "phone" | "statements" | "delivery" | "conclusion";
@@ -237,6 +252,9 @@ export interface OutgoingCallDef {
 export interface DeliveryDef {
   id: string;
   title: string;
+  /** What the sealed item looks like before it is opened. */
+  exterior?: string;
+  /** The enclosed note. Can be read aloud by the narrator. */
   text: string;
   evidence: string[];
 }
@@ -268,11 +286,50 @@ export interface StatementDef {
   transcript: { speakerId: string; speaker: string; text: string }[];
 }
 
+/**
+ * A reactive story event. Deterministic: it moves through its lifecycle only
+ * when the investigation state satisfies each stage, and is re-evaluated after
+ * every player action. Never on a timer. Each stage happens once.
+ *
+ *   locked -> available   when `requires` (and the listed flags, evidence,
+ *                         deductions and interviews) all hold
+ *   available -> active   when `activate` holds (where and how it is presented)
+ *   active -> completed   when `complete` holds
+ */
 export interface ReactiveEventDef {
   id: string;
+  caseId: string;
   title: string;
-  trigger: Condition;
-  effects: Effect[];
+  /** The person the event concerns, for the notebook. */
+  characterId?: string;
+  /** General trigger condition (supports all / any / not). */
+  requires: Condition;
+  requiresFlags?: string[];
+  requiresEvidence?: string[];
+  requiresDeductions?: string[];
+  /** Dialogue entries that must have been asked. */
+  requiresInterviews?: string[];
+  /** When an available event is presented to the player. Defaults to immediately. */
+  activate?: Condition;
+  complete: Condition;
+  onAvailable?: Effect[];
+  onActivate?: Effect[];
+  onComplete?: Effect[];
+  /** Follow-up dialogue entries hidden until this event completes. */
+  unlocksQuestions?: string[];
+  /** Evidence this event makes discoverable, listed in the notebook once collected. */
+  evidence?: string[];
+  /** Events and Developments entry in the notebook. */
+  notebook: {
+    /** When the entry is shown. Defaults to once the event is active. */
+    visible?: Condition;
+    /** What the investigator has learned; each line appears once its condition holds. */
+    learned: { text: string; requires?: Condition }[];
+    /** A telephone call whose transcript belongs with this event. */
+    call?: string;
+    /** A delivery whose enclosed note belongs with this event. */
+    delivery?: string;
+  };
 }
 
 export interface DeductionDef {
@@ -379,7 +436,10 @@ export interface InvestigationState {
   playerNotes: string;
   board: { items: { id: string; x: number; y: number }[]; connections: [string, string][] };
   deductions: string[];
+  /** Events that have been presented (active or completed). Kept for older saves and conditions. */
   events: string[];
+  /** Lifecycle of every event that has left the locked state. */
+  eventStates: Record<string, Exclude<EventState, "locked">>;
   env: Record<string, string>;
   pendingCalls: string[];
   answeredCalls: string[];
@@ -399,7 +459,7 @@ export interface ConversationLine {
   text: string;
   /** The question or evidence that produced this line. */
   q?: string;
-  kind?: "question" | "answer" | "present" | "reaction" | "refusal" | "cue";
+  kind?: "question" | "answer" | "present" | "reaction" | "refusal" | "cue" | "call";
 }
 
 export interface Discovery {
@@ -505,6 +565,18 @@ export interface ClientInterview {
   voiced: boolean;
 }
 
+export interface ClientDevelopment {
+  id: string;
+  title: string;
+  status: "Open" | "Resolved";
+  characterId: string | null;
+  character: string | null;
+  learned: string[];
+  evidence: { id: string; title: string }[];
+  call: { title: string; speaker: string; lines: string[] } | null;
+  note: { title: string; text: string } | null;
+}
+
 export interface ClientView {
   caseId: string;
   title: string;
@@ -519,7 +591,7 @@ export interface ClientView {
     subtitle: string;
     background: string;
     ambience: string | null;
-    hotspots: { id: string; label: string; rect: HotspotDef["rect"]; inspected: boolean; collected: boolean }[];
+    hotspots: { id: string; label: string; rect: HotspotDef["rect"]; inspected: boolean; collected: boolean; sprite: string | null; attention: boolean }[];
   };
   map: { id: string; name: string; subtitle: string; available: boolean; visited: boolean; current: boolean; pin: { x: number; y: number } | null }[];
   evidence: ClientEvidence[];
@@ -549,6 +621,7 @@ export interface ClientView {
     transcript: StatementDef["transcript"];
   }[];
   interviews: ClientInterview[];
+  developments: ClientDevelopment[];
   messages: string[];
   narration: boolean;
   voices: boolean;
@@ -591,7 +664,16 @@ export type ActionOutcome =
       evidence: { id: string; title: string; collected: boolean }[];
     }
   | { kind: "call"; id: string; title: string; from: string; fromId: string; lines: string[]; voiced: boolean }
-  | { kind: "delivery"; title: string; text: string; evidence: { id: string; title: string; collected: boolean }[] }
+  | {
+      kind: "delivery";
+      id: string;
+      title: string;
+      /** True until the player chooses to open it. */
+      sealed: boolean;
+      exterior: string;
+      text: string;
+      evidence: { id: string; title: string; collected: boolean }[];
+    }
   | { kind: "deduction"; id: string; title: string; text: string }
   | { kind: "verdict"; correct: boolean; feedback: string; closure?: SolutionDef["closure"] }
   | { kind: "error"; message: string };

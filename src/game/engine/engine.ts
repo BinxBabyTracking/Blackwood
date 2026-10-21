@@ -1,6 +1,7 @@
 import { apply, check, collectEvidence, demeanorOf, runContradictions, runDemeanor, runEvents } from "./rules";
 import type {
   CharacterDef,
+  ClientDevelopment,
   ClientEvidence,
   ClientInterview,
   ClientLine,
@@ -47,6 +48,7 @@ export function newState(def: CaseDefinition, now = Date.now()): InvestigationSt
     board: { items: [], connections: [] },
     deductions: [],
     events: [],
+    eventStates: {},
     env: {},
     pendingCalls: [],
     answeredCalls: [],
@@ -115,6 +117,9 @@ export function normalizeState(def: CaseDefinition, raw: InvestigationState): In
   s.contradictions ??= [];
   s.demeanor ??= {};
   s.conversations ??= {};
+  s.eventStates ??= {};
+  // Saves from before the event lifecycle recorded only which events had fired.
+  for (const id of s.events ?? []) s.eventStates[id] ??= "active";
   for (const id of s.evidence) {
     s.discoveries[id] ??= {
       locationId: def.evidence.find((e) => e.id === id)?.sourceLocationId ?? s.location,
@@ -160,7 +165,7 @@ function knownCharacters(def: CaseDefinition, s: InvestigationState) {
 
 /** Question ids that only appear once an earlier answer unlocks them. */
 function followUps(def: CaseDefinition) {
-  return new Set(def.questions.flatMap((q) => q.unlocks ?? []));
+  return new Set([...def.questions.flatMap((q) => q.unlocks ?? []), ...def.events.flatMap((e) => e.unlocksQuestions ?? [])]);
 }
 
 /** Whether a dialogue entry's requirements are met. Never sent to the browser. */
@@ -319,6 +324,13 @@ export function reduce(
       if (it.type === "talk") {
         return reduce(def, s, { type: "talk", characterId: it.characterId }, now);
       }
+      if (it.type === "delivery") {
+        const d = def.deliveries.find((x) => x.id === it.deliveryId) ?? fail("Nothing has arrived.");
+        if (!s.pendingDeliveries.includes(d.id) && !s.openedDeliveries.includes(d.id)) fail("Nothing has arrived.");
+        if (!s.inspected.includes(h.id)) s.inspected.push(h.id);
+        outcome = deliveryOutcome(def, s, d.id, !s.openedDeliveries.includes(d.id));
+        break;
+      }
       if (it.type === "panel") {
         if (!s.inspected.includes(h.id)) s.inspected.push(h.id);
         outcome = { kind: "panel", panel: it.panel };
@@ -424,6 +436,10 @@ export function reduce(
       s.pendingCalls = s.pendingCalls.filter((x) => x !== call.id);
       s.answeredCalls.push(call.id);
       apply([{ note: { id: `call:${call.id}`, kind: "call", title: call.title, text: call.lines.join(" "), characterId: call.from } }], s, def);
+      // The call belongs to the caller's interview record too, so it can be revisited and followed up.
+      const log = (s.conversations[call.from] ??= []);
+      log.push({ speaker: "cue", text: `${call.title}, at your office.`, kind: "cue", q: call.id });
+      for (const l of call.lines) log.push({ speaker: call.from, text: l, kind: "call", q: call.id });
       apply(call.effects, s, def);
       outcome = { kind: "call", id: call.id, title: call.title, from: char(def, call.from)?.name ?? "Caller", fromId: call.from, lines: call.lines, voiced: voiced(char(def, call.from)) };
       break;
@@ -449,12 +465,7 @@ export function reduce(
         s.openedDeliveries.push(d.id);
         apply([{ note: { id: `delivery:${d.id}`, kind: "document", title: d.title, text: d.text } }], s, def);
       }
-      outcome = {
-        kind: "delivery",
-        title: d.title,
-        text: d.text,
-        evidence: d.evidence.map((id) => ({ id, title: def.evidence.find((e) => e.id === id)!.title, collected: s.evidence.includes(id) })),
-      };
+      outcome = deliveryOutcome(def, s, d.id, false);
       break;
     }
 
@@ -616,6 +627,11 @@ export function project(def: CaseDefinition, s: InvestigationState): ClientView 
         rect: h.rect,
         inspected: s.inspected.includes(h.id),
         collected: h.interaction.type === "inspect" && Boolean(h.interaction.evidence) && s.evidence.includes(h.interaction.evidence!),
+        sprite: (() => {
+          const sp = h.sprite?.find((x) => check(x.when, s));
+          return sp ? img(sp.image) : null;
+        })(),
+        attention: h.attention ? check(h.attention, s) : false,
       })),
     },
     map: def.locations
@@ -679,6 +695,7 @@ export function project(def: CaseDefinition, s: InvestigationState): ClientView 
         })
       : [],
     interviews: interviewsView(def, s),
+    developments: developmentsView(def, s),
     messages: s.messages,
     narration: s.narration,
     voices: s.voices,
@@ -731,7 +748,7 @@ function interviewsView(def: CaseDefinition, s: InvestigationState): ClientInter
 export function spokenLine(
   def: CaseDefinition,
   s: InvestigationState,
-  ref: { kind: "conversation" | "statement" | "call"; id: string; n: number },
+  ref: { kind: "conversation" | "statement" | "call" | "delivery"; id: string; n: number },
 ): { speakerId: string; text: string } | null {
   if (ref.kind === "conversation") {
     const line = s.conversations[ref.id]?.[ref.n];
@@ -743,8 +760,53 @@ export function spokenLine(
     const line = def.statements.find((x) => x.characterId === ref.id)?.transcript[ref.n];
     return line ? { speakerId: line.speakerId, text: line.text } : null;
   }
+  if (ref.kind === "delivery") {
+    // An opened note can be read aloud by the narrator.
+    const d = def.deliveries.find((x) => x.id === ref.id);
+    return d && ref.n === 0 && s.openedDeliveries.includes(d.id) ? { speakerId: "narrator", text: d.text } : null;
+  }
   if (!s.answeredCalls.includes(ref.id)) return null;
   const call = def.calls.find((c) => c.id === ref.id);
   const text = call?.lines[ref.n];
   return call && text ? { speakerId: call.from, text } : null;
+}
+
+function deliveryOutcome(def: CaseDefinition, s: InvestigationState, id: string, sealed: boolean): ActionOutcome {
+  const d = def.deliveries.find((x) => x.id === id)!;
+  return {
+    kind: "delivery",
+    id: d.id,
+    title: d.title,
+    sealed,
+    exterior: d.exterior ?? "",
+    // The contents stay on the server until the player opens it.
+    text: sealed ? "" : d.text,
+    evidence: sealed ? [] : d.evidence.map((e) => ({ id: e, title: def.evidence.find((x) => x.id === e)!.title, collected: s.evidence.includes(e) })),
+  };
+}
+
+/** Events and Developments: only events the player has encountered, and only what they have learned. */
+function developmentsView(def: CaseDefinition, s: InvestigationState): ClientDevelopment[] {
+  return def.events
+    .filter((ev) => {
+      const st = s.eventStates?.[ev.id];
+      if (st !== "active" && st !== "completed") return false;
+      return ev.notebook.visible ? check(ev.notebook.visible, s) : true;
+    })
+    .map((ev) => {
+      const c = ev.characterId ? char(def, ev.characterId) : undefined;
+      const call = ev.notebook.call && s.answeredCalls.includes(ev.notebook.call) ? def.calls.find((x) => x.id === ev.notebook.call) : undefined;
+      const delivery = ev.notebook.delivery && s.openedDeliveries.includes(ev.notebook.delivery) ? def.deliveries.find((x) => x.id === ev.notebook.delivery) : undefined;
+      return {
+        id: ev.id,
+        title: ev.title,
+        status: s.eventStates[ev.id] === "completed" ? "Resolved" : "Open",
+        characterId: c?.id ?? null,
+        character: c?.name ?? null,
+        learned: ev.notebook.learned.filter((l) => check(l.requires, s)).map((l) => l.text),
+        evidence: (ev.evidence ?? []).filter((e) => s.evidence.includes(e)).map((e) => ({ id: e, title: def.evidence.find((x) => x.id === e)!.title })),
+        call: call ? { title: call.title, speaker: char(def, call.from)?.name ?? "", lines: call.lines } : null,
+        note: delivery ? { title: delivery.title, text: delivery.text } : null,
+      };
+    });
 }

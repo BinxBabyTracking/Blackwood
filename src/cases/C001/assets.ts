@@ -21,6 +21,8 @@ const locations = [
   "patricia_office",
 ];
 const characters = ["eleanor", "margaret", "daniel", "robert", "patricia", "bennett", "rosa"];
+/** Scene objects that appear or change with events, drawn over the background. */
+const objects = ["envelope_sealed", "envelope_open", "evidence_bag", "evidence_bag_open"];
 const evidence = Array.from({ length: 15 }, (_, i) => `e${String(i + 1).padStart(2, "0")}`);
 
 export const assets: AssetManifest = {
@@ -28,6 +30,7 @@ export const assets: AssetManifest = {
     ...Object.fromEntries(locations.map((k) => [`loc.${k}`, `${base}/locations/${k}.svg`])),
     ...Object.fromEntries(characters.map((k) => [`char.${k}`, `${base}/characters/${k}.svg`])),
     ...Object.fromEntries(evidence.map((k) => [`ev.${k}`, `${base}/evidence/${k}.svg`])),
+    ...Object.fromEntries(objects.map((k) => [`obj.${k}`, `${base}/objects/${k}.svg`])),
   },
   audio: {
     "amb.office": null,

@@ -15,9 +15,11 @@ export function SceneHotspot({
   disabled,
   onSelect,
   onHover,
+  reducedMotion = false,
 }: {
   hotspot: Hotspot;
   disabled: boolean;
+  reducedMotion?: boolean;
   onSelect: (id: string) => void;
   onHover: (label: string | null) => void;
 }) {
@@ -28,6 +30,7 @@ export function SceneHotspot({
       type="button"
       aria-label={label}
       data-hotspot={hotspot.id}
+      data-attention={hotspot.attention || undefined}
       disabled={disabled}
       onClick={() => onSelect(hotspot.id)}
       onMouseEnter={() => onHover(label)}
@@ -36,7 +39,13 @@ export function SceneHotspot({
       onBlur={() => onHover(null)}
       className="absolute cursor-pointer rounded-[3px] outline-none transition-[background-color,box-shadow] duration-300 hover:bg-[#f3ede3]/[0.06] hover:shadow-[inset_0_0_0_1px_rgba(243,237,227,0.22)] focus-visible:outline-dashed focus-visible:outline-2 focus-visible:outline-[#f3ede3]/70 disabled:cursor-wait"
       style={{ left: `${r.x}%`, top: `${r.y}%`, width: `${r.w}%`, height: `${r.h}%` }}
-    />
+    >
+      {hotspot.sprite ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={hotspot.sprite} alt="" draggable={false} className="pointer-events-none h-full w-full object-contain drop-shadow-[0_4px_6px_rgba(0,0,0,0.55)]" />
+      ) : null}
+      {hotspot.attention ? <span aria-hidden className={`pointer-events-none absolute inset-0 rounded-[3px] ${reducedMotion ? "shadow-[0_0_0_1px_rgba(196,163,107,0.5)]" : "game-attention"}`} /> : null}
+    </button>
   );
 }
 
@@ -80,7 +89,7 @@ export function ExplorationScene({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={location.background} alt={`${location.name}, ${location.subtitle}`} className="h-full w-full object-cover" draggable={false} />
           {location.hotspots.map((h) => (
-            <SceneHotspot key={h.id} hotspot={h} disabled={disabled} onSelect={onHotspot} onHover={setHover} />
+            <SceneHotspot key={h.id} hotspot={h} disabled={disabled} onSelect={onHotspot} onHover={setHover} reducedMotion={reducedMotion} />
           ))}
         </div>
 

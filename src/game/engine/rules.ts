@@ -1,4 +1,4 @@
-import type { CaseDefinition, Condition, Discovery, Effect, InvestigationState } from "./types";
+import type { CaseDefinition, Condition, Discovery, Effect, InvestigationState, ReactiveEventDef } from "./types";
 
 /** Evaluates a rule condition against the current investigation state. */
 export function check(c: Condition | undefined, s: InvestigationState): boolean {
@@ -19,6 +19,14 @@ export function check(c: Condition | undefined, s: InvestigationState): boolean 
   if ("evidenceCount" in c) return s.evidence.length >= c.evidenceCount;
   if ("presented" in c) return s.presented.includes(c.presented);
   if ("contradiction" in c) return (s.contradictions ?? []).includes(c.contradiction);
+  if ("eventState" in c) {
+    const st = s.eventStates?.[c.eventState] ?? "locked";
+    return Array.isArray(c.is) ? c.is.includes(st) : st === c.is;
+  }
+  if ("callPending" in c) return s.pendingCalls.includes(c.callPending);
+  if ("callAnswered" in c) return s.answeredCalls.includes(c.callAnswered);
+  if ("deliveryPending" in c) return s.pendingDeliveries.includes(c.deliveryPending);
+  if ("deliveryOpened" in c) return s.openedDeliveries.includes(c.deliveryOpened);
   if ("always" in c) return true;
   return false;
 }
@@ -44,6 +52,10 @@ export function apply(effects: Effect[] | undefined, s: InvestigationState, def:
     } else if ("delivery" in e) {
       if (!s.openedDeliveries.includes(e.delivery)) add(s.pendingDeliveries, e.delivery);
     } else if ("message" in e) add(s.messages, e.message);
+    else if ("unlockQuestion" in e) add((s.unlockedQuestions ??= []), e.unlockQuestion);
+    else if ("when" in e) {
+      if (check(e.when, s)) apply(e.then, s, def);
+    }
   }
 }
 
@@ -60,17 +72,50 @@ export function collectEvidence(s: InvestigationState, def: CaseDefinition, id: 
   return true;
 }
 
-/** Fires every reactive event whose trigger is now satisfied. Each fires at most once. */
+/** Whether every requirement for an event to become available holds. */
+function eventReady(ev: ReactiveEventDef, s: InvestigationState) {
+  return (
+    check(ev.requires, s) &&
+    (ev.requiresFlags ?? []).every((f) => s.flags.includes(f)) &&
+    (ev.requiresEvidence ?? []).every((e) => s.evidence.includes(e)) &&
+    (ev.requiresDeductions ?? []).every((d) => s.deductions.includes(d)) &&
+    (ev.requiresInterviews ?? []).every((q) => s.asked.includes(q))
+  );
+}
+
+/**
+ * The reactive event engine. Advances every event through its lifecycle as far
+ * as the current state allows, one stage at a time, and never backwards.
+ * Events are independent: each keeps its own state and effects, so any order
+ * of discovery produces the same facts. Runs after every player action.
+ */
 export function runEvents(s: InvestigationState, def: CaseDefinition) {
-  let fired = true;
-  // Loop so an event's effects can satisfy another event's trigger in the same action.
-  for (let guard = 0; fired && guard < 10; guard++) {
-    fired = false;
+  s.eventStates ??= {};
+  let changed = true;
+  // Loop so one event's effects can advance another in the same action.
+  for (let guard = 0; changed && guard < 20; guard++) {
+    changed = false;
     for (const ev of def.events) {
-      if (s.events.includes(ev.id) || !check(ev.trigger, s)) continue;
-      s.events.push(ev.id);
-      apply(ev.effects, s, def);
-      fired = true;
+      const st = s.eventStates[ev.id];
+      if (st === "completed") continue;
+      if (!st) {
+        if (!eventReady(ev, s)) continue;
+        s.eventStates[ev.id] = "available";
+        apply(ev.onAvailable, s, def);
+        changed = true;
+      } else if (st === "available") {
+        if (!check(ev.activate, s)) continue;
+        s.eventStates[ev.id] = "active";
+        add(s.events, ev.id);
+        apply(ev.onActivate, s, def);
+        changed = true;
+      } else if (st === "active") {
+        if (!check(ev.complete, s)) continue;
+        s.eventStates[ev.id] = "completed";
+        for (const q of ev.unlocksQuestions ?? []) add((s.unlockedQuestions ??= []), q);
+        apply(ev.onComplete, s, def);
+        changed = true;
+      }
     }
   }
 }

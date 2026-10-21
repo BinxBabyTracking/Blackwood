@@ -7,7 +7,7 @@ import { GameButton, Overlay } from "./overlay";
 
 type Dispatch = (a: GameAction) => Promise<unknown>;
 
-export const TABS = ["Objectives", "Evidence", "People", "Interviews", "Timeline", "Deductions", "My notes"] as const;
+export const TABS = ["Objectives", "Evidence", "People", "Interviews", "Developments", "Timeline", "Deductions", "My notes"] as const;
 
 /** The detective notebook: objectives, evidence, people, interviews, timeline, deductions and private notes. */
 export function DetectiveNotebook({
@@ -26,6 +26,7 @@ export function DetectiveNotebook({
   initialTab?: (typeof TABS)[number];
 }) {
   const [tab, setTab] = useState<(typeof TABS)[number]>(initialTab);
+  const [person, setPerson] = useState<string | null>(null);
   const [notes, setNotes] = useState(view.playerNotes);
   const [saved, setSaved] = useState<"idle" | "saved" | "error">("idle");
   const records = view.notebook.filter((n) => n.kind === "call" || n.kind === "document").slice().reverse();
@@ -84,7 +85,17 @@ export function DetectiveNotebook({
               <p className="opacity-70">Read the case file to learn who was there.</p>
             )
           ) : null}
-          {tab === "Interviews" ? <InterviewRecords view={view} records={records} /> : null}
+          {tab === "Interviews" ? <InterviewRecords key={person ?? "first"} view={view} records={records} initial={person} /> : null}
+          {tab === "Developments" ? (
+            <Developments
+              view={view}
+              onOpenEvidence={onOpenEvidence}
+              onTranscript={(id) => {
+                setPerson(id);
+                setTab("Interviews");
+              }}
+            />
+          ) : null}
           {tab === "Timeline" ? (
             <ol className="space-y-3 border-l border-[#2a241c]/30 pl-5">
               {sortTimeline(view.timeline).map((t, i) => (
@@ -159,9 +170,9 @@ function sortTimeline<T extends { time: string }>(list: T[]) {
   return list.map((t, i) => ({ t, i })).sort((a, b) => key(a.t.time) - key(b.t.time) || a.i - b.i).map((x) => x.t);
 }
 
-function InterviewRecords({ view, records }: { view: ClientView; records: ClientView["notebook"] }) {
+function InterviewRecords({ view, records, initial }: { view: ClientView; records: ClientView["notebook"]; initial: string | null }) {
   const people = view.interviews;
-  const [sel, setSel] = useState<string>(people.find((p) => p.transcript.length)?.characterId ?? people[0]?.characterId ?? "records");
+  const [sel, setSel] = useState<string>(initial ?? people.find((p) => p.transcript.length)?.characterId ?? people[0]?.characterId ?? "records");
   const p = people.find((x) => x.characterId === sel);
   if (!people.length && !records.length) return <p className="opacity-70">Your interview notes will be written here.</p>;
   return (
@@ -268,6 +279,65 @@ function InterviewRecords({ view, records }: { view: ClientView; records: Client
           </ul>
         )}
       </div>
+    </div>
+  );
+}
+
+/** Events and Developments: what has happened in the case world, and what the investigator has learned from it. */
+function Developments({ view, onOpenEvidence, onTranscript }: { view: ClientView; onOpenEvidence: (id: string) => void; onTranscript: (characterId: string) => void }) {
+  if (!view.developments.length) return <p className="opacity-70">Nothing has developed yet. Witnesses may remember more, and places can change between visits.</p>;
+  return (
+    <div>
+      <h3 className="font-mono text-xs font-bold uppercase tracking-[0.12em] text-[#7d3a33]">Events and Developments</h3>
+      <ul className="mt-3 space-y-6">
+        {view.developments.map((d) => (
+          <li key={d.id} data-development={d.id} className="border-l-2 border-[#2a241c]/30 pl-4">
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <p className="text-lg font-bold">{d.title}</p>
+              <span className={`font-mono text-[0.68rem] uppercase tracking-[0.14em] ${d.status === "Resolved" ? "text-[#4f6b4f]" : "text-[#7d3a33]"}`}>{d.status}</span>
+              {d.character ? <span className="font-mono text-xs opacity-70">{d.character}</span> : null}
+            </div>
+            {d.learned.length ? (
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-relaxed">
+                {d.learned.map((l) => (
+                  <li key={l}>{l}</li>
+                ))}
+              </ul>
+            ) : null}
+            {d.call ? (
+              <details className="mt-2 text-sm">
+                <summary className="cursor-pointer font-mono text-xs text-[#7d3a33]">Call transcript</summary>
+                <div className="mt-1 space-y-1 font-mono text-[0.82rem] leading-relaxed">
+                  {d.call.lines.map((l, i) => (
+                    <p key={i}>
+                      <span className="mr-2 text-[0.7rem] font-bold uppercase">{d.call!.speaker}:</span>
+                      {l}
+                    </p>
+                  ))}
+                </div>
+              </details>
+            ) : null}
+            {d.note ? (
+              <details className="mt-2 text-sm">
+                <summary className="cursor-pointer font-mono text-xs text-[#7d3a33]">{d.note.title}</summary>
+                <p className="mt-1 italic leading-relaxed">{d.note.text}</p>
+              </details>
+            ) : null}
+            <div className="mt-2 flex flex-wrap gap-3 font-mono text-xs">
+              {d.evidence.map((e) => (
+                <button key={e.id} type="button" onClick={() => onOpenEvidence(e.id)} className="underline underline-offset-4 hover:text-[#7d3a33]">
+                  {e.id} {e.title}
+                </button>
+              ))}
+              {d.characterId && view.interviews.some((i) => i.characterId === d.characterId && i.transcript.length) ? (
+                <button type="button" onClick={() => onTranscript(d.characterId!)} className="underline underline-offset-4 hover:text-[#7d3a33]">
+                  {d.character}: interview transcript
+                </button>
+              ) : null}
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

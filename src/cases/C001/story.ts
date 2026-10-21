@@ -166,43 +166,112 @@ export const outgoingCalls: OutgoingCallDef[] = [
 export const deliveries: DeliveryDef[] = [
   {
     id: "jacket_recovered",
-    title: "LAPD evidence bag: recovered jacket",
-    text: "Bennett's note: 'Pulled from the dumpster behind 2240 Griffith Park Blvd. Lab notes clipped to the bag.'",
+    title: "LAPD evidence bag",
+    exterior: "A brown paper evidence bag, sealed with red tape and tagged by LAPD Northeast Division.",
+    text: "Det. Bennett's note, clipped to the bag: 'Recovered from the dumpster behind 2240 Griffith Park Blvd., under a sack of grass clippings. The lab has had it; their notes are attached. F.B.'",
     evidence: ["E05"],
   },
   {
     id: "patricia_envelope",
     title: "Envelope from Patricia Wells",
-    text: "A Pacific Crest envelope, hand-addressed. Inside, a short note: 'This was in Aunt Eleanor's handbag when the police returned it. It's from the statements I pulled for her. I can't look at it any more. P.W.'",
+    exterior: "A sealed manila envelope, addressed by hand to you care of Blackwood Investigations. The return address is Pacific Crest Savings & Loan, Vermont Avenue.",
+    text: "A short note on Pacific Crest letterhead: 'The police returned Aunt Eleanor's handbag with her things. This was folded in the inside pocket. It's from the statements I pulled for her, and she had marked some of the lines. I can't look at it any more. Please take it. P.W.'",
     evidence: ["E15"],
   },
 ];
 
+/*
+ * Reactive events. Each is independent and driven only by investigation
+ * state: discoveries, interviews, deductions and visits, never time. They
+ * can resolve in any order, and every order arrives at the same facts.
+ * Requirements live here on the server; the browser only sees what an
+ * event changes in the world.
+ */
+
 export const events: ReactiveEventDef[] = [
   {
     id: "RE01",
+    caseId: "C001",
     title: "Margaret's telephone call",
-    trigger: { all: [{ asked: "margaret_evening" }, { visited: "living_room" }, { not: { at: "margaret_house" } }] },
-    effects: [{ incomingCall: "call_margaret_sedan" }, { message: "The telephone in your office is ringing." }],
+    characterId: "margaret",
+    // Margaret's first interview is done and the investigator has the guests' timeline in hand.
+    requiresInterviews: ["margaret_evening", "margaret_departure"],
+    requires: { any: [{ hasEvidence: "E12" }, { inspected: "office_recorder" }, { deduction: "D_ALIBI" }] },
+    // The telephone rings when the investigator is next in the office.
+    activate: { at: "office" },
+    onActivate: [{ incomingCall: "call_margaret_sedan" }, { message: "Agency telephone ringing." }],
+    complete: { callAnswered: "call_margaret_sedan" },
+    onComplete: [
+      { setFlag: "margaret_recalled_sedan" },
+      {
+        note: {
+          id: "statement:RE01",
+          kind: "interview",
+          title: "Margaret Ellis: a later recollection",
+          text: "Margaret remembered a large dark sedan parked by Eleanor's house with its lights off at about 12:10 AM. It was gone by 12:30.",
+          characterId: "margaret",
+          important: true,
+        },
+      },
+    ],
+    unlocksQuestions: ["margaret_sedan_more", "margaret_confidence"],
+    notebook: {
+      call: "call_margaret_sedan",
+      learned: [
+        { text: "Margaret Ellis telephoned with something she had remembered about the night.", requires: { callAnswered: "call_margaret_sedan" } },
+        { text: "At about 12:10 AM a large dark sedan was parked under the jacaranda by Eleanor's house, lights off. By 12:30 it was gone.", requires: { callAnswered: "call_margaret_sedan" } },
+        { text: "Margaret describes a crumpled rear fender on the street side. She would not guess whose car it was.", requires: { asked: "margaret_sedan_more" } },
+      ],
+    },
   },
   {
     id: "RE02",
+    caseId: "C001",
     title: "Daniel's apartment changes",
-    trigger: {
-      all: [
-        { flag: "saw_jacket" },
-        { talkedTo: "daniel" },
-        { any: [{ asked: "daniel_hand" }, { hasEvidence: "E13" }, { hasEvidence: "E11" }] },
-        { not: { at: "daniel_apartment" } },
+    characterId: "daniel",
+    // He has been interviewed in his apartment, and the investigation has started to point at an injury or at his account of the night.
+    requiresInterviews: ["daniel_evening"],
+    requires: { all: [{ visited: "daniel_apartment" }, { any: [{ deduction: "D_INJURED" }, { deduction: "D_HAND" }, { deduction: "D_ALIBI" }] }] },
+    // The change happens while the investigator is elsewhere.
+    activate: { not: { at: "daniel_apartment" } },
+    onActivate: [{ setEnv: "daniel_apartment", to: "B" }],
+    complete: { deliveryOpened: "jacket_recovered" },
+    unlocksQuestions: ["bennett_jacket_where"],
+    evidence: ["E05"],
+    notebook: {
+      // Only once the investigator has seen the changed apartment, or acted on it.
+      visible: { any: [{ inspected: "da_coats_b" }, { inspected: "da_suitcase" }, { inspected: "da_ashtray" }, { flag: "jacket_search" }] },
+      delivery: "jacket_recovered",
+      learned: [
+        { text: "Daniel Mercer's apartment has changed since your earlier visit." },
+        { text: "The tan windbreaker you saw on his coat rack is no longer there.", requires: { flag: "jacket_missing" } },
+        { text: "A packed suitcase stands by the door.", requires: { inspected: "da_suitcase" } },
+        { text: "Fresh ash in the ashtray, with the corner of a typed page.", requires: { inspected: "da_ashtray" } },
+        { text: "At your request, Det. Bennett's officers searched the dumpster behind the building and recovered a tan windbreaker.", requires: { flag: "jacket_search" } },
+        { text: "The windbreaker was delivered to your office in a police evidence bag.", requires: { deliveryOpened: "jacket_recovered" } },
       ],
     },
-    effects: [{ setEnv: "daniel_apartment", to: "B" }],
   },
   {
     id: "RE03",
+    caseId: "C001",
     title: "Patricia's envelope",
-    trigger: { all: [{ asked: "patricia_money" }, { any: [{ hasEvidence: "E03" }, { hasEvidence: "E08" }] }] },
-    effects: [{ setFlag: "has_mail" }, { delivery: "patricia_envelope" }, { message: "An envelope has been left for you at your office." }],
+    characterId: "patricia",
+    // Patricia has been interviewed and asked about money, and the investigator has seen the ledger or established the irregularities.
+    requiresInterviews: ["patricia_evening", "patricia_money"],
+    requires: { any: [{ hasEvidence: "E03" }, { deduction: "D_MOTIVE" }] },
+    activate: { at: "office" },
+    onActivate: [{ delivery: "patricia_envelope" }, { message: "An item has been delivered." }],
+    complete: { hasEvidence: "E15" },
+    unlocksQuestions: ["patricia_envelope", "patricia_circled"],
+    evidence: ["E15"],
+    notebook: {
+      delivery: "patricia_envelope",
+      learned: [
+        { text: "A sealed manila envelope from Patricia Wells was left on your desk." },
+        { text: "Inside: a note from Patricia and a torn page from the estate account statements, found in Eleanor's handbag.", requires: { deliveryOpened: "patricia_envelope" } },
+      ],
+    },
   },
 ];
 

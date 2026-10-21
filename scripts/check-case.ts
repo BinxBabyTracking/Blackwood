@@ -90,7 +90,6 @@ try { collect("E05"); problems.push("collected E05 without discovering it"); } c
 run({ type: "readDocument", documentId: "casefile" });
 collect("E12");
 hot("office_labreport"); collect("E11");
-hot("office_recorder");
 go("living_room");
 for (const h of ["lr_chair", "lr_glass", "lr_ledger", "lr_drawer", "lr_diary", "lr_sideboard"]) hot(h);
 for (const e of ["E07", "E02", "E03", "E08", "E09"]) collect(e);
@@ -104,13 +103,22 @@ if (v07?.foundAt !== "Eleanor's Living Room" || !v07.collected) problems.push(`E
 hot("lr_to_kitchen");
 for (const h of ["k_window", "k_door", "k_knives", "k_calendar"]) hot(h);
 for (const e of ["E01", "E10", "E06"]) collect(e);
+
+// RE01: available after Margaret's first interview, rings only in the office
 go("margaret_house");
 run({ type: "talk", characterId: "margaret" });
-ask("margaret_evening"); ask("margaret_eleanor_mood"); ask("margaret_daniel");
-if (s.events.includes("RE01")) problems.push("RE01 fired while at Margaret's");
+ask("margaret_evening");
+if (s.eventStates.RE01) problems.push("RE01 left locked before Margaret's initial interview was complete");
+ask("margaret_departure"); ask("margaret_eleanor_mood"); ask("margaret_daniel");
+if (s.eventStates.RE01 !== "available") problems.push(`RE01 should be available, is ${s.eventStates.RE01}`);
+if (s.pendingCalls.length) problems.push("the telephone rang away from the office");
+if (project(def, s).developments.length) problems.push("an event appears in the notebook before it is presented");
+
+// RE02 initial state: the jacket is there, observable, not collectable
 go("daniel_apartment");
-if (!s.events.includes("RE01")) problems.push("RE01 did not fire after leaving Margaret's");
-hot("da_coats_a");
+const coatsA = hot("da_coats_a");
+if (coatsA.kind !== "inspect" || coatsA.evidence) problems.push("jacket on the rack should be an observation, not evidence");
+if (!s.flags.includes("saw_jacket")) problems.push("jacket observation not recorded");
 for (const reserved of ["E05", "E15"]) {
   try { collect(reserved); problems.push(`${reserved} collectable before its event`); } catch {}
 }
@@ -118,35 +126,94 @@ hot("da_hand"); collect("E14");
 run({ type: "talk", characterId: "daniel" });
 ask("daniel_evening"); ask("daniel_hand");
 if (s.evidence.filter((e) => e === "E14").length !== 1) problems.push("E14 duplicated by dialogue");
-if (s.env.daniel_apartment === "B") problems.push("RE02 fired while in apartment");
+if (s.eventStates.RE02) problems.push("RE02 left locked before any injury, timeline or physical deduction");
 go("diner");
-if (s.env.daniel_apartment !== "B") problems.push("RE02 did not fire");
+if (s.env.daniel_apartment === "B") problems.push("apartment changed without valid conditions");
 hot("d_spike"); hot("d_schedule"); collect("E04"); collect("E13");
 run({ type: "talk", characterId: "rosa" });
 ask("rosa_friday"); ask("rosa_customer");
 const initial = [...evIds].filter((e) => e !== "E05" && e !== "E15");
 const missingInitial = initial.filter((e) => !s.evidence.includes(e));
 if (missingInitial.length) problems.push(`initially discoverable evidence not collected: ${missingInitial}`);
-if (s.evidence.includes("E05") || s.evidence.includes("E15")) problems.push("reserved evidence collected early");
+
+// RE03 becomes available after Patricia's financial answer
 go("patricia_office");
 run({ type: "talk", characterId: "patricia" });
 try { ask("patricia_money"); problems.push("follow-up question asked before it was unlocked"); } catch {}
-ask("patricia_evening"); ask("patricia_concerns"); ask("patricia_money");
-if (!s.events.includes("RE03")) problems.push("RE03 did not fire");
+ask("patricia_evening"); ask("patricia_concerns");
+if (s.eventStates.RE03) problems.push("RE03 available before Patricia was asked about money");
+ask("patricia_money");
+if (s.eventStates.RE03 !== "available") problems.push(`RE03 should be available, is ${s.eventStates.RE03}`);
+
+// Back at the office: both events present at once
+go("office");
+if (s.eventStates.RE01 !== "active" || !s.pendingCalls.includes("call_margaret_sedan")) problems.push("telephone did not ring on returning to the office");
+if (s.eventStates.RE03 !== "active" || !s.pendingDeliveries.includes("patricia_envelope")) problems.push("envelope did not arrive on returning to the office");
+const office = project(def, s);
+if (!office.location.hotspots.find((h) => h.id === "office_phone")?.attention) problems.push("telephone shows no ringing cue");
+const env = office.location.hotspots.find((h) => h.id === "office_envelope");
+if (!env?.sprite || !env.attention) problems.push("envelope not drawn on the desk");
+// Defer the call: leave and come back; it is still waiting
+go("margaret_house"); go("office");
+if (!s.pendingCalls.includes("call_margaret_sedan") || s.eventStates.RE01 !== "active") problems.push("deferred call was lost");
+if (s.pendingCalls.filter((c) => c === "call_margaret_sedan").length !== 1) problems.push("call queued twice");
+
+// RE02 becomes active once an injury deduction is established elsewhere
+run({ type: "boardAdd", itemId: "E02", x: 10, y: 10 }); run({ type: "boardAdd", itemId: "E11", x: 30, y: 10 });
+const inj = run({ type: "connect", a: "E02", b: "E11" });
+if (inj.kind !== "deduction") problems.push("no D_INJURED");
+if (s.eventStates.RE02 !== "active" || s.env.daniel_apartment !== "B") problems.push(`apartment did not change: ${s.eventStates.RE02}`);
+
+// RE03: the sealed envelope, then E15
+const sealed = hot("office_envelope");
+if (sealed.kind !== "delivery" || !sealed.sealed || sealed.text || sealed.evidence.length) problems.push("sealed envelope revealed its contents");
+try { collect("E15"); problems.push("E15 collectable before the envelope was opened"); } catch {}
+const opened = run({ type: "openDelivery", deliveryId: "patricia_envelope" });
+if (opened.kind !== "delivery" || opened.sealed || !opened.evidence.some((e) => e.id === "E15")) problems.push("opened envelope does not offer E15");
+if (s.eventStates.RE03 !== "active") problems.push("RE03 completed before E15 was collected");
+collect("E15");
+if (s.eventStates.RE03 !== "completed") problems.push("RE03 not completed after collecting E15");
+if (project(def, s).location.hotspots.some((h) => h.id === "office_envelope")) problems.push("envelope still on the desk after collecting");
+
+// RE01: answer the call
+const call = run({ type: "answerCall", callId: "call_margaret_sedan" });
+if (call.kind !== "call") problems.push("call not answered");
+if (s.eventStates.RE01 !== "completed") problems.push("RE01 not completed after answering");
+try { run({ type: "answerCall", callId: "call_margaret_sedan" }); problems.push("call answered twice"); } catch {}
+if (!s.unlockedQuestions.includes("margaret_sedan_more")) problems.push("Margaret's sedan questions not unlocked");
+if (!(s.conversations.margaret ?? []).some((l) => l.kind === "call")) problems.push("call not added to Margaret's interview record");
+
+// RE02: notice the change, ask Bennett, open the bag
+go("daniel_apartment");
+const viewB = project(def, s);
+if (viewB.location.hotspots.some((h) => h.id === "da_coats_a") || !viewB.location.hotspots.some((h) => h.id === "da_coats_b")) problems.push("coat rack did not change");
+const coatsB = hot("da_coats_b");
+if (coatsB.kind !== "inspect" || !coatsB.text.includes("is gone")) problems.push("investigator who saw the jacket does not notice it is gone");
+hot("da_suitcase");
+if (!s.flags.includes("jacket_missing")) problems.push("jacket_missing not set");
+go("patricia_office"); ask("patricia_envelope"); ask("patricia_circled");
 go("robert_garage"); ask("robert_evening");
 ask("robert_again");
 const again2 = run({ type: "ask", questionId: "robert_again" });
 if (again2.kind !== "conversation" || !again2.history.at(-1)?.text.startsWith("Look,")) problems.push("Robert did not grow impatient with repetition");
 ask("robert_cars");
-go("daniel_apartment"); hot("da_coats_b");
 go("office");
-const call = run({ type: "answerCall", callId: "call_margaret_sedan" });
-if (call.kind !== "call") problems.push("call not answered");
 const bennett = run({ type: "talk", characterId: "bennett" });
 if (bennett.kind !== "conversation" || bennett.medium !== "telephone" || !bennett.questions.some((x) => x.id === "bennett_jacket")) problems.push("Bennett telephone interview missing the jacket request");
 ask("bennett_jacket");
-for (const d of ["jacket_recovered", "patricia_envelope"]) run({ type: "openDelivery", deliveryId: d });
-for (const e of ["E05", "E15"]) collect(e);
+if (s.evidence.includes("E05")) problems.push("E05 appeared in the inventory without a recovery interaction");
+try { collect("E05"); problems.push("E05 collectable before the evidence bag was opened"); } catch {}
+if (s.eventStates.RE02 !== "active") problems.push("RE02 completed before recovery was resolved");
+const bag = hot("office_evidencebag");
+if (bag.kind !== "delivery" || !bag.sealed) problems.push("evidence bag not sealed on the desk");
+run({ type: "openDelivery", deliveryId: "jacket_recovered" });
+if (s.eventStates.RE02 !== "completed") problems.push("RE02 not completed when the recovery was resolved");
+collect("E05");
+if (!s.unlockedQuestions.includes("bennett_jacket_where")) problems.push("Bennett follow-up not unlocked by RE02");
+const dev = project(def, s).developments;
+if (dev.length !== 3 || dev.some((d) => d.status !== "Resolved")) problems.push(`developments: ${JSON.stringify(dev.map((d) => [d.id, d.status]))}`);
+if (!dev.find((d) => d.id === "RE01")?.call || !dev.find((d) => d.id === "RE03")?.note || !dev.find((d) => d.id === "RE02")?.evidence.some((e) => e.id === "E05")) problems.push("developments missing transcript, note or evidence");
+if (s.events.length !== 3 || new Set(s.events).size !== 3) problems.push("an event repeated");
 if (s.evidence.length !== 15) problems.push(`collected ${s.evidence.length}/15: missing ${[...evIds].filter((e) => !s.evidence.includes(e))}`);
 
 // every evidence item has exactly one scene hotspot, document or delivery that reveals it
@@ -171,8 +238,9 @@ const wrong = run({ type: "connect", a: "E01", b: "E05" });
 if (wrong.kind === "deduction") problems.push("wrong connection produced a deduction");
 run({ type: "disconnect", a: "E01", b: "E05" });
 for (const [a, b] of [["E01", "E10"], ["E02", "E11"], ["E14", "E11"], ["E03", "E15"], ["E09", "E03"], ["E04", "E13"], ["E05", "E11"], ["E06", "E07"]]) {
+  const had = s.deductions.length;
   const o = run({ type: "connect", a, b });
-  if (o.kind !== "deduction") problems.push(`no deduction for ${a}-${b}`);
+  if (o.kind !== "deduction" && !(a === "E02" && had)) problems.push(`no deduction for ${a}-${b}`);
 }
 if (s.deductions.length !== def.deductions.length) problems.push(`deductions ${s.deductions.length}/${def.deductions.length}`);
 
@@ -289,6 +357,106 @@ for (let seed = 1; seed <= 40; seed++) {
       if (l.speaker !== "you" && l.speaker !== "cue" && spokenLine(def, w, { kind: "conversation", id: cid, n })?.text !== l.text) problems.push("subtitle mismatch in random walk");
     });
   }
+}
+
+// ---- Step 7: events in any order, without unearned knowledge, across saves ----
+{
+  const fresh = () => {
+    let w = newState(def, 0);
+    const A = (a: GameAction) => {
+      const r = reduce(def, w, a, 1);
+      w = r.state;
+      return r.outcome;
+    };
+    const get = (e: string) => { if (!w.evidence.includes(e)) A({ type: "collect", evidenceId: e }); };
+    const at = (l: string) => { if (w.location !== l) A({ type: "travel", locationId: l }); };
+    const ask = (id: string) => { if (!w.asked.includes(id)) A({ type: "ask", questionId: id }); };
+    A({ type: "dismissIntro" }); A({ type: "readDocument", documentId: "casefile" }); get("E12");
+    return { A, get, at, ask, state: () => w };
+  };
+  type G = ReturnType<typeof fresh>;
+  const beats: Record<string, (g: G) => void> = {
+    RE01: (g) => {
+      g.at("margaret_house"); g.A({ type: "talk", characterId: "margaret" }); g.ask("margaret_evening"); g.ask("margaret_departure");
+      g.at("office"); g.A({ type: "answerCall", callId: "call_margaret_sedan" }); g.at("margaret_house"); g.ask("margaret_sedan_more");
+    },
+    RE02: (g) => {
+      g.at("daniel_apartment"); g.A({ type: "hotspot", hotspotId: "da_coats_a" }); g.A({ type: "talk", characterId: "daniel" }); g.ask("daniel_evening");
+      g.at("living_room"); g.A({ type: "hotspot", hotspotId: "lr_glass" }); g.get("E02");
+      g.at("office"); g.A({ type: "hotspot", hotspotId: "office_labreport" }); g.get("E11");
+      g.A({ type: "boardAdd", itemId: "E02", x: 1, y: 1 }); g.A({ type: "boardAdd", itemId: "E11", x: 2, y: 2 }); g.A({ type: "connect", a: "E02", b: "E11" });
+      g.at("daniel_apartment"); g.A({ type: "hotspot", hotspotId: "da_coats_b" });
+      g.at("office"); g.A({ type: "talk", characterId: "bennett" }); g.ask("bennett_jacket");
+      g.A({ type: "hotspot", hotspotId: "office_evidencebag" }); g.A({ type: "openDelivery", deliveryId: "jacket_recovered" }); g.get("E05");
+    },
+    RE03: (g) => {
+      g.at("living_room"); g.A({ type: "hotspot", hotspotId: "lr_ledger" }); g.get("E03");
+      g.at("patricia_office"); g.A({ type: "talk", characterId: "patricia" }); g.ask("patricia_evening"); g.ask("patricia_concerns"); g.ask("patricia_money");
+      g.at("office"); g.A({ type: "hotspot", hotspotId: "office_envelope" }); g.A({ type: "openDelivery", deliveryId: "patricia_envelope" }); g.get("E15");
+    },
+  };
+  const summaries: string[] = [];
+  for (const order of [["RE01", "RE03", "RE02"], ["RE02", "RE01", "RE03"], ["RE03", "RE02", "RE01"]]) {
+    const g = fresh();
+    try {
+      for (const id of order) {
+        if (g.state().eventStates[id]) problems.push(`order ${order}: ${id} advanced before its own prerequisites`);
+        beats[id](g);
+        if (g.state().eventStates[id] !== "completed") problems.push(`order ${order}: ${id} not completed (${g.state().eventStates[id]})`);
+      }
+    } catch (e) {
+      problems.push(`order ${order} failed: ${(e as Error).message}`);
+      continue;
+    }
+    const w = g.state();
+    const facts = {
+      evidence: [...w.evidence].sort(),
+      timeline: w.timeline.map((t) => `${t.time} ${t.text}`).sort(),
+      learned: project(def, w).developments.map((d) => `${d.id}:${d.learned.join("|")}`).sort(),
+      said: Object.entries(w.conversations).map(([c, l]) => `${c}:${l.filter((x) => x.speaker !== "you").map((x) => x.text).sort().join("|")}`).sort(),
+      env: w.env.daniel_apartment,
+    };
+    summaries.push(JSON.stringify(facts));
+  }
+  if (new Set(summaries).size !== 1) problems.push("different event orders produced different case facts");
+
+  // Never saw the jacket: the apartment still changes, but nothing is claimed, and Bennett needs another reason.
+  const g = fresh();
+  g.at("daniel_apartment"); g.A({ type: "talk", characterId: "daniel" }); g.ask("daniel_evening");
+  g.at("diner"); for (const h of ["d_spike", "d_schedule"]) g.A({ type: "hotspot", hotspotId: h }); g.get("E04"); g.get("E13");
+  g.A({ type: "boardAdd", itemId: "E04", x: 1, y: 1 }); g.A({ type: "boardAdd", itemId: "E13", x: 2, y: 2 }); g.A({ type: "connect", a: "E04", b: "E13" });
+  if (g.state().eventStates.RE02 !== "active") problems.push("RE02 should activate from the timeline deduction");
+  g.at("daniel_apartment");
+  const o = g.A({ type: "hotspot", hotspotId: "da_coats_b" });
+  if (o.kind === "inspect" && o.text.includes("gone")) problems.push("claimed the player saw a jacket they never inspected");
+  if (g.state().flags.includes("jacket_missing")) problems.push("unearned jacket_missing");
+  if (project(def, g.state()).developments.find((d) => d.id === "RE02")?.learned.some((l) => l.includes("you saw"))) problems.push("notebook claims an unseen jacket");
+  g.at("office");
+  const b1 = g.A({ type: "talk", characterId: "bennett" });
+  if (b1.kind === "conversation" && b1.questions.some((x) => x.id === "bennett_jacket")) problems.push("Bennett offers a jacket search with no reason to ask");
+  g.at("margaret_house"); g.A({ type: "talk", characterId: "margaret" }); g.ask("margaret_evening"); g.ask("margaret_daniel");
+  g.at("office"); g.A({ type: "talk", characterId: "bennett" });
+  const b2 = g.A({ type: "ask", questionId: "bennett_jacket" });
+  if (b2.kind !== "conversation" || !b2.history.some((l) => l.text.includes("Mrs. Ellis"))) problems.push("Bennett's alternate jacket reply not used");
+
+  // Mid-event saves round-trip: a ringing call, a sealed envelope and the changed apartment all survive a reload.
+  const m = fresh();
+  beats.RE03(m); // completes RE03
+  m.at("margaret_house"); m.A({ type: "talk", characterId: "margaret" }); m.ask("margaret_evening"); m.ask("margaret_departure"); m.at("office");
+  const mid = normalizeState(def, JSON.parse(JSON.stringify(m.state())));
+  if (mid.eventStates.RE01 !== "active" || !mid.pendingCalls.includes("call_margaret_sedan") || mid.eventStates.RE03 !== "completed") problems.push("event states lost on reload");
+
+  // Saves from before the lifecycle: fired events become active and finish normally.
+  const old = structuredClone(m.state()) as Partial<InvestigationState>;
+  delete old.eventStates;
+  const up = normalizeState(def, old as InvestigationState);
+  if (up.eventStates.RE01 !== "active" || up.eventStates.RE03 !== "active") problems.push("legacy event states not upgraded");
+  const after = reduce(def, up, { type: "answerCall", callId: "call_margaret_sedan" }, 1).state;
+  if (after.eventStates.RE01 !== "completed" || after.eventStates.RE03 !== "completed" || after.evidence.length !== up.evidence.length) problems.push("legacy save did not resume its events");
+
+  // Event rules never reach the browser
+  const vjson = JSON.stringify(project(def, m.state()));
+  for (const secret of ["requiresInterviews", "onActivate", "unlocksQuestions", "eventStates", "D_INJURED"]) if (vjson.includes(secret)) problems.push(`view leaks ${secret}`);
 }
 
 // view must not leak restricted content

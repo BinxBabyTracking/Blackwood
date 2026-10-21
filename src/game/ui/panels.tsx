@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ActionOutcome, ClientView, GameAction, Theory } from "../engine/types";
 import { voiceSrc } from "./interview-screen";
+import { NarrationPlayer } from "./narration-player";
 import { GameButton, Overlay } from "./overlay";
 import { useLinePlayer } from "./use-line-player";
 
@@ -109,12 +110,51 @@ export function DocumentPanel({ data, view, dispatch, onClose, pending }: { data
   );
 }
 
-export function DeliveryPanel({ data, view, dispatch, onClose, pending }: { data: Out<"delivery">; view: ClientView; dispatch: Dispatch; onClose: () => void; pending: boolean }) {
+/** A delivered item: sealed on the desk until the player opens it, then the note and its enclosures. */
+export function DeliveryPanel({
+  caseId,
+  data,
+  view,
+  dispatch,
+  onClose,
+  pending,
+  volume,
+}: {
+  caseId: string;
+  data: Out<"delivery">;
+  view: ClientView;
+  dispatch: Dispatch;
+  onClose: () => void;
+  pending: boolean;
+  volume: number;
+}) {
   return (
-    <Overlay title={data.title} onClose={onClose} tone="paper" closeLabel="Put it down">
+    <Overlay title={data.title} onClose={onClose} tone="paper" closeLabel={data.sealed ? "Leave it for now" : "Put it down"}>
       <div className="p-6 sm:p-8">
-        <p className="font-serif text-lg italic leading-relaxed">{data.text}</p>
-        <CollectList items={data.evidence} dispatch={dispatch} pending={pending} view={view} />
+        {data.sealed ? (
+          <>
+            <p className="font-mono text-xs uppercase tracking-[0.14em] text-[#7d3a33]">Unopened</p>
+            <p className="mt-2 font-serif text-lg leading-relaxed">{data.exterior}</p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <GameButton variant="paper" disabled={pending || view.status === "closed"} onClick={() => dispatch({ type: "openDelivery", deliveryId: data.id })}>
+                Open it
+              </GameButton>
+              <button type="button" onClick={onClose} className="px-2 text-sm text-[#2a241c]/70 underline-offset-4 hover:underline">
+                Leave it for now
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="font-serif text-lg italic leading-relaxed">{data.text}</p>
+            {view.voices ? (
+              <div className="text-paper [&>div]:border-[#2a241c]/20 [&>div]:bg-[#2a241c]/85">
+                <NarrationPlayer src={voiceSrc(caseId, "delivery", data.id, 0)} volume={volume} />
+              </div>
+            ) : null}
+            <CollectList items={data.evidence} dispatch={dispatch} pending={pending} view={view} />
+          </>
+        )}
       </div>
     </Overlay>
   );
@@ -183,7 +223,7 @@ export function CallPanel({ caseId, data, onClose, voices, volume }: { caseId: s
   );
 }
 
-export function PhonePanel({ view, dispatch, onClose, pending }: { view: ClientView; dispatch: Dispatch; onClose: () => void; pending: boolean }) {
+export function PhonePanel({ view, dispatch, onClose, pending, onDefer }: { view: ClientView; dispatch: Dispatch; onClose: () => void; pending: boolean; onDefer: () => void }) {
   const closed = view.status === "closed";
   return (
     <Overlay title="Telephone" onClose={onClose}>
@@ -200,9 +240,14 @@ export function PhonePanel({ view, dispatch, onClose, pending }: { view: ClientV
         {view.phone.ringing ? (
           <div className="border border-brass/50 bg-brass/10 p-4">
             <p className="font-serif text-lg">The line is ringing.</p>
-            <GameButton className="mt-3" disabled={pending || closed} onClick={() => dispatch({ type: "answerCall", callId: view.phone.ringing!.id })}>
-              Answer the telephone
-            </GameButton>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <GameButton disabled={pending || closed} onClick={() => dispatch({ type: "answerCall", callId: view.phone.ringing!.id })}>
+                Answer the telephone
+              </GameButton>
+              <button type="button" onClick={onDefer} className="text-sm text-smoke underline-offset-4 hover:text-paper hover:underline">
+                Let it ring
+              </button>
+            </div>
           </div>
         ) : null}
         <div>

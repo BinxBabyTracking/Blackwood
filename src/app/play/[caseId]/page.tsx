@@ -79,6 +79,7 @@ async function Desk({ params }: { params: Promise<{ caseId: string }> }) {
           masterVolume: settings?.master_volume ?? 80,
           musicVolume: settings?.music_volume ?? 70,
           dialogueVolume: settings?.dialogue_volume ?? 90,
+          sfxVolume: settings?.sfx_volume ?? 75,
         }}
       />
     </main>

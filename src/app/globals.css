@@ -147,6 +147,19 @@ html[data-vision="tritanopia"] {
 @keyframes game-caption { 0% { opacity: 0; transform: translateY(6px); } 15%, 100% { opacity: 1; transform: none; } }
 @keyframes game-closure { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 .game-fade { animation: game-fade 220ms ease-out both; }
+/* Something in the scene wants attention: a ringing telephone, a new item on the desk. Quiet, not arcade. */
+@keyframes game-attention {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(196, 163, 107, 0.15), 0 0 0 0 rgba(196, 163, 107, 0); }
+  50% { box-shadow: 0 0 0 1px rgba(196, 163, 107, 0.55), 0 0 18px 2px rgba(196, 163, 107, 0.22); }
+}
+.game-attention { animation: game-attention 2.4s ease-in-out infinite; }
+@keyframes game-ring {
+  0%, 60%, 100% { transform: rotate(0); }
+  64%, 72%, 80%, 88% { transform: rotate(-2.5deg); }
+  68%, 76%, 84%, 92% { transform: rotate(2.5deg); }
+}
+[data-attention][data-hotspot$="phone"] { animation: game-ring 2.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .game-attention, [data-attention][data-hotspot$="phone"] { animation: none; } }
 .game-scene-in { animation: game-scene-in 700ms ease-out both; }
 .game-caption { animation: game-caption 900ms ease-out both; }
 .game-closure { animation: game-closure 900ms ease-out both; }

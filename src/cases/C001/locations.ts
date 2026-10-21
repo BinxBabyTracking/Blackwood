@@ -47,6 +47,18 @@ const door = (id: string, label: string, locationId: string, rect: HotspotDef["r
   interaction: { type: "travel", locationId },
 });
 
+/** An item delivered to the office desk: sealed until opened, gone once its evidence is collected. */
+const deskItem = (id: string, label: string, deliveryId: string, evidenceId: string, rect: HotspotDef["rect"], sealed: string, opened: string): HotspotDef => ({
+  id,
+  label,
+  kind: "sprite",
+  rect,
+  visible: { any: [{ deliveryPending: deliveryId }, { all: [{ deliveryOpened: deliveryId }, { not: { hasEvidence: evidenceId } }] }] },
+  sprite: [{ image: opened, when: { deliveryOpened: deliveryId } }, { image: sealed }],
+  attention: { deliveryPending: deliveryId },
+  interaction: { type: "delivery", deliveryId },
+});
+
 export const locations: LocationDef[] = [
   {
     id: "office",
@@ -61,11 +73,14 @@ export const locations: LocationDef[] = [
       panel("office_casefile", "Case file from Det. Bennett", "folder", { x: 38, y: 62, w: 16, h: 10 }, "casefile"),
       inspect("office_labreport", "Laboratory report folder", "labfolder", { x: 17, y: 62, w: 9, h: 8 }, "Laboratory report", "A thin folder from the LAPD laboratory, clipped to the case file's covering note.", { evidence: "E11" }),
       panel("office_board", "Murder board", "board", { x: 5, y: 12, w: 26, h: 38 }, "board"),
-      panel("office_phone", "Telephone", "phone", { x: 60, y: 57, w: 8, h: 9 }, "phone"),
+      { ...panel("office_phone", "Telephone", "phone", { x: 60, y: 57, w: 8, h: 9 }, "phone"), attention: { callPending: "call_margaret_sedan" } },
       panel("office_notebook", "Notebook", "notebook", { x: 27, y: 66, w: 9, h: 7 }, "notebook"),
       panel("office_map", "Street map of Los Angeles", "map", { x: 64, y: 10, w: 22, h: 28 }, "map"),
       panel("office_recorder", "Police interview tapes", "recorder", { x: 72, y: 56, w: 12, h: 10 }, "statements", briefed),
-      panel("office_mail", "Mail and deliveries", "envelope", { x: 47, y: 77, w: 10, h: 7 }, "delivery", { flag: "has_mail" }),
+      panel("office_mail", "Opened mail", "tray", { x: 47, y: 77, w: 10, h: 7 }, "delivery", { any: [{ deliveryOpened: "jacket_recovered" }, { deliveryOpened: "patricia_envelope" }] }),
+      // Event objects: they appear on the desk when a delivery arrives and stay until their evidence is collected.
+      deskItem("office_envelope", "Manila envelope", "patricia_envelope", "E15", { x: 57, y: 67, w: 7, h: 7 }, "obj.envelope_sealed", "obj.envelope_open"),
+      deskItem("office_evidencebag", "Police evidence bag", "jacket_recovered", "E05", { x: 65, y: 63, w: 6, h: 11 }, "obj.evidence_bag", "obj.evidence_bag_open"),
       panel("office_typewriter", "Typewriter: file your conclusion", "typewriter", { x: 86, y: 58, w: 11, h: 13 }, "conclusion", briefed),
     ],
   },
@@ -140,7 +155,7 @@ export const locations: LocationDef[] = [
       person("da_daniel", "Daniel Mercer", "daniel", { x: 40, y: 22, w: 14, h: 58 }),
       inspect("da_hand", "Daniel's right hand", "hand", { x: 50.5, y: 52, w: 4, h: 6.5 }, "Daniel's right hand", "Daniel keeps his right hand close to his side.", { evidence: "E14" }),
       inspect("da_coats_a", "Coat rack", "coatrack", { x: 7, y: 12, w: 10, h: 60 }, "Coat rack by the door", "A grey raincoat, a navy blazer and a tan nylon windbreaker. The windbreaker's right cuff looks darker than the left, and damp, as though it has been rinsed.", { visible: { env: "daniel_apartment", is: "A" }, effects: [{ setFlag: "saw_jacket" }] }),
-      inspect("da_coats_b", "Coat rack", "coatrack_empty", { x: 7, y: 12, w: 10, h: 60 }, "Coat rack by the door", "A grey raincoat and a navy blazer.", { visible: { env: "daniel_apartment", is: "B" }, effects: [{ setFlag: "jacket_missing" }], textAfter: [{ requires: { flag: "saw_jacket" }, text: "A grey raincoat and a navy blazer. The tan windbreaker that hung here on your last visit is gone." }] }),
+      inspect("da_coats_b", "Coat rack", "coatrack_empty", { x: 7, y: 12, w: 10, h: 60 }, "Coat rack by the door", "A grey raincoat and a navy blazer.", { visible: { env: "daniel_apartment", is: "B" }, effects: [{ when: { flag: "saw_jacket" }, then: [{ setFlag: "jacket_missing" }] }], textAfter: [{ requires: { flag: "saw_jacket" }, text: "A grey raincoat and a navy blazer. The tan windbreaker that hung here on your last visit is gone." }] }),
       inspect("da_desk", "Desk and client files", "desk", { x: 62, y: 42, w: 18, h: 18 }, "Client files", "Neat stacks of client folders, each labelled. The one marked 'Whitmore' is thin.", { textAfter: [{ requires: { env: "daniel_apartment", is: "B" }, text: "The stacks have been gone through. The folder marked 'Whitmore' is no longer here." }] }),
       inspect("da_waste", "Wastebasket", "basket", { x: 57, y: 68, w: 6, h: 11 }, "Wastebasket", "Nearly empty. A receipt from Rexall Drugs on Sunset: 'Gauze 4in, adhesive tape, iodine. 8/17/85 9:02 AM.'", { visible: { env: "daniel_apartment", is: "A" } }),
       inspect("da_firstaid", "First aid tin", "tin", { x: 84, y: 50, w: 7, h: 8 }, "First aid tin", "Open on the kitchen counter. Gauze, tape, a half-used bottle of iodine.", { visible: { env: "daniel_apartment", is: "A" } }),

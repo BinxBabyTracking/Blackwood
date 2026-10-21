@@ -44,7 +44,7 @@ export const characters: CharacterDef[] = [
     bio: [
       { text: "Retired schoolteacher. Lives directly across Hollister Avenue from the Whitmore house and knew Eleanor for twenty years." },
       { text: "Walked home at about 10:10 on the night of the gathering.", requires: { any: [{ asked: "margaret_departure" }, { inspected: "office_recorder" }] } },
-      { text: "Saw a dark sedan parked by Eleanor's house at 12:10 AM.", requires: { event: "RE01" } },
+      { text: "Saw a dark sedan parked by Eleanor's house at 12:10 AM.", requires: { eventState: "RE01", is: "completed" } },
     ],
     available: { always: true },
     locationId: "margaret_house",
@@ -61,7 +61,7 @@ export const characters: CharacterDef[] = [
       {
         id: "forthcoming",
         label: "Forthcoming",
-        requires: { any: [{ asked: "margaret_sedan_more" }, { asked: "margaret_eleanor_mood" }] },
+        requires: { any: [{ eventState: "RE01", is: "completed" }, { asked: "margaret_sedan_more" }, { asked: "margaret_eleanor_mood" }] },
         cue: "Margaret seems more at ease with you now.",
       },
     ],
@@ -319,7 +319,7 @@ export const questions: DialogueQuestion[] = [
     "Dark. Green or black, I couldn't tell under the streetlight. A big four-door, parked under the jacaranda with its lights off.",
     "The back fender on the street side was crumpled in. I noticed because it caught the light.",
   ], {
-    requires: { event: "RE01" },
+    // Unlocked by RE01, Margaret's telephone call.
     unlocks: ["margaret_sedan_driver"],
     reveals: "The sedan Margaret saw at 12:10 AM was dark green or black, a large four-door, lights off, with a crumpled rear fender on the street side.",
     effects: [{ setFlag: "knows_fender" }],
@@ -328,6 +328,10 @@ export const questions: DialogueQuestion[] = [
     "No one. It just sat there. When I came down for a glass of water at half past twelve, it was gone.",
     "Please don't ask me whose car it was. I couldn't tell you, and I won't guess about something like that.",
   ]),
+  q("margaret", "The sedan", "margaret_confidence", "How sure are you about the time?", [
+    "Quite sure. The clock on my mantel was my mother's, and it keeps good time. I wind it every Sunday.",
+    "Ten past twelve when the cat woke me, and half past when I came down for water. I looked both times.",
+  ], { reveals: "Margaret is confident of the times: 12:10 AM by her mantel clock, and the car gone by 12:30." }),
   q("margaret", "Evidence", "margaret_struggle", "Would you have heard a struggle from across the street?", [
     "I keep asking myself that. I was asleep in my chair.",
     "I'm sorry. I would give anything to have stayed awake.",
@@ -396,7 +400,20 @@ export const questions: DialogueQuestion[] = [
   ], { requiresEvidence: ["E01"], reveals: "Daniel assumes the killer came in through the kitchen window." }),
   q("daniel", "Inconsistencies", "daniel_jacket_b", "Where is the tan windbreaker that was on your coat rack?", [
     "Windbreaker? I don't own a windbreaker. You must be thinking of somebody else.",
-  ], { requiresFlags: ["saw_jacket", "jacket_missing"], reveals: "Daniel says he does not own a windbreaker." }),
+  ], { topic: "Physical evidence", requiresFlags: ["saw_jacket", "jacket_missing"], reveals: "Daniel says he does not own a windbreaker." }),
+  q("daniel", "Afterwards", "daniel_suitcase", "You've packed a suitcase.", [
+    "A client in Phoenix. I travel for work.",
+    "Is there a law against packing a bag now?",
+  ], { requires: { inspected: "da_suitcase" } }),
+  q("daniel", "Physical evidence", "daniel_jacket_found", "Police recovered a tan windbreaker from the dumpster behind your building.", [
+    "Anyone can throw anything into that dumpster. The whole building uses it.",
+    "I have nothing more to say to you without my attorney.",
+  ], {
+    // Unlocked by RE02 once the recovered jacket has been collected.
+    requiresEvidence: ["E05"],
+    reveals: "Told the police had recovered a tan windbreaker behind his building, Daniel points out that the whole building uses the dumpster, and refers further questions to his attorney.",
+    effects: [{ setFlag: "daniel_lawyered" }],
+  }),
   q("daniel", "Inconsistencies", "daniel_alibi_broken", "Linda went home at eleven. Who kept your cup filled until one?", [
     "Then I have the name wrong. It was a long night and I was upset. What does a waitress's name matter?",
   ], { requiresDeductions: ["D_ALIBI"], unlocks: ["daniel_left_early"] }),
@@ -461,7 +478,7 @@ export const questions: DialogueQuestion[] = [
     "He does. Green '81 Buick LeSabre. He backed it into a pole a couple of months ago and crumpled the rear fender.",
     "I quoted him two-forty to fix it. He said he'd think about it. Never came back.",
   ], {
-    requires: { any: [{ event: "RE01" }, { flag: "knows_fender" }, { asked: "robert_cars_night" }] },
+    requires: { any: [{ eventState: "RE01", is: "completed" }, { flag: "knows_fender" }, { asked: "robert_cars_night" }] },
     unlocks: ["robert_buick"],
     reveals: "Daniel Mercer drives a green 1981 Buick LeSabre with a crumpled rear fender. Robert quoted $240 to fix it; Mercer declined.",
     effects: [{ setFlag: "fender_identified" }],
@@ -541,6 +558,14 @@ export const questions: DialogueQuestion[] = [
     "Mr. Albright was Uncle Harold's attorney. If she was taking the papers to him, she'd made up her mind.",
     "She never told me that part. I think she was protecting me.",
   ], { requiresDeductions: ["D_LAWYER"] }),
+  q("patricia", "Financial documentation", "patricia_envelope", "Tell me about the envelope you left at my office.", [
+    "The police gave me back her handbag with her things. The page was folded in the inside pocket. I knew it was from the copies I'd made for her.",
+    "I couldn't keep looking at it. I thought you would know what to do with it.",
+  ], { reveals: "Patricia found the torn statement page folded in Eleanor's handbag when the police returned her belongings." }),
+  q("patricia", "Financial documentation", "patricia_circled", "Eleanor marked lines on this statement. What are they?", [
+    "They're cheques drawn on the estate account. I can tell you what a line on a statement means. Who a cheque was made out to is on the half that's missing, or in the bank's files.",
+    "She tore it on purpose, I think. She was keeping the other half somewhere.",
+  ], { requiresEvidence: ["E15"] }),
   q("patricia", "Other guests", "patricia_daniel", "How well do you know Daniel Mercer?", [
     "Well enough to be polite. He's charming. Aunt Eleanor called him 'my Mr. Mercer' for years.",
     "Lately she stopped calling him that.",
@@ -600,14 +625,28 @@ export const questions: DialogueQuestion[] = [
     reveals: "A dark green 1981 Buick LeSabre is registered to D. Mercer Management.",
     effects: [{ setFlag: "sedan_registered" }],
   }),
-  q("bennett", "Requests for assistance", "bennett_jacket", "The tan windbreaker at Mercer's apartment has disappeared. Can you search for it?", [
+  q("bennett", "Requests for assistance", "bennett_jacket", "Something is missing from Mercer's apartment. Can your people look for a tan windbreaker?", [
     "A tan windbreaker with a wet cuff, and now it's gone. That's enough for me to look at the trash. Give me an hour.",
-    "It's done. Two of my officers pulled it out of the dumpster behind his building, under a sack of grass clippings. It goes to the lab first, then I'll have it sent to you with their notes.",
+    "It's done. Two of my officers pulled one out of the dumpster behind his building, under a sack of grass clippings. It goes to the lab first, then I'll have it brought to your office.",
   ], {
-    requiresFlags: ["saw_jacket", "jacket_missing"],
-    reveals: "Police recovered a tan windbreaker from the dumpster behind Mercer's building.",
-    effects: [{ setFlag: "jacket_search" }, { setFlag: "has_mail" }, { delivery: "jacket_recovered" }, { message: "An evidence bag from Det. Bennett has been delivered to your office." }],
+    // Available once the changed apartment has been seen, and the investigator has a reason to ask about a jacket.
+    requires: { all: [{ eventState: "RE02", is: "active" }, { inspected: "da_coats_b" }, { any: [{ flag: "jacket_missing" }, { flag: "knows_tan_jacket" }] }] },
+    variants: [
+      {
+        requires: { not: { flag: "jacket_missing" } },
+        reply: [
+          "A tan windbreaker Mrs. Ellis saw him wear, and you didn't see one at his place. That's thin. But trash is public property. Give me an hour.",
+          "It's done. Two of my officers pulled one out of the dumpster behind his building, under a sack of grass clippings. It goes to the lab first, then I'll have it brought to your office.",
+        ],
+      },
+    ],
+    reveals: "At your request, police searched the dumpster behind Mercer's building and recovered a tan windbreaker.",
+    effects: [{ setFlag: "jacket_search" }, { delivery: "jacket_recovered" }, { message: "An item has been delivered." }],
   }),
+  q("bennett", "Police findings", "bennett_jacket_where", "Tell me exactly where your officers found the jacket.", [
+    "Near the top of the bin, under a sack of grass clippings. The building manager says the bins were emptied two days before, so it went in after that.",
+    "Who put it there, I can't tell you. Nobody saw anything. Nobody ever does.",
+  ]),
   q("bennett", "Evidence reports", "bennett_jacket_lab", "What did the lab say about the jacket?", [
     "Their notes are clipped to the bag. That's everything I have, and I'm not going to improve on it.",
   ], { requiresEvidence: ["E05"] }),

@@ -22,6 +22,7 @@ import {
   StatementsPanel,
 } from "./panels";
 import { InterviewScreen } from "./interview-screen";
+import { useTelephoneRing } from "./telephone-ring";
 import { TravelMap } from "./travel-map";
 
 type Layer =
@@ -42,6 +43,7 @@ export interface GamePrefs {
   masterVolume: number;
   musicVolume: number;
   dialogueVolume: number;
+  sfxVolume: number;
 }
 
 /**
@@ -57,6 +59,8 @@ export function InvestigationShell({ caseId, initial, prefs, homeLocation }: { c
   const [toast, setToast] = useState<{ text: string; tone: "info" | "error" | "deduction" } | null>(null);
   const [verdictFeedback, setVerdictFeedback] = useState<string | null>(null);
   const [menu, setMenu] = useState(false);
+  /** A call the player chose to let ring. It stays pending and rings again on the next visit to the office. */
+  const [deferredCall, setDeferredCall] = useState<string | null>(null);
   const busy = useRef(false);
   const router = useRouter();
 
@@ -107,8 +111,10 @@ export function InvestigationShell({ caseId, initial, prefs, homeLocation }: { c
           if (action.type === "travel") setLayer(null);
           break;
       }
+      // Leaving the office ends a deferral, so a waiting call rings again on the next visit.
+      if (res.view.location.id !== view.location.id) setDeferredCall(null);
     },
-    [show],
+    [show, view.location.id],
   );
 
   const send = useCallback(
@@ -165,6 +171,9 @@ export function InvestigationShell({ caseId, initial, prefs, homeLocation }: { c
 
   const panel = layer?.k === "panel" ? layer.panel : null;
   const atHome = view.location.id === homeLocation;
+  // The telephone rings only in the office, and never over an interview, a document or an inspection.
+  const ringing = Boolean(view.phone.ringing && atHome && view.introSeen && (layer === null || panel === "phone") && deferredCall !== view.phone.ringing.id);
+  useTelephoneRing(ringing, (prefs.masterVolume / 100) * (prefs.sfxVolume / 100));
   const locked = view.status === "closed";
   const pin = (id: string) => dispatch({ type: "boardAdd", itemId: id, x: 10 + Math.random() * 70, y: 10 + Math.random() * 60 });
   const pinned = (id: string) => view.board.items.some((i) => i.id === id);
@@ -224,8 +233,8 @@ export function InvestigationShell({ caseId, initial, prefs, homeLocation }: { c
             </HudButton>
           ) : null}
           {view.phone.ringing ? (
-            <span className="ml-2 font-mono text-xs text-brass" role="status">
-              {atHome ? "The telephone is ringing." : "Your office telephone is ringing."}
+            <span className="ml-2 font-mono text-xs text-brass/80" role="status">
+              {atHome ? "Agency telephone ringing." : "A call is waiting at the office."}
             </span>
           ) : null}
         </nav>
@@ -363,7 +372,9 @@ export function InvestigationShell({ caseId, initial, prefs, homeLocation }: { c
       ) : null}
       {layer?.k === "document" ? <DocumentPanel data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} /> : null}
       {layer?.k === "call" ? <CallPanel caseId={caseId} data={layer.data} voices={view.voices} volume={dialogueVolume} onClose={() => setLayer({ k: "panel", panel: "phone" })} /> : null}
-      {layer?.k === "delivery" ? <DeliveryPanel data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} /> : null}
+      {layer?.k === "delivery" ? (
+        <DeliveryPanel caseId={caseId} data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} volume={dialogueVolume} />
+      ) : null}
 
       {panel === "notebook" ? (
         <DetectiveNotebook view={view} dispatch={dispatch} onClose={close} onOpenEvidence={(id) => setLayer({ k: "evidence", id, back: "notebook" })} pending={pending} />
@@ -372,7 +383,18 @@ export function InvestigationShell({ caseId, initial, prefs, homeLocation }: { c
         <EvidenceInventory items={view.evidence} onOpen={(id) => setLayer({ k: "evidence", id, back: "inventory" })} onClose={close} />
       ) : null}
       {panel === "map" ? <TravelMap view={view} onTravel={(id) => dispatch({ type: "travel", locationId: id })} onClose={close} pending={pending} /> : null}
-      {panel === "phone" ? <PhonePanel view={view} dispatch={dispatch} onClose={close} pending={pending} /> : null}
+      {panel === "phone" ? (
+        <PhonePanel
+          view={view}
+          dispatch={dispatch}
+          onClose={close}
+          pending={pending}
+          onDefer={() => {
+            if (view.phone.ringing) setDeferredCall(view.phone.ringing.id);
+            close();
+          }}
+        />
+      ) : null}
       {panel === "statements" ? <StatementsPanel caseId={caseId} view={view} onClose={close} volume={dialogueVolume} /> : null}
       {panel === "delivery" ? <MailPanel view={view} dispatch={dispatch} onClose={close} pending={pending} /> : null}
       {panel === "conclusion" ? <ConclusionPanel view={view} dispatch={dispatch} onClose={close} pending={pending} feedback={verdictFeedback} /> : null}

@@ -136,6 +136,8 @@ function obj(h: HotspotDef, l: LocationDef, state: string): string {
       return `<rect x="${x}" y="${y + hh * 0.2}" width="${w}" height="${hh * 0.8}" rx="6" fill="#2a2a2a"/><rect x="${x + w * 0.1}" y="${y + hh * 0.3}" width="${w * 0.5}" height="${hh * 0.35}" fill="#555"/><circle cx="${x + w * 0.25}" cy="${y + hh * 0.47}" r="${hh * 0.1}" fill="#222"/><circle cx="${x + w * 0.45}" cy="${y + hh * 0.47}" r="${hh * 0.1}" fill="#222"/>${[0, 1, 2].map((i) => `<rect x="${x + w * 0.68 + i * w * 0.1}" y="${y + hh * 0.3}" width="${w * 0.07}" height="${hh * 0.2}" fill="#999"/>`).join("")}<rect x="${x + w + 8}" y="${y + hh * 0.4}" width="${w * 0.25}" height="${hh * 0.6}" fill="#3b2f25"/>`;
     case "envelope":
       return `<rect x="${x}" y="${y}" width="${w}" height="${hh}" fill="#d8c79c" transform="rotate(-6 ${cx} ${y})"/><path d="M${x} ${y} L${cx} ${y + hh * 0.6} L${x + w} ${y}" stroke="#a39065" stroke-width="3" fill="none" transform="rotate(-6 ${cx} ${y})"/>`;
+    case "tray":
+      return `<rect x="${x}" y="${y + hh * 0.35}" width="${w}" height="${hh * 0.65}" fill="none" stroke="#7a7466" stroke-width="4"/>${[0.25, 0.5, 0.75].map((f) => `<line x1="${x + w * f}" y1="${y + hh * 0.35}" x2="${x + w * f}" y2="${b}" stroke="#7a7466" stroke-width="2"/>`).join("")}<rect x="${x + 6}" y="${y + hh * 0.5}" width="${w - 12}" height="${hh * 0.12}" fill="#d9cfb2" opacity="0.5"/>`;
     case "typewriter":
       return `<path d="M${x} ${b} L${x + w * 0.1} ${y + hh * 0.35} L${x + w * 0.9} ${y + hh * 0.35} L${x + w} ${b} Z" fill="#232323"/><rect x="${x + w * 0.05}" y="${y + hh * 0.25}" width="${w * 0.9}" height="${hh * 0.12}" rx="8" fill="#111"/><rect x="${x + w * 0.25}" y="${y}" width="${w * 0.5}" height="${hh * 0.3}" fill="${C.paper}"/>${Array.from({ length: 12 }, (_, i) => `<circle cx="${x + w * 0.15 + (i % 6) * w * 0.14}" cy="${y + hh * 0.6 + Math.floor(i / 6) * hh * 0.15}" r="5" fill="#bbb"/>`).join("")}`;
     case "chair":
@@ -245,6 +247,7 @@ function person(cx: number, y: number, w: number, h: number, loc: string) {
 function scene(l: LocationDef, state: string) {
   let body = backdrop(l, state);
   const hs = l.hotspots.filter((h) => {
+    if (h.sprite) return false; // event objects are drawn over the scene at runtime
     const v = h.visible as { env?: string; is?: string; flag?: string } | undefined;
     if (!v) return true;
     if (v.env) return v.is === state;
@@ -375,6 +378,17 @@ for (const l of def.locations) {
   }
 }
 for (const c of def.characters) write(def.assets.images[c.portrait].replace(`/cases/${caseId}/`, ""), portrait(c.id, c.name));
+// Event objects, drawn over the scene when their condition holds.
+const OBJECTS: Record<string, string> = {
+  envelope_sealed: `<rect x="10" y="22" width="180" height="120" rx="3" fill="#cdb27a" transform="rotate(-5 100 82)"/><path d="M14 26 L100 92 L186 26" stroke="#9c834f" stroke-width="4" fill="none" transform="rotate(-5 100 82)"/><circle cx="100" cy="92" r="11" fill="#8a2f28" transform="rotate(-5 100 82)"/><rect x="34" y="106" width="80" height="6" fill="#3b3326" opacity="0.6" transform="rotate(-5 100 82)"/>`,
+  envelope_open: `<rect x="10" y="40" width="180" height="110" rx="3" fill="#cdb27a" transform="rotate(-5 100 95)"/><path d="M10 40 L100 4 L190 40" fill="#bfa36a" transform="rotate(-5 100 95)"/><rect x="40" y="20" width="110" height="70" fill="#efe7d4" transform="rotate(-9 95 55)"/><rect x="52" y="34" width="70" height="4" fill="#666" transform="rotate(-9 95 55)"/><rect x="52" y="46" width="85" height="4" fill="#666" transform="rotate(-9 95 55)"/>`,
+  evidence_bag: `<path d="M30 30 L170 30 L162 190 L38 190 Z" fill="#9b7b52"/><rect x="30" y="22" width="140" height="18" fill="#8b6c45"/><rect x="30" y="26" width="140" height="8" fill="#a5281f"/><rect x="62" y="80" width="76" height="52" fill="#efe7d4"/><rect x="70" y="92" width="58" height="5" fill="#333"/><rect x="70" y="104" width="44" height="5" fill="#333"/><text x="100" y="124" text-anchor="middle" font-family="Courier New, monospace" font-size="11" fill="#a5281f">LAPD</text>`,
+  evidence_bag_open: `<path d="M30 40 L170 40 L162 190 L38 190 Z" fill="#9b7b52"/><path d="M30 40 L60 18 L150 14 L170 40 Z" fill="#7d6040"/><rect x="62" y="80" width="76" height="52" fill="#efe7d4"/><rect x="70" y="92" width="58" height="5" fill="#333"/><rect x="70" y="104" width="44" height="5" fill="#333"/><rect x="40" y="44" width="120" height="30" fill="#b39a6c" opacity="0.9"/>`,
+};
+for (const [k, body] of Object.entries(OBJECTS)) {
+  const key = `obj.${k}`;
+  if (def.assets.images[key]) write(def.assets.images[key].replace(`/cases/${caseId}/`, ""), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">${body}</svg>`);
+}
 for (const e of def.evidence) write(def.assets.images[e.image].replace(`/cases/${caseId}/`, ""), evidenceArt(e));
 mkdirSync(join(out, "audio"), { recursive: true });
 writeFileSync(

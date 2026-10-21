@@ -16,7 +16,7 @@ function rateLimited(userId: string) {
   return hits.length > LIMIT;
 }
 
-const KINDS = new Set(["conversation", "statement", "call"]);
+const KINDS = new Set(["conversation", "statement", "call", "delivery"]);
 
 /**
  * Character voices. GET /api/voice?caseId=C001&kind=conversation&id=margaret&n=3
@@ -49,10 +49,16 @@ export async function GET(request: NextRequest) {
     if (!loaded) return fail("Accept the assignment first.", 403);
     const line = spokenLine(def, normalizeState(def, loaded.state), { kind: kind as "conversation", id, n });
     if (!line) return fail("That line is not available.", 403);
-    const speaker = def.characters.find((c) => c.id === line.speakerId);
-    if (!speaker?.voice) return fail("This person has no voice assigned.", 404);
-    const voice = castVoice(speaker.id, speaker.voice);
-    const { audio, cached } = await narrate(`${def.id}/voices/${speaker.id}`, line.text, voice);
+    let result;
+    if (line.speakerId === "narrator") {
+      // Written notes use the existing evidence narrator voice.
+      result = await narrate(`${def.id}/voices/narrator`, line.text);
+    } else {
+      const speaker = def.characters.find((c) => c.id === line.speakerId);
+      if (!speaker?.voice) return fail("This person has no voice assigned.", 404);
+      result = await narrate(`${def.id}/voices/${speaker.id}`, line.text, castVoice(speaker.id, speaker.voice));
+    }
+    const { audio, cached } = result;
     return new Response(audio, {
       headers: { "Content-Type": "audio/mpeg", "Cache-Control": "private, max-age=86400", "X-Voice-Cache": cached ? "hit" : "miss" },
     });
