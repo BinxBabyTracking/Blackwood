@@ -60,7 +60,7 @@ export function DetectiveNotebook({
               ))}
             </ul>
           ) : null}
-          {tab === "Evidence" ? <EvidenceList items={view.evidence} onOpen={onOpenEvidence} tone="paper" /> : null}
+          {tab === "Evidence" ? <EvidenceList items={view.evidence} onOpen={onOpenEvidence} tone="paper" detailed /> : null}
           {tab === "People" ? (
             view.characters.length ? (
               <ul className="space-y-5">

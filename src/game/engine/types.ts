@@ -279,6 +279,10 @@ export interface InvestigationState {
   evidence: string[];
   /** Where and when each piece of evidence was collected. */
   discoveries: Record<string, Discovery>;
+  /** The player's own notes on individual evidence items. */
+  evidenceNotes: Record<string, string>;
+  /** Whether narration controls are shown in evidence views. Narration itself always waits for the player. */
+  narration: boolean;
   flags: string[];
   asked: string[];
   presented: string[]; // `${characterId}:${evidenceId}`
@@ -334,6 +338,8 @@ export type GameAction =
   | { type: "connect"; a: string; b: string }
   | { type: "disconnect"; a: string; b: string }
   | { type: "saveNotes"; text: string }
+  | { type: "saveEvidenceNote"; evidenceId: string; text: string }
+  | { type: "setNarration"; enabled: boolean }
   | { type: "dismissMessages" }
   | { type: "submitConclusion"; theory: Theory };
 
@@ -362,6 +368,10 @@ export interface ClientEvidence {
   /** Where the player collected it, once collected. */
   foundAt: string | null;
   collectedAt: number | null;
+  /** Names of related people the player already knows about. */
+  related: string[];
+  /** The player's own note on this item. */
+  note: string;
 }
 
 export interface ClientCharacter {
@@ -387,7 +397,7 @@ export interface ClientView {
     subtitle: string;
     background: string;
     ambience: string | null;
-    hotspots: { id: string; label: string; rect: HotspotDef["rect"] }[];
+    hotspots: { id: string; label: string; rect: HotspotDef["rect"]; inspected: boolean; collected: boolean }[];
   };
   map: { id: string; name: string; subtitle: string; available: boolean; visited: boolean; current: boolean; pin: { x: number; y: number } | null }[];
   evidence: ClientEvidence[];
@@ -407,6 +417,7 @@ export interface ClientView {
   documents: { id: string; title: string; read: boolean }[];
   statements: { characterId: string; name: string; recordedAt: string; audio: string | null; transcript: StatementDef["transcript"] }[];
   messages: string[];
+  narration: boolean;
   conclusion: { choices: ChoiceSet[]; attempts: number };
   /** Only present once the case is closed. */
   closure: SolutionDef["closure"] | null;

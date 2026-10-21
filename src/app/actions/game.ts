@@ -45,7 +45,8 @@ export async function restartCase(caseId: string): Promise<ActionResponse | { er
 
 const ACTIONS = new Set<GameAction["type"]>([
   "dismissIntro", "travel", "hotspot", "collect", "readDocument", "talk", "ask", "present", "answerCall", "placeCall",
-  "openDelivery", "boardAdd", "boardMove", "boardRemove", "connect", "disconnect", "saveNotes", "dismissMessages", "submitConclusion",
+  "openDelivery", "boardAdd", "boardMove", "boardRemove", "connect", "disconnect", "saveNotes", "saveEvidenceNote", "setNarration",
+  "dismissMessages", "submitConclusion",
 ]);
 
 /** `saved: false` means progress may not have been written; a rule refusal changes nothing and keeps `saved: true`. */

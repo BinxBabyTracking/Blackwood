@@ -55,11 +55,12 @@ run({ type: "dismissIntro" });
 // Cannot cheat-collect before discovery
 try { collect("E05"); problems.push("collected E05 without discovering it"); } catch {}
 run({ type: "readDocument", documentId: "casefile" });
-collect("E06"); collect("E12");
+collect("E12");
+hot("office_labreport"); collect("E11");
 hot("office_recorder");
 go("living_room");
-for (const h of ["lr_chair", "lr_glass", "lr_ledger", "lr_drawer", "lr_sideboard"]) hot(h);
-for (const e of ["E07", "E02", "E03", "E08"]) collect(e);
+for (const h of ["lr_chair", "lr_glass", "lr_ledger", "lr_drawer", "lr_diary", "lr_sideboard"]) hot(h);
+for (const e of ["E07", "E02", "E03", "E08", "E09"]) collect(e);
 try { collect("E07"); problems.push("E07 collected twice"); } catch {}
 if (s.evidence.filter((e) => e === "E07").length !== 1) problems.push("E07 duplicated in evidence list");
 const d07 = s.discoveries.E07;
@@ -68,8 +69,8 @@ if (!s.notebook.some((n) => n.id === "evidence:E07")) problems.push("E07 missing
 const v07 = project(def, s).evidence.find((e) => e.id === "E07");
 if (v07?.foundAt !== "Eleanor's Living Room" || !v07.collected) problems.push(`E07 view wrong: ${JSON.stringify(v07)}`);
 hot("lr_to_kitchen");
-for (const h of ["k_window", "k_door", "k_calendar"]) hot(h);
-for (const e of ["E01", "E10", "E09"]) collect(e);
+for (const h of ["k_window", "k_door", "k_knives", "k_calendar"]) hot(h);
+for (const e of ["E01", "E10", "E06"]) collect(e);
 go("margaret_house");
 run({ type: "talk", characterId: "margaret" });
 ask("margaret_evening"); ask("margaret_eleanor_mood"); ask("margaret_daniel");
@@ -77,15 +78,23 @@ if (s.events.includes("RE01")) problems.push("RE01 fired while at Margaret's");
 go("daniel_apartment");
 if (!s.events.includes("RE01")) problems.push("RE01 did not fire after leaving Margaret's");
 hot("da_coats_a");
+for (const reserved of ["E05", "E15"]) {
+  try { collect(reserved); problems.push(`${reserved} collectable before its event`); } catch {}
+}
+hot("da_hand"); collect("E14");
 run({ type: "talk", characterId: "daniel" });
 ask("daniel_evening"); ask("daniel_hand");
-if (!s.evidence.includes("E14")) problems.push("E14 not given");
+if (s.evidence.filter((e) => e === "E14").length !== 1) problems.push("E14 duplicated by dialogue");
 if (s.env.daniel_apartment === "B") problems.push("RE02 fired while in apartment");
 go("diner");
 if (s.env.daniel_apartment !== "B") problems.push("RE02 did not fire");
+hot("d_spike"); hot("d_schedule"); collect("E04"); collect("E13");
 run({ type: "talk", characterId: "rosa" });
 ask("rosa_saturday"); ask("rosa_customer");
-hot("d_spike"); hot("d_schedule"); collect("E04"); collect("E13");
+const initial = [...evIds].filter((e) => e !== "E05" && e !== "E15");
+const missingInitial = initial.filter((e) => !s.evidence.includes(e));
+if (missingInitial.length) problems.push(`initially discoverable evidence not collected: ${missingInitial}`);
+if (s.evidence.includes("E05") || s.evidence.includes("E15")) problems.push("reserved evidence collected early");
 go("patricia_office");
 ask("patricia_evening"); ask("patricia_money");
 if (!s.events.includes("RE03")) problems.push("RE03 did not fire");
@@ -94,11 +103,25 @@ go("daniel_apartment"); hot("da_coats_b");
 go("office");
 const call = run({ type: "answerCall", callId: "call_margaret_sedan" });
 if (call.kind !== "call") problems.push("call not answered");
-run({ type: "placeCall", callId: "call_bennett_lab" });
 run({ type: "placeCall", callId: "call_bennett_jacket" });
-for (const d of ["lab_report", "jacket_recovered", "patricia_envelope"]) run({ type: "openDelivery", deliveryId: d });
-for (const e of ["E11", "E05", "E15"]) collect(e);
+for (const d of ["jacket_recovered", "patricia_envelope"]) run({ type: "openDelivery", deliveryId: d });
+for (const e of ["E05", "E15"]) collect(e);
 if (s.evidence.length !== 15) problems.push(`collected ${s.evidence.length}/15: missing ${[...evIds].filter((e) => !s.evidence.includes(e))}`);
+
+// every evidence item has exactly one scene hotspot, document or delivery that reveals it
+for (const e of evIds) {
+  const sources = def.locations.flatMap((l) => l.hotspots).filter((h) => h.interaction.type === "inspect" && h.interaction.evidence === e).length
+    + def.documents.filter((d) => d.evidence.includes(e)).length + def.deliveries.filter((d) => d.evidence.includes(e)).length;
+  if (sources < 1) problems.push(`${e} has no discovery source`);
+}
+// assigned locations from the Step 4 brief
+const assigned: Record<string, string[]> = { office: ["E11", "E12"], living_room: ["E02", "E03", "E07", "E08", "E09"], kitchen: ["E01", "E06", "E10"], diner: ["E04", "E13"], daniel_apartment: ["E14"] };
+for (const [locId, ids] of Object.entries(assigned)) for (const id of ids) if (def.evidence.find((e) => e.id === id)?.sourceLocationId !== locId) problems.push(`${id} not assigned to ${locId}`);
+for (const id of ["E01","E02","E03","E04","E06","E07","E08","E09","E10","E11","E13","E14"]) {
+  const d = s.discoveries[id];
+  const want = def.evidence.find((e) => e.id === id)!.sourceLocationId;
+  if (!d || d.locationId !== want) problems.push(`${id} discovered at ${d?.locationId} instead of ${want}`);
+}
 
 // board
 const pins = ["E01", "E10", "E02", "E11", "E14", "E03", "E15", "E04", "E13", "E06", "E07", "E05", "E09", "E08", "E12", "daniel"];

@@ -15,7 +15,7 @@ export function ZoomImage({ src, alt }: { src: string; alt: string }) {
   };
 
   return (
-    <div className="relative overflow-hidden bg-black">
+    <div className="relative flex items-center overflow-hidden bg-black lg:h-full">
       <div
         className={`aspect-[4/3] w-full touch-none select-none ${zoom > 1 ? "cursor-grab active:cursor-grabbing" : "cursor-zoom-in"}`}
         onWheel={(e) => setZ(zoom - e.deltaY * 0.0015)}

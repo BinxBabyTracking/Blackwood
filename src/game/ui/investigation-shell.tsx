@@ -41,6 +41,7 @@ export interface GamePrefs {
   reducedMotion: boolean;
   masterVolume: number;
   musicVolume: number;
+  dialogueVolume: number;
 }
 
 /**
@@ -167,6 +168,14 @@ export function InvestigationShell({ caseId, initial, prefs, homeLocation }: { c
   const locked = view.status === "closed";
   const pin = (id: string) => dispatch({ type: "boardAdd", itemId: id, x: 10 + Math.random() * 70, y: 10 + Math.random() * 60 });
   const pinned = (id: string) => view.board.items.some((i) => i.id === id);
+  const narrationFor = (id: string) =>
+    view.narration
+      ? {
+          src: `/api/narration?caseId=${encodeURIComponent(caseId)}&evidenceId=${encodeURIComponent(id)}`,
+          volume: Math.max(0, Math.min(1, (prefs.masterVolume / 100) * (prefs.dialogueVolume / 100))),
+        }
+      : null;
+  const saveNote = (id: string) => (text: string) => dispatch({ type: "saveEvidenceNote", evidenceId: id, text });
 
   // The evidence shown in an inspection: the collected copy if the player has it, else the scene's copy.
   const inspected =
@@ -229,6 +238,16 @@ export function InvestigationShell({ caseId, initial, prefs, homeLocation }: { c
                   My Case Files
                   <span className="block text-xs text-smoke">Progress is saved after every action.</span>
                 </Link>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={view.narration}
+                  className="block w-full px-3 py-2 text-left hover:bg-white/5"
+                  onClick={() => dispatch({ type: "setNarration", enabled: !view.narration })}
+                >
+                  Evidence narration: {view.narration ? "On" : "Off"}
+                  <span className="block text-xs text-smoke">Shows a Read aloud control on evidence. Audio only plays when you press Play.</span>
+                </button>
                 <button
                   type="button"
                   className="block w-full px-3 py-2 text-left hover:bg-white/5"
@@ -298,8 +317,11 @@ export function InvestigationShell({ caseId, initial, prefs, homeLocation }: { c
 
       {layer?.k === "inspect" && inspected ? (
         <EvidenceInspection
+          key={inspected.id}
           evidence={inspected}
           observation={layer.text}
+          narration={narrationFor(inspected.id)}
+          onSaveNote={saveNote(inspected.id)}
           onCollect={() => dispatch({ type: "collect", evidenceId: inspected.id })}
           onPin={() => pin(inspected.id)}
           pinned={pinned(inspected.id)}
@@ -311,7 +333,10 @@ export function InvestigationShell({ caseId, initial, prefs, homeLocation }: { c
       {layer?.k === "inspect" && !layer.evidence ? <ObservationCard title={layer.title} text={layer.text} onClose={close} /> : null}
       {layer?.k === "evidence" && fromNotebook ? (
         <EvidenceInspection
+          key={fromNotebook.id}
           evidence={fromNotebook}
+          narration={narrationFor(fromNotebook.id)}
+          onSaveNote={saveNote(fromNotebook.id)}
           onCollect={() => undefined}
           onPin={() => pin(fromNotebook.id)}
           pinned={pinned(fromNotebook.id)}
@@ -355,6 +380,11 @@ export function InvestigationShell({ caseId, initial, prefs, homeLocation }: { c
 }
 
 function ObservationCard({ title, text, onClose }: { title: string; text: string; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
   return (
     <div className="fixed inset-0 z-40 flex items-end justify-center bg-black/40 p-4 sm:items-center game-fade" onClick={onClose}>
       <div

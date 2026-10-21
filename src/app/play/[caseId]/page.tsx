@@ -78,6 +78,7 @@ async function Desk({ params }: { params: Promise<{ caseId: string }> }) {
           reducedMotion: settings?.reduced_motion ?? false,
           masterVolume: settings?.master_volume ?? 80,
           musicVolume: settings?.music_volume ?? 70,
+          dialogueVolume: settings?.dialogue_volume ?? 90,
         }}
       />
     </main>

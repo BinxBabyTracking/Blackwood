@@ -39,7 +39,7 @@ export const documents: DocumentDef[] = [
       { label: "Police contact", value: "Det. Frank Bennett, LAPD Northeast Division" },
     ],
     people: ["margaret", "daniel", "robert", "patricia"],
-    evidence: ["E06", "E12"],
+    evidence: ["E12"],
     effectsOnRead: [{ setFlag: "casefile_read" }],
     pages: [
       {
@@ -64,7 +64,7 @@ export const documents: DocumentDef[] = [
       },
       {
         heading: "Attached",
-        body: "Photograph and report extract for the weapon (property tag 85-41173). My notes on when each guest left. One shard of the broken glass, bagged and held at the scene for you.",
+        body: "My notes on when each guest left. The laboratory folder is on your desk. One shard of the broken glass is bagged and held at the scene for you; the knife block in the kitchen is tagged.",
       },
     ],
   },
@@ -139,18 +139,6 @@ export const calls: CallDef[] = [
 
 export const outgoingCalls: OutgoingCallDef[] = [
   {
-    id: "call_bennett_lab",
-    to: "bennett",
-    label: "Ask Det. Bennett to have the glass shard analysed",
-    available: { hasEvidence: "E02" },
-    done: { flag: "lab_requested" },
-    lines: [
-      "Bennett: The glass? The lab typed the victim's blood and called it a day. You think there's more on it?",
-      "Bennett: All right. I'll lean on SID and have them type the shard against the guests' voluntary samples. I'll send the report over by courier.",
-    ],
-    effects: [{ setFlag: "lab_requested" }, { setFlag: "has_mail" }, { delivery: "lab_report" }],
-  },
-  {
     id: "call_bennett_jacket",
     to: "bennett",
     label: "Tell Det. Bennett the jacket at Mercer's apartment has disappeared",
@@ -175,12 +163,6 @@ export const outgoingCalls: OutgoingCallDef[] = [
 ];
 
 export const deliveries: DeliveryDef[] = [
-  {
-    id: "lab_report",
-    title: "Courier envelope from LAPD Scientific Investigation Division",
-    text: "Typed results with a note from Bennett: 'Rushed it. You owe me. F.B.'",
-    evidence: ["E11"],
-  },
   {
     id: "jacket_recovered",
     title: "LAPD evidence bag: recovered jacket",

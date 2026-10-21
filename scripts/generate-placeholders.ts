@@ -115,6 +115,12 @@ function obj(h: HotspotDef, l: LocationDef, state: string): string {
       s += `<path d="M${x + 60} ${y + 80} L${x + w * 0.6} ${y + hh * 0.6} L${x + w * 0.8} ${y + 70}" stroke="#b02a22" stroke-width="2.5" fill="none"/>`;
       return s;
     }
+    case "labfolder":
+      return `<g transform="rotate(4 ${cx} ${y + hh / 2})"><rect x="${x}" y="${y + 4}" width="${w}" height="${hh - 4}" fill="#6f8796"/><rect x="${x + 4}" y="${y}" width="${w * 0.4}" height="8" fill="#6f8796"/><rect x="${x + w * 0.15}" y="${y + hh * 0.35}" width="${w * 0.6}" height="${hh * 0.22}" fill="${C.paper}"/></g>`;
+    case "diary":
+      return `<rect x="${x}" y="${y + hh * 0.15}" width="${w}" height="${hh * 0.85}" fill="#4a1f1c"/><rect x="${x + w * 0.08}" y="${y + hh * 0.22}" width="${w * 0.84}" height="${hh * 0.7}" fill="${C.paper}"/><line x1="${cx}" y1="${y + hh * 0.22}" x2="${cx}" y2="${y + hh * 0.92}" stroke="#7a6a52" stroke-width="2"/>${[0, 1, 2].map((i) => `<line x1="${x + w * 0.14}" y1="${y + hh * (0.4 + i * 0.15)}" x2="${cx - 6}" y2="${y + hh * (0.4 + i * 0.15)}" stroke="#2a3f6b" stroke-width="2"/>`).join("")}`;
+    case "hand":
+      return "";
     case "phone":
       return `<rect x="${x}" y="${y + hh * 0.35}" width="${w}" height="${hh * 0.65}" rx="10" fill="#1b1b1b"/><path d="M${x - 4} ${y + hh * 0.35} Q${cx} ${y - 6} ${x + w + 4} ${y + hh * 0.35}" stroke="#1b1b1b" stroke-width="16" fill="none"/><circle cx="${cx}" cy="${y + hh * 0.68}" r="${w * 0.22}" fill="#3a3a3a" stroke="#777" stroke-width="2"/>`;
     case "notebook":
@@ -305,14 +311,20 @@ function evidenceArt(e: CaseDefinition["evidence"][number]) {
   const H2 = 900;
   let body = `<rect width="${W2}" height="${H2}" fill="#1f2326"/>`;
   if (DOCS.has(e.id)) {
-    const lines = wrapLines(e.inspection, 52).slice(0, 14);
+    // Placeholder layout only: structure of the document, no invented content.
+    const handwritten = ["E03", "E04", "E09", "E12"].includes(e.id);
     body += `<rect x="200" y="60" width="800" height="780" fill="${e.id === "E04" || e.id === "E13" ? "#efe9d6" : C.paper}"/>`;
     if (e.id === "E15") body += `<path d="M1000 60 L1000 840 L960 800 L985 740 L950 680 L990 620 L955 560 L995 500 L960 440 L990 380 L955 320 L990 260 L960 200 L995 140 L965 60 Z" fill="#1f2326"/>`;
-    if (e.id === "E03" || e.id === "E12") for (let y = 150; y < 820; y += 34) body += `<line x1="230" y1="${y}" x2="970" y2="${y}" stroke="#8fb0c7" stroke-width="1.5" opacity="0.6"/>`;
+    if (handwritten) for (let y = 150; y < 820; y += 34) body += `<line x1="230" y1="${y}" x2="970" y2="${y}" stroke="#8fb0c7" stroke-width="1.5" opacity="0.6"/>`;
     body += `<text x="240" y="120" font-family="Courier New, monospace" font-size="26" font-weight="bold" fill="#2a241c">${esc(e.title.toUpperCase())}</text>`;
-    lines.forEach((ln, i) => {
-      body += `<text x="240" y="${190 + i * 44}" font-family="${["E03", "E04", "E09", "E12"].includes(e.id) ? "Georgia, serif" : "Courier New, monospace"}" font-style="${["E03", "E04", "E09", "E12"].includes(e.id) ? "italic" : "normal"}" font-size="26" fill="#2f2a22">${esc(ln)}</text>`;
-    });
+    for (let k = 0; k < 13; k++) {
+      const yy = 180 + k * 46;
+      const wLine = 200 + ((k * 137) % 460);
+      body += handwritten
+        ? `<path d="M240 ${yy} q ${wLine / 4} -10 ${wLine / 2} 0 t ${wLine / 2} 0" stroke="#2f3f6a" stroke-width="3" fill="none" opacity="0.55"/>`
+        : `<rect x="240" y="${yy - 14}" width="${wLine}" height="14" fill="#2f2a22" opacity="0.25"/>`;
+    }
+    body += `<g transform="rotate(-12 600 470)"><rect x="330" y="420" width="540" height="100" fill="none" stroke="#7d3a33" stroke-width="6" opacity="0.75"/><text x="600" y="485" text-anchor="middle" font-family="Courier New, monospace" font-size="38" font-weight="bold" fill="#7d3a33" opacity="0.75">TEXT PENDING</text></g>`;
   } else {
     body += `<ellipse cx="600" cy="470" rx="420" ry="300" fill="#2c3236"/>`;
     body += physical(e.id);
@@ -331,7 +343,7 @@ function physical(id: string) {
     case "E05":
       return `<path d="M330 260 L500 220 Q600 260 700 220 L870 260 L930 640 L840 650 L820 420 L820 700 L380 700 L380 420 L360 650 L270 640 Z" fill="#b39a6c"/><path d="M840 600 L930 600 L935 650 L842 655 Z" fill="#5a3426"/><rect x="590" y="240" width="20" height="460" fill="#8a744f"/>`;
     case "E06":
-      return `<rect x="200" y="200" width="800" height="500" fill="#e9e3d3"/><path d="M300 470 L800 430 L860 450 L800 470 Z" fill="#c9cdd0"/><rect x="800" y="430" width="140" height="44" rx="8" fill="#2a1c13" transform="rotate(-3 870 450)"/><text x="240" y="260" font-family="Courier New" font-size="24" fill="#2a241c">PROPERTY TAG 85-41173</text><rect x="220" y="560" width="250" height="100" fill="none" stroke="#2a241c" stroke-width="2"/><text x="240" y="620" font-family="Courier New" font-size="20" fill="#2a241c">SCALE 1:1  8 IN</text>`;
+      return `<path d="M380 700 L520 300 L860 380 L800 700 Z" fill="#7a5532"/>${[0, 1, 2, 3].map((i) => `<rect x="${540 + i * 70}" y="${250 + i * 18}" width="22" height="${110 - i * 12}" fill="#1a1a1a"/><rect x="${545 + i * 70}" y="${330 + i * 18}" width="12" height="40" fill="#0d0b09"/>`).join("")}<rect x="460" y="330" width="60" height="22" fill="#0d0b09" transform="rotate(16 490 340)"/><rect x="820" y="520" width="150" height="80" fill="#e6e1d0" transform="rotate(6 895 560)"/><text x="835" y="565" font-family="Courier New" font-size="18" fill="#2a241c" transform="rotate(6 895 560)">LAPD TAG</text>`;
     case "E07":
       return `<g transform="rotate(-80 600 500)"><rect x="440" y="300" width="300" height="34" fill="#5a3b28"/><rect x="440" y="100" width="34" height="240" fill="#4a3020"/><rect x="706" y="100" width="34" height="240" fill="#4a3020"/><rect x="440" y="100" width="300" height="44" fill="#5a3b28"/><rect x="450" y="334" width="26" height="200" fill="#3a2418"/><rect x="706" y="334" width="26" height="200" fill="#3a2418" transform="rotate(12 719 334)"/></g>`;
     case "E08":

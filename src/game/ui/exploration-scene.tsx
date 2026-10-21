@@ -22,16 +22,17 @@ export function SceneHotspot({
   onHover: (label: string | null) => void;
 }) {
   const r = hotspot.rect;
+  const label = hotspot.collected ? `${hotspot.label} (collected)` : hotspot.inspected ? `${hotspot.label} (examined)` : hotspot.label;
   return (
     <button
       type="button"
-      aria-label={hotspot.label}
+      aria-label={label}
       data-hotspot={hotspot.id}
       disabled={disabled}
       onClick={() => onSelect(hotspot.id)}
-      onMouseEnter={() => onHover(hotspot.label)}
+      onMouseEnter={() => onHover(label)}
       onMouseLeave={() => onHover(null)}
-      onFocus={() => onHover(hotspot.label)}
+      onFocus={() => onHover(label)}
       onBlur={() => onHover(null)}
       className="absolute cursor-pointer rounded-[3px] outline-none transition-[background-color,box-shadow] duration-300 hover:bg-[#f3ede3]/[0.06] hover:shadow-[inset_0_0_0_1px_rgba(243,237,227,0.22)] focus-visible:outline-dashed focus-visible:outline-2 focus-visible:outline-[#f3ede3]/70 disabled:cursor-wait"
       style={{ left: `${r.x}%`, top: `${r.y}%`, width: `${r.w}%`, height: `${r.h}%` }}
@@ -94,6 +95,9 @@ export function ExplorationScene({
           </span>
         </div>
       </div>
+      <p className="pointer-events-none absolute bottom-3 left-0 right-0 hidden text-center font-mono text-xs text-smoke portrait:block sm:portrait:hidden">
+        Turn your phone sideways for a larger view.
+      </p>
     </div>
   );
 }

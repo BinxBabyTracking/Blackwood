@@ -26,6 +26,8 @@ export function newState(def: CaseDefinition, now = Date.now()): InvestigationSt
     inspected: [],
     evidence: [],
     discoveries: {},
+    evidenceNotes: {},
+    narration: true,
     flags: [],
     asked: [],
     presented: [],
@@ -85,6 +87,11 @@ function discoverable(def: CaseDefinition, s: InvestigationState, evidenceId: st
   return null;
 }
 
+/** Narration is only offered for evidence the player has found or collected, so it cannot leak unfound text. */
+export function canNarrate(def: CaseDefinition, s: InvestigationState, evidenceId: string) {
+  return s.evidence.includes(evidenceId) || discoverable(def, s, evidenceId) !== null;
+}
+
 /**
  * Brings a save written by an earlier version up to the current shape without
  * touching any progress it already holds.
@@ -93,6 +100,8 @@ export function normalizeState(def: CaseDefinition, raw: InvestigationState): In
   const fresh = newState(def, raw.lastActionAt ?? Date.now());
   const s = { ...fresh, ...raw } as InvestigationState;
   s.discoveries ??= {};
+  s.evidenceNotes ??= {};
+  s.narration ??= true;
   for (const id of s.evidence) {
     s.discoveries[id] ??= {
       locationId: def.evidence.find((e) => e.id === id)?.sourceLocationId ?? s.location,
@@ -121,6 +130,10 @@ export function evidenceView(def: CaseDefinition, s: InvestigationState, id: str
     collected: s.evidence.includes(id),
     foundAt: d ? loc(def, d.locationId)?.name ?? null : null,
     collectedAt: d?.at ?? null,
+    related: knownCharacters(def, s)
+      .filter((c) => e.characters.includes(c.id))
+      .map((c) => c.name),
+    note: s.evidenceNotes?.[id] ?? "",
   };
 }
 
@@ -188,7 +201,7 @@ export function reduce(
   if (idle > 0 && idle < IDLE_CAP_MS) s.activeSeconds += Math.round(idle / 1000);
   s.lastActionAt = now;
 
-  if (s.status === "closed" && action.type !== "saveNotes" && action.type !== "dismissMessages") {
+  if (s.status === "closed" && !["saveNotes", "saveEvidenceNote", "setNarration", "dismissMessages"].includes(action.type)) {
     fail("This case is closed.");
   }
 
@@ -398,7 +411,19 @@ export function reduce(
       break;
 
     case "saveNotes":
-      s.playerNotes = action.text.slice(0, MAX_NOTES);
+      s.playerNotes = String(action.text ?? "").slice(0, MAX_NOTES);
+      break;
+
+    case "saveEvidenceNote": {
+      if (!s.evidence.includes(action.evidenceId)) fail("Collect that evidence before adding notes to it.");
+      const text = String(action.text ?? "").slice(0, 4000);
+      if (text.trim()) s.evidenceNotes[action.evidenceId] = text;
+      else delete s.evidenceNotes[action.evidenceId];
+      break;
+    }
+
+    case "setNarration":
+      s.narration = Boolean(action.enabled);
       break;
 
     case "dismissMessages":
@@ -479,7 +504,13 @@ export function project(def: CaseDefinition, s: InvestigationState): ClientView 
       subtitle: l.subtitle,
       background: img(bg),
       ambience: l.ambience ? def.assets.audio[l.ambience] ?? null : null,
-      hotspots: visibleHotspots(def, s, l).map((h) => ({ id: h.id, label: h.label, rect: h.rect })),
+      hotspots: visibleHotspots(def, s, l).map((h) => ({
+        id: h.id,
+        label: h.label,
+        rect: h.rect,
+        inspected: s.inspected.includes(h.id),
+        collected: h.interaction.type === "inspect" && Boolean(h.interaction.evidence) && s.evidence.includes(h.interaction.evidence!),
+      })),
     },
     map: def.locations
       .filter((x) => x.onMap)
@@ -534,6 +565,7 @@ export function project(def: CaseDefinition, s: InvestigationState): ClientView 
         }))
       : [],
     messages: s.messages,
+    narration: s.narration,
     conclusion: { choices: def.conclusionChoices, attempts: s.attempts },
     closure: s.status === "closed" ? def.solution.closure : null,
   };
