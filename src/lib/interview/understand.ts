@@ -1,6 +1,8 @@
 import "server-only";
+import { after } from "next/server";
 import { acceptedOffer, interviewCandidates, knownFacts } from "@/game/engine/engine";
 import { bestMatch } from "@/game/engine/matcher";
+import { findCached, knowledgeKey, saveCached } from "./answer-cache";
 import type { CaseDefinition, InvestigationState } from "@/game/engine/types";
 
 /*
@@ -42,9 +44,15 @@ export async function interpretQuestion(def: CaseDefinition, s: InvestigationSta
   const candidates = [...all.filter((q) => q.repeatable || !s.asked.includes(q.id)), ...all.filter((q) => !q.repeatable && s.asked.includes(q.id))];
   const local = candidates.length ? bestMatch(text, candidates) : null;
   const person = def.characters.find((c) => c.id === characterId);
-  if (!API_KEY || !person) return { match: local, composed: null };
+  if (!person) return { match: local, composed: null };
 
+  // Someone may already have asked this, or something with the same subject, at the same point in the case.
   const facts = knownFacts(def, s, characterId);
+  const knowledge = knowledgeKey(characterId, facts.map((f) => f.index));
+  const cached = await findCached(def.id, characterId, text, knowledge, (id) => candidates.some((q) => q.id === id));
+  if (cached) return cached;
+  if (!API_KEY) return { match: local, composed: null };
+
   const recent = (s.conversations[characterId] ?? [])
     .filter((l) => l.speaker !== "cue")
     .slice(-8)
@@ -87,12 +95,18 @@ export async function interpretQuestion(def: CaseDefinition, s: InvestigationSta
     const body = (await res.json()) as { content?: { type: string; text?: string }[] };
     const out = (body.content?.find((c) => c.type === "text")?.text ?? "").trim();
     const entry = /^ENTRY\s+([a-z0-9_]+)/i.exec(out);
-    if (entry) return { match: candidates.some((q) => q.id === entry[1]) ? entry[1] : local, composed: null };
+    if (entry) {
+      if (!candidates.some((q) => q.id === entry[1])) return { match: local, composed: null };
+      after(() => saveCached(def.id, characterId, text, knowledge, { match: entry[1], composed: null }));
+      return { match: entry[1], composed: null };
+    }
     const answer = /^ANSWER\s*:?\s*([\s\S]+?)\s*(?:\n\s*USED\b\s*:?\s*([^\n]*))?\s*$/i.exec(out);
     if (answer) {
       const allowed = new Set(facts.map((x) => x.index));
       const used = [...(answer[2] ?? "").matchAll(/\d+/g)].map((m) => Number(m[0])).filter((n) => allowed.has(n));
-      return { match: null, composed: answer[1].trim(), facts: used };
+      const result = { match: null, composed: answer[1].trim(), facts: used };
+      after(() => saveCached(def.id, characterId, text, knowledge, result));
+      return result;
     }
     return { match: local, composed: null };
   } catch (e) {
