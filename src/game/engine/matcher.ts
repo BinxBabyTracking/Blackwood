@@ -14,7 +14,7 @@ const STOP = new Set(
     "a an the and or but if so of to in on at by for with from into onto about over after before than then as is are was were be been being am do does did " +
     "doing done have has had having i me my mine we us our you your yours he him his she her hers it its they them their this that these those there here " +
     "what which who whom whose why how can could would should will shall may might must just really very please tell ask know think say said like any anything " +
-    "something some ever also too again more much many well okay ok mr mrs miss ms sir maam madam dear let lets get got gets going go s t d ll ve re m"
+    "something some ever also too again happen happened happens happening more much many well okay ok mr mrs miss ms sir maam madam dear let lets get got gets going go s t d ll ve re m"
   ).split(" "),
 );
 // "go", "get" are stop words alone but carry meaning in phrases; phrases are handled first.

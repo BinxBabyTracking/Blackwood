@@ -333,13 +333,13 @@ export const questions: DialogueQuestion[] = [
     "This? A pickle jar broke in my hand on Saturday morning. Clumsy of me. I cleaned it up and bandaged it myself.",
     "I didn't bother with a doctor.",
   ], {
-    requires: { any: [{ inspected: "da_hand" }, { hasEvidence: "E14" }] },
+    // The bandage is plain to see on his figure, so the question is open from the start.
     reveals: "Daniel says a jar broke in his right hand on Saturday morning.",
     effects: [{ giveEvidence: "E14" }],
   }),
   q("daniel", "The injury", "daniel_hand_when", "What time on Saturday morning did you cut your hand?", [
     "Early. Before nine. I bought gauze at the Rexall on Sunset on my way back from the newsstand.",
-  ], { requires: { any: [{ inspected: "da_hand" }, { hasEvidence: "E14" }] } }),
+  ]),
   q("daniel", "Financial records", "daniel_accounts", "Tell me about Eleanor's accounts.", [
     "Harold's estate is in excellent order. Conservative investments, steady income. Eleanor never wanted for anything.",
     "I sent her a report every quarter. She kept copies of all of them in her desk.",
@@ -743,7 +743,7 @@ const KEYWORDS: Record<string, string> = {
   margaret_struggle: "would you have heard a fight struggle argument screams",
   margaret_money: "did eleanor talk about money finances estate trouble with money",
   daniel_relationship: "how do you know the whitmores harold and eleanor how long have you worked for her what do you do for her",
-  daniel_gathering: "tell me about the evening the party supper friday night what happened",
+  daniel_gathering: "tell me about the evening the party supper friday night how did it go",
   daniel_desk: "what did you and eleanor talk about at the desk private conversation nine fifteen aside",
   daniel_departure: "when did you leave eleanor's house what time did you go who left last",
   daniel_evening: "what did you do once you left hollister avenue where did you go next where did you go after where were you that night alibi what did you do after you left",

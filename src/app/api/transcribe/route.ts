@@ -54,7 +54,11 @@ export async function POST(request: NextRequest) {
       signal: AbortSignal.timeout(20000),
     });
     if (!res.ok) {
-      console.error("ElevenLabs speech-to-text failed", res.status, (await res.text().catch(() => "")).slice(0, 300));
+      const detail = (await res.text().catch(() => "")).slice(0, 300);
+      console.error("ElevenLabs speech-to-text failed", res.status, detail);
+      // ElevenLabs keys carry per-feature permissions: a key made for voices may not be allowed to transcribe.
+      if (res.status === 401 && /permission/i.test(detail))
+        return fail("The ElevenLabs key does not have Speech to Text permission. Turn it on for this key in your ElevenLabs account, or type your question.", 502);
       return fail(res.status === 401 ? "The speech service rejected the API key." : "The speech service is unavailable. Type your question instead.", 502);
     }
     const body = (await res.json()) as { text?: string };
