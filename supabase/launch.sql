@@ -150,14 +150,15 @@ select distinct on (p.user_id, s.case_id) p.user_id, s.case_id, s.id, coalesce(s
  order by p.user_id, s.case_id, s.completed_at
 on conflict do nothing;
 
--- Invite-only sign-up while Blackwood is in testing.
+-- Optional invite-only sign-up. Off by default: anyone can create an account.
 --
--- A trigger on auth.users refuses any new account whose email is not on the
+-- When switched on, a trigger on auth.users refuses any new account whose email is not on the
 -- invitation list, so it holds however the sign-up arrives (the site's form or
 -- a direct call to Supabase Auth). Existing accounts are not affected.
 --
--- Invite a tester:    insert into public.signup_invites (email, note) values ('name@example.com', 'tester');
--- Open sign-up to all: update public.site_settings set value = 'false' where key = 'invite_only';
+-- Switch it on:       update public.site_settings set value = 'true' where key = 'invite_only';
+-- Invite someone:      insert into public.signup_invites (email, note) values ('name@example.com', 'tester');
+-- Open sign-up again: update public.site_settings set value = 'false' where key = 'invite_only';
 
 create table if not exists public.site_settings (
   key text primary key,
@@ -167,7 +168,7 @@ create table if not exists public.site_settings (
 alter table public.site_settings enable row level security;
 -- No policies: only the service role (the server) and the dashboard read or change settings.
 
-insert into public.site_settings (key, value) values ('invite_only', 'true')
+insert into public.site_settings (key, value) values ('invite_only', 'false')
 on conflict (key) do nothing;
 
 create table if not exists public.signup_invites (
