@@ -74,8 +74,8 @@ export default function HomePage() {
               closed. Many were not. The archive now passes to a new generation of investigators.
             </p>
             <p>
-              Blackwood is a fictional agency and every case in its archive is a work of interactive fiction, written to
-              be solved.
+              The agency is fictional. Its cases are not: each file is drawn from a real investigation, with names,
+              places and dates changed to protect the people involved.
             </p>
             <Link href="/about" className="inline-block text-sm text-brass underline-offset-4 hover:underline">
               About the agency

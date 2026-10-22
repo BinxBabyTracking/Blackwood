@@ -53,11 +53,20 @@ export default function AboutPage() {
 
       <section className="border-t border-rule bg-ink-2">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-8">
-          <h2 className="font-serif text-2xl">A note on fiction</h2>
+          <h2 className="font-serif text-2xl">A note on the cases</h2>
           <p className="mt-3 max-w-[64ch] text-smoke">
-            Blackwood Investigations is an interactive entertainment experience. The agency, its history and its cases
-            are invented. It is not a licensed investigation agency and cannot take on real matters. If you need help
-            with a real situation, contact local law enforcement or a licensed professional.
+            The agency, its history and its staff are invented. The cases are not. Each one is drawn from a real
+            investigation, with names, places, dates and identifying details changed to protect the privacy of the
+            people involved and their families. No character represents a real, identifiable person.
+          </p>
+          <p className="mt-3 max-w-[64ch] text-smoke">
+            Some of these cases were never solved. Where that is so, the solution in the game is our own dramatized
+            reconstruction, not a finding about anyone in the real case.
+          </p>
+          <p className="mt-3 max-w-[64ch] text-smoke">
+            Blackwood Investigations is interactive entertainment. It is not a licensed investigation agency and cannot
+            take on real matters. If you need help with a real situation, contact local law enforcement or a licensed
+            professional.
           </p>
           <div className="mt-8">
             <ButtonLink href="/join">Join the Agency</ButtonLink>

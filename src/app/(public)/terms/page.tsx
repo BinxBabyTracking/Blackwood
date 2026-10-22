@@ -7,10 +7,13 @@ export default function TermsPage() {
   return (
     <LegalPage title="Terms of Service">
       <div>
-        <h2>Fictional entertainment</h2>
+        <h2>Entertainment based on real cases</h2>
         <p>
-          Blackwood Investigations is interactive fiction. It is not a licensed private investigation agency and provides
-          no investigative, legal or security services. Names, characters and events are invented.
+          Blackwood Investigations is interactive entertainment. The agency is fictional. Its cases are drawn from real
+          investigations, with names, places, dates and identifying details changed; no character represents a real,
+          identifiable person. Where a real case was never solved, the solution in the game is a dramatized
+          reconstruction and not a statement about anyone&apos;s guilt. Blackwood is not a licensed private
+          investigation agency and provides no investigative, legal or security services.
         </p>
       </div>
       <div>

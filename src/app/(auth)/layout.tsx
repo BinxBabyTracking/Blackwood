@@ -28,7 +28,7 @@ export default function AuthLayout({ children }: LayoutProps<"/">) {
           <Wordmark />
         </div>
         <div className="my-auto w-full max-w-sm py-12 lg:mx-auto">{children}</div>
-        <p className="text-xs text-smoke">Blackwood Investigations is a fictional agency created for entertainment.</p>
+        <p className="text-xs text-smoke">Blackwood Investigations is a fictional agency. Its cases are drawn from real investigations, with identities changed.</p>
       </main>
     </div>
   );

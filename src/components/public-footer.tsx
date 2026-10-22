@@ -21,9 +21,10 @@ export function PublicFooter() {
           </div>
           <p className="mt-2 font-serif italic text-smoke">Every Case Has a Truth.</p>
           <p className="mt-6 max-w-[56ch] text-xs leading-relaxed text-smoke">
-            Blackwood Investigations is a work of interactive fiction. The agency, its history, its staff and every case
-            in its archive are invented for entertainment. It is not a licensed private investigation agency and does not
-            offer investigative, legal or security services. Any resemblance to real people or events is coincidental.
+            The agency, its history and its staff are fictional. Its cases are drawn from real investigations, with names,
+            places, dates and identifying details changed to protect the people involved; no character represents a real,
+            identifiable person, and solutions to unsolved cases are dramatized reconstructions. Blackwood is not a
+            licensed private investigation agency and does not offer investigative, legal or security services.
           </p>
         </div>
         <nav aria-label="Footer" className="grid grid-cols-2 content-start gap-x-8 gap-y-3 text-sm">

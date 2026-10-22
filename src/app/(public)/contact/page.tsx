@@ -27,7 +27,7 @@ export default function ContactPage() {
           </p>
         )}
         <p className="mt-8 text-sm text-smoke">
-          Blackwood Investigations is fictional and cannot take on real investigations. For a real emergency, contact local
+          Blackwood Investigations is a fictional agency and cannot take on real investigations. For a real emergency, contact local
           law enforcement.
         </p>
       </section>
