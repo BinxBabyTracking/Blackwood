@@ -377,6 +377,30 @@
       "kind": "site",
       "model": "hand-imported",
       "generatedAt": "2026-10-22T16:11:51.994Z"
+    },
+    "travel_drive_car": {
+      "url": "/art/travel_drive_car.webp",
+      "kind": "strip",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T17:21:13.172Z"
+    },
+    "travel_drive_far": {
+      "url": "/art/travel_drive_far.webp",
+      "kind": "panorama",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T17:21:13.589Z"
+    },
+    "travel_drive_near": {
+      "url": "/art/travel_drive_near.webp",
+      "kind": "strip",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T17:21:14.736Z"
+    },
+    "travel_walk": {
+      "url": "/art/travel_walk.webp",
+      "kind": "pov",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T17:21:15.285Z"
     }
   }
 }

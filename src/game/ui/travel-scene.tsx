@@ -236,7 +236,7 @@ function PaintedDrive({ still }: { still: boolean }) {
   return (
     <div className="relative h-full w-full overflow-hidden bg-[#1a1420]">
       {/* Distant city and hills */}
-      <div className="absolute inset-x-0 top-0 h-[80%]">
+      <div className="absolute inset-x-0 top-0 h-[92%]">
         <PaintedScroll src={ART.far!} seconds={60} still={still} />
       </div>
       {/* The road */}
