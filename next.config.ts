@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // The Next.js development badge ("N") in the corner: not part of the game, and it sat where controls go.
+  devIndicators: false,
   cacheComponents: true,
   partialPrefetching: true,
   experimental: {

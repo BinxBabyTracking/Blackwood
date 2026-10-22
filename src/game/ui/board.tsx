@@ -91,7 +91,7 @@ export function MurderBoard({
               ? `Choose a second item to tie to ${meta(linkFrom).title}. Esc to cancel.`
               : "Drag to arrange. Click one item, then another, to tie them with string. Click a string to remove it."}
         </p>
-        <div className="flex items-center gap-3">
+        <div className="hidden items-center gap-3 md:flex">
           {!readOnly ? (
             <button type="button" onClick={() => setTrayOpen((o) => !o)} className="text-smoke hover:text-paper">
               {trayOpen ? "Hide tray" : `Pin items (${tray.length})`}
@@ -103,7 +103,8 @@ export function MurderBoard({
         </div>
       </div>
 
-      <div className="relative flex min-h-0 flex-1">
+      {/* On a phone the tray sits along the bottom, so the board keeps the full width. */}
+      <div className="relative flex min-h-0 flex-1 flex-col md:flex-row">
         <div
           ref={ref}
           className="relative min-h-0 flex-1 overflow-hidden"
@@ -173,7 +174,7 @@ export function MurderBoard({
             return (
               <div
                 key={it.id}
-                className="group absolute w-[10%] min-w-24 select-none"
+                className="group absolute w-[10%] min-w-[4.5rem] select-none md:min-w-24"
                 style={{ left: `${it.x}%`, top: `${it.y}%`, transform: `rotate(${((it.id.charCodeAt(it.id.length - 1) % 7) - 3) * 0.8}deg)` }}
               >
                 <button
@@ -245,10 +246,10 @@ export function MurderBoard({
         </div>
 
         {trayOpen && !readOnly ? (
-          <aside className="flex w-56 shrink-0 flex-col border-l border-black/40 bg-[#1d1610] text-paper sm:w-64">
-            <p className="border-b border-white/10 px-4 py-2 text-xs text-smoke">Drag onto the board, or choose Pin.</p>
-            <ul className="flex-1 space-y-2 overflow-y-auto p-3">
-              {tray.length === 0 ? <li className="text-sm text-smoke">Everything you have is on the board.</li> : null}
+          <aside className="flex max-h-[38%] shrink-0 flex-col border-t border-black/40 bg-[#1d1610] text-paper md:max-h-none md:w-64 md:border-l md:border-t-0">
+            <p className="hidden border-b border-white/10 px-4 py-2 text-xs text-smoke md:block">Drag onto the board, or choose Pin.</p>
+            <ul className="flex min-h-0 flex-1 gap-2 overflow-x-auto p-2 md:block md:space-y-2 md:overflow-y-auto md:overflow-x-visible md:p-3">
+              {tray.length === 0 ? <li className="shrink-0 text-sm text-smoke">Everything you have is on the board.</li> : null}
               {tray.map((id) => {
                 const m = meta(id);
                 return (
@@ -256,7 +257,7 @@ export function MurderBoard({
                     key={id}
                     draggable
                     onDragStart={(e) => e.dataTransfer.setData("text/plain", id)}
-                    className="flex cursor-grab items-center gap-2 border border-white/10 p-1.5"
+                    className="flex w-48 shrink-0 cursor-grab items-center gap-2 border border-white/10 p-1.5 md:w-auto"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={m.image} alt="" className="h-10 w-12 shrink-0 object-cover" />
@@ -276,7 +277,7 @@ export function MurderBoard({
               })}
             </ul>
             {view.deductions.length ? (
-              <div className="max-h-60 overflow-y-auto border-t border-white/10 p-3">
+              <div className="hidden max-h-60 overflow-y-auto border-t border-white/10 p-3 md:block">
                 <p className="text-xs text-smoke">Established</p>
                 <ul className="mt-2 space-y-2">
                   {view.deductions.map((d) => (
@@ -289,6 +290,18 @@ export function MurderBoard({
               </div>
             ) : null}
           </aside>
+        ) : null}
+      </div>
+
+      {/* Phone controls along the bottom: the way back on the left, the tray on the right. */}
+      <div className="flex shrink-0 items-center justify-between gap-3 border-t border-black/40 bg-[#1d1610] px-3 py-2 text-sm text-paper md:hidden">
+        <button type="button" onClick={onClose} className="rounded-[2px] border border-white/15 px-3 py-1.5 hover:bg-white/5">
+          Back
+        </button>
+        {!readOnly ? (
+          <button type="button" onClick={() => setTrayOpen((o) => !o)} className="px-2 py-1.5 text-smoke hover:text-paper">
+            {trayOpen ? "Hide tray" : `Pin items (${tray.length})`}
+          </button>
         ) : null}
       </div>
     </div>
