@@ -188,9 +188,18 @@ html[data-vision="tritanopia"] {
 @keyframes travel-arm { 0%, 100% { transform: rotate(-14deg); } 50% { transform: rotate(14deg); } }
 .travel-arm { animation: travel-arm 1.04s ease-in-out infinite; }
 .travel-arm-b { animation: travel-arm 1.04s ease-in-out infinite reverse; }
+@keyframes travel-pan { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.travel-pan { animation: travel-pan linear infinite; }
+.travel-dashes { background: repeating-linear-gradient(90deg, rgba(196,170,120,0.75) 0 6%, transparent 6% 12.5%); background-size: 200% 100%; }
+@keyframes travel-dashes-run { from { background-position: 0 0; } to { background-position: -100% 0; } }
+.travel-dashes-run { animation: travel-dashes-run 0.9s linear infinite; }
+@keyframes travel-walk-push { from { transform: scale(1); } to { transform: scale(1.16); } }
+.travel-walk-push { animation: travel-walk-push 7s ease-out both; }
+@keyframes travel-walk-sway { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-0.4%, -0.6%); } 50% { transform: translate(0, 0); } 75% { transform: translate(0.4%, -0.6%); } }
+.travel-walk-sway { animation: travel-walk-sway 1.04s ease-in-out infinite; }
 @keyframes travel-fade { from { opacity: 0; } to { opacity: 1; } }
 .travel-fade { animation: travel-fade 350ms ease-out both; }
 .travel-caption { animation: game-caption 2.4s ease-out both; }
 @media (prefers-reduced-motion: reduce) {
-  .travel-scroll, .travel-bob, .travel-spin, .travel-step, .travel-leg-a, .travel-leg-b, .travel-arm, .travel-arm-b { animation: none; }
+  .travel-scroll, .travel-pan, .travel-dashes-run, .travel-walk-push, .travel-walk-sway, .travel-bob, .travel-spin, .travel-step, .travel-leg-a, .travel-leg-b, .travel-arm, .travel-arm-b { animation: none; }
 }

@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
+import { paintedArt } from "@/lib/art";
 import type { TravelMode } from "./travel-audio";
 
 /*
  * The journey between locations: a 1985 sedan crossing Los Angeles at dusk,
- * or the investigator on foot along Hollister Avenue. Drawn in SVG and
- * animated with CSS parallax, so it needs no artwork files; final art can
- * replace it later without touching the travel logic. Skippable at any time.
+ * or the investigator on foot across Hollister Avenue. Once the paintings
+ * exist (travel_* in art/manifest.json) the painted versions play; until
+ * then a drawn SVG version stands in. Skippable at any time.
  */
 
 const W = 1600;
@@ -207,6 +208,64 @@ function WalkScene({ still }: { still: boolean }) {
   );
 }
 
+
+/** Painted travel art, when it has been made. */
+const ART = {
+  far: paintedArt("travel_drive_far"),
+  near: paintedArt("travel_drive_near"),
+  car: paintedArt("travel_drive_car"),
+  walk: paintedArt("travel_walk"),
+};
+
+/**
+ * A painted layer that scrolls left forever. The tile alternates with its own
+ * mirror image, so the seams always match without a specially tiled painting.
+ */
+function PaintedScroll({ src, seconds, still, className = "" }: { src: string; seconds: number; still: boolean; className?: string }) {
+  return (
+    <div className={`absolute flex h-full w-max ${still ? "" : "travel-pan"} ${className}`} style={{ animationDuration: `${seconds}s` }}>
+      {[0, 1, 2, 3].map((i) => (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img key={i} src={src} alt="" draggable={false} className={`h-full w-auto max-w-none select-none ${i % 2 ? "-scale-x-100" : ""}`} />
+      ))}
+    </div>
+  );
+}
+
+function PaintedDrive({ still }: { still: boolean }) {
+  return (
+    <div className="relative h-full w-full overflow-hidden bg-[#1a1420]">
+      {/* Distant city and hills */}
+      <div className="absolute inset-x-0 top-0 h-[80%]">
+        <PaintedScroll src={ART.far!} seconds={60} still={still} />
+      </div>
+      {/* The road */}
+      <div className="absolute inset-x-0 bottom-0 h-[24%] bg-gradient-to-b from-[#24201d] to-[#0f0d0c]">
+        <div className={`absolute inset-x-0 top-[42%] h-[3%] min-h-[3px] travel-dashes ${still ? "" : "travel-dashes-run"}`} />
+      </div>
+      {/* Palms and streetlights along the boulevard */}
+      <div className="absolute inset-x-0 bottom-[22%] h-[62%]">
+        <PaintedScroll src={ART.near!} seconds={11} still={still} className="bottom-0" />
+      </div>
+      {/* The car */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={ART.car!} alt="" draggable={false} className={`absolute bottom-[7%] left-1/2 h-[27%] w-auto -translate-x-1/2 select-none drop-shadow-[0_10px_8px_rgba(0,0,0,0.6)] ${still ? "" : "travel-bob"}`} />
+    </div>
+  );
+}
+
+function PaintedWalk({ still }: { still: boolean }) {
+  return (
+    <div className="relative h-full w-full overflow-hidden bg-black">
+      {/* Seen through the investigator's eyes: a slow push forward with a walker's sway. */}
+      <div className={`absolute inset-0 ${still ? "" : "travel-walk-push"}`}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={ART.walk!} alt="" draggable={false} className={`h-full w-full select-none object-cover ${still ? "" : "travel-walk-sway"}`} />
+      </div>
+    </div>
+  );
+}
+
 /** Whether travel scenes are switched on for this device. A per-viewer convenience, so it lives in the browser. */
 const KEY = "bw.travelScenes";
 const listeners = new Set<() => void>();
@@ -258,6 +317,7 @@ export function TravelScene({
     return () => window.removeEventListener("keydown", onKey);
   }, [onSkip]);
 
+  const paintedReady = mode === "drive" ? Boolean(ART.far && ART.near && ART.car) : Boolean(ART.walk);
   return (
     <div
       className="fixed inset-0 z-[60] flex items-center justify-center bg-black travel-fade"
@@ -267,10 +327,16 @@ export function TravelScene({
       data-travel={mode}
       onClick={onSkip}
     >
-      <svg viewBox={`0 0 ${W} ${H}`} className="aspect-video max-h-full w-full max-w-[calc(100dvh*16/9)]" preserveAspectRatio="xMidYMid slice" aria-hidden>
-        {mode === "drive" ? <DriveScene still={reducedMotion} /> : <WalkScene still={reducedMotion} />}
-        <rect width={W} height={H} fill="#000" opacity="0.08" />
-      </svg>
+      {paintedReady ? (
+        <div className="aspect-video max-h-full w-full max-w-[calc(100dvh*16/9)]" aria-hidden>
+          {mode === "drive" ? <PaintedDrive still={reducedMotion} /> : <PaintedWalk still={reducedMotion} />}
+        </div>
+      ) : (
+        <svg viewBox={`0 0 ${W} ${H}`} className="aspect-video max-h-full w-full max-w-[calc(100dvh*16/9)]" preserveAspectRatio="xMidYMid slice" aria-hidden>
+          {mode === "drive" ? <DriveScene still={reducedMotion} /> : <WalkScene still={reducedMotion} />}
+          <rect width={W} height={H} fill="#000" opacity="0.08" />
+        </svg>
+      )}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-6 pb-8 pt-20 sm:px-12">
         <p className="font-mono text-xs uppercase tracking-[0.22em] text-paper/70">{mode === "drive" ? "Driving to" : "Walking to"}</p>
         <p className="mt-1 font-display text-3xl text-paper sm:text-4xl travel-caption">{to}</p>

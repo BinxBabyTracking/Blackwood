@@ -36,8 +36,11 @@ const SIZE = {
   site: [1536, 1024],
   portrait: [1024, 1536],
   evidence: [1024, 1024],
+  panorama: [1920, 1080],
+  pov: [1920, 1080],
   figure: null,
   sprite: null,
+  strip: null,
 };
 
 /** Makes the plain backdrop around a person or object transparent. */
@@ -98,10 +101,12 @@ for (const f of files) {
   const out = join(outDir, `${id}.webp`);
   if (!force && existsSync(out) && statSync(out).mtimeMs >= statSync(src).mtimeMs && registry.images[id]) continue;
   let pipeline;
-  if (img.kind === "figure" || img.kind === "sprite") {
+  if (img.kind === "figure" || img.kind === "sprite" || img.kind === "strip") {
     const cut = await cutOut(readFileSync(src));
     const trimmed = await sharp(cut).trim({ threshold: 1 }).toBuffer();
-    pipeline = sharp(trimmed).resize({ width: 1024, height: 1536, fit: "inside", withoutEnlargement: true });
+    // Travel strips (the roadside row and the car) are wide; people and objects are not.
+    const [mw, mh] = img.kind === "strip" ? [2400, 1350] : [1024, 1536];
+    pipeline = sharp(trimmed).resize({ width: mw, height: mh, fit: "inside", withoutEnlargement: true });
   } else {
     const [width, height] = SIZE[img.kind];
     pipeline = sharp(src).resize({ width, height, fit: "cover", position: "centre" });
