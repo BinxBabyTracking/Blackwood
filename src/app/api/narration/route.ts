@@ -1,3 +1,4 @@
+import { recordUsage } from "@/lib/usage";
 import type { NextRequest } from "next/server";
 import { canNarrate, normalizeState } from "@/game/engine/engine";
 import { findInvestigation } from "@/game/persistence";
@@ -38,6 +39,7 @@ export async function GET(request: NextRequest) {
     const loaded = await findInvestigation(user.id, def.id);
     if (!loaded || !canNarrate(def, normalizeState(def, loaded.state), ev.id)) return fail("You have not found that evidence yet.", 403);
     const { audio, cached } = await narrate(`${def.id}/${ev.id}`, ev.inspection);
+    recordUsage({ userId: user.id, sessionId: loaded.sessionId, caseId: def.id, service: "tts", purpose: "narration", characters: ev.inspection.length, saved: cached });
     return new Response(audio, {
       headers: { "Content-Type": "audio/mpeg", "Cache-Control": "private, max-age=86400", "X-Narration-Cache": cached ? "hit" : "miss" },
     });

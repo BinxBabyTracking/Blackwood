@@ -1,5 +1,7 @@
 import type { NextRequest } from "next/server";
+import { findInvestigation } from "@/game/persistence";
 import { createClient } from "@/lib/supabase/server";
+import { recordUsage } from "@/lib/usage";
 
 /*
  * Push-to-talk. POST /api/transcribe with a short recording (multipart field
@@ -30,10 +32,16 @@ export async function POST(request: NextRequest) {
   if (rateLimited(user.id)) return fail("Too many recordings. Wait a moment.", 429);
 
   let audio: File | null = null;
+  let caseId = "";
+  let characterId = "";
+  let seconds = 0;
   try {
     const form = await request.formData();
     const f = form.get("audio");
     audio = f instanceof File ? f : null;
+    caseId = String(form.get("caseId") ?? "").slice(0, 20);
+    characterId = String(form.get("characterId") ?? "").slice(0, 40);
+    seconds = Math.min(120, Math.max(0, Number(form.get("seconds")) || 0));
   } catch {
     return fail("The recording could not be read.", 400);
   }
@@ -62,6 +70,10 @@ export async function POST(request: NextRequest) {
       return fail(res.status === 401 ? "The speech service rejected the API key." : "The speech service is unavailable. Type your question instead.", 502);
     }
     const body = (await res.json()) as { text?: string };
+    if (/^C\d{3,}$/.test(caseId)) {
+      const loaded = await findInvestigation(user.id, caseId).catch(() => null);
+      recordUsage({ userId: user.id, sessionId: loaded?.sessionId ?? null, caseId, characterId: characterId || null, service: "stt", purpose: "transcribe", model: MODEL, audioSeconds: seconds });
+    }
     const text = (body.text ?? "").replace(/\s+/g, " ").trim().slice(0, 300);
     return Response.json({ text });
   } catch (e) {

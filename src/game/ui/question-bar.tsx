@@ -15,8 +15,11 @@ export function QuestionBar({
   disabled,
   onAsk,
   onListen,
+  context,
 }: {
   name: string;
+  /** The case and person being questioned, so the transcription is charged to the right investigation. */
+  context?: { caseId: string; characterId: string };
   disabled: boolean;
   onAsk: (text: string) => Promise<unknown>;
   /** Called when the microphone opens, so whoever is speaking stops. */
@@ -68,6 +71,11 @@ export function QuestionBar({
     try {
       const form = new FormData();
       form.append("audio", blob, blob.type.includes("mp4") ? "question.mp4" : "question.webm");
+      form.append("seconds", String(Math.round(ms / 100) / 10));
+      if (context) {
+        form.append("caseId", context.caseId);
+        form.append("characterId", context.characterId);
+      }
       const res = await fetch("/api/transcribe", { method: "POST", body: form, credentials: "same-origin" });
       const body = (await res.json().catch(() => ({}))) as { text?: string; error?: string };
       if (!res.ok) throw new Error(body.error ?? "The microphone is not available right now. Type your question instead.");

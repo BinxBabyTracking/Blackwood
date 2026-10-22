@@ -1,3 +1,4 @@
+import { recordUsage } from "@/lib/usage";
 import type { NextRequest } from "next/server";
 import { normalizeState, spokenLine } from "@/game/engine/engine";
 import { findInvestigation } from "@/game/persistence";
@@ -59,6 +60,16 @@ export async function GET(request: NextRequest) {
       result = await narrate(`${def.id}/voices/${speaker.id}`, line.text, castVoice(speaker.id, speaker.voice));
     }
     const { audio, cached } = result;
+    recordUsage({
+      userId: user.id,
+      sessionId: loaded.sessionId,
+      caseId: def.id,
+      characterId: line.speakerId === "narrator" ? null : line.speakerId,
+      service: "tts",
+      purpose: "voice",
+      characters: line.text.length,
+      saved: cached,
+    });
     return new Response(audio, {
       headers: { "Content-Type": "audio/mpeg", "Cache-Control": "private, max-age=86400", "X-Voice-Cache": cached ? "hit" : "miss" },
     });

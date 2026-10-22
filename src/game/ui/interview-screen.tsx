@@ -206,6 +206,7 @@ export function InterviewScreen({
                   <>
                     <QuestionBar
                       name={first}
+                      context={{ caseId, characterId: data.characterId }}
                       disabled={pending || !data.canAsk}
                       onListen={stop}
                       onAsk={(text) => ask({ type: "askFree", characterId: data.characterId, text })}

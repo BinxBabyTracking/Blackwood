@@ -96,7 +96,7 @@ export async function playAction(caseId: string, action: GameAction): Promise<Pl
           return { error: `${who} has nothing more to say for now.`, saved: true };
         }
         const text = String(act.text ?? "").slice(0, 300);
-        const r = await interpretQuestion(def, current, String(act.characterId ?? ""), text);
+        const r = await interpretQuestion(def, current, String(act.characterId ?? ""), text, { userId, sessionId: loaded.sessionId });
         step = { type: "askFree", characterId: String(act.characterId ?? ""), text, match: r.match, composed: r.composed, facts: r.facts };
       }
       const { state, outcome } = reduce(def, current, step);

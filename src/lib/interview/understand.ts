@@ -2,6 +2,7 @@ import "server-only";
 import { after } from "next/server";
 import { acceptedOffer, interviewCandidates, knownFacts } from "@/game/engine/engine";
 import { bestMatch } from "@/game/engine/matcher";
+import { recordUsage } from "@/lib/usage";
 import { findCached, knowledgeKey, saveCached } from "./answer-cache";
 import type { CaseDefinition, InvestigationState } from "@/game/engine/types";
 
@@ -34,7 +35,19 @@ export interface Interpretation {
   facts?: number[];
 }
 
-export async function interpretQuestion(def: CaseDefinition, s: InvestigationState, characterId: string, question: string): Promise<Interpretation> {
+/** Who is asking, for the spending ledger. */
+export interface AskContext {
+  userId: string;
+  sessionId: string;
+}
+
+export async function interpretQuestion(
+  def: CaseDefinition,
+  s: InvestigationState,
+  characterId: string,
+  question: string,
+  ctx?: AskContext,
+): Promise<Interpretation> {
   const text = question.replace(/\s+/g, " ").trim().slice(0, 300);
   // A short yes to something just offered needs no interpreting.
   const offered = acceptedOffer(def, s, characterId, text);
@@ -50,7 +63,10 @@ export async function interpretQuestion(def: CaseDefinition, s: InvestigationSta
   const facts = knownFacts(def, s, characterId);
   const knowledge = knowledgeKey(characterId, facts.map((f) => f.index));
   const cached = await findCached(def.id, characterId, text, knowledge, (id) => candidates.some((q) => q.id === id));
-  if (cached) return cached;
+  if (cached) {
+    if (ctx) recordUsage({ userId: ctx.userId, sessionId: ctx.sessionId, caseId: def.id, characterId, service: "claude", purpose: "interview", model: MODEL, saved: true });
+    return cached;
+  }
   if (!API_KEY) return { match: local, composed: null };
 
   const recent = (s.conversations[characterId] ?? [])
@@ -92,7 +108,20 @@ export async function interpretQuestion(def: CaseDefinition, s: InvestigationSta
       signal: AbortSignal.timeout(9000),
     });
     if (!res.ok) throw new Error(`status ${res.status} ${(await res.text().catch(() => "")).slice(0, 200)}`);
-    const body = (await res.json()) as { content?: { type: string; text?: string }[] };
+    const body = (await res.json()) as { content?: { type: string; text?: string }[]; usage?: { input_tokens?: number; output_tokens?: number }; model?: string };
+    if (ctx) {
+      recordUsage({
+        userId: ctx.userId,
+        sessionId: ctx.sessionId,
+        caseId: def.id,
+        characterId,
+        service: "claude",
+        purpose: "interview",
+        model: body.model ?? MODEL,
+        inputTokens: body.usage?.input_tokens,
+        outputTokens: body.usage?.output_tokens,
+      });
+    }
     const out = (body.content?.find((c) => c.type === "text")?.text ?? "").trim();
     const entry = /^ENTRY\s+([a-z0-9_]+)/i.exec(out);
     if (entry) {
