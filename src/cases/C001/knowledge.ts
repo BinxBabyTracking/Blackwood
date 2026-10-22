@@ -117,6 +117,8 @@ export const KNOWLEDGE: Record<string, Fact[]> = {
     f("By their own accounts the guests left between ten and half past ten: Hale first, then Mrs. Ellis, then the niece, then Mercer. Mercer says he spent the night at a diner on Sunset.", undefined, "bennett_timeline"),
     f("The coroner's preliminary estimate puts the death between about eleven on Friday night and one on Saturday morning, one wound consistent with a blade like the recovered knife. I won't go beyond what the reports say.", undefined, "bennett_forensics"),
     f("The laboratory sheet is in the folder on the investigator's desk."),
+    f("The lab typed the blood. Eleanor is Group A. The broken edge of the glass is Group B, somebody else's. All four guests gave samples on the Saturday: Ellis O, Wells A, Hale B, Mercer B. So it's Hale or Mercer, as far as typing goes.", { hasEvidence: "E11" }, "bennett_glass"),
+    f("The lab found Group B inside the windbreaker's right cuff and Group A on the outside of the sleeve. Somebody washed it. Not well enough.", { hasEvidence: "E05" }),
     f("Mercer's right hand was bandaged when he gave his statement. He said a jar broke in it that morning.", { hasEvidence: "E14" }, "bennett_hand"),
     f("There's a dark green 1981 Buick LeSabre registered to D. Mercer Management on Griffith Park Boulevard.", { all: [{ asked: "margaret_sedan_more" }, { any: [{ flag: "fender_identified" }, { inspected: "g_orders" }] }] }),
     f("My officers recovered a tan windbreaker from the dumpster behind Mercer's building, under a sack of grass clippings. The lab has had it.", { flag: "jacket_search" }),

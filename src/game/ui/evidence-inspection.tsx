@@ -58,7 +58,7 @@ export function EvidenceInspection({
           </dl>
           {observation && !e.collected ? <p className="mt-5 text-sm text-smoke">{observation}</p> : null}
           <p
-            className={`mt-4 border-l-2 pl-4 font-serif text-lg leading-relaxed transition-colors ${speaking ? "border-brass text-paper" : "border-brass/60 text-paper/90"}`}
+            className={`mt-4 whitespace-pre-line border-l-2 pl-4 font-serif text-lg leading-relaxed transition-colors ${speaking ? "border-brass text-paper" : "border-brass/60 text-paper/90"}`}
           >
             {e.inspection}
           </p>
