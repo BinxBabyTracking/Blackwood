@@ -97,7 +97,12 @@ export async function playAction(caseId: string, action: GameAction): Promise<Pl
       const saved = await saveState(def, loaded, state);
       if (!saved) continue; // another tab saved first; reload and apply again
       if (outcome.kind === "verdict" && outcome.correct) {
-        const record = await recordClosedCase(userId, def, loaded, state);
+        // The case is closed and saved either way. If the service record can't be written right now,
+        // the closing still plays, and the record is completed the next time the case is opened.
+        const record = await recordClosedCase(userId, def, loaded, state).catch((e) => {
+          console.error("recordClosedCase", e);
+          return null;
+        });
         if (record) outcome.record = { first: record.first, awarded: record.awarded, rank: record.rank };
       }
       return respond(def, state, outcome);
