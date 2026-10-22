@@ -703,6 +703,8 @@ export function project(def: CaseDefinition, s: InvestigationState): ClientView 
           return h.art && painted && def.assets.images[h.art] ? def.assets.images[h.art] : null;
         })(),
         figure: h.interaction.type === "talk",
+        // A painted scene whose painting for this person or object has not arrived yet.
+        pending: Boolean(h.art && painted && !def.assets.images[h.art] && !h.sprite?.some((x) => check(x.when, s))),
         attention: h.attention ? check(h.attention, s) : false,
       })),
     },

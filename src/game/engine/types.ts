@@ -674,7 +674,7 @@ export interface ClientView {
     subtitle: string;
     background: string;
     ambience: string | null;
-    hotspots: { id: string; label: string; rect: HotspotDef["rect"]; inspected: boolean; collected: boolean; sprite: string | null; figure: boolean; attention: boolean }[];
+    hotspots: { id: string; label: string; rect: HotspotDef["rect"]; inspected: boolean; collected: boolean; sprite: string | null; figure: boolean; pending: boolean; attention: boolean }[];
   };
   map: { id: string; name: string; subtitle: string; area: string | null; available: boolean; visited: boolean; current: boolean; pin: { x: number; y: number } | null }[];
   /** Optional recordings for travel scenes; when null the game synthesizes the sound. */

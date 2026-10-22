@@ -2,9 +2,9 @@ import type { Condition, HotspotDef, LocationDef } from "@/game/engine/types";
 import { reportAvailable } from "./story";
 
 /*
- * Scene layout for C001. Hotspot rectangles are percentages of a 16:9 frame
- * and match the placeholder art in public/cases/C001/locations. When final
- * artwork arrives, adjust the rectangles here to line up with it.
+ * Scene layout for C001. Hotspot rectangles are percentages of a 16:9 frame.
+ * Rooms with a painting in public/art are laid out to match that painting;
+ * the living room and Margaret's house still match their placeholder art.
  */
 
 const briefed: Condition = { flag: "casefile_read" };
@@ -103,21 +103,21 @@ export const locations: LocationDef[] = [
     available: { always: true },
     onMap: true,
     hotspots: [
-      panel("office_casefile", "Case file from Det. Bennett", "folder", { x: 38, y: 62, w: 16, h: 10 }, "casefile"),
-      inspect("office_labreport", "Laboratory report folder", "labfolder", { x: 17, y: 62, w: 9, h: 8 }, "Laboratory report", "A thin folder from the LAPD laboratory, clipped to the case file's covering note.", { evidence: "E11" }),
-      panel("office_board", "Murder board", "board", { x: 5, y: 12, w: 26, h: 38 }, "board"),
-      { ...panel("office_phone", "Telephone", "phone", { x: 60, y: 57, w: 8, h: 9 }, "phone"), attention: { callPending: "call_margaret_sedan" } },
-      panel("office_notebook", "Notebook", "notebook", { x: 27, y: 66, w: 9, h: 7 }, "notebook"),
-      panel("office_map", "Street map of Los Angeles", "map", { x: 64, y: 10, w: 22, h: 28 }, "map"),
-      panel("office_recorder", "Police interview tapes", "recorder", { x: 72, y: 56, w: 12, h: 10 }, "statements", briefed),
-      panel("office_mail", "Opened mail", "tray", { x: 47, y: 77, w: 10, h: 7 }, "delivery", { any: [{ deliveryOpened: "jacket_recovered" }, { deliveryOpened: "patricia_envelope" }] }),
+      panel("office_casefile", "Case file from Det. Bennett", "folder", { x: 39.5, y: 49.5, w: 9, h: 6.5 }, "casefile"),
+      inspect("office_labreport", "Laboratory report folder", "labfolder", { x: 28.5, y: 50.5, w: 6, h: 5.5 }, "Laboratory report", "A thin folder from the LAPD laboratory, clipped to the case file's covering note.", { evidence: "E11" }),
+      panel("office_board", "Murder board", "board", { x: 0, y: 4, w: 24, h: 41 }, "board"),
+      { ...panel("office_phone", "Telephone", "phone", { x: 21.5, y: 46.5, w: 6.5, h: 9 }, "phone"), attention: { callPending: "call_margaret_sedan" } },
+      panel("office_notebook", "Notebook", "notebook", { x: 34.5, y: 51, w: 5, h: 5 }, "notebook"),
+      panel("office_map", "Street map of Los Angeles", "map", { x: 69, y: 6, w: 22, h: 37 }, "map"),
+      panel("office_recorder", "Police interview tapes", "recorder", { x: 48.5, y: 48, w: 6.5, h: 8 }, "statements", briefed),
+      panel("office_mail", "Opened mail", "tray", { x: 55, y: 50, w: 6, h: 6 }, "delivery", { any: [{ deliveryOpened: "jacket_recovered" }, { deliveryOpened: "patricia_envelope" }] }),
       // Event objects: they appear on the desk when a delivery arrives and stay until their evidence is collected.
-      deskItem("office_envelope", "Manila envelope", "patricia_envelope", "E15", { x: 57, y: 67, w: 7, h: 7 }, "obj.envelope_sealed", "obj.envelope_open"),
-      deskItem("office_evidencebag", "Police evidence bag", "jacket_recovered", "E05", { x: 65, y: 63, w: 6, h: 11 }, "obj.evidence_bag", "obj.evidence_bag_open"),
-      panel("office_typewriter", "Typewriter: final report", "typewriter", { x: 86, y: 58, w: 11, h: 13 }, "conclusion", reportAvailable),
+      deskItem("office_envelope", "Manila envelope", "patricia_envelope", "E15", { x: 61, y: 50, w: 5, h: 6 }, "obj.envelope_sealed", "obj.envelope_open"),
+      deskItem("office_evidencebag", "Police evidence bag", "jacket_recovered", "E05", { x: 70, y: 45.5, w: 4, h: 10 }, "obj.evidence_bag", "obj.evidence_bag_open"),
+      panel("office_typewriter", "Typewriter: final report", "typewriter", { x: 79, y: 44.5, w: 9, h: 9.5 }, "conclusion", reportAvailable),
       // The final report folder appears on the desk once the investigation has enough substance to report on.
       {
-        ...panel("office_report", "Final report folder", "sprite", { x: 76, y: 69, w: 9, h: 7 }, "conclusion", reportAvailable),
+        ...panel("office_report", "Final report folder", "sprite", { x: 83, y: 52, w: 6, h: 4.5 }, "conclusion", reportAvailable),
         sprite: [{ image: "obj.report_folder" }],
       },
     ],
@@ -156,13 +156,13 @@ export const locations: LocationDef[] = [
     available: briefed,
     onMap: false,
     hotspots: [
-      inspect("k_window", "Window over the sink", "window", { x: 40, y: 16, w: 20, h: 26 }, "Kitchen window", "The window over the sink stands open a few inches behind its screen.", { evidence: "E01" }),
-      inspect("k_door", "Rear door", "backdoor", { x: 74, y: 10, w: 14, h: 58 }, "Rear door", "The back door to the yard. The police found it unlocked on Saturday morning.", { evidence: "E10" }),
-      inspect("k_calendar", "Wall calendar", "calendar", { x: 16, y: 20, w: 9, h: 18 }, "Wall calendar", "A pharmacy calendar beside the telephone. Friday's square has a pencilled note: 'Supper, 7. M, R, P, D.'"),
-      inspect("k_phone", "Kitchen telephone", "wallphone", { x: 9, y: 38, w: 5, h: 11 }, "Kitchen telephone", "A beige wall telephone with a long coiled cord. A pad beside it lists numbers: Patricia (work), Margaret, Hale Automotive, D. Mercer, Mr. Albright."),
-      inspect("k_knives", "Knife block", "knives", { x: 28, y: 47, w: 6, h: 10 }, "Knife block", "A wooden block of French knives on the counter.", { evidence: "E06" }),
-      inspect("k_rack", "Drying rack", "rack", { x: 42, y: 47, w: 16, h: 10 }, "Drying rack", "Five dessert plates, five coffee cups and the cake server, washed and drying. Eleanor tidied up after her guests left."),
-      door("k_to_living", "Living room", "living_room", { x: 1, y: 10, w: 8, h: 60 }),
+      inspect("k_window", "Window over the sink", "window", { x: 43, y: 6, w: 15, h: 33 }, "Kitchen window", "The window over the sink stands open a few inches behind its screen.", { evidence: "E01" }),
+      inspect("k_door", "Rear door", "backdoor", { x: 73, y: 10, w: 16, h: 62 }, "Rear door", "The back door to the yard. The police found it unlocked on Saturday morning.", { evidence: "E10" }),
+      inspect("k_calendar", "Wall calendar", "calendar", { x: 12.5, y: 12.5, w: 6.5, h: 29.5 }, "Wall calendar", "A pharmacy calendar beside the telephone. Friday's square has a pencilled note: 'Supper, 7. M, R, P, D.'"),
+      inspect("k_phone", "Kitchen telephone", "wallphone", { x: 20.5, y: 23, w: 3.5, h: 12 }, "Kitchen telephone", "A beige wall telephone with a long coiled cord. A pad beside it lists numbers: Patricia (work), Margaret, Hale Automotive, D. Mercer, Mr. Albright."),
+      inspect("k_knives", "Knife block", "knives", { x: 25, y: 39, w: 5, h: 9 }, "Knife block", "A wooden block of French knives on the counter.", { evidence: "E06" }),
+      inspect("k_rack", "Drying rack", "rack", { x: 58, y: 38.5, w: 11, h: 8.5 }, "Drying rack", "Five dessert plates, five coffee cups and the cake server, washed and drying. Eleanor tidied up after her guests left."),
+      door("k_to_living", "Living room", "living_room", { x: 0, y: 4, w: 9, h: 80 }),
     ],
   },
   {
@@ -176,12 +176,12 @@ export const locations: LocationDef[] = [
     available: briefed,
     onMap: true,
     hotspots: [
-      person("d_rosa", "Rosa Delgado, waitress", "rosa", { x: 44, y: 28, w: 12, h: 50 }),
-      inspect("d_schedule", "Staff schedule", "schedule", { x: 76, y: 18, w: 10, h: 18 }, "Staff schedule", "The week's shifts, pinned beside the kitchen pass.", { evidence: "E13" }),
-      inspect("d_spike", "Ticket spike by the register", "spike", { x: 62, y: 44, w: 7, h: 10 }, "Ticket spike", "Guest checks waiting for the manager. One near the top has writing on the back.", { evidence: "E04" }),
-      inspect("d_booth", "Window booth", "booth", { x: 3, y: 38, w: 23, h: 36 }, "Window booth", "Table six. A clear view of the parking lot and the pay phone on the corner of Maple and Sunset."),
-      inspect("d_pie", "Pie case", "pie", { x: 30, y: 50, w: 12, h: 12 }, "Pie case", "Cherry, apple and lemon meringue. Sixty-five cents a slice. The cherry is nearly gone."),
-      inspect("d_jukebox", "Jukebox", "jukebox", { x: 88, y: 38, w: 9, h: 34 }, "Jukebox", "A chrome Seeburg, three plays for a quarter. Someone has put on the same Hall & Oates song twice."),
+      person("d_rosa", "Rosa Delgado, waitress", "rosa", { x: 43, y: 24, w: 12, h: 52 }),
+      inspect("d_schedule", "Staff schedule", "schedule", { x: 72.5, y: 24.5, w: 5.5, h: 11.5 }, "Staff schedule", "The week's shifts, pinned beside the kitchen pass.", { evidence: "E13" }),
+      inspect("d_spike", "Ticket spike by the register", "spike", { x: 74, y: 37, w: 3.5, h: 8 }, "Ticket spike", "Guest checks waiting for the manager. One near the top has writing on the back.", { evidence: "E04" }),
+      inspect("d_booth", "Window booth", "booth", { x: 0, y: 50, w: 28, h: 48 }, "Window booth", "Table six. A clear view of the parking lot and the pay phone on the corner of Maple and Sunset."),
+      inspect("d_pie", "Pie case", "pie", { x: 35, y: 33, w: 13, h: 11 }, "Pie case", "Cherry, apple and lemon meringue. Sixty-five cents a slice. The cherry is nearly gone."),
+      inspect("d_jukebox", "Jukebox", "jukebox", { x: 91, y: 28, w: 9, h: 46 }, "Jukebox", "A chrome Seeburg, three plays for a quarter. Someone has put on the same Hall & Oates song twice."),
     ],
   },
   {
@@ -194,15 +194,15 @@ export const locations: LocationDef[] = [
     available: briefed,
     onMap: true,
     hotspots: [
-      person("da_daniel", "Daniel Mercer", "daniel", { x: 40, y: 22, w: 14, h: 58 }),
-      inspect("da_hand", "Daniel's right hand", "hand", { x: 50.5, y: 52, w: 4, h: 6.5 }, "Daniel's right hand", "Daniel keeps his right hand close to his side.", { evidence: "E14" }),
-      inspect("da_coats_a", "Coat rack", "coatrack", { x: 7, y: 12, w: 10, h: 60 }, "Coat rack by the door", "A grey raincoat, a navy blazer and a tan nylon windbreaker. The windbreaker's right cuff looks darker than the left, and damp, as though it has been rinsed.", { visible: { env: "daniel_apartment", is: "A" }, effects: [{ setFlag: "saw_jacket" }] }),
-      inspect("da_coats_b", "Coat rack", "coatrack_empty", { x: 7, y: 12, w: 10, h: 60 }, "Coat rack by the door", "A grey raincoat and a navy blazer.", { visible: { env: "daniel_apartment", is: "B" }, effects: [{ when: { flag: "saw_jacket" }, then: [{ setFlag: "jacket_missing" }] }], textAfter: [{ requires: { flag: "saw_jacket" }, text: "A grey raincoat and a navy blazer. The tan windbreaker that hung here on your last visit is gone." }] }),
-      inspect("da_desk", "Desk and client files", "desk", { x: 62, y: 42, w: 18, h: 18 }, "Client files", "Neat stacks of client folders, each labelled. The one marked 'Whitmore' is thin.", { textAfter: [{ requires: { env: "daniel_apartment", is: "B" }, text: "The stacks have been gone through. The folder marked 'Whitmore' is no longer here." }] }),
-      inspect("da_waste", "Wastebasket", "basket", { x: 57, y: 68, w: 6, h: 11 }, "Wastebasket", "Nearly empty. A receipt from Rexall Drugs on Sunset: 'Gauze 4in, adhesive tape, iodine. 8/17/85 9:02 AM.'", { visible: { env: "daniel_apartment", is: "A" } }),
-      inspect("da_firstaid", "First aid tin", "tin", { x: 84, y: 50, w: 7, h: 8 }, "First aid tin", "Open on the kitchen counter. Gauze, tape, a half-used bottle of iodine.", { visible: { env: "daniel_apartment", is: "A" } }),
-      inspect("da_ashtray", "Ashtray", "ashtray", { x: 66, y: 62, w: 8, h: 7 }, "Ashtray", "Fresh ash and the curled corner of a typed page. Legible on the scrap: '...ESTATE ACCO...'", { visible: { env: "daniel_apartment", is: "B" } }),
-      inspect("da_suitcase", "Suitcase", "suitcase", { x: 19, y: 64, w: 14, h: 16 }, "Suitcase", "A packed suitcase by the door, airline tag still on the handle from a trip to Phoenix in May.", { visible: { env: "daniel_apartment", is: "B" } }),
+      person("da_daniel", "Daniel Mercer", "daniel", { x: 30, y: 26, w: 14, h: 58 }),
+      inspect("da_hand", "Daniel's right hand", "hand", { x: 40.5, y: 56, w: 4, h: 6.5 }, "Daniel's right hand", "Daniel keeps his right hand close to his side.", { evidence: "E14" }),
+      inspect("da_coats_a", "Coat rack", "coatrack", { x: 10, y: 20, w: 9, h: 52 }, "Coat rack by the door", "A grey raincoat, a navy blazer and a tan nylon windbreaker. The windbreaker's right cuff looks darker than the left, and damp, as though it has been rinsed.", { visible: { env: "daniel_apartment", is: "A" }, effects: [{ setFlag: "saw_jacket" }] }),
+      inspect("da_coats_b", "Coat rack", "coatrack_empty", { x: 10, y: 20, w: 9, h: 52 }, "Coat rack by the door", "A grey raincoat and a navy blazer.", { visible: { env: "daniel_apartment", is: "B" }, effects: [{ when: { flag: "saw_jacket" }, then: [{ setFlag: "jacket_missing" }] }], textAfter: [{ requires: { flag: "saw_jacket" }, text: "A grey raincoat and a navy blazer. The tan windbreaker that hung here on your last visit is gone." }] }),
+      inspect("da_desk", "Desk and client files", "desk", { x: 70, y: 47, w: 30, h: 20 }, "Client files", "Neat stacks of client folders, each labelled. The one marked 'Whitmore' is thin.", { textAfter: [{ requires: { env: "daniel_apartment", is: "B" }, text: "The stacks have been gone through. The folder marked 'Whitmore' is no longer here." }] }),
+      inspect("da_waste", "Wastebasket", "basket", { x: 63, y: 64, w: 5, h: 9 }, "Wastebasket", "Nearly empty. A receipt from Rexall Drugs on Sunset: 'Gauze 4in, adhesive tape, iodine. 8/17/85 9:02 AM.'", { visible: { env: "daniel_apartment", is: "A" } }),
+      inspect("da_firstaid", "First aid tin", "tin", { x: 84, y: 33, w: 6, h: 5.5 }, "First aid tin", "Open on the kitchen counter. Gauze, tape, a half-used bottle of iodine.", { visible: { env: "daniel_apartment", is: "A" } }),
+      inspect("da_ashtray", "Ashtray", "ashtray", { x: 52, y: 48, w: 6, h: 5 }, "Ashtray", "Fresh ash and the curled corner of a typed page. Legible on the scrap: '...ESTATE ACCO...'", { visible: { env: "daniel_apartment", is: "B" } }),
+      inspect("da_suitcase", "Suitcase", "suitcase", { x: 12, y: 63, w: 11, h: 14 }, "Suitcase", "A packed suitcase by the door, airline tag still on the handle from a trip to Phoenix in May.", { visible: { env: "daniel_apartment", is: "B" } }),
     ],
   },
   {
@@ -233,10 +233,10 @@ export const locations: LocationDef[] = [
     available: briefed,
     onMap: true,
     hotspots: [
-      person("g_robert", "Robert Hale", "robert", { x: 30, y: 24, w: 12, h: 54 }),
-      inspect("g_lift", "Pickup on the lift", "lift", { x: 50, y: 16, w: 31, h: 36 }, "On the lift", "A 1978 Ford pickup with the oil pan off. A drop light hangs from the frame."),
-      inspect("g_orders", "Work order board", "orders", { x: 84, y: 14, w: 12, h: 28 }, "Work order board", "Carbon copies of quotes and work orders on nails. One near the bottom: 'D. Mercer. 1981 Buick LeSabre, dk green. Rear L fender crumpled, quote $240. Declined 6/22.'", { effects: [{ setFlag: "knows_fender" }] }),
-      inspect("g_bench", "Tool bench", "bench", { x: 3, y: 48, w: 23, h: 24 }, "Tool bench", "Sockets in labelled trays, a radio tuned to the Dodgers, a coffee can full of bolts. Everything has its place."),
+      person("g_robert", "Robert Hale", "robert", { x: 36, y: 26, w: 12, h: 56 }),
+      inspect("g_lift", "Pickup on the lift", "lift", { x: 50, y: 0, w: 40, h: 40 }, "On the lift", "A 1978 Ford pickup with the oil pan off. A drop light hangs from the frame."),
+      inspect("g_orders", "Work order board", "orders", { x: 91.5, y: 20, w: 8.5, h: 34 }, "Work order board", "Carbon copies of quotes and work orders on nails. One near the bottom: 'D. Mercer. 1981 Buick LeSabre, dk green. Rear L fender crumpled, quote $240. Declined 6/22.'", { effects: [{ setFlag: "knows_fender" }] }),
+      inspect("g_bench", "Tool bench", "bench", { x: 0, y: 48, w: 25, h: 30 }, "Tool bench", "Sockets in labelled trays, a radio tuned to the Dodgers, a coffee can full of bolts. Everything has its place."),
     ],
   },
   {
@@ -249,10 +249,10 @@ export const locations: LocationDef[] = [
     available: briefed,
     onMap: true,
     hotspots: [
-      person("p_patricia", "Patricia Wells", "patricia", { x: 44, y: 22, w: 13, h: 56 }),
-      inspect("p_files", "Filing cabinets", "filing", { x: 3, y: 22, w: 15, h: 52 }, "Filing cabinets", "Four-drawer steel cabinets. The drawer marked 'Trust & Estate Accts' is locked."),
-      inspect("p_adder", "Adding machine", "adder", { x: 62, y: 50, w: 14, h: 11 }, "Adding machine", "A long paper tape curls from the machine onto the floor: a column of figures, several circled in red."),
-      inspect("p_notices", "Notice board", "notices", { x: 80, y: 16, w: 14, h: 24 }, "Notice board", "Rate sheet for August: 30-year fixed, 12.25%. A memo about the new IBM terminals arriving in October."),
+      person("p_patricia", "Patricia Wells", "patricia", { x: 38, y: 24, w: 12, h: 56 }),
+      inspect("p_files", "Filing cabinets", "filing", { x: 3, y: 26, w: 24, h: 52 }, "Filing cabinets", "Four-drawer steel cabinets. The drawer marked 'Trust & Estate Accts' is locked."),
+      inspect("p_adder", "Adding machine", "adder", { x: 56, y: 44, w: 10, h: 8 }, "Adding machine", "A long paper tape curls from the machine onto the floor: a column of figures, several circled in red."),
+      inspect("p_notices", "Notice board", "notices", { x: 86.5, y: 10, w: 13.5, h: 35 }, "Notice board", "Rate sheet for August: 30-year fixed, 12.25%. A memo about the new IBM terminals arriving in October."),
     ],
   },
 ];
