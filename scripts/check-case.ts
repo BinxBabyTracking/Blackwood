@@ -526,10 +526,12 @@ for (let seed = 1; seed <= 40; seed++) {
   if (x.asked.includes("margaret_sedan_more")) problems.push("locked answer reached through a free question");
   // a composed answer is recorded and voiceable, but cannot be smuggled past a refusal
   X({ type: "askFree", characterId: "margaret", text: "Was Eleanor a good cook?", composed: "She was. Her lemon cake was the best on the street." });
-  const last = x.conversations.margaret.at(-1)!;
-  if (last.text !== "She was. Her lemon cake was the best on the street." || spokenLine(def, x, { kind: "conversation", id: "margaret", n: x.conversations.margaret.length - 1 })?.text !== last.text) problems.push("composed answer not recorded or not voiceable");
+  // (a volunteered fact may follow the answer, so look for the composed line itself)
+  const at = x.conversations.margaret.findLastIndex((l) => l.q === "composed");
+  const last = x.conversations.margaret[at];
+  if (last?.text !== "She was. Her lemon cake was the best on the street." || spokenLine(def, x, { kind: "conversation", id: "margaret", n: at })?.text !== last.text) problems.push("composed answer not recorded or not voiceable");
   X({ type: "askFree", characterId: "margaret", text: "Anything?", composed: "Some \u2014 dash" });
-  if (x.conversations.margaret.at(-1)!.text.includes("\u2014")) problems.push("composed answer kept an em dash");
+  if (x.conversations.margaret.some((l) => l.text.includes("\u2014"))) problems.push("composed answer kept an em dash");
   // knowledge is gated like the answers
   const facts = characterKnowledge(def, x, "margaret").join(" ");
   if (/sedan|jacaranda|fender/i.test(facts)) problems.push("Margaret's sedan knowledge available before she remembers it");
@@ -537,6 +539,27 @@ for (let seed = 1; seed <= 40; seed++) {
   if (!/sedan/.test(characterKnowledge(def, later, "margaret").join(" "))) problems.push("Margaret's sedan knowledge missing after her call");
   if (/killed|murdered|stabbed her|I did it/i.test(def.characters.find((c) => c.id === "daniel")!.knowledge!.map((k) => k.text).join(" "))) problems.push("Daniel's knowledge confesses");
   for (const c of interviewees) if (!c.knowledge?.length || !c.persona || !c.noAnswer?.length) problems.push(`${c.id} lacks knowledge, persona or no-answer lines`);
+  // facts used by a composed answer bring their authored entry's effects: Daniel's hand gives E14
+  {
+    let y = newState(def, 0);
+    const Y = (a: GameAction) => (y = reduce(def, y, a, 1).state);
+    Y({ type: "dismissIntro" }); Y({ type: "readDocument", documentId: "casefile" }); Y({ type: "travel", locationId: "daniel_apartment" });
+    const handFact = def.characters.find((c) => c.id === "daniel")!.knowledge!.findIndex((k) => k.entry === "daniel_hand");
+    Y({ type: "askFree", characterId: "daniel", text: "That's a nasty bandage.", composed: "A jar broke in my hand on Saturday morning.", facts: [handFact] });
+    if (!y.evidence.includes("E14") || !y.asked.includes("daniel_hand")) problems.push("a composed answer using a fact did not credit its entry");
+    // a fact the character does not know yet is ignored
+    const before = y.evidence.length;
+    const jacketFact = def.characters.find((c) => c.id === "daniel")!.knowledge!.findIndex((k) => /windbreaker/.test(k.text));
+    Y({ type: "askFree", characterId: "daniel", text: "Jacket?", composed: "No.", facts: [jacketFact, 999] });
+    if (y.evidence.length !== before) problems.push("an unknown fact changed the investigation");
+    // offers: Rosa mentions the schedule, a short yes takes it
+    Y({ type: "travel", locationId: "diner" });
+    Y({ type: "askFree", characterId: "rosa", text: "Were you working Friday?", match: "rosa_friday" });
+    Y({ type: "askFree", characterId: "rosa", text: "Yeah, let me see it" });
+    if (!y.evidence.includes("E13")) problems.push("a short yes did not take up Rosa's offer of the schedule");
+    // volunteering: Rosa brings up the man in the tan jacket when Friday night comes up, and hands over the ticket
+    if (!y.asked.includes("rosa_customer") || !y.evidence.includes("E04")) problems.push("Rosa did not volunteer the man in the tan jacket");
+  }
   // the built-in matcher on everyday phrasings
   let hits = 0;
   for (const [cid, q, want] of MATCH_CASES) if (bestMatch(q, def.questions.filter((d) => d.characterId === cid)) === want) hits++;

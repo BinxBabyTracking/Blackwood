@@ -1,4 +1,5 @@
 import { evaluateReport, reportProblem, REVIEW_FEEDBACK } from "./evaluation";
+import { concepts } from "./matcher";
 import { apply, check, collectEvidence, demeanorOf, runContradictions, runDemeanor, runEvents } from "./rules";
 import type {
   CharacterDef,
@@ -116,6 +117,7 @@ export function normalizeState(def: CaseDefinition, raw: InvestigationState): In
   s.narration ??= true;
   s.voices ??= true;
   s.unlockedQuestions ??= [];
+  s.offers ??= {};
   s.contradictions ??= [];
   s.demeanor ??= {};
   s.conversations ??= {};
@@ -280,25 +282,93 @@ function cleanComposed(t: unknown) {
 
 /** What a character knows right now: the facts whose conditions hold. Server-side only. */
 export function characterKnowledge(def: CaseDefinition, s: InvestigationState, characterId: string) {
-  const c = char(def, characterId);
-  return (c?.knowledge ?? []).filter((k) => check(k.requires, s)).map((k) => k.text);
+  return knownFacts(def, s, characterId).map((k) => k.text);
 }
 
-/** Answers one dialogue entry: transcript, notebook, unlocks and effects. `asked` is the investigator's own words. */
-function answerQuestion(def: CaseDefinition, s: InvestigationState, q: DialogueQuestion, asked: string) {
+/** The facts a character knows right now, with their position in the character's knowledge list. */
+export function knownFacts(def: CaseDefinition, s: InvestigationState, characterId: string) {
+  const c = char(def, characterId);
+  return (c?.knowledge ?? []).map((k, index) => ({ index, text: k.text, ok: check(k.requires, s) })).filter((k) => k.ok).map(({ index, text }) => ({ index, text }));
+}
+
+/** A short yes, such as "sure" or "yeah, show me". */
+const YES = /^(yes|yeah|yep|yup|ya|sure|ok|okay|please|alright|all right|go ahead|go on|absolutely|definitely|of course|i would|i'?d like (that|it|to)|let'?s see|let me see|show me|give (it|me)|hand it|that would|that'?d)\b/i;
+
+/**
+ * The entry a character's last answer offered, if this question takes it up:
+ * a short yes as the very next question, and the entry is still open.
+ */
+export function acceptedOffer(def: CaseDefinition, s: InvestigationState, characterId: string, text: string) {
+  const offered = s.offers?.[characterId];
+  if (!offered) return null;
+  const t = text.trim();
+  if (t.split(/\s+/).length > 10 || !YES.test(t)) return null;
+  return interviewCandidates(def, s, characterId).some((q) => q.id === offered) ? offered : null;
+}
+
+/**
+ * Records one dialogue entry: transcript, notebook, unlocks, offers and
+ * effects. `asked` is the investigator's own words, or null when the
+ * character volunteers it.
+ */
+function recordAnswer(def: CaseDefinition, s: InvestigationState, q: DialogueQuestion, asked: string | null) {
   const c = char(def, q.characterId)!;
   const first = !s.asked.includes(q.id);
   if (first) s.asked.push(q.id);
   if (!s.talkedTo.includes(c.id)) s.talkedTo.push(c.id);
   const r = replyFor(s, q);
-  const latest = say(s, c.id, asked, r.lines, { you: "question", them: "answer" }, q.id);
+  const lines = asked === null && q.volunteer?.reply ? q.volunteer.reply : r.lines;
+  let latest: number[];
+  if (asked !== null) latest = say(s, c.id, asked, lines, { you: "question", them: "answer" }, q.id);
+  else {
+    const log = (s.conversations[c.id] ??= []);
+    latest = lines.map((text) => log.push({ speaker: c.id, text, kind: "answer", q: q.id }) - 1);
+  }
   if (!q.repeatable && first) {
-    apply([{ note: { id: `q:${q.id}`, kind: "interview", title: `${c.name}: ${asked}`, text: q.reveals ?? r.lines.join(" "), characterId: c.id, important: Boolean(q.reveals) } }], s, def);
+    apply([{ note: { id: `q:${q.id}`, kind: "interview", title: asked !== null ? `${c.name}: ${asked}` : `${c.name}, unprompted`, text: q.reveals ?? r.lines.join(" "), characterId: c.id, important: Boolean(q.reveals) } }], s, def);
   }
   for (const u of q.unlocks ?? []) if (!s.unlockedQuestions.includes(u)) s.unlockedQuestions.push(u);
+  if (q.offers) (s.offers ??= {})[c.id] = q.offers;
   apply(q.effects, s, def);
   apply(r.effects, s, def);
   return latest;
+}
+
+/**
+ * The character has told the investigator what an authored entry says, in
+ * their own words: the entry counts as asked, with its notebook entry,
+ * unlocks and effects, but no second transcript line.
+ */
+function creditAnswer(def: CaseDefinition, s: InvestigationState, q: DialogueQuestion, asked: string) {
+  const c = char(def, q.characterId)!;
+  s.asked.push(q.id);
+  const r = replyFor(s, q);
+  if (!q.repeatable) apply([{ note: { id: `q:${q.id}`, kind: "interview", title: `${c.name}: ${asked}`, text: q.reveals ?? r.lines.join(" "), characterId: c.id, important: Boolean(q.reveals) } }], s, def);
+  for (const u of q.unlocks ?? []) if (!s.unlockedQuestions.includes(u)) s.unlockedQuestions.push(u);
+  apply(q.effects, s, def);
+  apply(r.effects, s, def);
+}
+
+function answerQuestion(def: CaseDefinition, s: InvestigationState, q: DialogueQuestion, asked: string) {
+  return recordAnswer(def, s, q, asked);
+}
+
+/**
+ * Essential information a character brings up without being asked, once:
+ * when the question touches its subject, or after enough questions to them.
+ * Returns the new transcript lines, or none.
+ */
+function volunteerFact(def: CaseDefinition, s: InvestigationState, characterId: string, question: string) {
+  if (refusing(def, s, characterId)) return [];
+  const asked = (s.conversations[characterId] ?? []).filter((l) => l.speaker === "you" && l.kind === "question").length;
+  const said = new Set(concepts(question));
+  const v = interviewCandidates(def, s, characterId).find(
+    (q) =>
+      q.volunteer &&
+      !s.asked.includes(q.id) &&
+      ((q.volunteer.near && concepts(q.volunteer.near).some((w) => said.has(w))) || (q.volunteer.after !== undefined && asked >= q.volunteer.after)),
+  );
+  return v ? recordAnswer(def, s, v, null) : [];
 }
 
 /** The answer a character gives right now: the last variant whose condition holds, else the base reply. */
@@ -442,14 +512,28 @@ export function reduce(
       const text = String(action.text ?? "").replace(/\s+/g, " ").trim().slice(0, 300);
       if (!text) fail("Ask a question first.");
       if (!s.talkedTo.includes(c.id)) s.talkedTo.push(c.id);
-      // The match was chosen on the server from this character's current candidates; check it again here.
-      const q = action.match ? interviewCandidates(def, s, c.id).find((x) => x.id === action.match) : undefined;
+      // A short yes takes up what the character just offered; otherwise the
+      // match chosen on the server from this character's current candidates, checked again here.
+      const offered = acceptedOffer(def, s, c.id, text);
+      const wanted = offered ?? action.match;
+      const q = wanted ? interviewCandidates(def, s, c.id).find((x) => x.id === wanted) : undefined;
+      if (s.offers) delete s.offers[c.id];
       const composed = cleanComposed(action.composed);
       let latest: number[];
       if (q) latest = answerQuestion(def, s, q, text);
       else if (composed && !refusing(def, s, c.id)) {
         // An answer composed on the server from this character's available knowledge.
         latest = say(s, c.id, text, [composed], { you: "question", them: "answer" }, "composed");
+        // Facts the answer drew on bring their effects with them, such as evidence handed over.
+        const known = new Set(knownFacts(def, s, c.id).map((k) => k.index));
+        const open = interviewCandidates(def, s, c.id);
+        for (const i of new Set(action.facts ?? [])) {
+          const fact = known.has(i) ? c.knowledge?.[i] : undefined;
+          if (!fact) continue;
+          const entry = fact.entry ? open.find((x) => x.id === fact.entry) : undefined;
+          if (entry && !s.asked.includes(entry.id)) creditAnswer(def, s, entry, text);
+          apply(fact.effects, s, def);
+        }
       } else {
         const d = demeanorOf(def, s, c.id);
         const unknown = c.noAnswer?.length ? c.noAnswer : [c.idleLine];
@@ -457,6 +541,8 @@ export function reduce(
         const line = d?.refuses ?? unknown[asked % unknown.length];
         latest = say(s, c.id, text, [line], { you: "question", them: d?.refuses ? "refusal" : "answer" }, "none");
       }
+      // Nothing is volunteered over an open offer, so a following "yes" is never ambiguous.
+      if (!s.offers?.[c.id]) latest = [...latest, ...volunteerFact(def, s, c.id, text)];
       finish(s, def);
       outcome = conversationOutcome(def, s, c.id, latest);
       break;

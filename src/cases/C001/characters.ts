@@ -258,7 +258,15 @@ export const questions: DialogueQuestion[] = [
   q("margaret", "Other guests", "margaret_daniel", "What do you know about Daniel Mercer?", [
     "He has handled Harold's estate since the funeral. Very polished. Eleanor trusted him completely. At least, she used to.",
     "He wore one of those tan windbreakers all evening, even at the table. I thought it was a little warm for it.",
-  ], { reveals: "Daniel Mercer wore a tan windbreaker all evening.", effects: [{ setFlag: "knows_tan_jacket" }] }),
+  ], {
+    volunteer: {
+      near: "daniel mercer wear wore jacket clothes dressed",
+      after: 4,
+      reply: ["There's one small thing I keep coming back to. Daniel wore one of those tan windbreakers all evening, even at the table. I thought it was a little warm for it."],
+    },
+    reveals: "Daniel Mercer wore a tan windbreaker all evening.",
+    effects: [{ setFlag: "knows_tan_jacket" }],
+  }),
   q("margaret", "Unusual observations", "margaret_noise", "Did you hear anything after you got home?", [
     "No. I had the television on until the late news finished at half past eleven, and then I'm afraid I dozed off in my chair.",
     "With the windows shut and the set on, I don't think I'd have heard much from across the street.",
@@ -324,6 +332,15 @@ export const questions: DialogueQuestion[] = [
     "The waitress, a redhead called Linda, kept my cup filled the whole time. Ask her.",
   ], {
     allowWhenRefusing: true,
+    // Mercer is keen to put his alibi on record.
+    volunteer: {
+      near: "night after left later midnight alibi where",
+      after: 3,
+      reply: [
+        "And before you ask, I know how these things go. After I left Eleanor's I drove to the Maple Street Diner on Sunset and sat there with coffee and pie until about one.",
+        "The waitress, a redhead called Linda, kept my cup filled the whole time. Ask her.",
+      ],
+    },
     reveals: "Daniel says he was at the Maple Street Diner from about 10:40 PM until about 1:00 AM, served throughout by a waitress named Linda.",
     variants: [{ requires: { flag: "daniel_lawyered" }, reply: ["I told the police where I was. The Maple Street Diner, until about one. That is all I will say without my attorney."] }],
     effects: [{ setFlag: "daniel_alibi_given" }, { unlockLocation: "diner" }, tl("10:40 PM", "Daniel Mercer says he arrives at the Maple Street Diner and stays until about 1:00 AM.", "Daniel Mercer")],
@@ -619,14 +636,30 @@ export const questions: DialogueQuestion[] = [
   // =====================================================================
   q("rosa", "That night", "rosa_friday", "Were you working last Friday night?", [
     "Eleven to seven, same as every Friday. Linda had the evening and clocked out at eleven on the dot. She always does.",
-  ], { effects: [{ setFlag: "rosa_shift" }, tl("11:00 PM", "Linda, the diner's evening waitress, clocks out. Rosa Delgado starts the night shift.", "Rosa Delgado")] }),
+    "It's all on the schedule by the pass, if you want a look.",
+  ], { offers: "rosa_schedule", effects: [{ setFlag: "rosa_shift" }, tl("11:00 PM", "Linda, the diner's evening waitress, clocks out. Rosa Delgado starts the night shift.", "Rosa Delgado")] }),
   q("rosa", "That night", "rosa_customer", "Do you remember a man on his own, around eleven? Coffee, maybe pie.", [
     "Tan jacket, window booth? He was finishing up when I came on. Left about five past eleven without paying for his refill.",
     "I wrote it on a ticket for the manager. Hang on, let me get it off the spike for you. Here.",
   ], {
+    volunteer: {
+      near: "friday night man customer jacket booth eleven anybody someone unusual",
+      after: 2,
+      reply: [
+        "Oh, and honey, there was a fella in a tan jacket in the window booth when I came on. He left about five past eleven without paying for his refill.",
+        "I wrote it on a ticket for the manager. Here, you might as well have it.",
+      ],
+    },
     reveals: "A man in a tan jacket left the window booth at about 11:05 PM without paying for a refill.",
     // She hands the ticket over as she mentions it.
     effects: [{ setFlag: "rosa_note" }, { giveEvidence: "E04" }, tl("11:05 PM", "A man in a tan jacket leaves the diner without paying for a refill.", "Rosa Delgado")],
+  }),
+  q("rosa", "That night", "rosa_schedule", "Can I see the staff schedule?", [
+    "Sure. Here, off the wall. This week's. Linda, three to eleven. Me, eleven to seven. Manager initials it every Monday.",
+  ], {
+    effects: [{ giveEvidence: "E13" }],
+    variants: [{ requires: { hasEvidence: "E13" }, reply: ["You've already got it, honey."] }],
+    repeatable: true,
   }),
   q("rosa", "That night", "rosa_ticket", "Can I have that ticket?", [
     "Sure, honey. Here, off the spike. Just bring it back if the manager asks.",
@@ -815,6 +848,7 @@ const KEYWORDS: Record<string, string> = {
   bennett_again: "anything new any news updates on your side",
   rosa_friday: "were you working friday night your shift who was working",
   rosa_customer: "do you remember a man alone around eleven customer tan jacket serving him did you serve him did you see him",
+  rosa_schedule: "can I see the schedule the staff schedule shift sheet the roster who works when show me the schedule",
   rosa_ticket: "give me the ticket can I have the ticket the check guest check note the spike hand it over can I see it get it for me",
   rosa_return: "did he come back later return that night",
 };

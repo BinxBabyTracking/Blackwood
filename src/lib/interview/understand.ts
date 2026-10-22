@@ -1,5 +1,5 @@
 import "server-only";
-import { characterKnowledge, interviewCandidates } from "@/game/engine/engine";
+import { acceptedOffer, interviewCandidates, knownFacts } from "@/game/engine/engine";
 import { bestMatch } from "@/game/engine/matcher";
 import type { CaseDefinition, InvestigationState } from "@/game/engine/types";
 
@@ -28,10 +28,15 @@ export const interviewAIConfigured = Boolean(API_KEY);
 export interface Interpretation {
   match: string | null;
   composed: string | null;
+  /** For a composed answer: which of the character's facts it used, so their effects apply. */
+  facts?: number[];
 }
 
 export async function interpretQuestion(def: CaseDefinition, s: InvestigationState, characterId: string, question: string): Promise<Interpretation> {
   const text = question.replace(/\s+/g, " ").trim().slice(0, 300);
+  // A short yes to something just offered needs no interpreting.
+  const offered = acceptedOffer(def, s, characterId, text);
+  if (offered) return { match: offered, composed: null };
   // Entries not yet asked come first, so an equally good match prefers new information.
   const all = interviewCandidates(def, s, characterId);
   const candidates = [...all.filter((q) => q.repeatable || !s.asked.includes(q.id)), ...all.filter((q) => !q.repeatable && s.asked.includes(q.id))];
@@ -39,7 +44,7 @@ export async function interpretQuestion(def: CaseDefinition, s: InvestigationSta
   const person = def.characters.find((c) => c.id === characterId);
   if (!API_KEY || !person) return { match: local, composed: null };
 
-  const facts = characterKnowledge(def, s, characterId);
+  const facts = knownFacts(def, s, characterId);
   const recent = (s.conversations[characterId] ?? [])
     .filter((l) => l.speaker !== "cue")
     .slice(-8)
@@ -52,6 +57,7 @@ export async function interpretQuestion(def: CaseDefinition, s: InvestigationSta
     "First, if one of the AUTHORED ENTRIES covers the question (same subject, any wording, even if the question is vague or uses 'him' or 'it' for someone just mentioned), reply exactly: ENTRY <id>",
     "Asking for, or to see, an object the character has is covered by the entry that hands it over; prefer that entry.",
     `Otherwise, answer as ${person.name}, in character, using ONLY the FACTS listed. Reply exactly: ANSWER <reply>`,
+    "Then, on a new line, list the numbers of the facts your answer states or relies on: USED <numbers separated by commas>, or USED none.",
     "Rules for ANSWER:",
     "- Use only the FACTS. Never invent names, times, places, events, evidence, motives or opinions about guilt that the facts do not state.",
     "- If the facts do not cover the question, say in character that you don't know or can't say. Do not guess.",
@@ -63,7 +69,7 @@ export async function interpretQuestion(def: CaseDefinition, s: InvestigationSta
   ].join("\n");
   const user = [
     `AUTHORED ENTRIES:\n${entries || "(none)"}`,
-    `FACTS ${person.name} knows:\n${facts.map((x) => `- ${x}`).join("\n") || "(none)"}`,
+    `FACTS ${person.name} knows:\n${facts.map((x) => `[${x.index}] ${x.text}`).join("\n") || "(none)"}`,
     recent ? `CONVERSATION SO FAR:\n${recent}` : "",
     `INVESTIGATOR ASKS: ${text}`,
   ]
@@ -82,8 +88,12 @@ export async function interpretQuestion(def: CaseDefinition, s: InvestigationSta
     const out = (body.content?.find((c) => c.type === "text")?.text ?? "").trim();
     const entry = /^ENTRY\s+([a-z0-9_]+)/i.exec(out);
     if (entry) return { match: candidates.some((q) => q.id === entry[1]) ? entry[1] : local, composed: null };
-    const answer = /^ANSWER\s*:?\s*([\s\S]+)/i.exec(out);
-    if (answer) return { match: null, composed: answer[1].trim() };
+    const answer = /^ANSWER\s*:?\s*([\s\S]+?)\s*(?:\n\s*USED\b\s*:?\s*([^\n]*))?\s*$/i.exec(out);
+    if (answer) {
+      const allowed = new Set(facts.map((x) => x.index));
+      const used = [...(answer[2] ?? "").matchAll(/\d+/g)].map((m) => Number(m[0])).filter((n) => allowed.has(n));
+      return { match: null, composed: answer[1].trim(), facts: used };
+    }
     return { match: local, composed: null };
   } catch (e) {
     console.error("interview: falling back to the built-in matcher:", (e as Error).message);

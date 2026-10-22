@@ -129,7 +129,13 @@ export interface CharacterDef {
    * a composed answer can never reach what the investigation has not earned.
    * Server-only; never sent to the browser.
    */
-  knowledge?: { text: string; requires?: Condition }[];
+  /**
+   * What the character knows, for answers in their own words. When an answer
+   * uses a fact, the fact's `entry` (the authored answer with the same
+   * information) counts as asked and its effects apply, as do the fact's own
+   * `effects`, so evidence arrives however the subject comes up.
+   */
+  knowledge?: { text: string; requires?: Condition; effects?: Effect[]; entry?: string }[];
 }
 
 /**
@@ -167,6 +173,18 @@ export interface DialogueQuestion {
   /** Still offered while the character refuses to cooperate. */
   allowWhenRefusing?: boolean;
   effects?: Effect[];
+  /**
+   * The entry this answer offers ("Want to see the schedule?"). A short yes
+   * as the very next question ("yes", "sure", "show me") takes that entry.
+   */
+  offers?: string;
+  /**
+   * Essential information the character brings up unprompted, once: when a
+   * question touches the subject (`near`, words like a keyword list) or after
+   * `after` questions to them. `reply` is how they bring it up; without it
+   * they give the usual answer.
+   */
+  volunteer?: { near?: string; after?: number; reply?: string[] };
 }
 
 export interface EvidenceReaction {
@@ -498,6 +516,8 @@ export interface InvestigationState {
   conversations: Record<string, ConversationLine[]>;
   /** Follow-up questions unlocked by earlier answers. */
   unlockedQuestions: string[];
+  /** Per character, the entry their last answer offered, taken by a short yes. */
+  offers?: Record<string, string>;
   /** Contradictions the investigator has established. */
   contradictions: string[];
   /** Each character's current manner, so changes are noticed once. */
@@ -562,7 +582,7 @@ export type GameAction =
    * A question in the player's own words, typed or spoken. The server decides
    * which authored answer it matches (`match`), never the browser.
    */
-  | { type: "askFree"; characterId: string; text: string; match?: string | null; composed?: string | null }
+  | { type: "askFree"; characterId: string; text: string; match?: string | null; composed?: string | null; facts?: number[] | null }
   | { type: "present"; characterId: string; evidenceId: string }
   | { type: "answerCall"; callId: string }
   | { type: "placeCall"; callId: string }

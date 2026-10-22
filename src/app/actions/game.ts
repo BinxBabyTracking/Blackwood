@@ -79,7 +79,7 @@ export async function playAction(caseId: string, action: GameAction): Promise<Pl
       if (act.type === "askFree") {
         const text = String(act.text ?? "").slice(0, 300);
         const r = await interpretQuestion(def, current, String(act.characterId ?? ""), text);
-        step = { type: "askFree", characterId: String(act.characterId ?? ""), text, match: r.match, composed: r.composed };
+        step = { type: "askFree", characterId: String(act.characterId ?? ""), text, match: r.match, composed: r.composed, facts: r.facts };
       }
       const { state, outcome } = reduce(def, current, step);
       const saved = await saveState(def, loaded, state);
