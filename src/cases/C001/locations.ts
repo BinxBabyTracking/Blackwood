@@ -103,14 +103,14 @@ export const locations: LocationDef[] = [
     available: { always: true },
     onMap: true,
     hotspots: [
-      panel("office_casefile", "Case file from Det. Bennett", "folder", { x: 22, y: 82, w: 18, h: 16 }, "casefile"),
+      panel("office_casefile", "Case file from Det. Bennett", "folder", { x: 37, y: 69.5, w: 16, h: 14.5 }, "casefile"),
       inspect("office_labreport", "Laboratory report folder", "labfolder", { x: 16, y: 73, w: 11, h: 11 }, "Laboratory report", "A thin folder from the LAPD laboratory, clipped to the case file's covering note.", { evidence: "E11" }),
       panel("office_board", "Murder board", "board", { x: 0, y: 3, w: 22, h: 41 }, "board"),
       { ...panel("office_phone", "Telephone", "phone", { x: 2, y: 68, w: 13, h: 17 }, "phone"), attention: { callPending: "call_margaret_sedan" } },
-      panel("office_notebook", "Notebook", "notebook", { x: 28, y: 73, w: 10, h: 11 }, "notebook"),
+      panel("office_notebook", "Notebook", "notebook", { x: 26.5, y: 70.5, w: 9.5, h: 10.5 }, "notebook"),
       panel("office_map", "Street map of Los Angeles", "map", { x: 70, y: 6, w: 21, h: 37 }, "map"),
-      panel("office_recorder", "Police interview tapes", "recorder", { x: 39, y: 70, w: 13, h: 14 }, "statements", briefed),
-      panel("office_mail", "Opened mail", "tray", { x: 53, y: 72, w: 12, h: 12 }, "delivery", { any: [{ deliveryOpened: "jacket_recovered" }, { deliveryOpened: "patricia_envelope" }] }),
+      panel("office_recorder", "Police interview tapes", "recorder", { x: 73, y: 78, w: 13, h: 14 }, "statements", briefed),
+      panel("office_mail", "Opened mail", "tray", { x: 76, y: 68, w: 11, h: 10 }, "delivery", { any: [{ deliveryOpened: "jacket_recovered" }, { deliveryOpened: "patricia_envelope" }] }),
       // Event objects: they appear on the desk when a delivery arrives and stay until their evidence is collected.
       deskItem("office_envelope", "Manila envelope", "patricia_envelope", "E15", { x: 42, y: 84, w: 13, h: 13 }, "obj.envelope_sealed", "obj.envelope_open"),
       deskItem("office_evidencebag", "Police evidence bag", "jacket_recovered", "E05", { x: 66, y: 65, w: 9, h: 20 }, "obj.evidence_bag", "obj.evidence_bag_open"),
