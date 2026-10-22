@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { Wordmark } from "../wordmark";
 
 const ICONS: Record<string, React.ReactNode> = {
@@ -120,6 +121,13 @@ export function SideNav() {
 export function MobileNav() {
   const [open, setOpen] = useState(false);
   const closeRef = useRef<HTMLButtonElement>(null);
+  // The drawer is drawn at the end of the page, not inside the header: the header's blur would otherwise
+  // shrink the "full screen" drawer to the header's own height.
+  const mounted = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false,
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -147,6 +155,7 @@ export function MobileNav() {
           <path d="M3 7h18M3 12h18M3 17h12" />
         </svg>
       </button>
+      {mounted ? createPortal(
       <div
         className={`fixed inset-0 z-50 lg:hidden ${open ? "" : "pointer-events-none"}`}
         aria-hidden={!open}
@@ -181,7 +190,9 @@ export function MobileNav() {
             <AdminLink onNavigate={() => setOpen(false)} />
           </div>
         </div>
-      </div>
+      </div>,
+      document.body,
+      ) : null}
     </>
   );
 }
