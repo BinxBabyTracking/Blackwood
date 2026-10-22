@@ -197,6 +197,11 @@ export function FinalReport({
                 <p className="mt-1 font-mono text-xs text-[#231e17]/65">
                   Attach between {c.minItems} and {c.maxItems} items from your evidence. Attached: {shown.evidence.length}.
                 </p>
+                {!filed && draft.evidence.length >= c.maxItems ? (
+                  <p className="mt-1 font-mono text-xs font-bold text-[#7d3a33]" role="status">
+                    {c.maxItems} attached, the most a report can carry. Uncheck one to attach a different item.
+                  </p>
+                ) : null}
                 {view.evidence.length ? (
                   <ul className="mt-3 divide-y divide-[#231e17]/10 border-y border-[#231e17]/15 font-mono text-[0.92rem]">
                     {view.evidence.map((e) => {
@@ -322,6 +327,9 @@ function ReturnedMemo({ review, onRevise, onLeave }: { review: NonNullable<Clien
         <p className="mt-3 font-mono text-[0.85rem] leading-relaxed">
           <span className="font-bold">Reviewer&apos;s note:</span> {review.note}
         </p>
+      ) : null}
+      {review.evidence.length ? (
+        <p className="mt-2 font-mono text-xs leading-relaxed text-[#231e17]/70">Evidence attached to this submission: {review.evidence.join(", ")}.</p>
       ) : null}
       <div className="mt-5 flex flex-wrap gap-3">
         <PaperButton strong onClick={onRevise}>

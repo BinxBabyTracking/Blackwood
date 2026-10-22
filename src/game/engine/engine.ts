@@ -870,7 +870,7 @@ export function project(def: CaseDefinition, s: InvestigationState): ClientView 
       draft: { ...s.report.draft, evidence: s.report.draft.evidence.filter((id) => s.evidence.includes(id)) },
       review: (() => {
         const last = s.report.submissions.at(-1);
-        return last && !last.accepted ? { at: last.at, note: last.note, attempt: s.report.submissions.length } : null;
+        return last && !last.accepted ? { at: last.at, note: last.note, attempt: s.report.submissions.length, evidence: [...last.theory.evidence] } : null;
       })(),
       final: s.report.final,
     },

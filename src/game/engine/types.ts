@@ -738,7 +738,8 @@ export interface ClientView {
     attempts: number;
     draft: ReportDraft;
     /** The agency's response to the latest returned report. */
-    review: { at: number; note: string; attempt: number } | null;
+    /** The last returned submission: when, the reviewer's note, which attempt, and the evidence it carried. */
+    review: { at: number; note: string; attempt: number; evidence: string[] } | null;
     final: FinalReport | null;
   };
   /** Only present once the case is closed. */
