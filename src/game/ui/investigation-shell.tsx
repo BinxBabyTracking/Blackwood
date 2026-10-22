@@ -25,6 +25,7 @@ import { useTelephoneRing } from "./telephone-ring";
 import { playTravelSound, type TravelMode } from "./travel-audio";
 import { setTravelScenes, TravelScene, useTravelScenes } from "./travel-scene";
 import { TravelMap } from "./travel-map";
+import { EvidenceStamp } from "./evidence-stamp";
 
 type Layer =
   | { k: "inspect"; text: string; title: string; evidence: ClientEvidence | null }
@@ -65,7 +66,17 @@ export function InvestigationShell({
   homeLocation: string;
   investigator: string;
 }) {
-  const [view, setView] = useState(initial);
+  const [view, setViewState] = useState(initial);
+  /** Evidence collected since the page loaded, waiting to be shown with the COLLECTED stamp. */
+  const [stamps, setStamps] = useState<ClientView["evidence"]>([]);
+  const seenEvidence = useRef(new Set(initial.evidence.filter((e) => e.collected).map((e) => e.id)));
+  const setView = useCallback((next: ClientView) => {
+    const fresh = next.evidence.filter((e) => e.collected && !seenEvidence.current.has(e.id));
+    for (const e of fresh) seenEvidence.current.add(e.id);
+    if (fresh.length) setStamps((q) => [...q, ...fresh]);
+    setViewState(next);
+  }, []);
+  const nextStamp = useCallback(() => setStamps((q) => q.slice(1)), []);
   const [layer, setLayer] = useState<Layer>(null);
   const [pending, setPending] = useState(false);
   const [save, setSave] = useState<SaveStatus>({ state: "saved", at: null });
@@ -127,7 +138,7 @@ export function InvestigationShell({
       // Leaving the office ends a deferral, so a waiting call rings again on the next visit.
       if (res.view.location.id !== view.location.id) setDeferredCall(null);
     },
-    [show, view.location.id],
+    [show, setView, view.location.id],
   );
 
   const send = useCallback(
@@ -219,7 +230,7 @@ export function InvestigationShell({
       setLayer(null);
       setSave({ state: "saved", at: Date.now() });
     }
-  }, [caseId, show, view.status]);
+  }, [caseId, show, setView, view.status]);
 
   // Ambient sound, only when a recording exists for this location.
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -445,6 +456,9 @@ export function InvestigationShell({
       ) : null}
       {panel === "map" ? <TravelMap view={view} onTravel={(id) => travelTo(id)} onClose={close} pending={pending} /> : null}
       {trip ? <TravelScene mode={trip.mode} to={trip.to} subtitle={trip.subtitle} reducedMotion={prefs.reducedMotion} onSkip={() => skipTrip.current?.()} /> : null}
+      {stamps.length && !trip ? (
+        <EvidenceStamp key={stamps[0].id} item={stamps[0]} volume={(prefs.masterVolume / 100) * (prefs.sfxVolume / 100)} reducedMotion={prefs.reducedMotion} onDone={nextStamp} />
+      ) : null}
       {panel === "phone" ? (
         <PhonePanel
           view={view}
@@ -469,7 +483,7 @@ export function InvestigationShell({
           onExamine={(id) => setLayer({ k: "evidence", id, back: "conclusion" })}
         />
       ) : null}
-      {panel === "board" ? <MurderBoard view={view} dispatch={dispatch} onClose={close} onLocalBoard={(board) => setView((v) => ({ ...v, board }))} /> : null}
+      {panel === "board" ? <MurderBoard view={view} dispatch={dispatch} onClose={close} onLocalBoard={(board) => setViewState((v) => ({ ...v, board }))} /> : null}
 
       {layer?.k === "closure" && view.closure ? (
         <CaseResolution

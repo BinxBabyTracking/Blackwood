@@ -188,6 +188,18 @@ html[data-vision="tritanopia"] {
 @keyframes travel-arm { 0%, 100% { transform: rotate(-14deg); } 50% { transform: rotate(14deg); } }
 .travel-arm { animation: travel-arm 1.04s ease-in-out infinite; }
 .travel-arm-b { animation: travel-arm 1.04s ease-in-out infinite reverse; }
+/* Evidence collected: the photograph comes up, the stamp lands, it slips away. */
+@keyframes evidence-card { 0% { opacity: 0; transform: translateY(24px) rotate(-2deg) scale(0.96); } 9% { opacity: 1; transform: rotate(-2deg); } 86% { opacity: 1; transform: rotate(-2deg); } 100% { opacity: 0; transform: translateY(-14px) rotate(-2deg) scale(0.98); } }
+.evidence-card { animation: evidence-card ease-out both; }
+@keyframes evidence-card-still { 0% { opacity: 0; transform: rotate(-2deg); } 10%, 88% { opacity: 1; transform: rotate(-2deg); } 100% { opacity: 0; transform: rotate(-2deg); } }
+.evidence-card-still { animation: evidence-card-still linear both; }
+@keyframes evidence-stamp {
+  0%, 13% { opacity: 0; transform: translate(-50%, -50%) rotate(-14deg) scale(2.6); }
+  17% { opacity: 0.95; transform: translate(-50%, -50%) rotate(-12deg) scale(0.92); }
+  21%, 100% { opacity: 0.92; transform: translate(-50%, -50%) rotate(-12deg) scale(1); }
+}
+.evidence-stamp { animation: evidence-stamp 2600ms cubic-bezier(0.2, 0.8, 0.3, 1) both; }
+.evidence-stamp-still { opacity: 0.92; transform: translate(-50%, -50%) rotate(-12deg); }
 @keyframes travel-pan { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 .travel-pan { animation: travel-pan linear infinite; }
 .travel-dashes { background: repeating-linear-gradient(90deg, rgba(196,170,120,0.75) 0 6%, transparent 6% 12.5%); background-size: 200% 100%; }
