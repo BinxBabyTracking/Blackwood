@@ -200,6 +200,12 @@ html[data-vision="tritanopia"] {
 }
 .evidence-stamp { animation: evidence-stamp 2600ms cubic-bezier(0.2, 0.8, 0.3, 1) both; }
 .evidence-stamp-still { opacity: 0.92; transform: translate(-50%, -50%) rotate(-12deg); }
+/* Look-around scenes on tall screens: hide the scrollbar, and show the swipe hint briefly. */
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+@keyframes look-hint { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
+.look-hint { animation: look-hint 3.2s ease-in both; }
+@media (prefers-reduced-motion: reduce) { .look-hint { animation-duration: 0.01ms; animation-delay: 3s; } }
 @keyframes travel-pan { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 .travel-pan { animation: travel-pan linear infinite; }
 .travel-dashes { background: repeating-linear-gradient(90deg, rgba(196,170,120,0.75) 0 6%, transparent 6% 12.5%); background-size: 200% 100%; }

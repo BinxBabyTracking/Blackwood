@@ -291,26 +291,31 @@ export function InvestigationShell({
       />
 
       {/* Controls */}
-      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-white/10 bg-[#0d1013] px-3 py-2 text-sm">
-        <nav aria-label="Investigation" className="flex flex-wrap items-center gap-1">
+      {/* One row on every screen; on a phone the buttons scroll sideways rather than stacking over the scene. */}
+      <div className="flex shrink-0 items-center justify-between gap-2 border-t border-white/10 bg-[#0d1013] px-2 py-1.5 text-sm sm:px-3 sm:py-2">
+        <nav aria-label="Investigation" className="no-scrollbar flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto sm:gap-1">
           <HudButton onClick={() => setLayer({ k: "panel", panel: "notebook" })}>Notebook</HudButton>
           <HudButton onClick={() => setLayer({ k: "panel", panel: "inventory" })}>
             Evidence <span className="font-mono text-xs text-brass">{view.evidence.length}</span>
           </HudButton>
           <HudButton onClick={() => setLayer({ k: "panel", panel: "map" })}>Map</HudButton>
-          <HudButton onClick={() => setLayer({ k: "panel", panel: "board" })}>Murder Board</HudButton>
+          <HudButton onClick={() => setLayer({ k: "panel", panel: "board" })}>
+            <span className="sm:hidden">Board</span>
+            <span className="hidden sm:inline">Murder Board</span>
+          </HudButton>
           {!atHome ? (
             <HudButton disabled={pending || !view.map.find((m) => m.id === homeLocation)?.available} onClick={() => travelTo(homeLocation)}>
-              Back to the office
+              <span className="sm:hidden">Office</span>
+              <span className="hidden sm:inline">Back to the office</span>
             </HudButton>
           ) : null}
           {view.phone.ringing ? (
-            <span className="ml-2 font-mono text-xs text-brass/80" role="status">
+            <span className="ml-2 hidden whitespace-nowrap font-mono text-xs text-brass/80 sm:inline" role="status">
               {atHome ? "Agency telephone ringing." : "A call is waiting at the office."}
             </span>
           ) : null}
         </nav>
-        <div className="flex items-center gap-1">
+        <div className="flex shrink-0 items-center gap-1">
           {view.draft ? <span className="mr-2 hidden font-mono text-[0.65rem] text-smoke sm:inline">Draft case content</span> : null}
           <div className="relative">
             <HudButton onClick={() => setMenu((m) => !m)}>Menu</HudButton>
@@ -566,7 +571,7 @@ function HudButton({ children, onClick, disabled }: { children: React.ReactNode;
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="rounded-[2px] px-3 py-1.5 text-paper/80 transition-colors hover:bg-white/5 hover:text-paper disabled:opacity-40"
+      className="shrink-0 whitespace-nowrap rounded-[2px] px-2.5 py-1.5 text-paper/80 transition-colors hover:bg-white/5 hover:text-paper disabled:opacity-40 sm:px-3"
     >
       {children}
     </button>
