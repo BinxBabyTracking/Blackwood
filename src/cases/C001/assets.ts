@@ -1,3 +1,4 @@
+import generated from "@/art/generated.json";
 import type { AssetManifest } from "@/game/engine/types";
 
 /**
@@ -25,7 +26,11 @@ const characters = ["eleanor", "margaret", "daniel", "robert", "patricia", "benn
 const objects = ["envelope_sealed", "envelope_open", "evidence_bag", "evidence_bag_open", "report_folder"];
 const evidence = Array.from({ length: 15 }, (_, i) => `e${String(i + 1).padStart(2, "0")}`);
 
-export const assets: AssetManifest = {
+/** Painted artwork written by scripts/generate-art.mjs. Anything not generated yet keeps its placeholder. */
+const painted = (generated as { images: Record<string, { url: string }> }).images;
+const art = (id: string) => painted[id]?.url ?? null;
+
+const placeholders: AssetManifest = {
   images: {
     ...Object.fromEntries(locations.map((k) => [`loc.${k}`, `${base}/locations/${k}.svg`])),
     ...Object.fromEntries(characters.map((k) => [`char.${k}`, `${base}/characters/${k}.svg`])),
@@ -45,4 +50,39 @@ export const assets: AssetManifest = {
     "rec.robert": null,
     "rec.patricia": null,
   },
+};
+
+/** Which generated image replaces which asset key: scenes, portraits, evidence close-ups and desk items. */
+const PAINTED: Record<string, string> = {
+  "loc.office": "c001_loc_office",
+  "loc.living_room": "c001_loc_living_room",
+  "loc.kitchen": "c001_loc_kitchen",
+  "loc.diner": "c001_loc_diner",
+  // Both states of the apartment share one painted room; what changes is drawn as objects.
+  "loc.daniel_apartment_a": "c001_loc_daniel_apartment",
+  "loc.daniel_apartment_b": "c001_loc_daniel_apartment",
+  "loc.margaret_house": "c001_loc_margaret_house",
+  "loc.robert_garage": "c001_loc_robert_garage",
+  "loc.patricia_office": "c001_loc_patricia_office",
+  ...Object.fromEntries(characters.map((c) => [`char.${c}`, `c001_portrait_${c}`])),
+  ...Object.fromEntries(evidence.map((e) => [`ev.${e}`, `c001_ev_${e}`])),
+  ...Object.fromEntries(objects.map((o) => [`obj.${o}`, `c001_obj_${o}`])),
+};
+
+/** People and objects drawn over a painted scene (hotspot `art` keys). Only present once generated. */
+const OVERLAYS = [
+  "figure_margaret", "figure_daniel", "figure_robert", "figure_patricia", "figure_rosa",
+  "obj_casefile", "obj_labfolder", "obj_phone", "obj_notebook", "obj_recorder", "obj_mailtray",
+  "obj_chair", "obj_glass", "obj_ledger", "obj_diary", "obj_knives", "obj_rack", "obj_spike",
+  "obj_coatrack_jacket", "obj_coatrack_empty", "obj_wastebasket", "obj_firstaid", "obj_ashtray", "obj_suitcase",
+  "obj_photo", "obj_cat", "obj_adder",
+];
+
+export const assets: AssetManifest = {
+  images: {
+    ...placeholders.images,
+    ...Object.fromEntries(Object.entries(PAINTED).flatMap(([key, id]) => (art(id) ? [[key, art(id)!]] : []))),
+    ...Object.fromEntries(OVERLAYS.flatMap((k) => (art(`c001_${k}`) ? [[`art.${k}`, art(`c001_${k}`)!]] : []))),
+  },
+  audio: placeholders.audio,
 };

@@ -42,7 +42,7 @@ export function SceneHotspot({
     >
       {hotspot.sprite ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={hotspot.sprite} alt="" draggable={false} className="pointer-events-none h-full w-full object-contain drop-shadow-[0_4px_6px_rgba(0,0,0,0.55)]" />
+        <img src={hotspot.sprite} alt="" draggable={false} className={`pointer-events-none h-full w-full object-contain drop-shadow-[0_4px_6px_rgba(0,0,0,0.55)] ${hotspot.figure ? "object-bottom" : ""}`} />
       ) : null}
       {hotspot.attention ? <span aria-hidden className={`pointer-events-none absolute inset-0 rounded-[3px] ${reducedMotion ? "shadow-[0_0_0_1px_rgba(196,163,107,0.5)]" : "game-attention"}`} /> : null}
     </button>

@@ -1,3 +1,4 @@
+import { paintedArt } from "@/lib/art";
 import type { CatalogCase } from "@/lib/types";
 
 type CoverCase = Pick<CatalogCase, "id" | "case_number" | "title" | "is_preview" | "cover_image_url">;
@@ -17,11 +18,12 @@ export function CaseCover({
   variant?: "card" | "hero";
   priority?: boolean;
 }) {
-  if (c.cover_image_url) {
+  const cover = c.cover_image_url ?? paintedArt(`${c.id.toLowerCase()}_cover`);
+  if (cover) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
       <img
-        src={c.cover_image_url}
+        src={cover}
         alt=""
         loading={priority ? "eager" : "lazy"}
         className={`h-full w-full object-cover ${className}`}

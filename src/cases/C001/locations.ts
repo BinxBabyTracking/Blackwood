@@ -60,6 +60,37 @@ const deskItem = (id: string, label: string, deliveryId: string, evidenceId: str
   interaction: { type: "delivery", deliveryId },
 });
 
+/** Painted artwork for objects and people, by hotspot. Drawn only over painted scenes. */
+const ART: Record<string, string> = {
+  office_casefile: "art.obj_casefile",
+  office_labreport: "art.obj_labfolder",
+  office_phone: "art.obj_phone",
+  office_notebook: "art.obj_notebook",
+  office_recorder: "art.obj_recorder",
+  office_mail: "art.obj_mailtray",
+  lr_chair: "art.obj_chair",
+  lr_glass: "art.obj_glass",
+  lr_ledger: "art.obj_ledger",
+  lr_diary: "art.obj_diary",
+  k_knives: "art.obj_knives",
+  k_rack: "art.obj_rack",
+  d_spike: "art.obj_spike",
+  d_rosa: "art.figure_rosa",
+  da_daniel: "art.figure_daniel",
+  da_coats_a: "art.obj_coatrack_jacket",
+  da_coats_b: "art.obj_coatrack_empty",
+  da_waste: "art.obj_wastebasket",
+  da_firstaid: "art.obj_firstaid",
+  da_ashtray: "art.obj_ashtray",
+  da_suitcase: "art.obj_suitcase",
+  m_margaret: "art.figure_margaret",
+  m_photo: "art.obj_photo",
+  m_cat: "art.obj_cat",
+  g_robert: "art.figure_robert",
+  p_patricia: "art.figure_patricia",
+  p_adder: "art.obj_adder",
+};
+
 export const locations: LocationDef[] = [
   {
     id: "office",
@@ -225,3 +256,5 @@ export const locations: LocationDef[] = [
     ],
   },
 ];
+
+for (const l of locations) for (const h of l.hotspots) if (ART[h.id]) h.art = ART[h.id];

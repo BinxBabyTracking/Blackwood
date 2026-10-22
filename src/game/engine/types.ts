@@ -206,6 +206,8 @@ export interface HotspotDef {
     | { type: "talk"; characterId: string }
     | { type: "travel"; locationId: string }
     | { type: "delivery"; deliveryId: string };
+  /** Painted artwork for this object or person (asset key), drawn over a painted scene once it exists. */
+  art?: string;
   /** Draws a sprite in the scene at this rectangle; the first entry whose condition holds is shown. */
   sprite?: { image: string; when?: Condition }[];
   /** A subtle cue (a ringing telephone, something new on the desk) while the condition holds. */
@@ -672,7 +674,7 @@ export interface ClientView {
     subtitle: string;
     background: string;
     ambience: string | null;
-    hotspots: { id: string; label: string; rect: HotspotDef["rect"]; inspected: boolean; collected: boolean; sprite: string | null; attention: boolean }[];
+    hotspots: { id: string; label: string; rect: HotspotDef["rect"]; inspected: boolean; collected: boolean; sprite: string | null; figure: boolean; attention: boolean }[];
   };
   map: { id: string; name: string; subtitle: string; area: string | null; available: boolean; visited: boolean; current: boolean; pin: { x: number; y: number } | null }[];
   /** Optional recordings for travel scenes; when null the game synthesizes the sound. */

@@ -673,6 +673,7 @@ export function project(def: CaseDefinition, s: InvestigationState): ClientView 
   const img = (key: string) => def.assets.images[key] ?? "";
   const l = loc(def, s.location)!;
   const bg = typeof l.background === "string" ? l.background : l.background.states[s.env[l.background.env] ?? "A"] ?? Object.values(l.background.states)[0];
+  const painted = !img(bg).endsWith(".svg");
 
   return {
     caseId: def.id,
@@ -697,8 +698,11 @@ export function project(def: CaseDefinition, s: InvestigationState): ClientView 
         collected: h.interaction.type === "inspect" && Boolean(h.interaction.evidence) && s.evidence.includes(h.interaction.evidence!),
         sprite: (() => {
           const sp = h.sprite?.find((x) => check(x.when, s));
-          return sp ? img(sp.image) : null;
+          if (sp) return img(sp.image) || null;
+          // Painted objects and people only go over a painted scene; placeholder scenes draw their own.
+          return h.art && painted && def.assets.images[h.art] ? def.assets.images[h.art] : null;
         })(),
+        figure: h.interaction.type === "talk",
         attention: h.attention ? check(h.attention, s) : false,
       })),
     },

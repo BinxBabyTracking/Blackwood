@@ -1,9 +1,23 @@
+import { paintedArt } from "@/lib/art";
+
 /**
  * The agency office after hours, drawn in layers: street light coming through
  * venetian blinds and falling across the room, a desk lamp, an open file.
  * Placeholder for final photography; every layer is decorative.
  */
 export function HeroOffice() {
+  const painted = paintedArt("site_hero");
+  if (painted) {
+    return (
+      <div aria-hidden className="absolute inset-0 overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={painted} alt="" className="absolute inset-0 h-full w-full object-cover object-right" fetchPriority="high" />
+        {/* Keep the page text readable over the painting. */}
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(13,17,22,0.92)_0%,rgba(13,17,22,0.7)_38%,rgba(13,17,22,0.15)_75%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#0d1116] to-transparent" />
+      </div>
+    );
+  }
   return (
     <div aria-hidden className="absolute inset-0 overflow-hidden">
       {/* Room */}
