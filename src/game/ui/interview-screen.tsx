@@ -211,6 +211,10 @@ export function InterviewScreen({
                       onListen={stop}
                       onAsk={(text) => ask({ type: "askFree", characterId: data.characterId, text })}
                     />
+                    <p className="mt-2 text-xs leading-snug text-smoke">
+                      {first} only knows what {data.characterId === "bennett" ? "is in the police file" : "they saw, heard and did around the case"}. Ask about the
+                      people, the night and the evidence. Questions about anything else get short answers.
+                    </p>
                     {data.questions.limited && data.available && !closed ? (
                       <QuestionCount
                         q={data.questions}

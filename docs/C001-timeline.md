@@ -54,7 +54,6 @@ Other fixed points: coroner's preliminary estimate 11:00 PM to 1:00 AM (an estim
 5. **Margaret's sighting.** The draft had her let the cat in "after the news" at 12:15, but the news ends at 11:30. She now dozes and is woken by the cat at 12:10.
 6. **Coroner window.** The draft said 11:30 PM Saturday to 1:30 AM Sunday. Now a preliminary 11:00 PM Friday to 1:00 AM Saturday.
 
-## Still open
+## Document evidence
 
-- Document evidence E03, E04, E09, E11, E12, E13 and E15 still shows placeholder text. Their canonical text should carry the times above (E12 in particular should list 10:00, 10:10, 10:20, 10:25).
-- The blood-typing details in the deduction texts are draft and should be confirmed when E11's canonical text is written.
+E03, E04, E09, E11, E12, E13 and E15 carry their full text in `src/cases/C001/evidence.ts`, using the times above. Blood typing (E11, with the E05 supplement): Eleanor Group A; the glass's broken edge Group B; comparison samples Ellis O, Wells A, Hale B, Mercer B. Typing narrows the source to Hale or Mercer; the hand injury separates them.

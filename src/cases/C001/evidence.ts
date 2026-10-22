@@ -13,7 +13,6 @@ import type { EvidenceDef } from "@/game/engine/types";
 const ev = (e: EvidenceDef) => e;
 
 /** Shown wherever a document's canonical text has not been written yet. */
-export const PENDING = "Placeholder document: canonical text to be supplied.";
 
 export const evidence: EvidenceDef[] = [
   ev({
@@ -48,7 +47,12 @@ export const evidence: EvidenceDef[] = [
     description: "Eleanor's household ledger, open on her writing desk.",
     sourceLocationId: "living_room",
     image: "ev.e03",
-    inspection: `A handwritten household ledger in pencil. On the most recent pages a second column of figures has been added beside the first, and the two do not agree. ${PENDING}`,
+    inspection: [
+      "A household ledger in Eleanor's pencil hand, open at a page headed 'Harold's estate account, Pacific Crest S&L'. Two columns of quarterly balances run side by side.",
+      "Left column, headed 'Mr. Mercer's report': Sept. 30, 1984, $184,200. Dec. 31, 1984, $186,900. Mar. 31, 1985, $189,450. June 30, 1985, $191,700. Steady growth every quarter.",
+      "Right column, headed 'Bank (from Pat's copies)': Sept. 30, 1984, $176,950. Dec. 31, 1984, $169,300. Mar. 31, 1985, $160,880. June 30, 1985, $151,425. It falls every quarter.",
+      "At the foot, underlined twice: 'Difference $40,275.' Below it: 'Cheques I never signed. Ask D. on Friday. If no answer, take everything to Mr. Albright.'",
+    ].join("\n\n"),
     discovery: "Inspect the writing desk in the living room.",
     characters: ["eleanor"],
     related: ["E08", "E09", "E15"],
@@ -60,7 +64,10 @@ export const evidence: EvidenceDef[] = [
     description: "A note written on the back of a Maple Street Diner guest check.",
     sourceLocationId: "diner",
     image: "ev.e04",
-    inspection: `A guest check from the ticket spike by the register, with a short handwritten note on the back describing a customer. ${PENDING}`,
+    inspection: [
+      "A Maple Street Diner guest check, speared on the spike by the register. The front is stamped Fri 8/16, window booth, and lists coffee, a slice of apple pie and one refill, with the coffee and pie marked paid.",
+      "On the back, in a quick waitress's hand: 'For Mr. K. Booth 4 walked on a refill, 35 cents. Man about 40, tan zip jacket, good haircut, newspaper. Was finishing up when I came on and left about 5 past 11. Linda had him before me. R.D.'",
+    ].join("\n\n"),
     discovery: "Inspect the ticket spike by the diner register.",
     characters: ["rosa"],
     related: ["E12", "E13"],
@@ -128,7 +135,11 @@ export const evidence: EvidenceDef[] = [
     description: "A desk diary page with an appointment written in Eleanor's hand.",
     sourceLocationId: "living_room",
     image: "ev.e09",
-    inspection: `Eleanor's desk diary, open at the current week. An upcoming appointment is written in ink and underlined, with a reminder to bring papers. ${PENDING}`,
+    inspection: [
+      "Eleanor's desk diary, open at the week of August 12, 1985.",
+      "Friday 16: 'Supper at 7. Maggie, Robert, Pat, Mr. Mercer. Roast. Lemon cake.' Beneath it, smaller: 'Ledger to D. after supper.'",
+      "Monday 19, in ink and underlined twice: '10 a.m. Mr. Albright, Spring Street. Harold's attorney. BRING: my ledger, Pat's copies of the bank statements, D.'s quarterly reports.'",
+    ].join("\n\n"),
     discovery: "Inspect the desk diary in the living room.",
     characters: ["eleanor"],
     related: ["E03", "E08"],
@@ -173,7 +184,11 @@ export const evidence: EvidenceDef[] = [
     description: "Det. Bennett's handwritten notes on when each guest says they left.",
     sourceLocationId: "office",
     image: "ev.e12",
-    inspection: `A sheet of lined notepaper in Det. Bennett's handwriting, listing the four guests and the times they gave in their statements. ${PENDING}`,
+    inspection: [
+      "Lined notepaper in Det. Bennett's blunt pencil, headed 'Whitmore, 8/16, departures per statements'.",
+      "Hale: 10:00 PM, first out. Opens his shop at 7 Sat. Ellis: 10:10 PM, walked home across the street. Wells: 10:20 PM, Mercer still inside carrying cups. Mercer: 10:25 PM, says he was last out and V. was 'perfectly well'.",
+      "Underneath: 'Mercer says Maple St. Diner on Sunset after, until about 1 AM. Waitress Linda, red hair. NOT YET CHECKED.' And in the margin: 'Ellis found her 7:40 AM. Front door locked. Back door bolt drawn.'",
+    ].join("\n\n"),
     discovery: "Enclosed in Det. Bennett's case file.",
     characters: ["margaret", "robert", "patricia", "daniel"],
     related: ["E04", "E13"],
@@ -185,7 +200,11 @@ export const evidence: EvidenceDef[] = [
     description: "The Maple Street Diner's weekly staff schedule.",
     sourceLocationId: "diner",
     image: "ev.e13",
-    inspection: `A typed weekly schedule pinned beside the kitchen pass, listing each waitress and cook with their shift times. Names have been initialled as shifts ended. ${PENDING}`,
+    inspection: [
+      "A typed staff schedule for the week of August 12, 1985, pinned beside the kitchen pass. Each waitress initials her line when she clocks out.",
+      "Friday 16: Evening shift, 3 PM to 11 PM: Linda K., initialled 'LK 11:00'. Night shift, 11 PM to 7 AM: Rosa D., initialled 'RD 7:05'. Cook, 3 to 11: Manny. Cook, 11 to 7: Joe.",
+      "Linda's line is the same every weekday: off at 11 sharp. Nobody else waited tables on Friday after eleven.",
+    ].join("\n\n"),
     discovery: "Inspect the staff schedule in the diner.",
     characters: ["rosa"],
     related: ["E04", "E12"],
@@ -209,7 +228,11 @@ export const evidence: EvidenceDef[] = [
     description: "Half of a bank statement, torn from top to bottom.",
     sourceLocationId: "office",
     image: "ev.e15",
-    inspection: `The left half of a typed bank statement for an estate account, torn top to bottom. Several lines have been circled in pencil and there is a handwritten note in the margin. ${PENDING}`,
+    inspection: [
+      "The left half of a Pacific Crest Savings & Loan statement for the Harold Whitmore estate account, July 1985, torn top to bottom. The payee and amount columns are on the missing half.",
+      "Four lines are circled in pencil: July 3, cheque 1187. July 12, cheque 1191. July 19, cheque 1194. July 26, cheque 1196. Each is marked 'cheque drawn', and each is ticked twice.",
+      "In the margin, in Eleanor's hand: 'None of these are mine. Not on D.'s report. Other half kept safe for Mr. Albright.'",
+    ].join("\n\n"),
     discovery: "Reserved for Patricia's envelope event (RE03). Arrives at the office.",
     characters: ["eleanor", "patricia"],
     related: ["E03", "E08"],

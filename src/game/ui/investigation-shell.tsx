@@ -479,7 +479,7 @@ export function InvestigationShell({
 
       {layer?.k === "inspect" && inspected ? (
         <EvidenceInspection
-          key={inspected.id}
+          key={`inspect-${inspected.id}`}
           evidence={inspected}
           observation={layer.text}
           narration={narrationFor(inspected.id)}
@@ -495,7 +495,7 @@ export function InvestigationShell({
       {layer?.k === "inspect" && !layer.evidence ? <ObservationCard title={layer.title} text={layer.text} onClose={close} /> : null}
       {layer?.k === "evidence" && fromNotebook ? (
         <EvidenceInspection
-          key={fromNotebook.id}
+          key={`evidence-${fromNotebook.id}`}
           evidence={fromNotebook}
           narration={narrationFor(fromNotebook.id)}
           onSaveNote={saveNote(fromNotebook.id)}
@@ -510,7 +510,7 @@ export function InvestigationShell({
       ) : null}
 
       {layer?.k === "conversation" ? (
-        <InterviewScreen key={layer.data.characterId} caseId={caseId} data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} volume={dialogueVolume} />
+        <InterviewScreen key={`interview-${layer.data.characterId}`} caseId={caseId} data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} volume={dialogueVolume} />
       ) : null}
       {layer?.k === "document" ? <DocumentPanel data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} /> : null}
       {layer?.k === "call" ? <CallPanel caseId={caseId} data={layer.data} voices={view.voices} volume={dialogueVolume} onClose={() => setLayer({ k: "panel", panel: "phone" })} /> : null}
@@ -527,7 +527,7 @@ export function InvestigationShell({
       {panel === "map" ? <TravelMap view={view} onTravel={(id) => travelTo(id)} onClose={close} pending={pending} /> : null}
       {trip ? <TravelScene mode={trip.mode} to={trip.to} subtitle={trip.subtitle} reducedMotion={prefs.reducedMotion} onSkip={() => skipTrip.current?.()} /> : null}
       {stamps.length && !trip ? (
-        <EvidenceStamp key={stamps[0].id} item={stamps[0]} volume={(prefs.masterVolume / 100) * (prefs.sfxVolume / 100)} reducedMotion={prefs.reducedMotion} onDone={nextStamp} />
+        <EvidenceStamp key={`stamp-${stamps[0].id}`} item={stamps[0]} volume={(prefs.masterVolume / 100) * (prefs.sfxVolume / 100)} reducedMotion={prefs.reducedMotion} onDone={nextStamp} />
       ) : null}
       {panel === "phone" ? (
         <PhonePanel
