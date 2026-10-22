@@ -144,11 +144,17 @@
       "model": "hand-imported",
       "generatedAt": "2026-10-22T16:11:26.714Z"
     },
+    "c001_loc_margaret_house": {
+      "url": "/art/c001_loc_margaret_house.webp",
+      "kind": "background",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:26:41.266Z"
+    },
     "c001_loc_office": {
       "url": "/art/c001_loc_office.webp",
       "kind": "background",
       "model": "hand-imported",
-      "generatedAt": "2026-10-22T16:11:27.197Z"
+      "generatedAt": "2026-10-22T16:26:41.730Z"
     },
     "c001_loc_patricia_office": {
       "url": "/art/c001_loc_patricia_office.webp",

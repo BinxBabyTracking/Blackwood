@@ -4,7 +4,7 @@ import { reportAvailable } from "./story";
 /*
  * Scene layout for C001. Hotspot rectangles are percentages of a 16:9 frame.
  * Rooms with a painting in public/art are laid out to match that painting;
- * the living room and Margaret's house still match their placeholder art.
+ * the living room still matches its placeholder art.
  */
 
 const briefed: Condition = { flag: "casefile_read" };
@@ -103,21 +103,21 @@ export const locations: LocationDef[] = [
     available: { always: true },
     onMap: true,
     hotspots: [
-      panel("office_casefile", "Case file from Det. Bennett", "folder", { x: 39.5, y: 49.5, w: 9, h: 6.5 }, "casefile"),
-      inspect("office_labreport", "Laboratory report folder", "labfolder", { x: 28.5, y: 50.5, w: 6, h: 5.5 }, "Laboratory report", "A thin folder from the LAPD laboratory, clipped to the case file's covering note.", { evidence: "E11" }),
-      panel("office_board", "Murder board", "board", { x: 0, y: 4, w: 24, h: 41 }, "board"),
-      { ...panel("office_phone", "Telephone", "phone", { x: 21.5, y: 46.5, w: 6.5, h: 9 }, "phone"), attention: { callPending: "call_margaret_sedan" } },
-      panel("office_notebook", "Notebook", "notebook", { x: 34.5, y: 51, w: 5, h: 5 }, "notebook"),
-      panel("office_map", "Street map of Los Angeles", "map", { x: 69, y: 6, w: 22, h: 37 }, "map"),
-      panel("office_recorder", "Police interview tapes", "recorder", { x: 48.5, y: 48, w: 6.5, h: 8 }, "statements", briefed),
-      panel("office_mail", "Opened mail", "tray", { x: 55, y: 50, w: 6, h: 6 }, "delivery", { any: [{ deliveryOpened: "jacket_recovered" }, { deliveryOpened: "patricia_envelope" }] }),
+      panel("office_casefile", "Case file from Det. Bennett", "folder", { x: 22, y: 82, w: 18, h: 16 }, "casefile"),
+      inspect("office_labreport", "Laboratory report folder", "labfolder", { x: 16, y: 73, w: 11, h: 11 }, "Laboratory report", "A thin folder from the LAPD laboratory, clipped to the case file's covering note.", { evidence: "E11" }),
+      panel("office_board", "Murder board", "board", { x: 0, y: 3, w: 22, h: 41 }, "board"),
+      { ...panel("office_phone", "Telephone", "phone", { x: 2, y: 68, w: 13, h: 17 }, "phone"), attention: { callPending: "call_margaret_sedan" } },
+      panel("office_notebook", "Notebook", "notebook", { x: 28, y: 73, w: 10, h: 11 }, "notebook"),
+      panel("office_map", "Street map of Los Angeles", "map", { x: 70, y: 6, w: 21, h: 37 }, "map"),
+      panel("office_recorder", "Police interview tapes", "recorder", { x: 39, y: 70, w: 13, h: 14 }, "statements", briefed),
+      panel("office_mail", "Opened mail", "tray", { x: 53, y: 72, w: 12, h: 12 }, "delivery", { any: [{ deliveryOpened: "jacket_recovered" }, { deliveryOpened: "patricia_envelope" }] }),
       // Event objects: they appear on the desk when a delivery arrives and stay until their evidence is collected.
-      deskItem("office_envelope", "Manila envelope", "patricia_envelope", "E15", { x: 61, y: 50, w: 5, h: 6 }, "obj.envelope_sealed", "obj.envelope_open"),
-      deskItem("office_evidencebag", "Police evidence bag", "jacket_recovered", "E05", { x: 70, y: 45.5, w: 4, h: 10 }, "obj.evidence_bag", "obj.evidence_bag_open"),
-      panel("office_typewriter", "Typewriter: final report", "typewriter", { x: 79, y: 44.5, w: 9, h: 9.5 }, "conclusion", reportAvailable),
+      deskItem("office_envelope", "Manila envelope", "patricia_envelope", "E15", { x: 42, y: 84, w: 13, h: 13 }, "obj.envelope_sealed", "obj.envelope_open"),
+      deskItem("office_evidencebag", "Police evidence bag", "jacket_recovered", "E05", { x: 66, y: 65, w: 9, h: 20 }, "obj.evidence_bag", "obj.evidence_bag_open"),
+      panel("office_typewriter", "Typewriter: final report", "typewriter", { x: 76, y: 46, w: 9.5, h: 10 }, "conclusion", reportAvailable),
       // The final report folder appears on the desk once the investigation has enough substance to report on.
       {
-        ...panel("office_report", "Final report folder", "sprite", { x: 83, y: 52, w: 6, h: 4.5 }, "conclusion", reportAvailable),
+        ...panel("office_report", "Final report folder", "sprite", { x: 58, y: 84, w: 15, h: 13 }, "conclusion", reportAvailable),
         sprite: [{ image: "obj.report_folder" }],
       },
     ],
@@ -215,11 +215,11 @@ export const locations: LocationDef[] = [
     available: briefed,
     onMap: true,
     hotspots: [
-      person("m_margaret", "Margaret Ellis", "margaret", { x: 56, y: 20, w: 14, h: 60 }),
-      inspect("m_window", "Front window", "frontwindow", { x: 9, y: 12, w: 29, h: 38 }, "Front window", "Through the lace curtains you can see Eleanor's porch and the jacaranda tree at her kerb. The streetlight is directly beside it."),
-      inspect("m_tv", "Television", "tv", { x: 77, y: 44, w: 15, h: 22 }, "Television", "A Zenith console set. A TV Guide lies open at Friday: the late news on Channel 2 ended at 11:30."),
-      inspect("m_photo", "Framed photograph", "photo", { x: 81, y: 16, w: 9, h: 14 }, "Framed photograph", "Opening of the reading room at the Hollister branch library, 1983. Eleanor holds the scissors at the ribbon. Margaret stands beside her."),
-      inspect("m_cat", "Cat", "cat", { x: 39, y: 71, w: 9, h: 9 }, "Cat", "A large ginger tom, asleep on the rug. He has a habit of being let in late."),
+      person("m_margaret", "Margaret Ellis", "margaret", { x: 40, y: 21, w: 14, h: 63 }),
+      inspect("m_window", "Front window", "frontwindow", { x: 6, y: 2, w: 34, h: 52 }, "Front window", "Through the lace curtains you can see Eleanor's porch and the jacaranda tree at her kerb. The streetlight is directly beside it."),
+      inspect("m_tv", "Television", "tv", { x: 52.5, y: 21, w: 18, h: 43 }, "Television", "A Zenith console set. A TV Guide lies open at Friday: the late news on Channel 2 ended at 11:30."),
+      inspect("m_photo", "Framed photograph", "photo", { x: 53.5, y: 31, w: 5, h: 8 }, "Framed photograph", "Opening of the reading room at the Hollister branch library, 1983. Eleanor holds the scissors at the ribbon. Margaret stands beside her."),
+      inspect("m_cat", "Cat", "cat", { x: 24, y: 80, w: 11, h: 11 }, "Cat", "A large ginger tom, asleep on the rug. He has a habit of being let in late."),
     ],
   },
   {
