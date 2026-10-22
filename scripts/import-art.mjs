@@ -38,6 +38,7 @@ const SIZE = {
   evidence: [1024, 1024],
   panorama: [1920, 1080],
   pov: [1920, 1080],
+  map: [1600, 1200],
   figure: null,
   sprite: null,
   strip: null,
