@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { safeNext, siteOrigin } from "@/lib/site";
 import type { ActionResult } from "@/lib/types";
@@ -11,6 +12,21 @@ const NOT_CONFIGURED: ActionResult = {
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const INVITE_ONLY: ActionResult = {
+  status: "error",
+  message: "Blackwood Investigations is open to invited testers only for now. Ask the agency for an invitation, then sign up with that email address.",
+};
+
+/** Whether this email may create an account: always, unless sign-up is invite-only and it isn't on the list. */
+async function invited(email: string) {
+  const admin = createAdminClient();
+  if (!admin) return true;
+  const { data: setting } = await admin.from("site_settings").select("value").eq("key", "invite_only").maybeSingle();
+  if (setting?.value !== true) return true;
+  const { data } = await admin.from("signup_invites").select("email").eq("email", email.trim().toLowerCase()).maybeSingle();
+  return Boolean(data);
+}
 
 function str(fd: FormData, key: string) {
   const v = fd.get(key);
@@ -30,13 +46,16 @@ export async function signUp(_prev: ActionResult, fd: FormData): Promise<ActionR
   const supabase = await createClient();
   if (!supabase) return NOT_CONFIGURED;
 
+  // While Blackwood is invite-only, say so before anything is sent. The database enforces it regardless.
+  if (!(await invited(email))) return INVITE_ONLY;
+
   const origin = await siteOrigin();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: { emailRedirectTo: `${origin}/auth/confirm?next=/agency/onboarding` },
   });
-  if (error) return { status: "error", message: error.message };
+  if (error) return /database error saving new user/i.test(error.message) ? INVITE_ONLY : { status: "error", message: error.message };
 
   // Email confirmation disabled in Supabase: the session exists already.
   if (data.session) redirect("/agency/onboarding");

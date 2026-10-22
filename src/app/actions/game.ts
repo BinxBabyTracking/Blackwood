@@ -16,6 +16,17 @@ async function currentUserId() {
 }
 
 /** Form action behind "Accept Assignment". */
+/** Interview questions per investigator per minute. Each may call the interview model, so this caps cost as well as abuse. */
+const ASK_LIMIT = 30;
+const asks = new Map<string, number[]>();
+function askedTooFast(userId: string) {
+  const now = Date.now();
+  const recent = (asks.get(userId) ?? []).filter((t) => now - t < 60000);
+  recent.push(now);
+  asks.set(userId, recent);
+  return recent.length > ASK_LIMIT;
+}
+
 export async function acceptAssignment(fd: FormData) {
   const caseId = String(fd.get("caseId") ?? "");
   const def = loadCase(caseId);
@@ -77,6 +88,7 @@ export async function playAction(caseId: string, action: GameAction): Promise<Pl
       // Anything the browser put in match or composed is discarded and decided here.
       let step: GameAction = act;
       if (act.type === "askFree") {
+        if (askedTooFast(userId)) return { error: "Slow down a little. Give them a moment to answer.", saved: true };
         const text = String(act.text ?? "").slice(0, 300);
         const r = await interpretQuestion(def, current, String(act.characterId ?? ""), text);
         step = { type: "askFree", characterId: String(act.characterId ?? ""), text, match: r.match, composed: r.composed, facts: r.facts };
