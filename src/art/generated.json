@@ -4,91 +4,373 @@
       "url": "/art/c001_cover.webp",
       "kind": "site",
       "model": "hand-imported",
-      "generatedAt": "2026-10-22T13:17:29.283Z"
+      "generatedAt": "2026-10-22T16:11:17.483Z"
+    },
+    "c001_ev_e01": {
+      "url": "/art/c001_ev_e01.webp",
+      "kind": "evidence",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:17.765Z"
+    },
+    "c001_ev_e02": {
+      "url": "/art/c001_ev_e02.webp",
+      "kind": "evidence",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:18.010Z"
+    },
+    "c001_ev_e03": {
+      "url": "/art/c001_ev_e03.webp",
+      "kind": "evidence",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:18.329Z"
+    },
+    "c001_ev_e04": {
+      "url": "/art/c001_ev_e04.webp",
+      "kind": "evidence",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:18.588Z"
+    },
+    "c001_ev_e05": {
+      "url": "/art/c001_ev_e05.webp",
+      "kind": "evidence",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:18.845Z"
+    },
+    "c001_ev_e06": {
+      "url": "/art/c001_ev_e06.webp",
+      "kind": "evidence",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:19.068Z"
+    },
+    "c001_ev_e07": {
+      "url": "/art/c001_ev_e07.webp",
+      "kind": "evidence",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:19.297Z"
+    },
+    "c001_ev_e08": {
+      "url": "/art/c001_ev_e08.webp",
+      "kind": "evidence",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:19.506Z"
+    },
+    "c001_ev_e09": {
+      "url": "/art/c001_ev_e09.webp",
+      "kind": "evidence",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:19.718Z"
+    },
+    "c001_ev_e10": {
+      "url": "/art/c001_ev_e10.webp",
+      "kind": "evidence",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:19.907Z"
+    },
+    "c001_ev_e11": {
+      "url": "/art/c001_ev_e11.webp",
+      "kind": "evidence",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:20.117Z"
+    },
+    "c001_ev_e12": {
+      "url": "/art/c001_ev_e12.webp",
+      "kind": "evidence",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:20.409Z"
+    },
+    "c001_ev_e13": {
+      "url": "/art/c001_ev_e13.webp",
+      "kind": "evidence",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:20.608Z"
+    },
+    "c001_ev_e14": {
+      "url": "/art/c001_ev_e14.webp",
+      "kind": "evidence",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:20.815Z"
+    },
+    "c001_ev_e15": {
+      "url": "/art/c001_ev_e15.webp",
+      "kind": "evidence",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:21.021Z"
+    },
+    "c001_figure_daniel": {
+      "url": "/art/c001_figure_daniel.webp",
+      "kind": "figure",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:22.022Z"
+    },
+    "c001_figure_margaret": {
+      "url": "/art/c001_figure_margaret.webp",
+      "kind": "figure",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:22.720Z"
+    },
+    "c001_figure_patricia": {
+      "url": "/art/c001_figure_patricia.webp",
+      "kind": "figure",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:23.502Z"
+    },
+    "c001_figure_robert": {
+      "url": "/art/c001_figure_robert.webp",
+      "kind": "figure",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:24.404Z"
+    },
+    "c001_figure_rosa": {
+      "url": "/art/c001_figure_rosa.webp",
+      "kind": "figure",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:25.310Z"
     },
     "c001_loc_daniel_apartment": {
       "url": "/art/c001_loc_daniel_apartment.webp",
       "kind": "background",
       "model": "hand-imported",
-      "generatedAt": "2026-10-22T13:17:29.741Z"
+      "generatedAt": "2026-10-22T16:11:25.747Z"
     },
     "c001_loc_diner": {
       "url": "/art/c001_loc_diner.webp",
       "kind": "background",
       "model": "hand-imported",
-      "generatedAt": "2026-10-22T13:17:30.191Z"
+      "generatedAt": "2026-10-22T16:11:26.205Z"
     },
     "c001_loc_kitchen": {
       "url": "/art/c001_loc_kitchen.webp",
       "kind": "background",
       "model": "hand-imported",
-      "generatedAt": "2026-10-22T13:17:30.615Z"
+      "generatedAt": "2026-10-22T16:11:26.714Z"
     },
     "c001_loc_office": {
       "url": "/art/c001_loc_office.webp",
       "kind": "background",
       "model": "hand-imported",
-      "generatedAt": "2026-10-22T13:17:31.044Z"
+      "generatedAt": "2026-10-22T16:11:27.197Z"
     },
     "c001_loc_patricia_office": {
       "url": "/art/c001_loc_patricia_office.webp",
       "kind": "background",
       "model": "hand-imported",
-      "generatedAt": "2026-10-22T13:17:31.510Z"
+      "generatedAt": "2026-10-22T16:11:27.700Z"
     },
     "c001_loc_robert_garage": {
       "url": "/art/c001_loc_robert_garage.webp",
       "kind": "background",
       "model": "hand-imported",
-      "generatedAt": "2026-10-22T13:17:31.957Z"
+      "generatedAt": "2026-10-22T16:11:28.186Z"
+    },
+    "c001_obj_adder": {
+      "url": "/art/c001_obj_adder.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:29.223Z"
+    },
+    "c001_obj_ashtray": {
+      "url": "/art/c001_obj_ashtray.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:30.068Z"
+    },
+    "c001_obj_casefile": {
+      "url": "/art/c001_obj_casefile.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:30.909Z"
+    },
+    "c001_obj_cat": {
+      "url": "/art/c001_obj_cat.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:31.763Z"
+    },
+    "c001_obj_chair": {
+      "url": "/art/c001_obj_chair.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:32.650Z"
+    },
+    "c001_obj_coatrack_empty": {
+      "url": "/art/c001_obj_coatrack_empty.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:33.174Z"
+    },
+    "c001_obj_coatrack_jacket": {
+      "url": "/art/c001_obj_coatrack_jacket.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:33.748Z"
+    },
+    "c001_obj_diary": {
+      "url": "/art/c001_obj_diary.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:34.478Z"
+    },
+    "c001_obj_envelope_open": {
+      "url": "/art/c001_obj_envelope_open.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:35.240Z"
+    },
+    "c001_obj_envelope_sealed": {
+      "url": "/art/c001_obj_envelope_sealed.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:35.964Z"
+    },
+    "c001_obj_evidence_bag": {
+      "url": "/art/c001_obj_evidence_bag.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:36.738Z"
+    },
+    "c001_obj_evidence_bag_open": {
+      "url": "/art/c001_obj_evidence_bag_open.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:37.526Z"
+    },
+    "c001_obj_firstaid": {
+      "url": "/art/c001_obj_firstaid.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:38.425Z"
+    },
+    "c001_obj_glass": {
+      "url": "/art/c001_obj_glass.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:39.102Z"
+    },
+    "c001_obj_knives": {
+      "url": "/art/c001_obj_knives.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:39.864Z"
+    },
+    "c001_obj_labfolder": {
+      "url": "/art/c001_obj_labfolder.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:40.673Z"
+    },
+    "c001_obj_ledger": {
+      "url": "/art/c001_obj_ledger.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:41.590Z"
+    },
+    "c001_obj_mailtray": {
+      "url": "/art/c001_obj_mailtray.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:42.309Z"
+    },
+    "c001_obj_notebook": {
+      "url": "/art/c001_obj_notebook.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:43.148Z"
+    },
+    "c001_obj_phone": {
+      "url": "/art/c001_obj_phone.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:44.097Z"
+    },
+    "c001_obj_photo": {
+      "url": "/art/c001_obj_photo.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:44.863Z"
+    },
+    "c001_obj_rack": {
+      "url": "/art/c001_obj_rack.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:45.681Z"
+    },
+    "c001_obj_recorder": {
+      "url": "/art/c001_obj_recorder.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:46.490Z"
+    },
+    "c001_obj_report_folder": {
+      "url": "/art/c001_obj_report_folder.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:47.380Z"
+    },
+    "c001_obj_spike": {
+      "url": "/art/c001_obj_spike.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:48.068Z"
+    },
+    "c001_obj_suitcase": {
+      "url": "/art/c001_obj_suitcase.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:48.981Z"
+    },
+    "c001_obj_wastebasket": {
+      "url": "/art/c001_obj_wastebasket.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T16:11:49.675Z"
     },
     "c001_portrait_bennett": {
       "url": "/art/c001_portrait_bennett.webp",
       "kind": "portrait",
       "model": "hand-imported",
-      "generatedAt": "2026-10-22T13:51:48.825Z"
+      "generatedAt": "2026-10-22T16:11:49.995Z"
     },
     "c001_portrait_daniel": {
       "url": "/art/c001_portrait_daniel.webp",
       "kind": "portrait",
       "model": "hand-imported",
-      "generatedAt": "2026-10-22T13:51:49.124Z"
+      "generatedAt": "2026-10-22T16:11:50.258Z"
     },
     "c001_portrait_eleanor": {
       "url": "/art/c001_portrait_eleanor.webp",
       "kind": "portrait",
       "model": "hand-imported",
-      "generatedAt": "2026-10-22T13:51:49.490Z"
+      "generatedAt": "2026-10-22T16:11:50.570Z"
     },
     "c001_portrait_margaret": {
       "url": "/art/c001_portrait_margaret.webp",
       "kind": "portrait",
       "model": "hand-imported",
-      "generatedAt": "2026-10-22T13:51:49.756Z"
+      "generatedAt": "2026-10-22T16:11:50.909Z"
     },
     "c001_portrait_patricia": {
       "url": "/art/c001_portrait_patricia.webp",
       "kind": "portrait",
       "model": "hand-imported",
-      "generatedAt": "2026-10-22T13:51:49.992Z"
+      "generatedAt": "2026-10-22T16:11:51.180Z"
     },
     "c001_portrait_robert": {
       "url": "/art/c001_portrait_robert.webp",
       "kind": "portrait",
       "model": "hand-imported",
-      "generatedAt": "2026-10-22T13:51:50.271Z"
+      "generatedAt": "2026-10-22T16:11:51.476Z"
     },
     "c001_portrait_rosa": {
       "url": "/art/c001_portrait_rosa.webp",
       "kind": "portrait",
       "model": "hand-imported",
-      "generatedAt": "2026-10-22T13:51:50.610Z"
+      "generatedAt": "2026-10-22T16:11:51.745Z"
     },
     "site_hero": {
       "url": "/art/site_hero.webp",
       "kind": "site",
       "model": "hand-imported",
-      "generatedAt": "2026-10-22T13:17:32.560Z"
+      "generatedAt": "2026-10-22T16:11:51.994Z"
     }
   }
 }
