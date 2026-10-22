@@ -79,6 +79,23 @@ function NavLinks({ pathname, onNavigate }: { pathname: string | null; onNavigat
   );
 }
 
+/** The way into the Admin page, at the very bottom of the navigation. The page itself asks for a password. */
+function AdminLink({ onNavigate }: { onNavigate?: () => void }) {
+  return (
+    <Link
+      href="/agency/admin"
+      onClick={onNavigate}
+      className="flex items-center gap-2 rounded-[2px] px-2 py-1.5 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-smoke/70 hover:text-paper"
+    >
+      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+        <rect x="5" y="11" width="14" height="9" rx="1" />
+        <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+      </svg>
+      Admin
+    </Link>
+  );
+}
+
 export function SideNav() {
   return (
     <nav aria-label="Agency" className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-rule bg-rail lg:flex">
@@ -88,11 +105,14 @@ export function SideNav() {
       <div className="flex-1 overflow-y-auto px-3 py-5">
         <NavList />
       </div>
-      <p className="border-t border-rule px-5 py-4 font-mono text-[0.7rem] leading-relaxed text-smoke">
+      <p className="border-t border-rule px-5 pt-4 font-mono text-[0.7rem] leading-relaxed text-smoke">
         Internal use only.
         <br />
         Fictional agency, est. 1978
       </p>
+      <div className="px-3 pb-3 pt-2">
+        <AdminLink />
+      </div>
     </nav>
   );
 }
@@ -156,6 +176,9 @@ export function MobileNav() {
           </div>
           <div className="flex-1 overflow-y-auto px-3 py-5">
             <NavList onNavigate={() => setOpen(false)} />
+          </div>
+          <div className="border-t border-rule px-3 py-3">
+            <AdminLink onNavigate={() => setOpen(false)} />
           </div>
         </div>
       </div>

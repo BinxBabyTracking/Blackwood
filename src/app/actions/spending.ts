@@ -2,12 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { requireInvestigator } from "@/lib/investigator";
-import { isOwner, saveRates, type Rates } from "@/lib/spending";
+import { hasAdminAccess } from "@/lib/admin-gate";
+import { saveRates, type Rates } from "@/lib/spending";
 
-/** Saves the rates used to price the spending ledger. Owner only. */
+/** Saves the rates used to price the spending ledger. Admin only. */
 export async function updateRates(fd: FormData) {
   const me = await requireInvestigator();
-  if (!(await isOwner(me.id))) throw new Error("Not allowed.");
+  if (!(await hasAdminAccess(me.id))) throw new Error("Not allowed.");
   const n = (k: string, max: number) => {
     const v = Number(fd.get(k));
     return Number.isFinite(v) ? Math.min(max, Math.max(0, v)) : 0;
@@ -20,5 +21,5 @@ export async function updateRates(fd: FormData) {
     target_margin: n("target_margin", 95) / 100,
   };
   await saveRates(rates);
-  revalidatePath("/agency/spending");
+  revalidatePath("/agency/admin");
 }

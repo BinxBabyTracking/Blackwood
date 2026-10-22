@@ -18,13 +18,6 @@ export interface Rates {
 
 export const DEFAULT_RATES: Rates = { claude_input_per_mtok: 0.1, claude_output_per_mtok: 0.5, tts_per_1k_chars: 0.1, stt_per_hour: 0.22, target_margin: 0.7 };
 
-export async function isOwner(userId: string) {
-  const db = createAdminClient();
-  if (!db) return false;
-  const { data } = await db.from("site_settings").select("value").eq("key", "admins").maybeSingle();
-  return Array.isArray(data?.value) && (data!.value as unknown[]).includes(userId);
-}
-
 export async function getRates(): Promise<Rates> {
   const db = createAdminClient();
   if (!db) return DEFAULT_RATES;
