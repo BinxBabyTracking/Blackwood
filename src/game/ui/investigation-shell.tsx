@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { playAction, restartCase, syncView } from "@/app/actions/game";
 import type { ActionOutcome, ActionResponse, ClientEvidence, ClientView, GameAction, PanelId } from "../engine/types";
 import { MurderBoard } from "./board";
@@ -26,6 +26,7 @@ import { playTravelSound, type TravelMode } from "./travel-audio";
 import { setTravelScenes, TravelScene, useTravelScenes } from "./travel-scene";
 import { TravelMap } from "./travel-map";
 import { EvidenceStamp } from "./evidence-stamp";
+import { isSpeaking, subscribeSpeaking } from "./audio-bus";
 import { setMusicEnabled, useBackgroundSound, useMusicEnabled } from "./background-sound";
 
 type Layer =
@@ -281,13 +282,16 @@ export function InvestigationShell({
 
   // Background music for the case and room sound for each scene. Music dips while someone is speaking.
   const musicOn = useMusicEnabled();
-  const speaking = layer?.k === "conversation" || layer?.k === "call" || layer?.k === "delivery" || layer?.k === "closure";
+  // Half volume during an interview, a call or the ending, and whenever a recording or the narrator is playing.
+  const voicePlaying = useSyncExternalStore(subscribeSpeaking, isSpeaking, () => false);
+  const ducked = voicePlaying || layer?.k === "conversation" || layer?.k === "call" || layer?.k === "delivery" || layer?.k === "closure";
+  const duck = ducked ? 0.5 : 1;
   const master = prefs.masterVolume / 100;
   useBackgroundSound({
     music: musicOn ? view.music : null,
     ambience: trip ? null : view.location.ambience,
-    musicVolume: master * (prefs.musicVolume / 100) * (speaking ? 0.12 : 0.35),
-    ambienceVolume: master * (prefs.sfxVolume / 100) * (speaking ? 0.3 : 0.6),
+    musicVolume: master * (prefs.musicVolume / 100) * 0.35 * duck,
+    ambienceVolume: master * (prefs.sfxVolume / 100) * 0.6 * duck,
   });
 
   const panel = layer?.k === "panel" ? layer.panel : null;

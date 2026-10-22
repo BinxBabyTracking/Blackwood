@@ -10,13 +10,47 @@
 let active: HTMLAudioElement | null = null;
 const cache = new Map<string, Promise<string>>();
 
+/*
+ * Whether anyone is speaking right now (a voice on the bus, or a recording
+ * played from its own controls), so background music and room sound can dip.
+ */
+const watched = new WeakSet<HTMLMediaElement>();
+const speakingListeners = new Set<() => void>();
+let speaking = false;
+function recompute() {
+  const domPlaying =
+    typeof document !== "undefined" &&
+    [...document.querySelectorAll<HTMLMediaElement>("audio, video")].some((m) => !m.paused && !m.ended && !m.muted);
+  const next = Boolean((active && !active.paused && !active.ended) || domPlaying);
+  if (next === speaking) return;
+  speaking = next;
+  speakingListeners.forEach((l) => l());
+}
+function watch(a: HTMLMediaElement) {
+  if (watched.has(a)) return;
+  watched.add(a);
+  for (const ev of ["play", "playing", "pause", "ended", "emptied"]) a.addEventListener(ev, recompute);
+}
+if (typeof document !== "undefined") {
+  // Media events don't bubble, but they can be caught on the way down.
+  for (const ev of ["play", "playing", "pause", "ended", "emptied"]) document.addEventListener(ev, recompute, true);
+}
+export function subscribeSpeaking(l: () => void) {
+  speakingListeners.add(l);
+  return () => speakingListeners.delete(l);
+}
+export const isSpeaking = () => speaking;
+
 export function claim(a: HTMLAudioElement) {
   if (active && active !== a) active.pause();
   active = a;
+  watch(a);
+  recompute();
 }
 
 export function release(a: HTMLAudioElement) {
   if (active === a) active = null;
+  recompute();
 }
 
 /** Resolves to a playable object URL, or rejects with a message fit to show the player. */
