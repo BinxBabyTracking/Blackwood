@@ -45,11 +45,12 @@ export async function interpretQuestion(def: CaseDefinition, s: InvestigationSta
     .slice(-8)
     .map((l) => `${l.speaker === "you" ? "Investigator" : person.name}: ${l.text}`)
     .join("\n");
-  const entries = candidates.map((q) => `${q.id}: ${q.prompt}`).join("\n");
+  const entries = candidates.map((q) => `${q.id}: ${q.prompt}${q.keywords?.length ? ` (also: ${q.keywords.join(" ")})` : ""}`).join("\n");
 
   const system = [
     "You are the interview engine of a 1985 Los Angeles detective game. An investigator asks a question in their own words.",
-    "First, if one of the AUTHORED ENTRIES answers the question (same meaning, any wording), reply exactly: ENTRY <id>",
+    "First, if one of the AUTHORED ENTRIES covers the question (same subject, any wording, even if the question is vague or uses 'him' or 'it' for someone just mentioned), reply exactly: ENTRY <id>",
+    "Asking for, or to see, an object the character has is covered by the entry that hands it over; prefer that entry.",
     `Otherwise, answer as ${person.name}, in character, using ONLY the FACTS listed. Reply exactly: ANSWER <reply>`,
     "Rules for ANSWER:",
     "- Use only the FACTS. Never invent names, times, places, events, evidence, motives or opinions about guilt that the facts do not state.",
@@ -57,6 +58,7 @@ export async function interpretQuestion(def: CaseDefinition, s: InvestigationSta
     "- Never accuse anyone and never confess. Some facts are the character's own claims; state them as the character would.",
     "- One to three short spoken sentences, natural American English of 1985. No stage directions, no quotation marks, no em dashes.",
     "- Stay consistent with the conversation so far.",
+    "- Never offer, promise or pretend to hand over, fetch or show any object or document. Objects only change hands through authored entries. If asked for one, say plainly you can't help with that.",
     `Character: ${person.persona ?? person.name}`,
   ].join("\n");
   const user = [

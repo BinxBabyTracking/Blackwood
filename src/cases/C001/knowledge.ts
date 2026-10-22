@@ -122,7 +122,7 @@ export const KNOWLEDGE: Record<string, Fact[]> = {
     f("I work the night shift at the Maple Street Diner, eleven to seven, every Friday."),
     f("Linda works the evening shift and clocks out at eleven on the dot."),
     f("When I came on Friday night, a man in a tan jacket in the window booth was finishing up. He left about five past eleven without paying for his refill."),
-    f("I wrote the unpaid refill on a ticket for the manager. It's on the spike by the register."),
+    f("I wrote the unpaid refill on a ticket for the manager and kept it on the spike by the register. I give it to the investigator when they ask about him."),
     f("He didn't come back on my shift. It was dead after midnight."),
   ],
 };

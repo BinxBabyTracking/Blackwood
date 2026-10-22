@@ -622,10 +622,18 @@ export const questions: DialogueQuestion[] = [
   ], { effects: [{ setFlag: "rosa_shift" }, tl("11:00 PM", "Linda, the diner's evening waitress, clocks out. Rosa Delgado starts the night shift.", "Rosa Delgado")] }),
   q("rosa", "That night", "rosa_customer", "Do you remember a man on his own, around eleven? Coffee, maybe pie.", [
     "Tan jacket, window booth? He was finishing up when I came on. Left about five past eleven without paying for his refill.",
-    "I wrote it on a ticket for the manager. It's still on the spike by the register if you want it.",
+    "I wrote it on a ticket for the manager. Hang on, let me get it off the spike for you. Here.",
   ], {
     reveals: "A man in a tan jacket left the window booth at about 11:05 PM without paying for a refill.",
-    effects: [{ setFlag: "rosa_note" }, tl("11:05 PM", "A man in a tan jacket leaves the diner without paying for a refill.", "Rosa Delgado")],
+    // She hands the ticket over as she mentions it.
+    effects: [{ setFlag: "rosa_note" }, { giveEvidence: "E04" }, tl("11:05 PM", "A man in a tan jacket leaves the diner without paying for a refill.", "Rosa Delgado")],
+  }),
+  q("rosa", "That night", "rosa_ticket", "Can I have that ticket?", [
+    "Sure, honey. Here, off the spike. Just bring it back if the manager asks.",
+  ], {
+    effects: [{ giveEvidence: "E04" }],
+    variants: [{ requires: { hasEvidence: "E04" }, reply: ["You've already got it, honey. That's the only one."] }],
+    repeatable: true,
   }),
   q("rosa", "That night", "rosa_return", "Did he come back later that night?", ["Not on my shift. It was dead after midnight. I'd remember."], {}),
 ];
@@ -806,7 +814,8 @@ const KEYWORDS: Record<string, string> = {
   bennett_lawyer: "she had an appointment with a lawyer albright",
   bennett_again: "anything new any news updates on your side",
   rosa_friday: "were you working friday night your shift who was working",
-  rosa_customer: "do you remember a man alone around eleven customer tan jacket",
+  rosa_customer: "do you remember a man alone around eleven customer tan jacket serving him did you serve him did you see him",
+  rosa_ticket: "give me the ticket can I have the ticket the check guest check note the spike hand it over can I see it get it for me",
   rosa_return: "did he come back later return that night",
 };
 for (const q of questions) if (KEYWORDS[q.id]) q.keywords = [KEYWORDS[q.id]];
