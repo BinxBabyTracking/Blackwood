@@ -42,6 +42,48 @@
       "model": "hand-imported",
       "generatedAt": "2026-10-22T13:17:31.957Z"
     },
+    "c001_portrait_bennett": {
+      "url": "/art/c001_portrait_bennett.webp",
+      "kind": "portrait",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T13:51:48.825Z"
+    },
+    "c001_portrait_daniel": {
+      "url": "/art/c001_portrait_daniel.webp",
+      "kind": "portrait",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T13:51:49.124Z"
+    },
+    "c001_portrait_eleanor": {
+      "url": "/art/c001_portrait_eleanor.webp",
+      "kind": "portrait",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T13:51:49.490Z"
+    },
+    "c001_portrait_margaret": {
+      "url": "/art/c001_portrait_margaret.webp",
+      "kind": "portrait",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T13:51:49.756Z"
+    },
+    "c001_portrait_patricia": {
+      "url": "/art/c001_portrait_patricia.webp",
+      "kind": "portrait",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T13:51:49.992Z"
+    },
+    "c001_portrait_robert": {
+      "url": "/art/c001_portrait_robert.webp",
+      "kind": "portrait",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T13:51:50.271Z"
+    },
+    "c001_portrait_rosa": {
+      "url": "/art/c001_portrait_rosa.webp",
+      "kind": "portrait",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-22T13:51:50.610Z"
+    },
     "site_hero": {
       "url": "/art/site_hero.webp",
       "kind": "site",
