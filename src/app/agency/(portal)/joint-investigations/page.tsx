@@ -1,127 +1,109 @@
 import type { Metadata } from "next";
+import QRCode from "qrcode";
 import { Suspense } from "react";
-import { leaveJointInvestigation, setReady } from "@/app/actions/joint";
-import { Avatar } from "@/components/portal/avatar";
+import { closeParty, openParty } from "@/app/actions/party";
 import { PortalHeading } from "@/components/portal/heading";
-import { LoadingFile, Panel, Tag, buttonClass } from "@/components/ui";
-import { getFormingJointInvestigations, getJointEligibleCases, requireInvestigator, type JointInvestigation } from "@/lib/investigator";
-import { CopyCode, JoinForm, OpenJointForm } from "./joint-forms";
+import { LoadingFile, Panel, buttonClass } from "@/components/ui";
+import { loadCase } from "@/game/registry";
+import { requireInvestigator } from "@/lib/investigator";
+import { hostLobby, lobbyGuests, MAX_PARTY } from "@/lib/party";
+import { siteOrigin } from "@/lib/site";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { CopyLink, HostLobby } from "./joint-forms";
 
 export const metadata: Metadata = { title: "Joint Investigations" };
 
-export default function JointInvestigationsPage() {
+export default function JointInvestigationsPage({ searchParams }: PageProps<"/agency/joint-investigations">) {
   return (
     <>
       <PortalHeading title="Joint Investigations">
-        Work a case with up to five other investigators. The host opens the investigation and shares an invitation code;
-        everyone marks themselves ready before the file is opened.
+        Work a case together in the same room. You host and show a QR code; everyone else scans it with their phone, gives a name,
+        and joins your investigation. No accounts needed for them.
       </PortalHeading>
-      <Suspense fallback={<LoadingFile label="Retrieving joint investigations" />}>
-        <Joint />
+      <Suspense fallback={<LoadingFile label="Opening the joint investigation" />}>
+        <Joint searchParams={searchParams} />
       </Suspense>
     </>
   );
 }
 
-async function Joint() {
-  const me = await requireInvestigator();
-  const [eligible, forming] = await Promise.all([getJointEligibleCases(me.id), getFormingJointInvestigations(me.id)]);
-
-  return (
-    <div className="space-y-12">
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Panel className="p-6">
-          <h2 className="font-serif text-xl">Open Joint Investigation</h2>
-          <p className="mt-1 mb-5 text-sm text-smoke">You will host, and receive a code to invite your team.</p>
-          <OpenJointForm cases={eligible} />
-        </Panel>
-        <Panel className="p-6">
-          <h2 className="font-serif text-xl">Join Existing Assignment</h2>
-          <p className="mt-1 mb-5 text-sm text-smoke">Enter the invitation code the host gave you.</p>
-          <JoinForm />
-        </Panel>
-      </div>
-
-      <section aria-labelledby="rosters">
-        <h2 id="rosters" className="mb-4 font-serif text-xl">
-          Investigator Rosters
-        </h2>
-        {forming.length === 0 ? (
-          <p className="border-y border-rule py-5 text-sm text-smoke">
-            You are not on any joint investigation roster. Open one or join with a code above.
-          </p>
-        ) : (
-          <div className="space-y-6">
-            {forming.map((s) => (
-              <Roster key={s.id} s={s} myId={me.id} />
-            ))}
-          </div>
-        )}
-        <p className="mt-4 text-xs text-smoke">Rosters do not update live yet. Reload the page to see investigators who have joined.</p>
-      </section>
-    </div>
+async function playableCases() {
+  const db = createAdminClient();
+  if (!db) return [];
+  const { data } = await db.from("cases").select("id, title, status, is_preview").order("id");
+  return ((data ?? []) as { id: string; title: string; status: string; is_preview: boolean }[]).filter(
+    (c) => c.status === "available" && !c.is_preview && loadCase(c.id),
   );
 }
 
-function Roster({ s, myId }: { s: JointInvestigation; myId: string }) {
-  const isHost = s.host_user_id === myId;
-  const me = s.participants.find((p) => p.user_id === myId);
-  const seats = Array.from({ length: s.max_participants }, (_, i) => s.participants[i] ?? null);
-  const readyCount = s.participants.filter((p) => p.is_ready).length;
+async function Joint({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const me = await requireInvestigator();
+  const { error } = await searchParams;
+  const lobby = await hostLobby(me.id).catch(() => null);
 
-  return (
-    <Panel className="overflow-hidden">
-      <div className="flex flex-wrap items-start justify-between gap-4 border-b border-rule p-5">
-        <div>
-          <p className="font-mono text-sm text-brass">{s.case_id}</p>
-          <p className="font-serif text-lg">{s.case?.title}</p>
-          <p className="mt-1 text-xs text-smoke">
-            {readyCount} of {s.participants.length} ready, {s.participants.length} of {s.max_participants} seats filled
+  if (!lobby) {
+    const cases = await playableCases();
+    return (
+      <Panel className="max-w-xl p-6">
+        <h2 className="font-serif text-xl">Open a Joint Investigation</h2>
+        <p className="mt-1 mb-5 text-sm text-smoke">
+          Everyone plays your investigation of the case, on their own screen. Anyone can look around, collect evidence, ask questions and
+          work on the report. Only you can file it. Questions are limited the same as playing alone.
+        </p>
+        {error ? (
+          <p role="alert" className="mb-4 border border-fault bg-fault/15 px-4 py-3 text-sm">
+            {error === "case" ? "That case is not open for investigation." : "The joint investigation could not be opened. Try again."}
           </p>
-        </div>
-        {s.invite_code ? <CopyCode code={s.invite_code} /> : null}
-      </div>
-      <ul className="grid gap-px bg-rule sm:grid-cols-2 lg:grid-cols-3">
-        {seats.map((p, i) =>
-          p ? (
-            <li key={p.user_id} className="flex items-center gap-3 bg-ink-2 p-4">
-              <Avatar name={p.profile?.display_name ?? null} url={p.profile?.avatar_url ?? null} size={36} />
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm text-paper">
-                  {p.profile?.display_name ?? "Investigator"}
-                  {p.user_id === myId ? <span className="text-smoke"> (you)</span> : null}
-                </p>
-                <div className="mt-1 flex gap-2">
-                  {p.role === "host" ? <Tag tone="brass">Host</Tag> : null}
-                  {p.is_ready ? <Tag tone="ok">Investigator Ready</Tag> : <Tag>Not ready</Tag>}
-                </div>
-              </div>
-            </li>
-          ) : (
-            <li key={`open-${i}`} className="flex items-center bg-ink-2 p-4 text-sm text-smoke/70">
-              Open seat
-            </li>
-          ),
-        )}
-      </ul>
-      <div className="flex flex-wrap items-center gap-3 border-t border-rule p-5">
-        {me ? (
-          <form action={setReady}>
-            <input type="hidden" name="sessionId" value={s.id} />
-            <input type="hidden" name="ready" value={String(!me.is_ready)} />
-            <button type="submit" className={buttonClass(me.is_ready ? "secondary" : "primary")}>
-              {me.is_ready ? "Mark not ready" : "Mark Investigator Ready"}
-            </button>
-          </form>
         ) : null}
-        <form action={leaveJointInvestigation}>
-          <input type="hidden" name="sessionId" value={s.id} />
-          <button type="submit" className={buttonClass("danger")}>
-            {isHost ? "Close investigation" : "Leave roster"}
+        <form action={openParty} className="space-y-4">
+          <label className="block text-sm">
+            Case
+            <select name="caseId" className="field mt-1.5" defaultValue={cases[0]?.id ?? ""} required disabled={!cases.length}>
+              {cases.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.id}: {c.title}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button type="submit" className={buttonClass("primary")} disabled={!cases.length}>
+            Open Joint Investigation
           </button>
         </form>
-        <p className="text-xs text-smoke">Shared play arrives in a later phase. For now each investigator works the case solo from Available Assignments.</p>
-      </div>
+      </Panel>
+    );
+  }
+
+  const link = `${await siteOrigin()}/party/${lobby.code}?k=${encodeURIComponent(lobby.join_key)}`;
+  const svg = await QRCode.toString(link, { type: "svg", margin: 1, errorCorrectionLevel: "M", color: { dark: "#14171a", light: "#efe8d6" } });
+  const guests = await lobbyGuests(lobby.id);
+  const title = loadCase(lobby.case_id)?.title ?? lobby.case_id;
+
+  return (
+    <Panel className="mx-auto max-w-md p-6 text-center">
+      <p className="font-mono text-sm text-brass">{lobby.case_id}</p>
+      <h2 className="font-serif text-2xl">{title}</h2>
+      <p className="mt-1 text-sm text-smoke">Scan to join the investigation.</p>
+      <div
+        className="mx-auto mt-5 w-full max-w-[18rem] overflow-hidden rounded-[2px] bg-[#efe8d6] p-2 [&>svg]:block [&>svg]:h-auto [&>svg]:w-full"
+        role="img"
+        aria-label={`QR code to join, code ${lobby.code}`}
+        dangerouslySetInnerHTML={{ __html: svg }}
+      />
+      <p className="mt-3 font-mono text-lg tracking-[0.3em]">{lobby.code}</p>
+      <CopyLink link={link} />
+      <HostLobby
+        caseId={lobby.case_id}
+        max={MAX_PARTY}
+        initial={{ status: lobby.status, guests: guests.map((g) => ({ id: g.id, name: g.name })) }}
+        host={me.profile.display_name ?? "You"}
+      />
+      <form action={closeParty} className="mt-4">
+        <button type="submit" className="text-sm text-smoke underline-offset-4 hover:text-paper hover:underline">
+          End the joint investigation
+        </button>
+      </form>
+      <p className="mt-2 text-xs text-smoke">Ending it sends everyone else out. Your progress on the case is kept.</p>
     </Panel>
   );
 }

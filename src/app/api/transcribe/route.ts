@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { findInvestigation } from "@/game/persistence";
-import { createClient } from "@/lib/supabase/server";
+import { actingUser, fromGuestScreen } from "@/lib/party";
 import { recordUsage } from "@/lib/usage";
 
 /*
@@ -25,12 +25,6 @@ function rateLimited(userId: string) {
 
 export async function POST(request: NextRequest) {
   const fail = (error: string, status: number) => Response.json({ error }, { status });
-  const supabase = await createClient();
-  const user = supabase ? (await supabase.auth.getUser()).data.user : null;
-  if (!user) return fail("Sign in to use the microphone.", 401);
-  if (!API_KEY) return fail("Speech recognition is not configured on this server. Type your question instead.", 501);
-  if (rateLimited(user.id)) return fail("Too many recordings. Wait a moment.", 429);
-
   let audio: File | null = null;
   let caseId = "";
   let characterId = "";
@@ -45,6 +39,12 @@ export async function POST(request: NextRequest) {
   } catch {
     return fail("The recording could not be read.", 400);
   }
+  // A guest in a joint investigation records for the host's investigation.
+  const acting = await actingUser(caseId, fromGuestScreen(request));
+  if (!acting) return fail("Sign in to use the microphone.", 401);
+  const user = { id: acting.userId };
+  if (!API_KEY) return fail("Speech recognition is not configured on this server. Type your question instead.", 501);
+  if (rateLimited(acting.guest?.id ?? user.id)) return fail("Too many recordings. Wait a moment.", 429);
   if (!audio || audio.size === 0) return fail("Nothing was recorded.", 400);
   if (audio.size > MAX_BYTES) return fail("That recording is too long. Keep questions short.", 413);
   if (audio.type && !audio.type.startsWith("audio/") && !audio.type.startsWith("video/webm")) return fail("That is not an audio recording.", 415);

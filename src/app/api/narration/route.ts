@@ -4,7 +4,7 @@ import { canNarrate, normalizeState } from "@/game/engine/engine";
 import { findInvestigation } from "@/game/persistence";
 import { loadCase } from "@/game/registry";
 import { narrate, NarrationError } from "@/lib/narration/elevenlabs";
-import { createClient } from "@/lib/supabase/server";
+import { actingUser, fromGuestScreen } from "@/lib/party";
 
 const recent = new Map<string, number[]>();
 const LIMIT = 30; // requests per user per minute
@@ -26,10 +26,10 @@ export async function GET(request: NextRequest) {
   const evidenceId = request.nextUrl.searchParams.get("evidenceId") ?? "";
   const fail = (error: string, status: number) => Response.json({ error }, { status });
 
-  const supabase = await createClient();
-  const user = supabase ? (await supabase.auth.getUser()).data.user : null;
-  if (!user) return fail("Sign in to hear narration.", 401);
-  if (rateLimited(user.id)) return fail("Too many narration requests. Wait a moment.", 429);
+  const acting = await actingUser(caseId, fromGuestScreen(request));
+  if (!acting) return fail("Sign in to hear narration.", 401);
+  const user = { id: acting.userId };
+  if (rateLimited(acting.guest?.id ?? user.id)) return fail("Too many narration requests. Wait a moment.", 429);
 
   const def = loadCase(caseId);
   const ev = def?.evidence.find((e) => e.id === evidenceId);

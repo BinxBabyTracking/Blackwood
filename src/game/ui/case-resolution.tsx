@@ -36,7 +36,8 @@ export function CaseResolution({
   reducedMotion: boolean;
   onReviewReport: () => void;
   onEvidence: () => void;
-  onReplay: () => void;
+  /** Absent for a guest in a joint investigation. */
+  onReplay?: () => void;
   onClose: () => void;
 }) {
   const pages = closure.reconstruction.length;
@@ -178,15 +179,19 @@ export function CaseResolution({
             <StageButton onClick={onEvidence} ghost>
               Review the evidence
             </StageButton>
-            <Link href="/agency/service-record" className="rounded-[2px] border border-white/20 px-4 py-2 text-paper hover:border-brass hover:text-brass">
-              Service record
-            </Link>
-            <Link href="/agency" className="rounded-[2px] border border-white/20 px-4 py-2 text-paper hover:border-brass hover:text-brass">
-              Return to Agency HQ
-            </Link>
-            <StageButton onClick={onReplay} ghost>
-              Start a replay
-            </StageButton>
+            {onReplay ? (
+              <>
+                <Link href="/agency/service-record" className="rounded-[2px] border border-white/20 px-4 py-2 text-paper hover:border-brass hover:text-brass">
+                  Service record
+                </Link>
+                <Link href="/agency" className="rounded-[2px] border border-white/20 px-4 py-2 text-paper hover:border-brass hover:text-brass">
+                  Return to Agency HQ
+                </Link>
+                <StageButton onClick={onReplay} ghost>
+                  Start a replay
+                </StageButton>
+              </>
+            ) : null}
           </div>
           <button type="button" onClick={onClose} className="mt-6 font-mono text-xs text-smoke underline-offset-4 hover:text-paper hover:underline">
             Back to the office

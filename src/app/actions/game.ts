@@ -7,6 +7,7 @@ import type { ActionResponse, GameAction } from "@/game/engine/types";
 import { findInvestigation, investigatorName, PersistenceError, recordClosedCase, restartInvestigation, saveState, startInvestigation } from "@/game/persistence";
 import { loadCase } from "@/game/registry";
 import { interpretQuestion } from "@/lib/interview/understand";
+import { actingUser } from "@/lib/party";
 import { createClient } from "@/lib/supabase/server";
 
 async function currentUserId() {
@@ -71,17 +72,21 @@ export type PlayResult = ActionResponse | { error: string; saved: boolean };
  * applies the action with the case rules, saves, and returns only what the
  * player is allowed to see.
  */
-export async function playAction(caseId: string, action: GameAction): Promise<PlayResult> {
+export async function playAction(caseId: string, action: GameAction, asGuest = false): Promise<PlayResult> {
   if (!action || typeof action !== "object" || !ACTIONS.has(action.type)) return { error: "Unknown action.", saved: true };
   const def = loadCase(caseId);
-  const userId = await currentUserId();
   if (!def) return { error: "This case is not playable.", saved: true };
-  if (!userId) return { error: "Your session has ended. Sign in again to continue.", saved: false };
+  // In a joint investigation, a guest's actions are applied to the host's investigation.
+  const acting = await actingUser(def.id, asGuest);
+  if (!acting) return { error: asGuest ? "The joint investigation has ended." : "Your session has ended. Sign in again to continue.", saved: false };
+  const userId = acting.userId;
+  if (acting.guest && action.type === "submitConclusion") return { error: "Only the host can file the report.", saved: true };
 
   try {
     // The investigator's name on a filed report comes from their profile, never from the browser.
     const act: GameAction = action.type === "submitConclusion" ? { ...action, investigator: await investigatorName(userId) } : action;
-    for (let attempt = 0; attempt < 2; attempt++) {
+    // Several people may act on one save at once in a joint investigation, so retry a few times.
+    for (let attempt = 0; attempt < 4; attempt++) {
       const loaded = await findInvestigation(userId, def.id);
       if (!loaded) return { error: "Accept the assignment before starting the investigation.", saved: true };
       const current = normalizeState(def, loaded.state);
@@ -89,7 +94,7 @@ export async function playAction(caseId: string, action: GameAction): Promise<Pl
       // Anything the browser put in match or composed is discarded and decided here.
       let step: GameAction = act;
       if (act.type === "askFree") {
-        if (askedTooFast(userId)) return { error: "Slow down a little. Give them a moment to answer.", saved: true };
+        if (askedTooFast(acting.guest?.id ?? userId)) return { error: "Slow down a little. Give them a moment to answer.", saved: true };
         // Out of questions with this person: refuse before anything is sent to the interview model.
         if (questionsLeft(def, current, String(act.characterId ?? "")) === 0) {
           const who = def.characters.find((c) => c.id === act.characterId)?.name ?? "They";
@@ -101,7 +106,7 @@ export async function playAction(caseId: string, action: GameAction): Promise<Pl
       }
       const { state, outcome } = reduce(def, current, step);
       const saved = await saveState(def, loaded, state);
-      if (!saved) continue; // another tab saved first; reload and apply again
+      if (!saved) continue; // another tab or partner saved first; reload and apply again
       if (outcome.kind === "verdict" && outcome.correct) {
         // The case is closed and saved either way. If the service record can't be written right now,
         // the closing still plays, and the record is completed the next time the case is opened.
@@ -120,4 +125,22 @@ export async function playAction(caseId: string, action: GameAction): Promise<Pl
     console.error("playAction", e);
     return { error: "Something went wrong saving your investigation. Try again.", saved: false };
   }
+}
+
+export type SyncResult = { changed: false } | { changed: true; stamp: string; response: ActionResponse } | { error: string };
+
+/**
+ * Joint investigations: everyone at the table plays one save. Each screen asks
+ * every few seconds whether the save has moved on since `since`, and if so
+ * gets the fresh view.
+ */
+export async function syncView(caseId: string, since: string, asGuest = false): Promise<SyncResult> {
+  const def = loadCase(caseId);
+  if (!def) return { error: "This case is not playable." };
+  const acting = await actingUser(def.id, asGuest);
+  if (!acting) return { error: "The joint investigation has ended." };
+  const loaded = await findInvestigation(acting.userId, def.id).catch(() => null);
+  if (!loaded) return { error: "The investigation could not be found." };
+  if (loaded.updatedAt === since) return { changed: false };
+  return { changed: true, stamp: loaded.updatedAt, response: respond(def, normalizeState(def, loaded.state)) };
 }

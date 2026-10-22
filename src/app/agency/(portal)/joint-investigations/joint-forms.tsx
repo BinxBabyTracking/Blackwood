@@ -1,87 +1,86 @@
 "use client";
 
-import { useActionState, useState } from "react";
-import { joinJointInvestigation, openJointInvestigation } from "@/app/actions/joint";
-import { Field, FormMessage, IDLE, SubmitButton } from "@/components/form";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { hostLobbyStatus, removePartyGuest, startParty, type LobbyStatus } from "@/app/actions/party";
+import { SubmitButton } from "@/components/form";
+import { buttonClass } from "@/components/ui";
 
-export function OpenJointForm({ cases }: { cases: { id: string; title: string; case_number: string }[] }) {
-  const [state, action] = useActionState(openJointInvestigation, IDLE);
-  const none = cases.length === 0;
-  return (
-    <form action={action} className="space-y-4">
-      <label className="block text-sm">
-        Case
-        <select name="caseId" className="field mt-1.5" disabled={none} defaultValue="">
-          <option value="" disabled>
-            {none ? "No eligible cases" : "Choose a case"}
-          </option>
-          {cases.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.id}: {c.title}
-            </option>
-          ))}
-        </select>
-      </label>
-      {none ? (
-        <p className="text-sm text-smoke">
-          Joint investigations can be opened for open cases you have access to that support more than one investigator.
-          Accept a case in Available Assignments first and it will appear here.
-        </p>
-      ) : null}
-      <FormMessage state={state} />
-      <SubmitButton pending="Opening" disabled={none}>
-        Open Joint Investigation
-      </SubmitButton>
-    </form>
-  );
-}
+/** The lobby under the QR code: how many are at the table, and the button that starts it for everyone. */
+export function HostLobby({ caseId, initial, host, max }: { caseId: string; initial: LobbyStatus; host: string; max: number }) {
+  const [lobby, setLobby] = useState(initial);
 
-export function JoinForm() {
-  const [state, action] = useActionState(joinJointInvestigation, IDLE);
-  const errors = state.status === "error" ? state.fieldErrors ?? {} : {};
-  return (
-    <form action={action} className="space-y-4" noValidate>
-      <Field
-        label="Invitation code"
-        name="code"
-        autoComplete="off"
-        spellCheck={false}
-        maxLength={6}
-        placeholder="K7Q2XM"
-        className="field mt-1.5 font-mono uppercase tracking-[0.3em]"
-        hint="Six characters, from the investigation host."
-        error={errors.code}
-      />
-      <FormMessage state={state} />
-      <SubmitButton pending="Checking code" variant="secondary">
-        Join Existing Assignment
-      </SubmitButton>
-    </form>
-  );
-}
+  useEffect(() => {
+    let stopped = false;
+    const tick = async () => {
+      if (document.visibilityState !== "visible") return;
+      const next = await hostLobbyStatus().catch(() => null);
+      if (!stopped && next) setLobby(next);
+    };
+    const t = setInterval(tick, 2000);
+    return () => {
+      stopped = true;
+      clearInterval(t);
+    };
+  }, []);
 
-export function CopyCode({ code }: { code: string }) {
-  const [copied, setCopied] = useState<"idle" | "copied" | "failed">("idle");
+  const count = lobby.guests.length + 1;
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <span className="rounded-[2px] border border-brass/50 bg-ink px-3 py-1.5 font-mono text-lg tracking-[0.3em] text-brass">{code}</span>
-      <button
-        type="button"
-        className="text-sm text-brass underline-offset-4 hover:underline"
-        onClick={async () => {
-          try {
-            await navigator.clipboard.writeText(code);
-            setCopied("copied");
-          } catch {
-            setCopied("failed");
-          }
-        }}
-      >
-        Invite Investigator
-      </button>
-      <span aria-live="polite" className="text-xs text-smoke">
-        {copied === "copied" ? "Code copied. Send it to the investigator you want to invite." : copied === "failed" ? "Copy failed. Select the code and copy it manually." : ""}
-      </span>
+    <div className="mt-6 border-t border-rule pt-5">
+      <p className="font-serif text-xl" role="status" aria-live="polite">
+        {count} in the lobby
+      </p>
+      <ul className="mt-2 flex flex-wrap justify-center gap-1.5 text-sm">
+        <li className="rounded-[2px] border border-brass/50 px-2 py-0.5 text-brass">{host} (host)</li>
+        {lobby.guests.map((g) => (
+          <li key={g.id} className="flex items-center gap-1 rounded-[2px] border border-white/15 px-2 py-0.5">
+            {g.name}
+            <form
+              action={async (fd) => {
+                await removePartyGuest(fd);
+                setLobby((l) => ({ ...l, guests: l.guests.filter((x) => x.id !== g.id) }));
+              }}
+            >
+              <input type="hidden" name="guestId" value={g.id} />
+              <button type="submit" aria-label={`Remove ${g.name}`} className="px-1 text-smoke hover:text-paper">
+                ×
+              </button>
+            </form>
+          </li>
+        ))}
+      </ul>
+      {count >= max ? <p className="mt-2 text-xs text-smoke">The table is full.</p> : null}
+      <div className="mt-5">
+        {lobby.status === "started" ? (
+          <Link href={`/play/${caseId}`} className={buttonClass("primary", "w-full justify-center")}>
+            Return to the investigation
+          </Link>
+        ) : (
+          <form action={startParty}>
+            <SubmitButton pending="Starting" className="w-full justify-center">
+              Start investigation
+            </SubmitButton>
+          </form>
+        )}
+      </div>
+      {lobby.status === "started" ? <p className="mt-2 text-xs text-smoke">Under way. Latecomers can still scan to join.</p> : null}
     </div>
+  );
+}
+
+export function CopyLink({ link }: { link: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      type="button"
+      className="mt-1 text-xs text-smoke underline-offset-4 hover:text-paper hover:underline"
+      onClick={async () => {
+        await navigator.clipboard?.writeText(link).catch(() => undefined);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }}
+    >
+      {copied ? "Link copied" : "Copy the join link instead"}
+    </button>
   );
 }

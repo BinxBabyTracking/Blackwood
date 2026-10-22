@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { playAction, restartCase } from "@/app/actions/game";
+import { playAction, restartCase, syncView } from "@/app/actions/game";
 import type { ActionOutcome, ActionResponse, ClientEvidence, ClientView, GameAction, PanelId } from "../engine/types";
 import { MurderBoard } from "./board";
 import { DetectiveNotebook } from "./detective-notebook";
@@ -40,6 +40,16 @@ type Layer =
 
 type SaveStatus = { state: "saved" | "saving" | "failed"; at: number | null; detail?: string };
 
+/** A joint investigation played in the same room on one shared save. */
+export interface PartyInfo {
+  /** Shown in the top bar, e.g. "Joint investigation · 3 at the table". */
+  label: string;
+  /** This screen belongs to a guest, who helps the host but cannot file the report or restart. */
+  guest: boolean;
+  /** The save's last-changed time when the page loaded. */
+  stamp: string;
+}
+
 export interface GamePrefs {
   reducedMotion: boolean;
   masterVolume: number;
@@ -59,12 +69,14 @@ export function InvestigationShell({
   prefs,
   homeLocation,
   investigator,
+  party,
 }: {
   caseId: string;
   initial: ClientView;
   prefs: GamePrefs;
   homeLocation: string;
   investigator: string;
+  party?: PartyInfo;
 }) {
   const [view, setViewState] = useState(initial);
   /** Evidence collected since the page loaded, waiting to be shown with the COLLECTED stamp. */
@@ -144,7 +156,7 @@ export function InvestigationShell({
   const send = useCallback(
     async (action: GameAction) => {
       setSave((s) => ({ ...s, state: "saving" }));
-      const res = await playAction(caseId, action);
+      const res = await playAction(caseId, action, Boolean(party?.guest));
       if ("error" in res) {
         // Rule refusals change nothing, so the last save still stands.
         setSave((s) => ({ ...s, state: res.saved === false ? "failed" : "saved", detail: res.saved === false ? res.error : undefined }));
@@ -155,7 +167,7 @@ export function InvestigationShell({
       handle(res, action);
       return res;
     },
-    [caseId, handle, show],
+    [caseId, handle, show, party?.guest],
   );
 
   const dispatch = useCallback(
@@ -183,6 +195,40 @@ export function InvestigationShell({
   );
 
   const close = useCallback(() => setLayer(null), []);
+
+  // Joint investigation: everyone plays one save, so each screen picks up what the others did.
+  const stamp = useRef(party?.stamp ?? "");
+  const tripRef = useRef(false);
+  const statusRef = useRef(view.status);
+  useEffect(() => {
+    statusRef.current = view.status;
+    tripRef.current = Boolean(trip);
+  }, [view.status, trip]);
+  useEffect(() => {
+    if (!party) return;
+    let stopped = false;
+    const tick = async () => {
+      if (stopped || busy.current || tripRef.current || document.visibilityState !== "visible") return;
+      const r = await syncView(caseId, stamp.current, party.guest).catch(() => null);
+      if (stopped || !r || busy.current) return;
+      if ("error" in r) {
+        if (party.guest) window.location.replace("/party/ended");
+        return;
+      }
+      if (r.changed) {
+        stamp.current = r.stamp;
+        // The host filed the report and it was accepted: play the conclusion for everyone.
+        if (r.response.view.status === "closed" && statusRef.current !== "closed") setLayer({ k: "closure" });
+        setView(r.response.view);
+      }
+    };
+    const t = setInterval(tick, 2500);
+    return () => {
+      stopped = true;
+      clearInterval(t);
+    };
+  }, [party, caseId, setView]);
+  const guest = Boolean(party?.guest);
 
   /**
    * Travel with a short journey scene: on foot within a neighbourhood, by car
@@ -276,10 +322,17 @@ export function InvestigationShell({
           </span>
         </p>
         <div className="flex shrink-0 items-center gap-4">
+          {party ? <span className="hidden font-mono text-brass/80 md:inline">{party.label}</span> : null}
           <SaveIndicator status={save} />
-          <Link href="/agency" className="text-paper/80 underline-offset-4 hover:text-brass hover:underline">
-            Return to Agency HQ
-          </Link>
+          {guest ? (
+            <Link href="/party/leave" prefetch={false} className="text-paper/80 underline-offset-4 hover:text-brass hover:underline">
+              Leave
+            </Link>
+          ) : (
+            <Link href="/agency" className="text-paper/80 underline-offset-4 hover:text-brass hover:underline">
+              Return to Agency HQ
+            </Link>
+          )}
         </div>
       </div>
 
@@ -321,10 +374,14 @@ export function InvestigationShell({
             <HudButton onClick={() => setMenu((m) => !m)}>Menu</HudButton>
             {menu ? (
               <div className="absolute bottom-full right-0 z-30 mb-2 w-64 border border-white/10 bg-[#161b20] p-2 shadow-xl">
-                <Link href="/agency/cases" className="block px-3 py-2 hover:bg-white/5">
-                  My Case Files
-                  <span className="block text-xs text-smoke">Progress is saved after every action.</span>
-                </Link>
+                {guest ? (
+                  <p className="px-3 py-2 text-xs text-smoke">You are helping the host. Everything you do is saved to their investigation.</p>
+                ) : (
+                  <Link href="/agency/cases" className="block px-3 py-2 hover:bg-white/5">
+                    My Case Files
+                    <span className="block text-xs text-smoke">Progress is saved after every action.</span>
+                  </Link>
+                )}
                 <button
                   type="button"
                   role="switch"
@@ -355,14 +412,12 @@ export function InvestigationShell({
                   Travel scenes: {travelScenes ? "On" : "Off"}
                   <span className="block text-xs text-smoke">A short drive or walk, with sound, between locations. Click to skip.</span>
                 </button>
-                <button
-                  type="button"
-                  className="block w-full px-3 py-2 text-left hover:bg-white/5"
-                  onClick={replay}
-                >
-                  Restart investigation
-                  <span className="block text-xs text-smoke">Start the case again with a clean file.</span>
-                </button>
+                {guest ? null : (
+                  <button type="button" className="block w-full px-3 py-2 text-left hover:bg-white/5" onClick={replay}>
+                    Restart investigation
+                    <span className="block text-xs text-smoke">Start the case again with a clean file.</span>
+                  </button>
+                )}
               </div>
             ) : null}
           </div>
@@ -484,6 +539,8 @@ export function InvestigationShell({
           dispatch={dispatch}
           pending={pending}
           investigator={investigator}
+          shared={Boolean(party)}
+          guest={guest}
           onClose={close}
           onExamine={(id) => setLayer({ k: "evidence", id, back: "conclusion" })}
         />
@@ -500,7 +557,7 @@ export function InvestigationShell({
           reducedMotion={prefs.reducedMotion}
           onReviewReport={() => setLayer({ k: "panel", panel: "conclusion" })}
           onEvidence={() => setLayer({ k: "panel", panel: "inventory" })}
-          onReplay={replay}
+          onReplay={guest ? undefined : replay}
           onClose={close}
         />
       ) : null}
@@ -515,9 +572,11 @@ export function InvestigationShell({
             <button type="button" className="text-brass hover:underline" onClick={() => setLayer({ k: "closure" })}>
               Replay the conclusion
             </button>
-            <button type="button" className="text-brass hover:underline" onClick={replay}>
-              Start a new investigation (replay)
-            </button>
+            {guest ? null : (
+              <button type="button" className="text-brass hover:underline" onClick={replay}>
+                Start a new investigation (replay)
+              </button>
+            )}
           </div>
         </div>
       ) : null}

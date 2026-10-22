@@ -4,7 +4,7 @@ import { normalizeState, spokenLine } from "@/game/engine/engine";
 import { findInvestigation } from "@/game/persistence";
 import { loadCase } from "@/game/registry";
 import { castVoice, narrate, NarrationError } from "@/lib/narration/elevenlabs";
-import { createClient } from "@/lib/supabase/server";
+import { actingUser, fromGuestScreen } from "@/lib/party";
 
 const recent = new Map<string, number[]>();
 const LIMIT = 60; // lines per user per minute
@@ -37,10 +37,11 @@ export async function GET(request: NextRequest) {
 
   if (!KINDS.has(kind) || !/^[a-z0-9_]{1,40}$/i.test(id) || !Number.isInteger(n) || n < 0 || n > 2000) return fail("Unknown line.", 400);
 
-  const supabase = await createClient();
-  const user = supabase ? (await supabase.auth.getUser()).data.user : null;
-  if (!user) return fail("Sign in to hear voices.", 401);
-  if (rateLimited(user.id)) return fail("Too many voice requests. Wait a moment.", 429);
+  // A guest in a joint investigation hears the host's investigation.
+  const acting = await actingUser(caseId, fromGuestScreen(request));
+  if (!acting) return fail("Sign in to hear voices.", 401);
+  const user = { id: acting.userId };
+  if (rateLimited(acting.guest?.id ?? user.id)) return fail("Too many voice requests. Wait a moment.", 429);
 
   const def = loadCase(caseId);
   if (!def) return fail("Unknown case.", 404);

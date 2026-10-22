@@ -21,6 +21,8 @@ export function FinalReport({
   investigator,
   onClose,
   onExamine,
+  shared = false,
+  guest = false,
 }: {
   view: ClientView;
   dispatch: Dispatch;
@@ -29,6 +31,10 @@ export function FinalReport({
   onClose: () => void;
   /** Open an evidence item, returning to the report afterwards. */
   onExamine: (id: string) => void;
+  /** A joint investigation: everyone at the table edits one draft, saved as they go. */
+  shared?: boolean;
+  /** A guest in a joint investigation may add to the report; only the host files it. */
+  guest?: boolean;
 }) {
   const c = view.conclusion;
   const filed = c.final;
@@ -39,6 +45,15 @@ export function FinalReport({
   const top = useRef<HTMLDivElement>(null);
 
   const dirty = JSON.stringify(draft) !== JSON.stringify(c.draft);
+
+  // Someone else at the table changed the draft: take their version unless this screen has unsaved edits.
+  const lastServer = useRef(JSON.stringify(c.draft));
+  const serverDraft = JSON.stringify(c.draft);
+  useEffect(() => {
+    if (serverDraft === lastServer.current) return;
+    setDraft((mine) => (JSON.stringify(mine) === lastServer.current ? { ...c.draft, evidence: [...c.draft.evidence] } : mine));
+    lastServer.current = serverDraft;
+  }, [serverDraft, c.draft]);
   const complete = ANSWERS.every((k) => draft[k]) && draft.evidence.length >= c.minItems && draft.evidence.length <= c.maxItems;
   const label = (set: (typeof ANSWERS)[number], id?: string) => c.choices.find((x) => x.id === set)?.options.find((o) => o.id === id)?.label ?? "Not answered";
   const evidenceTitle = (id: string) => view.evidence.find((e) => e.id === id)?.title ?? id;
@@ -47,6 +62,13 @@ export function FinalReport({
   useEffect(() => {
     top.current?.scrollIntoView({ block: "start" });
   }, [mode]);
+
+  // In a joint investigation each change is saved after a short pause, so the others see it.
+  useEffect(() => {
+    if (!shared || !dirty || filed || pending) return;
+    const t = setTimeout(() => void dispatch({ type: "saveReport", draft }), 1200);
+    return () => clearTimeout(t);
+  }, [shared, dirty, draft, filed, pending, dispatch]);
 
   const save = async () => {
     if (!dirty) return true;
@@ -143,9 +165,13 @@ export function FinalReport({
               <Signature name={name} />
               <div className="mt-8 flex flex-wrap gap-3">
                 <PaperButton onClick={() => setMode("form")}>Return to Report</PaperButton>
-                <PaperButton strong disabled={pending || !complete} onClick={() => setConfirming(true)}>
-                  Submit Findings
-                </PaperButton>
+                {guest ? (
+                  <span className="self-center font-mono text-xs text-[#231e17]/70">Only the host can file the report. Your changes are saved for them.</span>
+                ) : (
+                  <PaperButton strong disabled={pending || !complete} onClick={() => setConfirming(true)}>
+                    Submit Findings
+                  </PaperButton>
+                )}
               </div>
             </section>
           ) : (
