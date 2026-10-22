@@ -1,4 +1,5 @@
 import type { CharacterDef, ContradictionDef, DialogueQuestion, EvidenceReaction } from "@/game/engine/types";
+import { PATIENCE, UNLIMITED } from "./interviews";
 import { KNOWLEDGE, PERSONA } from "./knowledge";
 
 /*
@@ -857,4 +858,6 @@ for (const q of questions) if (KEYWORDS[q.id]) q.keywords = [KEYWORDS[q.id]];
 for (const c of characters) {
   c.knowledge = KNOWLEDGE[c.id];
   c.persona = PERSONA[c.id];
+  c.patience = PATIENCE[c.id];
+  if (UNLIMITED.includes(c.id)) c.questionLimit = null;
 }

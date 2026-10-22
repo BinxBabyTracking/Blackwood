@@ -136,6 +136,41 @@ export interface CharacterDef {
    * `effects`, so evidence arrives however the subject comes up.
    */
   knowledge?: { text: string; requires?: Condition; effects?: Effect[]; entry?: string }[];
+  /**
+   * Questions this character answers per case before needing a reason to talk
+   * again. Defaults to the case's `questionLimit`; null means no limit (for
+   * example the police contact, who must stay reachable).
+   */
+  questionLimit?: number | null;
+  /** How the character runs out of patience, and how they take an offer of more time. */
+  patience?: PatienceDef;
+}
+
+/** In-character lines for the interview question limit. */
+export interface PatienceDef {
+  /** Said once, about five questions before the allowance runs out. */
+  warn: string;
+  /** Said with two questions left. */
+  last: string;
+  /** Said as the last question is answered; the interview ends. */
+  farewell: string;
+  /** The investigator's in-world offer for more time (fictional money), and the character's reply. */
+  offer: string;
+  accept: string;
+}
+
+/**
+ * A legitimate reason to question someone again: when the condition first
+ * holds, that character gets extra questions (5 by default). Each grant is
+ * awarded once.
+ */
+export interface ReinterviewDef {
+  id: string;
+  characterId: string;
+  when: Condition;
+  questions?: number;
+  /** Shown to the investigator when granted, e.g. "Daniel Mercer will have to explain the jacket." */
+  note: string;
 }
 
 /**
@@ -487,6 +522,10 @@ export interface CaseDefinition {
   solution: SolutionDef;
   /** Seed timeline entries the player starts with. */
   timeline: { time: string; text: string; source: string }[];
+  /** Questions each interviewee answers before needing a new reason (default 20). */
+  questionLimit?: number;
+  /** Evidence and developments that earn extra questions with a particular person. */
+  reinterviews?: ReinterviewDef[];
 }
 
 // ---------------------------------------------------------------------------
@@ -514,6 +553,8 @@ export interface InvestigationState {
   presented: string[]; // `${characterId}:${evidenceId}`
   talkedTo: string[];
   conversations: Record<string, ConversationLine[]>;
+  /** Interview question allowances, credits and redemptions. */
+  budget?: QuestionBudget;
   /** Follow-up questions unlocked by earlier answers. */
   unlockedQuestions: string[];
   /** Per character, the entry their last answer offered, taken by a short yes. */
@@ -555,6 +596,36 @@ export interface ConversationLine {
   /** The question or evidence that produced this line. */
   q?: string;
   kind?: "question" | "answer" | "present" | "reaction" | "refusal" | "cue" | "call";
+  /** For the investigator's questions: which allowance paid for it. */
+  fund?: QuestionFund;
+}
+
+/** Where a question's cost came from. */
+export type QuestionFund = "base" | "reinterview" | "bonus" | "purchased";
+
+/** One character's question allowance in this investigation. All counts only ever grow. */
+export interface CharacterBudget {
+  baseUsed: number;
+  reinterviewGranted: number;
+  reinterviewUsed: number;
+  bonusGranted: number;
+  bonusUsed: number;
+  purchasedGranted: number;
+  purchasedUsed: number;
+}
+
+/** The interview question economy for one investigation. */
+export interface QuestionBudget {
+  mode: "standard" | "hardcore";
+  characters: Record<string, CharacterBudget>;
+  /** Authored answers whose first delivery counted toward expense credits, by unique id. */
+  qualifying: string[];
+  /** Re-interview grants already awarded. */
+  grants: string[];
+  /** Credits spent; credits earned are derived from `qualifying`. */
+  redeemed: number;
+  redemptions: { id: string; characterId: string; credits: number; at: number }[];
+  purchases: { id: string; characterId: string; questions: number; at: number; reference: string }[];
 }
 
 export interface Discovery {
@@ -584,6 +655,8 @@ export type GameAction =
    */
   | { type: "askFree"; characterId: string; text: string; match?: string | null; composed?: string | null; facts?: number[] | null }
   | { type: "present"; characterId: string; evidenceId: string }
+  /** Spend five expense credits (an in-world $5) for five more questions with one person. `requestId` makes a retry harmless. */
+  | { type: "extendInterview"; characterId: string; requestId: string }
   | { type: "answerCall"; callId: string }
   | { type: "placeCall"; callId: string }
   | { type: "openDelivery"; deliveryId: string }
@@ -665,6 +738,21 @@ export interface ClientInterview {
   statements: { id: string; title: string; text: string }[];
   contradictions: { id: string; title: string; text: string }[];
   voiced: boolean;
+  /** Questions left with this person, or null when unlimited. */
+  questionsLeft: number | null;
+}
+
+/** What the interview screen shows about the question allowance. Never the credit arithmetic. */
+export interface ClientQuestions {
+  limited: boolean;
+  /** Questions left right now. */
+  left: number;
+  exhausted: boolean;
+  mode: "standard" | "hardcore";
+  /** Expense money in hand (fictional dollars), standard mode only. */
+  expense: number;
+  /** The in-world offer for five more questions, when it can be made now. */
+  extend: { offer: string; cost: number } | null;
 }
 
 export interface ClientDevelopment {
@@ -769,6 +857,7 @@ export type ActionOutcome =
       idle: string;
       available: boolean;
       voiced: boolean;
+      questions: ClientQuestions;
     }
   | {
       kind: "document";

@@ -7,6 +7,7 @@ import { join } from "node:path";
 import { loadCase } from "../src/game/registry";
 import { newState, normalizeState, reduce, project, spokenLine, questionOpen, interviewCandidates, characterKnowledge } from "../src/game/engine/engine";
 import { bestMatch } from "../src/game/engine/matcher";
+import { credits, questionsLeft } from "../src/game/engine/questions";
 import { CASES as MATCH_CASES } from "./match-eval";
 import type { CaseDefinition, GameAction, InvestigationState } from "../src/game/engine/types";
 
@@ -354,6 +355,101 @@ if (JSON.stringify(rt.conversations) !== JSON.stringify(s.conversations)) proble
   if (o.kind !== "conversation" || !o.refusing || interviewCandidates(def, ref, "daniel").some((x) => x.id !== "daniel_evening")) problems.push("Daniel's refusal not applied");
 }
 
+// ---- Interview question limits, re-interviews and expense credits ----
+{
+  let w = newState(def, 0);
+  const W = (a: GameAction) => {
+    const r = reduce(def, w, a, 1);
+    w = r.state;
+    return r.outcome;
+  };
+  const fails = (a: GameAction) => {
+    try {
+      reduce(def, w, a, 1);
+      return false;
+    } catch {
+      return true;
+    }
+  };
+  const margaret = def.characters.find((c) => c.id === "margaret")!;
+  W({ type: "dismissIntro" }); W({ type: "readDocument", documentId: "casefile" }); W({ type: "travel", locationId: "margaret_house" });
+  if (questionsLeft(def, w, "margaret") !== 20 || questionsLeft(def, w, "daniel") !== 20) problems.push("characters do not start with 20 questions");
+  if (questionsLeft(def, w, "bennett") !== null) problems.push("Bennett should have no question limit");
+  W({ type: "talk", characterId: "margaret" });
+  if (questionsLeft(def, w, "margaret") !== 20) problems.push("opening an interview cost a question");
+  // ask distinct authored answers first, then anything
+  const askM = (i: number) => {
+    const open = interviewCandidates(def, w, "margaret").filter((q) => !w.asked.includes(q.id));
+    const q = open[0];
+    return W({ type: "askFree", characterId: "margaret", text: q ? q.prompt : `Question ${i}?`, match: q?.id ?? null });
+  };
+  for (let i = 1; i <= 10; i++) askM(i);
+  if (questionsLeft(def, w, "margaret") !== 10 || questionsLeft(def, w, "daniel") !== 20) problems.push("question balances are not independent");
+  for (let i = 11; i <= 14; i++) askM(i);
+  if (w.conversations.margaret.some((l) => l.text === margaret.patience!.warn)) problems.push("impatience shown too early");
+  askM(15);
+  if (!w.conversations.margaret.some((l) => l.text === margaret.patience!.warn)) problems.push("no impatience at question 15");
+  for (let i = 16; i <= 19; i++) askM(i);
+  const last = askM(20);
+  if (last.kind !== "conversation" || last.canAsk || !last.questions.exhausted || w.conversations.margaret.at(-1)!.text !== margaret.patience!.farewell) problems.push("the twentieth question did not end the interview");
+  if (!fails({ type: "askFree", characterId: "margaret", text: "One more?" })) problems.push("a question was allowed past the limit");
+  if (!fails({ type: "present", characterId: "margaret", evidenceId: w.evidence[0] ?? "E12" }) && w.evidence.length) problems.push("evidence was presented past the limit");
+  const before = JSON.stringify(w.budget);
+  fails({ type: "askFree", characterId: "robert", text: "Hello?" }); // not here: an error
+  if (JSON.stringify(w.budget) !== before) problems.push("a failed question changed the allowance");
+  W({ type: "travel", locationId: "office" }); W({ type: "travel", locationId: "margaret_house" }); W({ type: "talk", characterId: "margaret" });
+  if (questionsLeft(def, w, "margaret") !== 0) problems.push("leaving and returning reset Margaret's questions");
+  if (!w.conversations.margaret.length) problems.push("transcript lost after exhaustion");
+  // a re-interview: Daniel's hand gives Margaret five more questions, once
+  W({ type: "travel", locationId: "daniel_apartment" });
+  const hand = W({ type: "hotspot", hotspotId: "da_hand" });
+  if (hand.kind === "inspect" && hand.evidence && !w.evidence.includes("E14")) W({ type: "collect", evidenceId: "E14" });
+  if (questionsLeft(def, w, "margaret") !== 5) problems.push(`Daniel's hand did not give Margaret exactly 5 questions (${questionsLeft(def, w, "margaret")})`);
+  W({ type: "travel", locationId: "office" }); W({ type: "travel", locationId: "daniel_apartment" });
+  if (questionsLeft(def, w, "margaret") !== 5) problems.push("the same evidence granted questions twice");
+  // credits: three distinct authored answers make one; replays add nothing; they pool across characters
+  const q0 = w.budget!.qualifying.length;
+  if (credits(w).earned !== Math.floor(q0 / 3)) problems.push("credits do not follow three answers each");
+  W({ type: "talk", characterId: "daniel" });
+  const dq = interviewCandidates(def, w, "daniel").find((q) => !w.asked.includes(q.id))!;
+  W({ type: "askFree", characterId: "daniel", text: dq.prompt, match: dq.id });
+  W({ type: "askFree", characterId: "daniel", text: dq.prompt, match: dq.id });
+  if (w.budget!.qualifying.length !== q0 + 1) problems.push("a repeated answer earned credit, or a new one did not");
+  // earn enough for an extension by asking new authored answers across people
+  for (const [cid, loc] of [["daniel", "daniel_apartment"], ["robert", "robert_garage"], ["patricia", "patricia_office"]] as const) {
+    if (credits(w).balance >= 5) break;
+    if (w.location !== loc) W({ type: "travel", locationId: loc });
+    W({ type: "talk", characterId: cid });
+    for (let i = 0; i < 12 && credits(w).balance < 5; i++) {
+      const q = interviewCandidates(def, w, cid).find((x) => !w.asked.includes(x.id));
+      if (!q || !questionsLeft(def, w, cid)) break;
+      W({ type: "askFree", characterId: cid, text: q.prompt, match: q.id });
+    }
+  }
+  if (credits(w).balance < 5) problems.push("could not earn five credits through authored answers");
+  else {
+    if (w.location !== "robert_garage") W({ type: "travel", locationId: "robert_garage" });
+    const rob = questionsLeft(def, w, "robert")!, pat = questionsLeft(def, w, "patricia")!, bal = credits(w).balance;
+    W({ type: "extendInterview", characterId: "robert", requestId: "test-1" });
+    W({ type: "extendInterview", characterId: "robert", requestId: "test-1" }); // a retry
+    if (questionsLeft(def, w, "robert") !== rob + 5 || questionsLeft(def, w, "patricia") !== pat || credits(w).balance !== bal - 5) problems.push("an extension did not give exactly five questions to one person");
+    // questions paid for with credits earn nothing
+    w.budget!.characters.robert.baseUsed = 20;
+    w.budget!.characters.robert.reinterviewUsed = w.budget!.characters.robert.reinterviewGranted;
+    const nq = interviewCandidates(def, w, "robert").find((x) => !w.asked.includes(x.id));
+    const qn = w.budget!.qualifying.length;
+    W({ type: "askFree", characterId: "robert", text: nq?.prompt ?? "Anything else?", match: nq?.id ?? null });
+    if (w.budget!.qualifying.length !== qn || w.conversations.robert.filter((l) => l.speaker === "you").at(-1)!.fund !== "bonus") problems.push("a bonus-funded answer earned credit");
+  }
+  // save and resume keeps everything
+  const resumed = normalizeState(def, JSON.parse(JSON.stringify(w)));
+  if (JSON.stringify(resumed.budget) !== JSON.stringify(w.budget)) problems.push("save and resume lost the question budget");
+  // hardcore: no credits, no free extensions
+  w.budget!.mode = "hardcore";
+  if (credits(w).earned !== 0) problems.push("hardcore mode earned credits");
+  if (!fails({ type: "extendInterview", characterId: "robert", requestId: "test-2" })) problems.push("hardcore mode allowed a free extension");
+}
+
 // ---- interviews in any reasonable order: random walks never hit an error ----
 for (let seed = 1; seed <= 40; seed++) {
   let x = seed * 9973;
@@ -386,6 +482,11 @@ for (let seed = 1; seed <= 40; seed++) {
         if (!c) continue;
         const o = W({ type: "talk", characterId: c.id });
         if (o.kind !== "conversation") continue;
+        if (questionsLeft(def, w, c.id) === 0) {
+          // Out of questions: buy more time when the expense money allows, otherwise move on.
+          if (o.questions.extend) W({ type: "extendInterview", characterId: c.id, requestId: `walk-${seed}-${step}` });
+          continue;
+        }
         const qs = interviewCandidates(def, w, c.id);
         if (qs.length && rnd(4)) W({ type: "askFree", characterId: c.id, text: qs[rnd(qs.length)].prompt, match: qs[rnd(qs.length)].id });
         else if (w.evidence.length) W({ type: "present", characterId: c.id, evidenceId: w.evidence[rnd(w.evidence.length)] });
@@ -564,6 +665,14 @@ for (let seed = 1; seed <= 40; seed++) {
   let hits = 0;
   for (const [cid, q, want] of MATCH_CASES) if (bestMatch(q, def.questions.filter((d) => d.characterId === cid)) === want) hits++;
   if (hits / MATCH_CASES.length < 0.9) problems.push(`matcher accuracy ${hits}/${MATCH_CASES.length}`);
+}
+
+// the full playthrough fits inside the question limits without paying for anything
+for (const c of def.characters) {
+  const used = s.asked.filter((id) => def.questions.find((q) => q.id === id)?.characterId === c.id).length + s.presented.filter((k) => k.startsWith(`${c.id}:`)).length;
+  const cap = questionsLeft(def, newState(def, 0), c.id);
+  const granted = (def.reinterviews ?? []).filter((g) => g.characterId === c.id).reduce((n, g) => n + (g.questions ?? 5), 0);
+  if (cap !== null && used > cap + granted) problems.push(`the reference playthrough needs ${used} questions with ${c.name}, more than ${cap} + ${granted}`);
 }
 
 // view must not leak restricted content

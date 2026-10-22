@@ -1,5 +1,18 @@
 import { evaluateReport, reportProblem, REVIEW_FEEDBACK } from "./evaluation";
 import { concepts } from "./matcher";
+import {
+  allowance,
+  credits,
+  EXTENSION_COST,
+  LAST_AT,
+  newBudget,
+  noteAuthoredAnswer,
+  questionsLeft,
+  redeemCredits,
+  runReinterviews,
+  spendQuestion,
+  WARN_AT,
+} from "./questions";
 import { apply, check, collectEvidence, demeanorOf, runContradictions, runDemeanor, runEvents } from "./rules";
 import type {
   CharacterDef,
@@ -7,7 +20,10 @@ import type {
   ClientEvidence,
   ClientInterview,
   ClientLine,
+  ClientQuestions,
   DialogueQuestion,
+  PatienceDef,
+  QuestionFund,
   ActionOutcome,
   ActionResponse,
   CaseDefinition,
@@ -118,6 +134,7 @@ export function normalizeState(def: CaseDefinition, raw: InvestigationState): In
   s.voices ??= true;
   s.unlockedQuestions ??= [];
   s.offers ??= {};
+  s.budget ??= newBudget();
   s.contradictions ??= [];
   s.demeanor ??= {};
   s.conversations ??= {};
@@ -239,10 +256,11 @@ function conversationOutcome(def: CaseDefinition, s: InvestigationState, charact
     refusing: Boolean(d?.refuses),
     history: clientLines(def, s, characterId),
     latest,
-    canAsk: characterHere(def, s, characterId) && s.status !== "closed",
+    canAsk: characterHere(def, s, characterId) && s.status !== "closed" && questionsLeft(def, s, characterId) !== 0,
     idle: d?.refuses ?? d?.idleLine ?? c.idleLine,
     available: characterHere(def, s, characterId),
     voiced: voiced(c),
+    questions: questionsView(def, s, c),
   };
 }
 
@@ -512,6 +530,8 @@ export function reduce(
       const text = String(action.text ?? "").replace(/\s+/g, " ").trim().slice(0, 300);
       if (!text) fail("Ask a question first.");
       if (!s.talkedTo.includes(c.id)) s.talkedTo.push(c.id);
+      // Every question asked and answered costs one from this person's allowance, whatever the answer.
+      const fund = chargeQuestion(def, s, c);
       // A short yes takes up what the character just offered; otherwise the
       // match chosen on the server from this character's current candidates, checked again here.
       const offered = acceptedOffer(def, s, c.id, text);
@@ -520,8 +540,10 @@ export function reduce(
       if (s.offers) delete s.offers[c.id];
       const composed = cleanComposed(action.composed);
       let latest: number[];
-      if (q) latest = answerQuestion(def, s, q, text);
-      else if (composed && !refusing(def, s, c.id)) {
+      if (q) {
+        latest = answerQuestion(def, s, q, text);
+        noteAuthoredAnswer(s, q.id, fund);
+      } else if (composed && !refusing(def, s, c.id)) {
         // An answer composed on the server from this character's available knowledge.
         latest = say(s, c.id, text, [composed], { you: "question", them: "answer" }, "composed");
         // Facts the answer drew on bring their effects with them, such as evidence handed over.
@@ -541,8 +563,10 @@ export function reduce(
         const line = d?.refuses ?? unknown[asked % unknown.length];
         latest = say(s, c.id, text, [line], { you: "question", them: d?.refuses ? "refusal" : "answer" }, "none");
       }
+      markFund(s, c.id, fund);
       // Nothing is volunteered over an open offer, so a following "yes" is never ambiguous.
-      if (!s.offers?.[c.id]) latest = [...latest, ...volunteerFact(def, s, c.id, text)];
+      if (!s.offers?.[c.id] && questionsLeft(def, s, c.id) !== 0) latest = [...latest, ...volunteerFact(def, s, c.id, text)];
+      latest = [...latest, ...patienceLines(def, s, c, fund)];
       finish(s, def);
       outcome = conversationOutcome(def, s, c.id, latest);
       break;
@@ -553,6 +577,7 @@ export function reduce(
       if (!characterHere(def, s, c.id)) fail(`${c.name} is not here.`);
       if (!s.evidence.includes(action.evidenceId)) fail("You do not have that evidence.");
       const ev = def.evidence.find((e) => e.id === action.evidenceId)!;
+      const fund = chargeQuestion(def, s, c);
       const d = demeanorOf(def, s, c.id);
       const r = d?.refuses ? undefined : [...def.reactions].reverse().find((x) => x.characterId === c.id && x.evidenceId === ev.id && check(x.requires, s));
       const key = `${c.id}:${ev.id}`;
@@ -560,12 +585,37 @@ export function reduce(
       if (!s.talkedTo.includes(c.id)) s.talkedTo.push(c.id);
       const lines = d?.refuses ? [d.refuses] : r ? r.reply : [c.defaultEvidenceReply];
       const verb = c.medium === "telephone" ? "read" : "show";
-      const latest = say(s, c.id, `You ${verb} ${shortName(c)} ${ev.id}, the ${ev.title.toLowerCase()}.`, lines, { you: "present", them: d?.refuses ? "refusal" : "reaction" }, ev.id);
+      const said = say(s, c.id, `You ${verb} ${shortName(c)} ${ev.id}, the ${ev.title.toLowerCase()}.`, lines, { you: "present", them: d?.refuses ? "refusal" : "reaction" }, ev.id);
+      markFund(s, c.id, fund);
+      const latest = [...said, ...patienceLines(def, s, c, fund)];
       if (r) {
+        noteAuthoredAnswer(s, `reaction:${key}:${def.reactions.indexOf(r)}`, fund);
         apply([{ note: { id: `p:${key}:${def.reactions.indexOf(r)}`, kind: "interview", title: `${c.name} on ${ev.title}`, text: r.reveals ?? r.reply.join(" "), characterId: c.id, important: Boolean(r.reveals) } }], s, def);
         apply(r.effects, s, def);
       }
       finish(s, def);
+      outcome = conversationOutcome(def, s, c.id, latest);
+      break;
+    }
+
+    case "extendInterview": {
+      const c = char(def, action.characterId) ?? fail("Unknown person.");
+      if (!characterHere(def, s, c.id)) fail(`${c.name} is not here.`);
+      const requestId = String(action.requestId ?? "").slice(0, 80);
+      if (!requestId) fail("Try that again.");
+      // The same request again (a retry, a second click that crossed in flight) changes nothing.
+      if (s.budget?.redemptions.some((r) => r.id === requestId)) {
+        outcome = conversationOutcome(def, s, c.id);
+        break;
+      }
+      if ((s.budget?.mode ?? "standard") !== "standard") fail("Extra questions in this mode are bought, not earned. That is not available yet.");
+      if (allowance(def, s, c.id) === null) fail(`${c.name} has no limit on questions.`);
+      if (credits(s).balance < EXTENSION_COST) fail("You don't have enough expense money for that yet.");
+      redeemCredits(s, c.id, requestId, now);
+      const p = patienceOf(c);
+      const log = (s.conversations[c.id] ??= []);
+      log.push({ speaker: "you", text: p.offer, kind: "present", q: "extension" });
+      const latest = [log.push({ speaker: c.id, text: p.accept, kind: "answer", q: "extension" }) - 1];
       outcome = conversationOutcome(def, s, c.id, latest);
       break;
     }
@@ -737,6 +787,69 @@ function finish(s: InvestigationState, def: CaseDefinition) {
   runEvents(s, def);
   runContradictions(s, def);
   runDemeanor(s, def);
+  // New discoveries can give a reason to question someone again.
+  for (const note of runReinterviews(def, s)) s.messages.push(note);
+}
+
+const DEFAULT_PATIENCE: PatienceDef = {
+  warn: "I don't have a great deal more time for this.",
+  last: "A couple more questions, and then I really must go.",
+  farewell: "That's all I can tell you for now.",
+  offer: "Offer $5 for a little more of their time.",
+  accept: "All right. Five more questions, but then I really have to go.",
+};
+
+const patienceOf = (c: CharacterDef) => c.patience ?? DEFAULT_PATIENCE;
+
+/** The question limit as the interview screen sees it. */
+function questionsView(def: CaseDefinition, s: InvestigationState, c: CharacterDef): ClientQuestions {
+  const a = allowance(def, s, c.id);
+  const mode = s.budget?.mode ?? "standard";
+  const { balance } = credits(s);
+  const canExtend = Boolean(a) && mode === "standard" && balance >= EXTENSION_COST && characterHere(def, s, c.id) && s.status !== "closed";
+  return {
+    limited: Boolean(a),
+    left: a?.left ?? 0,
+    exhausted: Boolean(a) && a!.left === 0,
+    mode,
+    expense: mode === "standard" ? balance : 0,
+    extend: canExtend ? { offer: patienceOf(c).offer, cost: EXTENSION_COST } : null,
+  };
+}
+
+/**
+ * Charges one question to a character before they answer, and marks the
+ * investigator's line with what paid for it. Refuses when nothing is left.
+ */
+function chargeQuestion(def: CaseDefinition, s: InvestigationState, c: CharacterDef): QuestionFund | null {
+  if (questionsLeft(def, s, c.id) === 0) fail(`${c.name} has nothing more to say for now.`);
+  return spendQuestion(def, s, c.id);
+}
+
+function markFund(s: InvestigationState, characterId: string, fund: QuestionFund | null) {
+  if (!fund) return;
+  const log = s.conversations[characterId] ?? [];
+  for (let i = log.length - 1; i >= 0; i--) {
+    if (log[i].speaker === "you") {
+      log[i].fund = fund;
+      return;
+    }
+  }
+}
+
+/**
+ * The character's patience after an answer: a word of impatience as the
+ * allowance runs low, and a closing line when it runs out. Returns the new
+ * transcript positions.
+ */
+function patienceLines(def: CaseDefinition, s: InvestigationState, c: CharacterDef, fund: QuestionFund | null) {
+  if (!fund) return [];
+  const left = questionsLeft(def, s, c.id);
+  const p = patienceOf(c);
+  const line = left === 0 ? p.farewell : left === LAST_AT ? p.last : left === WARN_AT && fund === "base" ? p.warn : null;
+  if (!line) return [];
+  const log = (s.conversations[c.id] ??= []);
+  return [log.push({ speaker: c.id, text: line, kind: "answer", q: "patience" }) - 1];
 }
 
 function clamp(n: number) {
@@ -911,6 +1024,7 @@ function interviewsView(def: CaseDefinition, s: InvestigationState): ClientInter
         statements: notes.filter((n) => n.kind === "interview" && n.important).map((n) => ({ id: n.id, title: n.title, text: n.text })),
         contradictions: notes.filter((n) => n.kind === "contradiction").map((n) => ({ id: n.id, title: n.title, text: n.text })),
         voiced: voiced(c),
+        questionsLeft: questionsLeft(def, s, c.id),
       };
     });
 }

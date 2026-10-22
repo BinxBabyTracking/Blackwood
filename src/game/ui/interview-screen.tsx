@@ -195,17 +195,35 @@ export function InterviewScreen({
             ) : (
               <>
                 {!data.available ? <p className="mb-3 text-sm text-smoke">{data.name} is not here. You can read the transcript, but not ask anything new.</p> : null}
-                <QuestionBar
-                  name={first}
-                  disabled={pending || !data.canAsk}
-                  onListen={stop}
-                  onAsk={(text) => ask({ type: "askFree", characterId: data.characterId, text })}
-                />
+                {data.questions.exhausted && data.available && !closed ? (
+                  <OutOfTime
+                    first={first}
+                    q={data.questions}
+                    pending={pending}
+                    onExtend={() => ask({ type: "extendInterview", characterId: data.characterId, requestId: newRequestId() })}
+                  />
+                ) : (
+                  <>
+                    <QuestionBar
+                      name={first}
+                      disabled={pending || !data.canAsk}
+                      onListen={stop}
+                      onAsk={(text) => ask({ type: "askFree", characterId: data.characterId, text })}
+                    />
+                    {data.questions.limited && data.available && !closed ? (
+                      <QuestionCount
+                        q={data.questions}
+                        pending={pending}
+                        onExtend={() => ask({ type: "extendInterview", characterId: data.characterId, requestId: newRequestId() })}
+                      />
+                    ) : null}
+                  </>
+                )}
                 <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-white/5 pt-3">
                   <button
                     type="button"
                     onClick={() => setMode("evidence")}
-                    disabled={closed || !data.available}
+                    disabled={closed || !data.available || data.questions.exhausted}
                     className="rounded-[2px] bg-brass px-4 py-2 text-sm font-semibold text-ink hover:bg-[#d4b585] disabled:opacity-40"
                   >
                     Present Evidence
@@ -220,6 +238,62 @@ export function InterviewScreen({
           </div>
         </section>
       </div>
+    </div>
+  );
+}
+
+type Questions = Conversation["questions"];
+
+/** A unique id for one request, so a retried extension is never charged twice. */
+function newRequestId() {
+  return typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+/** A quiet count of questions left, and the offer of more time once it runs low. */
+function QuestionCount({ q, pending, onExtend }: { q: Questions; pending: boolean; onExtend: () => void }) {
+  const low = q.left <= 5;
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[0.7rem] tracking-wide">
+      <span className={low ? "text-[#e2b98a]" : "text-smoke/80"}>Questions remaining: {q.left}</span>
+      {q.mode === "standard" ? <span className="text-smoke/60">Expense money: ${q.expense}</span> : null}
+      {low && q.extend ? (
+        <button type="button" disabled={pending} onClick={onExtend} className="text-brass underline-offset-4 hover:underline disabled:opacity-40">
+          {q.extend.offer}
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
+/** The person has given all the time they will for now. */
+function OutOfTime({ first, q, pending, onExtend }: { first: string; q: Questions; pending: boolean; onExtend: () => void }) {
+  return (
+    <div className="space-y-3" role="status">
+      <p className="font-serif text-lg italic text-paper/80">{first} has nothing more to say for now.</p>
+      {q.extend ? (
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            disabled={pending}
+            onClick={onExtend}
+            className="rounded-[2px] border border-brass/70 px-4 py-2 text-sm text-brass hover:bg-brass/10 disabled:opacity-40"
+          >
+            {q.extend.offer}
+          </button>
+          <span className="font-mono text-xs text-smoke">Expense money: ${q.expense}</span>
+        </div>
+      ) : q.mode === "standard" ? (
+        <p className="text-sm text-smoke">
+          New evidence may give you a reason to come back. Expense money for more of {first}&apos;s time: ${q.expense} of $5.
+        </p>
+      ) : (
+        <div className="flex flex-wrap items-center gap-3">
+          <button type="button" disabled className="rounded-[2px] border border-white/20 px-4 py-2 text-sm text-paper/60">
+            Buy more questions with real money
+          </button>
+          <span className="text-sm text-smoke">Purchases are not available yet. New evidence may still give you a reason to come back.</span>
+        </div>
+      )}
     </div>
   );
 }

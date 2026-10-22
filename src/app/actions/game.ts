@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { GameError, normalizeState, reduce, respond } from "@/game/engine/engine";
+import { questionsLeft } from "@/game/engine/questions";
 import type { ActionResponse, GameAction } from "@/game/engine/types";
 import { findInvestigation, investigatorName, PersistenceError, recordClosedCase, restartInvestigation, saveState, startInvestigation } from "@/game/persistence";
 import { loadCase } from "@/game/registry";
@@ -57,7 +58,7 @@ export async function restartCase(caseId: string): Promise<ActionResponse | { er
 
 const ACTIONS = new Set<GameAction["type"]>([
   // Interviews are asked in the player's own words ("askFree"); authored question ids are never accepted from the browser.
-  "dismissIntro", "travel", "hotspot", "collect", "readDocument", "talk", "askFree", "present", "answerCall", "placeCall",
+  "dismissIntro", "travel", "hotspot", "collect", "readDocument", "talk", "askFree", "present", "extendInterview", "answerCall", "placeCall",
   "openDelivery", "boardAdd", "boardMove", "boardRemove", "connect", "disconnect", "saveNotes", "saveEvidenceNote", "setNarration", "setVoices",
   "dismissMessages", "saveReport", "submitConclusion",
 ]);
@@ -89,6 +90,11 @@ export async function playAction(caseId: string, action: GameAction): Promise<Pl
       let step: GameAction = act;
       if (act.type === "askFree") {
         if (askedTooFast(userId)) return { error: "Slow down a little. Give them a moment to answer.", saved: true };
+        // Out of questions with this person: refuse before anything is sent to the interview model.
+        if (questionsLeft(def, current, String(act.characterId ?? "")) === 0) {
+          const who = def.characters.find((c) => c.id === act.characterId)?.name ?? "They";
+          return { error: `${who} has nothing more to say for now.`, saved: true };
+        }
         const text = String(act.text ?? "").slice(0, 300);
         const r = await interpretQuestion(def, current, String(act.characterId ?? ""), text);
         step = { type: "askFree", characterId: String(act.characterId ?? ""), text, match: r.match, composed: r.composed, facts: r.facts };
