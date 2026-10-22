@@ -5,6 +5,7 @@ import { characters, contradictions, questions, reactions } from "./characters";
 import { evidence } from "./evidence";
 import { reinterviews } from "./interviews";
 import { locations } from "./locations";
+import { SOUNDTRACK } from "./soundtrack";
 import { conclusionChoices, deductions, solution } from "./solution";
 import { calls, deliveries, documents, events, intro, objectives, outgoingCalls, reportAvailable, statements, timeline } from "./story";
 
@@ -36,4 +37,5 @@ export const C001: CaseDefinition = {
   timeline,
   questionLimit: 20,
   reinterviews,
+  soundtrack: SOUNDTRACK,
 };

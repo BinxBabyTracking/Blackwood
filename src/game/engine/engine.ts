@@ -973,6 +973,7 @@ export function project(def: CaseDefinition, s: InvestigationState): ClientView 
     messages: s.messages,
     narration: s.narration,
     voices: s.voices,
+    music: def.assets.audio["music.theme"] ?? null,
     travelAudio: { drive: def.assets.audio["sfx.travel_drive"] ?? null, walk: def.assets.audio["sfx.travel_walk"] ?? null },
     conclusion: {
       available: check(def.reportAvailable, s),

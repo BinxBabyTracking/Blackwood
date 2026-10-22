@@ -1,5 +1,6 @@
 import generated from "@/art/generated.json";
 import type { AssetManifest } from "@/game/engine/types";
+import { SOUNDTRACK } from "./soundtrack";
 
 /**
  * Central asset manifest for Case C001. Every image and sound the case uses is
@@ -38,10 +39,8 @@ const placeholders: AssetManifest = {
     ...Object.fromEntries(objects.map((k) => [`obj.${k}`, `${base}/objects/${k}.svg`])),
   },
   audio: {
-    "amb.office": null,
-    "amb.whitmore": null,
-    "amb.diner": null,
-    "amb.garage": null,
+    // Music and room sound, made on the Admin page and served from storage (see soundtrack.ts).
+    ...Object.fromEntries(SOUNDTRACK.map((t) => [t.key, `/api/case-audio/C001/${t.key}`])),
     // Travel scenes. Null means the game synthesizes the sound; point these at recordings to replace it.
     "sfx.travel_drive": null,
     "sfx.travel_walk": null,

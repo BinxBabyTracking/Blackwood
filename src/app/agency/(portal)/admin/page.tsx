@@ -9,8 +9,14 @@ import { formatDate } from "@/lib/format";
 import { requireInvestigator } from "@/lib/investigator";
 import { hasAdminAccess } from "@/lib/admin-gate";
 import { getSpending, type Money } from "@/lib/spending";
+import { loadCase } from "@/game/registry";
+import { soundtrackStatus } from "@/lib/soundtrack";
+import { SoundtrackPanel } from "@/components/portal/soundtrack-panel";
 
 export const metadata: Metadata = { title: "Admin", robots: { index: false, follow: false } };
+
+/** Making a music track with ElevenLabs can take a couple of minutes. */
+export const maxDuration = 300;
 
 /** Dollars, with cents shown to a tenth of a cent for small amounts. */
 function usd(n: number) {
@@ -157,6 +163,8 @@ async function Spending() {
         ) : null}
       </section>
 
+      <Soundtracks />
+
       <form action={lockAdmin}>
         <button type="submit" className="text-sm text-smoke underline-offset-4 hover:text-paper hover:underline">
           Lock the Admin page on this device
@@ -206,4 +214,26 @@ function Rate({ id, label, value, step = "0.0001" }: { id: string; label: string
 
 function breakdown(m: Money) {
   return `Interviews ${usd(m.claude)} · Voices ${usd(m.tts)} · Push-to-talk ${usd(m.stt)}`;
+}
+
+/** Music and room sound for each case, made with ElevenLabs. */
+async function Soundtracks() {
+  const def = loadCase("C001");
+  if (!def?.soundtrack?.length) return null;
+  const made = await soundtrackStatus(def.id).catch(() => ({}) as Record<string, string>);
+  return (
+    <section aria-labelledby="sound" className="max-w-3xl">
+      <h2 id="sound" className="font-serif text-xl text-smoke">
+        Music and room sound
+      </h2>
+      <p className="mt-2 text-sm text-smoke">
+        Made once with ElevenLabs and stored; players never trigger a charge. Music needs a paid ElevenLabs plan and the key&apos;s Music
+        permission; room sound needs the Sound Effects permission. Making a track again replaces it.
+      </p>
+      <SoundtrackPanel
+        caseId={def.id}
+        tracks={def.soundtrack.map((t) => ({ key: t.key, label: t.label, kind: t.kind, seconds: t.seconds, made: made[t.key] ?? null }))}
+      />
+    </section>
+  );
 }

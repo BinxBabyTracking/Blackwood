@@ -26,6 +26,7 @@ import { playTravelSound, type TravelMode } from "./travel-audio";
 import { setTravelScenes, TravelScene, useTravelScenes } from "./travel-scene";
 import { TravelMap } from "./travel-map";
 import { EvidenceStamp } from "./evidence-stamp";
+import { setMusicEnabled, useBackgroundSound, useMusicEnabled } from "./background-sound";
 
 type Layer =
   | { k: "inspect"; text: string; title: string; evidence: ClientEvidence | null }
@@ -278,14 +279,16 @@ export function InvestigationShell({
     }
   }, [caseId, show, setView, view.status]);
 
-  // Ambient sound, only when a recording exists for this location.
-  const audioRef = useRef<HTMLAudioElement>(null);
-  useEffect(() => {
-    const a = audioRef.current;
-    if (!a) return;
-    a.volume = Math.max(0, Math.min(1, (prefs.masterVolume / 100) * (prefs.musicVolume / 100)));
-    if (view.location.ambience) a.play().catch(() => undefined);
-  }, [view.location.ambience, prefs.masterVolume, prefs.musicVolume]);
+  // Background music for the case and room sound for each scene. Music dips while someone is speaking.
+  const musicOn = useMusicEnabled();
+  const speaking = layer?.k === "conversation" || layer?.k === "call" || layer?.k === "delivery" || layer?.k === "closure";
+  const master = prefs.masterVolume / 100;
+  useBackgroundSound({
+    music: musicOn ? view.music : null,
+    ambience: trip ? null : view.location.ambience,
+    musicVolume: master * (prefs.musicVolume / 100) * (speaking ? 0.12 : 0.35),
+    ambienceVolume: master * (prefs.sfxVolume / 100) * (speaking ? 0.3 : 0.6),
+  });
 
   const panel = layer?.k === "panel" ? layer.panel : null;
   const atHome = view.location.id === homeLocation;
@@ -402,6 +405,10 @@ export function InvestigationShell({
                   Character voices: {view.voices ? "On" : "Off"}
                   <span className="block text-xs text-smoke">Interviews, police tapes and calls are spoken aloud, with subtitles.</span>
                 </button>
+                <button type="button" role="switch" aria-checked={musicOn} className="block w-full px-3 py-2 text-left hover:bg-white/5" onClick={() => setMusicEnabled(!musicOn)}>
+                  Music: {musicOn ? "On" : "Off"}
+                  <span className="block text-xs text-smoke">Background score for the case. Room sounds stay on; set their level in Agency Settings.</span>
+                </button>
                 <button
                   type="button"
                   role="switch"
@@ -453,7 +460,6 @@ export function InvestigationShell({
         </div>
       ) : null}
 
-      <audio ref={audioRef} src={view.location.ambience ?? undefined} loop hidden />
 
       {/* Layers */}
       {!view.introSeen ? (

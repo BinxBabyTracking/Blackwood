@@ -494,6 +494,17 @@ export interface FinalReport {
   attempts: number;
 }
 
+/** A piece of music or room sound made with ElevenLabs from the Admin page. */
+export interface SoundtrackDef {
+  /** Asset key, e.g. "music.theme" or "amb.diner". */
+  key: string;
+  kind: "music" | "ambience";
+  label: string;
+  /** Music: the track length. Ambience: one seamless loop (at most 30). */
+  seconds: number;
+  prompt: string;
+}
+
 export interface CaseDefinition {
   id: string;
   title: string;
@@ -524,6 +535,8 @@ export interface CaseDefinition {
   timeline: { time: string; text: string; source: string }[];
   /** Questions each interviewee answers before needing a new reason (default 20). */
   questionLimit?: number;
+  /** Music and room sound, generated once and served from storage. */
+  soundtrack?: SoundtrackDef[];
   /** Evidence and developments that earn extra questions with a particular person. */
   reinterviews?: ReinterviewDef[];
 }
@@ -787,6 +800,8 @@ export interface ClientView {
   map: { id: string; name: string; subtitle: string; area: string | null; available: boolean; visited: boolean; current: boolean; pin: { x: number; y: number } | null }[];
   /** Optional recordings for travel scenes; when null the game synthesizes the sound. */
   travelAudio: { drive: string | null; walk: string | null };
+  /** Background music for the whole case. */
+  music: string | null;
   evidence: ClientEvidence[];
   characters: ClientCharacter[];
   notebook: InvestigationState["notebook"];
