@@ -35,8 +35,11 @@ export function LeaderboardButton({ caseId, title, className }: { caseId: string
           e.stopPropagation();
           setOpen(true);
         }}
-        className={className ?? "relative z-10 text-sm text-brass underline-offset-4 hover:underline"}
+        className={`relative z-10 inline-flex items-center gap-2 rounded-[2px] border border-brass/60 px-3 py-1.5 text-sm font-semibold text-brass transition-colors hover:bg-brass hover:text-ink ${className ?? ""}`}
       >
+        <svg aria-hidden viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4" />
+        </svg>
         Leaderboard
       </button>
       {open ? <LeaderboardModal caseId={caseId} title={title} onClose={() => setOpen(false)} /> : null}
@@ -199,7 +202,7 @@ export function LeaderboardModal({ caseId, title, onClose, initialMode = "solo" 
               ) : mineAny ? (
                 "You are on the board in the other list."
               ) : (
-                "Close the case on your first try at it to earn a place."
+                data.signedIn ? "Your first solve of a case can earn a place." : "Join the agency and solve the case to earn a place."
               )}
             </p>
             {mineAny ? (

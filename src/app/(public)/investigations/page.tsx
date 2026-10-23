@@ -27,5 +27,5 @@ export default function InvestigationsPage() {
 async function Catalog() {
   const catalog = await getCatalog();
   if (!catalog.ok) return <SetupNotice reason={catalog.reason} message={catalog.message} />;
-  return <CatalogBrowser cases={catalog.data} hrefBase="/investigations" />;
+  return <CatalogBrowser cases={catalog.data} hrefBase="/investigations" leaderboards />;
 }

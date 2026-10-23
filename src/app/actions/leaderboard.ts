@@ -8,14 +8,16 @@ import { boards, cleanName, hideMine, myResult, removeEntry, submit } from "@/li
 import { screenName } from "@/lib/moderation";
 import { hostLobby } from "@/lib/party";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 
-/** A case's boards, for the leaderboard window. */
+/** A case's boards, for the leaderboard window. Anyone may look; a signed-in viewer also sees their own place. */
 export async function getLeaderboard(caseId: string) {
-  const me = await requireInvestigator();
+  const supabase = await createClient();
+  const me = supabase ? (await supabase.auth.getUser()).data.user : null;
   const def = loadCase(caseId);
   if (!def) return { error: "Unknown case." } as const;
   try {
-    return { boards: await boards(def.id, me.id), title: def.title } as const;
+    return { boards: await boards(def.id, me?.id ?? null), title: def.title, signedIn: Boolean(me) } as const;
   } catch (e) {
     console.error("getLeaderboard", e);
     return { error: "The leaderboard is unavailable right now." } as const;

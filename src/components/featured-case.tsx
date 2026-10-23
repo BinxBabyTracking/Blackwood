@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LeaderboardButton } from "./leaderboard";
 import type { CatalogCase } from "@/lib/types";
 import { caseLabel, locationYear } from "@/lib/format";
 import { CaseCover } from "./case-cover";
@@ -40,9 +41,12 @@ export function FeaturedCase({
         <p className="mt-4 max-w-[52ch] leading-relaxed text-smoke">{c.synopsis}</p>
         <CaseFacts c={c} className="mt-8 border-t border-rule pt-5" />
         <div className="mt-8 lg:mt-auto lg:pt-8">
-          <Link href={href} className={buttonClass("primary")}>
-            {cta}
-          </Link>
+          <div className="flex flex-wrap items-center gap-5">
+            <Link href={href} className={buttonClass("primary")}>
+              {cta}
+            </Link>
+            {!c.is_preview && c.status === "available" ? <LeaderboardButton caseId={c.id} title={c.title} /> : null}
+          </div>
         </div>
       </div>
     </article>

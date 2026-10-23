@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { CatalogCase } from "@/lib/types";
 import { STATUS_LABELS, caseLabel, difficultyLabel, durationLabel, formatPrice, investigatorLabel } from "@/lib/format";
 import { AssignmentActions } from "./assignment-actions";
+import { LeaderboardButton } from "./leaderboard";
 import { CaseCover } from "./case-cover";
 import { StatusTag } from "./case-card";
 import { Skeleton } from "./ui";
@@ -66,6 +67,12 @@ export function CaseFile({ c, topPadding = true }: { c: CatalogCase; topPadding?
                 <AssignmentActions c={c} />
               </Suspense>
             </div>
+            {!c.is_preview && c.status === "available" ? (
+              <div className="border-t border-rule px-5 py-4">
+                <LeaderboardButton caseId={c.id} title={c.title} />
+                <p className="mt-1 text-xs text-smoke">Top investigators and groups for this case.</p>
+              </div>
+            ) : null}
           </div>
         </aside>
       </div>
