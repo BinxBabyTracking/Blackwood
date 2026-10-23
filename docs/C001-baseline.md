@@ -12,11 +12,11 @@ Live site: [blackwoodinvestigation.com](https://www.blackwoodinvestigation.com).
 
 ## C001 is the smallest case
 
-C001 is the Introductory tier, about 20 minutes and free. It is the floor, not the template for size: later cases can run from an hour to weeks of play, and everything here scales up from it.
+C001 is the Introductory tier and free: about 1 hour solo, about 20 minutes with friends (timed with real players). It is the floor, not the template for size: later cases can run from an hour to weeks of play, and everything here scales up from it.
 
 | Tier | Length | Price | Cases set up so far |
 | --- | --- | --- | --- |
-| Introductory | about 20 minutes | Free | C001 |
+| Introductory | about 1 hour solo, 20 minutes with friends | Free | C001 |
 | Tier 1 | about 1 hour | $2.99 | C002 |
 | Tier 2 | 2 to 3 hours | $4.99 | C003 |
 | Tier 3 | 4 to 6 hours | $8.99 | C004 |

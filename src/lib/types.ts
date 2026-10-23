@@ -26,6 +26,8 @@ export interface CaseRecord {
   difficulty: number | null;
   tier_id: string;
   est_minutes: number;
+  /** With friends in a joint investigation, when it differs from solo. */
+  est_minutes_group?: number | null;
   min_investigators: number;
   max_investigators: number;
   status: CaseStatus;

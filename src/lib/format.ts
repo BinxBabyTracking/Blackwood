@@ -11,8 +11,22 @@ export function formatMinutes(minutes: number) {
   return Number.isInteger(hours) ? `${hours} hr` : `${hours.toFixed(1)} hr`;
 }
 
-/** "Approximately 20 minutes" style label from the tier, the preferred public wording. */
+/** "20 minutes", "1 hour", "1.5 hours", in words for public labels. */
+function minutesInWords(minutes: number) {
+  if (minutes < 60) return `${minutes} minutes`;
+  const hours = minutes / 60;
+  const h = Number.isInteger(hours) ? String(hours) : hours.toFixed(1);
+  return `${h} hour${hours === 1 ? "" : "s"}`;
+}
+
+/**
+ * How long a case takes. A case timed both ways reads "About 1 hour solo,
+ * 20 minutes with friends"; otherwise the tier's wording ("Approximately 2 to 3 hours").
+ */
 export function durationLabel(c: CatalogCase) {
+  if (c.est_minutes_group && c.est_minutes_group !== c.est_minutes) {
+    return `About ${minutesInWords(c.est_minutes)} solo, ${minutesInWords(c.est_minutes_group)} with friends`;
+  }
   return c.tier?.duration_label ?? `Approximately ${formatMinutes(c.est_minutes)}`;
 }
 
