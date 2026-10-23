@@ -5,6 +5,62 @@ import type { ClientView } from "../engine/types";
 
 type Hotspot = ClientView["location"]["hotspots"][number];
 
+/** Each painted object's opacity, sampled small, so a click on its transparent corners reaches what lies beneath. */
+type Mask = { w: number; h: number; a: Uint8ClampedArray };
+const masks = new Map<string, Mask | "loading">();
+function loadMask(url: string, done: () => void) {
+  if (masks.has(url)) return;
+  masks.set(url, "loading");
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.onload = () => {
+    try {
+      const k = Math.min(1, 160 / Math.max(img.naturalWidth, img.naturalHeight));
+      const w = Math.max(1, Math.round(img.naturalWidth * k));
+      const h = Math.max(1, Math.round(img.naturalHeight * k));
+      const c = document.createElement("canvas");
+      c.width = w;
+      c.height = h;
+      const g = c.getContext("2d", { willReadFrequently: true });
+      if (!g) return;
+      g.drawImage(img, 0, 0, w, h);
+      const px = g.getImageData(0, 0, w, h).data;
+      const a = new Uint8ClampedArray(w * h);
+      for (let i = 0; i < a.length; i++) a[i] = px[i * 4 + 3];
+      masks.set(url, { w, h, a });
+      done();
+    } catch {
+      /* unreadable image: the whole rectangle stays clickable */
+    }
+  };
+  img.src = url;
+}
+
+/** Whether a point (fractions of the hotspot's box) lands on the painted object, drawn contained in that box. */
+function onPaint(h: Hotspot, fx: number, fy: number, box: { w: number; h: number }) {
+  const m = h.sprite ? masks.get(h.sprite) : undefined;
+  if (!m || m === "loading") return true;
+  // object-contain: the image fills one dimension of the box and is centred (people stand on the bottom edge).
+  const s = Math.min(box.w / m.w, box.h / m.h);
+  const iw = (m.w * s) / box.w;
+  const ih = (m.h * s) / box.h;
+  const ox = (1 - iw) / 2;
+  const oy = h.figure ? 1 - ih : (1 - ih) / 2;
+  const x = (fx - ox) / iw;
+  const y = (fy - oy) / ih;
+  if (x < 0 || y < 0 || x >= 1 || y >= 1) return false;
+  // A little forgiveness around the edges, so thin parts are not fiddly to hit.
+  const cx = Math.floor(x * m.w);
+  const cy = Math.floor(y * m.h);
+  for (let dy = -2; dy <= 2; dy++)
+    for (let dx = -2; dx <= 2; dx++) {
+      const px = cx + dx;
+      const py = cy + dy;
+      if (px >= 0 && py >= 0 && px < m.w && py < m.h && m.a[py * m.w + px] > 40) return true;
+    }
+  return false;
+}
+
 /**
  * One clickable object anchored to its place in the scene art. Feedback is
  * deliberately quiet: a faint lift in brightness and a hairline edge on hover,
@@ -16,14 +72,21 @@ export function SceneHotspot({
   onSelect,
   onHover,
   reducedMotion = false,
+  z,
+  hot = false,
 }: {
   hotspot: Hotspot;
   disabled: boolean;
   reducedMotion?: boolean;
+  /** Stacking order for painted objects: the one handled last lies on top. */
+  z?: number;
+  /** The pointer is over this object's painted pixels (painted objects only). */
+  hot?: boolean;
   onSelect: (id: string) => void;
   onHover: (label: string | null) => void;
 }) {
   const r = hotspot.rect;
+  const painted = Boolean(hotspot.sprite);
   const label = hotspot.collected ? `${hotspot.label} (collected)` : hotspot.inspected ? `${hotspot.label} (examined)` : hotspot.label;
   return (
     <button
@@ -33,12 +96,16 @@ export function SceneHotspot({
       data-attention={hotspot.attention || undefined}
       disabled={disabled}
       onClick={() => onSelect(hotspot.id)}
-      onMouseEnter={() => onHover(label)}
-      onMouseLeave={() => onHover(null)}
+      onMouseEnter={painted ? undefined : () => onHover(label)}
+      onMouseLeave={painted ? undefined : () => onHover(null)}
       onFocus={() => onHover(label)}
       onBlur={() => onHover(null)}
-      className="absolute cursor-pointer rounded-[3px] outline-none transition-[background-color,box-shadow] duration-300 hover:bg-[#f3ede3]/[0.06] hover:shadow-[inset_0_0_0_1px_rgba(243,237,227,0.22)] focus-visible:outline-dashed focus-visible:outline-2 focus-visible:outline-[#f3ede3]/70 disabled:cursor-wait"
-      style={{ left: `${r.x}%`, top: `${r.y}%`, width: `${r.w}%`, height: `${r.h}%` }}
+      className={`absolute rounded-[3px] outline-none transition-[background-color,box-shadow,filter] duration-300 focus-visible:outline-dashed focus-visible:outline-2 focus-visible:outline-[#f3ede3]/70 disabled:cursor-wait ${
+        painted
+          ? `pointer-events-none ${hot ? "brightness-[1.12]" : ""}`
+          : "cursor-pointer hover:bg-[#f3ede3]/[0.06] hover:shadow-[inset_0_0_0_1px_rgba(243,237,227,0.22)]"
+      }`}
+      style={{ left: `${r.x}%`, top: `${r.y}%`, width: `${r.w}%`, height: `${r.h}%`, zIndex: z }}
     >
       {hotspot.sprite ? (
         // eslint-disable-next-line @next/next/no-img-element
@@ -69,7 +136,10 @@ export function ExplorationScene({
   reducedMotion,
   onHotspot,
   overlays,
+  stack = [],
 }: {
+  /** Hotspot ids in the order they were last handled; later ones lie on top. */
+  stack?: string[];
   location: ClientView["location"];
   disabled: boolean;
   reducedMotion: boolean;
@@ -78,6 +148,44 @@ export function ExplorationScene({
   overlays?: React.ReactNode;
 }) {
   const [hover, setHover] = useState<string | null>(null);
+  const [hotId, setHotId] = useState<string | null>(null);
+  const [, setMasksLoaded] = useState(0);
+  const layer = useRef<HTMLDivElement>(null);
+
+  // Painted objects stack like things on a desk: nearer the front (lower on screen) lies over what is behind,
+  // and anything handled goes on top, the most recent highest.
+  const painted = location.hotspots.filter((h) => h.sprite);
+  const zOf = new Map(
+    [...painted]
+      .sort((a, b) => {
+        const sa = stack.indexOf(a.id);
+        const sb = stack.indexOf(b.id);
+        if (sa !== sb) return sa - sb;
+        return a.rect.y + a.rect.h - (b.rect.y + b.rect.h);
+      })
+      .map((h, i) => [h.id, i + 1]),
+  );
+  const spriteKey = painted.map((h) => h.sprite).join("|");
+  useEffect(() => {
+    for (const url of spriteKey ? spriteKey.split("|") : []) loadMask(url, () => setMasksLoaded((n) => n + 1));
+  }, [spriteKey]);
+
+  /** The topmost painted object under a screen point, judged by its pixels rather than its rectangle. */
+  const paintedAt = (clientX: number, clientY: number): Hotspot | null => {
+    const el = layer.current;
+    if (!el) return null;
+    const b = el.getBoundingClientRect();
+    const px = ((clientX - b.left) / b.width) * 100;
+    const py = ((clientY - b.top) / b.height) * 100;
+    const byZ = [...painted].sort((a, c) => (zOf.get(c.id) ?? 0) - (zOf.get(a.id) ?? 0));
+    for (const h of byZ) {
+      const r = h.rect;
+      if (px < r.x || py < r.y || px >= r.x + r.w || py >= r.y + r.h) continue;
+      if (onPaint(h, (px - r.x) / r.w, (py - r.y) / r.h, { w: (r.w * b.width) / 100, h: (r.h * b.height) / 100 })) return h;
+    }
+    return null;
+  };
+  const labelOf = (h: Hotspot) => (h.collected ? `${h.label} (collected)` : h.inspected ? `${h.label} (examined)` : h.label);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const wrap = useRef<HTMLDivElement>(null);
   const scroller = useRef<HTMLDivElement>(null);
@@ -148,18 +256,50 @@ export function ExplorationScene({
         >
           <div
             key={location.background}
-            className={`absolute inset-0 ${reducedMotion ? "" : "game-scene-in"}`}
+            ref={layer}
+            onClickCapture={(e) => {
+              // A click on a painted object goes to the topmost one actually painted there.
+              if (disabled || e.detail === 0) return;
+              const h = paintedAt(e.clientX, e.clientY);
+              if (!h) return;
+              e.stopPropagation();
+              e.preventDefault();
+              onHotspot(h.id);
+            }}
+            onPointerMove={(e) => {
+              if (e.pointerType !== "mouse") return;
+              const h = paintedAt(e.clientX, e.clientY);
+              if ((h?.id ?? null) !== hotId) {
+                setHotId(h?.id ?? null);
+                if (h) setHover(labelOf(h));
+                else setHover(null);
+              }
+            }}
+            onPointerLeave={() => setHotId(null)}
             style={{
               transform: reducedMotion || pan ? undefined : `scale(1.04) translate(${-tilt.x * 1.2}%, ${-tilt.y * 0.8}%)`,
               transition: "transform 400ms ease-out",
+              cursor: hotId ? "pointer" : undefined,
             }}
+            className={`absolute inset-0 ${reducedMotion ? "" : "game-scene-in"}`}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={location.background} alt={`${location.name}, ${location.subtitle}`} className="h-full w-full object-cover" draggable={false} />
             {location.hotspots.map((h) => (
-              <SceneHotspot key={h.id} hotspot={h} disabled={disabled} onSelect={onHotspot} onHover={setHover} reducedMotion={reducedMotion} />
+              <SceneHotspot
+                key={h.id}
+                hotspot={h}
+                disabled={disabled}
+                onSelect={onHotspot}
+                onHover={setHover}
+                reducedMotion={reducedMotion}
+                z={zOf.get(h.id)}
+                hot={hotId === h.id}
+              />
             ))}
-            {overlays}
+            <div className="pointer-events-none absolute inset-0" style={{ zIndex: painted.length + 1 }}>
+              {overlays}
+            </div>
           </div>
           {pan ? null : caption}
           {pan ? null : label}

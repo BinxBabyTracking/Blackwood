@@ -104,23 +104,23 @@ export const locations: LocationDef[] = [
     available: { always: true },
     onMap: true,
     hotspots: [
-      panel("office_casefile", "Case file from Det. Bennett", "folder", { x: 37, y: 69.5, w: 16, h: 14.5 }, "casefile"),
+      panel("office_casefile", "Case file from Det. Bennett", "folder", { x: 30, y: 66, w: 20.2, h: 29 }, "casefile"),
       // Lab results arrive on the desk when the police lab is done (see labs in story.ts).
       deskItem("office_labreport", "Lab results: the broken glass", "lab_glass", "E11", LAB_GLASS_RECT, "art.obj_labfolder", "art.obj_labfolder"),
       deskItem("office_labsamples", "Lab results: the guests' blood", "lab_samples", "E16", LAB_SAMPLES_RECT, "art.obj_labfolder", "art.obj_labfolder"),
       panel("office_board", "Murder board", "board", { x: 0, y: 3, w: 22, h: 41 }, "board"),
       { ...panel("office_phone", "Telephone", "phone", { x: 2, y: 68, w: 13, h: 17 }, "phone"), attention: { any: [{ callPending: "call_margaret_sedan" }, { callPending: "call_bennett_board" }] } },
-      panel("office_notebook", "Notebook", "notebook", { x: 26.5, y: 70.5, w: 9.5, h: 10.5 }, "notebook"),
+      panel("office_notebook", "Notebook", "notebook", { x: 14, y: 67, w: 14.2, h: 21 }, "notebook"),
       panel("office_map", "Street map of Los Angeles", "map", { x: 70, y: 6, w: 21, h: 37 }, "map"),
-      panel("office_recorder", "Police interview tapes", "recorder", { x: 73, y: 78, w: 13, h: 14 }, "statements", briefed),
+      panel("office_recorder", "Police interview tapes", "recorder", { x: 74, y: 72, w: 22, h: 28 }, "statements", briefed),
       panel("office_mail", "Opened mail", "tray", { x: 76, y: 68, w: 11, h: 10 }, "delivery", { any: [{ deliveryOpened: "jacket_recovered" }, { deliveryOpened: "patricia_envelope" }] }),
       // Event objects: they appear on the desk when a delivery arrives and stay until their evidence is collected.
-      deskItem("office_envelope", "Manila envelope", "patricia_envelope", "E15", { x: 42, y: 84, w: 13, h: 13 }, "obj.envelope_sealed", "obj.envelope_open"),
-      deskItem("office_evidencebag", "Police evidence bag", "jacket_recovered", "E05", { x: 66, y: 65, w: 9, h: 20 }, "obj.evidence_bag", "obj.evidence_bag_open"),
+      deskItem("office_envelope", "Manila envelope", "patricia_envelope", "E15", { x: 48, y: 72, w: 22.6, h: 26 }, "obj.envelope_sealed", "obj.envelope_open"),
+      deskItem("office_evidencebag", "Police evidence bag", "jacket_recovered", "E05", { x: 66, y: 62, w: 11.3, h: 30 }, "obj.evidence_bag", "obj.evidence_bag_open"),
       panel("office_typewriter", "Typewriter: final report", "typewriter", { x: 76, y: 46, w: 9.5, h: 10 }, "conclusion", reportAvailable),
       // The final report folder appears on the desk once the investigation has enough substance to report on.
       {
-        ...panel("office_report", "Final report folder", "sprite", { x: 58, y: 84, w: 15, h: 13 }, "conclusion", reportAvailable),
+        ...panel("office_report", "Final report folder", "sprite", { x: 56, y: 74, w: 20, h: 26 }, "conclusion", reportAvailable),
         sprite: [{ image: "obj.report_folder" }],
       },
     ],
@@ -137,7 +137,7 @@ export const locations: LocationDef[] = [
     available: briefed,
     onMap: true,
     hotspots: [
-      inspect("lr_chair", "Overturned chair", "chair", { x: 37, y: 59, w: 13, h: 23 }, "Overturned chair", "One of the dining chairs, brought in for coffee. It lies on its back.", { evidence: "E07" }),
+      inspect("lr_chair", "Overturned chair", "chair", { x: 30, y: 58, w: 22, h: 24 }, "Overturned chair", "One of the dining chairs, brought in for coffee. It lies on its back.", { evidence: "E07" }),
       inspect("lr_glass", "Broken glass", "glass", { x: 52, y: 78, w: 8, h: 7 }, "Broken glass", "Crystal shards on the carpet, a bagged piece beside them with an LAPD tag.", { evidence: "E02" }),
       inspect("lr_ledger", "Writing desk", "desk", { x: 18.5, y: 25, w: 11, h: 9 }, "Eleanor's writing desk", "A roll-top desk. Her household ledger lies open on the blotter.", { evidence: "E03" }),
       inspect("lr_diary", "Desk diary", "diary", { x: 17, y: 17, w: 6, h: 8 }, "Desk diary", "A leather desk diary propped open on the shelf above the blotter.", { evidence: "E09" }),

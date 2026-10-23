@@ -133,6 +133,32 @@ export function InvestigationShell({
   const [toast, setToast] = useState<{ text: string; tone: "info" | "error" | "deduction" } | null>(null);
   const [menu, setMenu] = useState(false);
   const [report, setReport] = useState<{ open: string; characterId: string | null } | null>(null);
+  // Things on the desk (and anywhere else) stack in the order they were last picked up: the latest lies on top.
+  const stackKey = `bw-stack-${caseId}`;
+  const [stack, setStack] = useState<string[]>([]);
+  // Read after mount: the server render has no saved order, and the first client render must match it.
+  useEffect(() => {
+    try {
+      const v = JSON.parse(localStorage.getItem(stackKey) ?? "[]");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (Array.isArray(v)) setStack(v.filter((x): x is string => typeof x === "string").slice(-40));
+    } catch {
+      /* nothing saved */
+    }
+  }, [stackKey]);
+  const handled = useCallback(
+    (id: string) =>
+      setStack((cur) => {
+        const next = [...cur.filter((x) => x !== id), id].slice(-40);
+        try {
+          localStorage.setItem(stackKey, JSON.stringify(next));
+        } catch {
+          /* storage unavailable: the order lasts until the page reloads */
+        }
+        return next;
+      }),
+    [stackKey],
+  );
   /** A call the player chose to let ring. It stays pending and rings again on the next visit to the office. */
   const [deferredCall, setDeferredCall] = useState<string | null>(null);
   /** The journey being shown, if any. */
@@ -527,7 +553,11 @@ export function InvestigationShell({
         location={view.location}
         disabled={pending}
         reducedMotion={prefs.reducedMotion}
-        onHotspot={(id) => dispatch({ type: "hotspot", hotspotId: id })}
+        stack={stack}
+        onHotspot={(id) => {
+          handled(id);
+          return dispatch({ type: "hotspot", hotspotId: id });
+        }}
       />
 
       {/* Map, notebook and evidence: painted objects in the corner of the scene. The murder board is on the office wall. */}
