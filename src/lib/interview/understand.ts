@@ -25,6 +25,14 @@ import type { CaseDefinition, InvestigationState } from "@/game/engine/types";
 const API_KEY = process.env.ANTHROPIC_API_KEY ?? "";
 const MODEL = process.env.INTERVIEW_MODEL ?? "claude-haiku-5-5";
 const API_BASE = (process.env.ANTHROPIC_API_BASE ?? "https://api.anthropic.com").replace(/\/$/, "");
+/** For a key that isn't scoped to one workspace, the workspace to use (Anthropic Console, Settings, Workspaces). */
+const WORKSPACE = (process.env.ANTHROPIC_WORKSPACE_ID ?? "").trim();
+const headers = () => ({
+  "x-api-key": API_KEY,
+  "anthropic-version": "2023-06-01",
+  "content-type": "application/json",
+  ...(WORKSPACE ? { "anthropic-workspace-id": WORKSPACE } : {}),
+});
 
 export const interviewAIConfigured = Boolean(API_KEY);
 
@@ -143,7 +151,7 @@ export async function interpretQuestion(
   try {
     const res = await fetch(`${API_BASE}/v1/messages`, {
       method: "POST",
-      headers: { "x-api-key": API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+      headers: headers(),
       body: JSON.stringify({ model: MODEL, max_tokens: 220, temperature: 0.3, system, messages: [{ role: "user", content: user }] }),
       signal: AbortSignal.timeout(9000),
     });
@@ -189,13 +197,14 @@ export async function interpretQuestion(
 }
 
 /** Admin check: one tiny call to the interview model, reporting exactly what comes back. Never returns the key. */
-export async function testInterviewModel(): Promise<{ ok: boolean; model: string; keyType: string; status: number | null; message: string }> {
+export async function testInterviewModel(): Promise<{ ok: boolean; model: string; keyType: string; workspace: string; status: number | null; message: string }> {
+  const workspace = WORKSPACE ? `set (${WORKSPACE.slice(0, 12)}...)` : "not set";
   const keyType = !API_KEY ? "none" : API_KEY.startsWith("sk-ant-api") ? "API key (sk-ant-api...)" : API_KEY.startsWith("sk-ant-usr") ? "user key (sk-ant-usr...)" : API_KEY.startsWith("sk-ant-oat") ? "OAuth token (sk-ant-oat...)" : "unrecognised format";
-  if (!API_KEY) return { ok: false, model: MODEL, keyType, status: null, message: "ANTHROPIC_API_KEY is not set in the server's environment variables." };
+  if (!API_KEY) return { ok: false, model: MODEL, keyType, workspace, status: null, message: "ANTHROPIC_API_KEY is not set in the server's environment variables." };
   try {
     const res = await fetch(`${API_BASE}/v1/messages`, {
       method: "POST",
-      headers: { "x-api-key": API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+      headers: headers(),
       body: JSON.stringify({ model: MODEL, max_tokens: 10, messages: [{ role: "user", content: "Reply with the single word OK." }] }),
       signal: AbortSignal.timeout(15000),
     });
@@ -205,8 +214,8 @@ export async function testInterviewModel(): Promise<{ ok: boolean; model: string
       const j = JSON.parse(text) as { error?: { type?: string; message?: string }; content?: { text?: string }[] };
       message = j.error ? `${j.error.type ?? "error"}: ${j.error.message ?? ""}` : `Model replied: ${j.content?.[0]?.text ?? "(empty)"}`;
     } catch {}
-    return { ok: res.ok, model: MODEL, keyType, status: res.status, message };
+    return { ok: res.ok, model: MODEL, keyType, workspace, status: res.status, message };
   } catch (e) {
-    return { ok: false, model: MODEL, keyType, status: null, message: (e as Error).message };
+    return { ok: false, model: MODEL, keyType, workspace, status: null, message: (e as Error).message };
   }
 }

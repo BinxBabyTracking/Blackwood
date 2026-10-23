@@ -23,7 +23,7 @@ export function InterviewAICheck({ lastError }: { lastError: { at: string; messa
         disabled={busy}
         onClick={async () => {
           setBusy(true);
-          setResult(await checkInterviewAI().catch((e) => ({ ok: false, model: "", keyType: "", status: null, message: String(e) })));
+          setResult(await checkInterviewAI().catch((e) => ({ ok: false, model: "", keyType: "", workspace: "", status: null, message: String(e) })));
           setBusy(false);
         }}
         className="rounded-[2px] bg-brass px-4 py-2 font-semibold text-ink hover:bg-[#d4b585] disabled:opacity-50"
@@ -38,6 +38,8 @@ export function InterviewAICheck({ lastError }: { lastError: { at: string; messa
           <dd className="font-mono text-xs">{result.model}</dd>
           <dt className="text-smoke">Key type</dt>
           <dd>{result.keyType}</dd>
+          <dt className="text-smoke">Workspace</dt>
+          <dd>{result.workspace}</dd>
           <dt className="text-smoke">HTTP status</dt>
           <dd>{result.status ?? "no response"}</dd>
           <dt className="text-smoke">Details</dt>
