@@ -870,8 +870,8 @@ export interface ClientView {
   map: { id: string; name: string; subtitle: string; area: string | null; available: boolean; visited: boolean; current: boolean; pin: { x: number; y: number } | null; tag: string | null }[];
   /** Optional recordings for travel scenes; when null the game synthesizes the sound. */
   travelAudio: { drive: string | null; walk: string | null };
-  /** Background music for the whole case. */
-  music: string | null;
+  /** Background music for the whole case: tracks played one after another, round and round. */
+  music: string[];
   /** Lab tests in progress or back. `remainingMs` is as of when this view was made. */
   labs: { id: string; label: string; remainingMs: number; done: boolean; rect: { x: number; y: number; w: number; h: number } }[];
   evidence: ClientEvidence[];

@@ -1085,7 +1085,7 @@ export function project(def: CaseDefinition, s: InvestigationState, now = Date.n
     messages: s.messages,
     narration: s.narration,
     voices: s.voices,
-    music: def.assets.audio["music.theme"] ?? null,
+    music: (def.soundtrack ?? []).filter((t) => t.kind === "music").flatMap((t) => (def.assets.audio[t.key] ? [def.assets.audio[t.key]!] : [])),
     labs: (def.labs ?? []).flatMap((l) => {
       const j = s.labs?.[l.id];
       return j ? [{ id: l.id, label: l.label, remainingMs: Math.max(0, j.readyAt - now), done: j.done, rect: l.rect }] : [];

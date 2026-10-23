@@ -15,6 +15,22 @@ export const SOUNDTRACK: SoundtrackDef[] = [
       "Slow, brooding 1980s Los Angeles detective noir score for a murder investigation. Muted trumpet melody, brushed drums, walking upright bass, soft Rhodes electric piano, a little tape saxophone, warm analog synth pad underneath. Late night, rain-slicked streets, quiet tension, never dramatic or loud. Even dynamics throughout, ends the way it begins so it can loop. Instrumental only.",
   },
   {
+    key: "music.theme2",
+    kind: "music",
+    label: "Case theme 2: the legwork",
+    seconds: 150,
+    prompt:
+      "Understated 1980s Los Angeles crime drama underscore for a detective doing legwork. A patient pulse of muted electric bass and soft analog synth, vibraphone motifs, light brushed hi-hat, a lonely flugelhorn line drifting in and out. Curious and quietly tense, never loud or dramatic, steady dynamics from start to end so it can loop. Instrumental only.",
+  },
+  {
+    key: "music.theme3",
+    kind: "music",
+    label: "Case theme 3: after midnight",
+    seconds: 150,
+    prompt:
+      "Melancholy late-night 1985 Los Angeles noir: solo piano with a soft tenor saxophone answering it, upright bass, the faint hush of rain, very sparse brushed drums. Reflective and sad, like a detective going over the file alone at night. Gentle, even dynamics, ends the way it begins so it can loop. Instrumental only.",
+  },
+  {
     key: "amb.office",
     kind: "ambience",
     label: "Detective's office",

@@ -326,7 +326,7 @@ export function InvestigationShell({
   const duck = ducked ? 0.5 : 1;
   const master = prefs.masterVolume / 100;
   useBackgroundSound({
-    music: musicOn ? view.music : null,
+    music: musicOn && view.music.length ? view.music : null,
     ambience: trip ? null : view.location.ambience,
     musicVolume: master * (prefs.musicVolume / 100) * 0.35 * duck,
     ambienceVolume: master * (prefs.sfxVolume / 100) * 0.6 * duck,

@@ -48,7 +48,8 @@ export function useBackgroundSound({
   musicVolume,
   ambienceVolume,
 }: {
-  music: string | null;
+  /** The case's music tracks, played in turn from a random starting track. */
+  music: string[] | null;
   ambience: string | null;
   /** 0 to 1, already including the master volume. */
   musicVolume: number;
@@ -56,7 +57,17 @@ export function useBackgroundSound({
 }) {
   const ctx = useRef<AudioContext | null>(null);
   const channels = useRef<{ music?: Channel; ambience?: Channel }>({});
-  const want = useRef({ music, ambience, musicVolume, ambienceVolume });
+  // Which track of the playlist is playing, and how many in a row have failed to load (a track not made yet).
+  const track = useRef(-1);
+  const failures = useRef(0);
+  const playlist = useRef<string[]>([]);
+  const current = () => {
+    const list = playlist.current;
+    if (!list.length) return null;
+    if (track.current < 0) track.current = Math.floor(Math.random() * list.length);
+    return list.at(track.current % list.length) ?? null;
+  };
+  const want = useRef<{ music: string | null; ambience: string | null; musicVolume: number; ambienceVolume: number }>({ music: null, ambience, musicVolume, ambienceVolume });
 
   const channel = (name: "music" | "ambience") => {
     if (!ctx.current) {
@@ -67,7 +78,27 @@ export function useBackgroundSound({
     let c = channels.current[name];
     if (!c) {
       const el = new Audio();
-      el.loop = true;
+      // Room sound loops; music moves on to the next track when one ends.
+      el.loop = name === "ambience";
+      if (name === "music") {
+        const next = (failed: boolean) => {
+          failures.current = failed ? failures.current + 1 : 0;
+          // Every track failed: none are made yet. Stay quiet rather than retrying forever.
+          if (failures.current >= playlist.current.length) return;
+          track.current += 1;
+          const src = current();
+          // A single track (or the same one again): just start it over.
+          if (src === channels.current.music?.src) {
+            el.currentTime = 0;
+            el.play().catch(() => undefined);
+            return;
+          }
+          want.current = { ...want.current, music: src };
+          apply();
+        };
+        el.addEventListener("ended", () => next(false));
+        el.addEventListener("error", () => next(true));
+      }
       el.preload = "auto";
       el.crossOrigin = "anonymous";
       const gain = ctx.current.createGain();
@@ -112,11 +143,17 @@ export function useBackgroundSound({
     }
   };
 
+  const musicKey = music?.join("|") ?? "";
   useEffect(() => {
-    want.current = { music, ambience, musicVolume, ambienceVolume };
+    const list = musicKey ? musicKey.split("|") : [];
+    if (list.join("|") !== playlist.current.join("|")) {
+      playlist.current = list;
+      failures.current = 0;
+    }
+    want.current = { music: current(), ambience, musicVolume, ambienceVolume };
     apply();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [music, ambience, musicVolume, ambienceVolume]);
+  }, [musicKey, ambience, musicVolume, ambienceVolume]);
 
   // Start on the first touch, click or key press: browsers block sound before that.
   useEffect(() => {
