@@ -38,4 +38,5 @@ export const C001: CaseDefinition = {
   questionLimit: 20,
   reinterviews,
   soundtrack: SOUNDTRACK,
+  boardHint: { evidenceCount: 4, callId: "call_bennett_board" },
 };

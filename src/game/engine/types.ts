@@ -25,6 +25,8 @@ export type Condition =
   | { event: string } // reactive event has fired
   | { env: string; is: string } // environmental state
   | { evidenceCount: number }
+  /** At least this many strings between items on the murder board. */
+  | { boardConnections: number }
   | { at: string } // player's current location
   | { presented: string } // `${characterId}:${evidenceId}`
   | { contradiction: string } // contradiction id has been recorded
@@ -539,6 +541,11 @@ export interface CaseDefinition {
   questionLimit?: number;
   /** Music and room sound, generated once and served from storage. */
   soundtrack?: SoundtrackDef[];
+  /**
+   * A nudge toward the murder board: once this much evidence is collected with
+   * nothing connected on the board, this call rings at the office (once).
+   */
+  boardHint?: { evidenceCount: number; callId: string };
   /** Evidence and developments that earn extra questions with a particular person. */
   reinterviews?: ReinterviewDef[];
 }

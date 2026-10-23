@@ -198,6 +198,16 @@ export function InvestigationShell({
 
   const close = useCallback(() => setLayer(null), []);
 
+  // Agency notices clear themselves after a few seconds; the notebook keeps anything worth keeping.
+  const messageKey = view.messages.join("|");
+  useEffect(() => {
+    if (!messageKey) return;
+    const t = setTimeout(() => {
+      if (!busy.current) void playAction(caseId, { type: "dismissMessages" }, Boolean(party?.guest)).then((r) => !("error" in r) && setView(r.view));
+    }, 6000);
+    return () => clearTimeout(t);
+  }, [messageKey, caseId, party?.guest, setView]);
+
   // Joint investigation: everyone plays one save, so each screen picks up what the others did.
   const stamp = useRef(party?.stamp ?? "");
   const tripRef = useRef(false);
@@ -435,11 +445,11 @@ export function InvestigationShell({
         </div>
       </div>
 
-      {/* Agency messages */}
+      {/* Agency messages: shown for a few seconds, never in the way of the scene */}
       {view.messages.length ? (
-        <div className="fixed left-1/2 top-12 z-30 w-[min(32rem,calc(100%-2rem))] -translate-x-1/2 space-y-2" role="status">
+        <div className="pointer-events-none fixed left-1/2 top-12 z-30 w-[min(32rem,calc(100%-2rem))] -translate-x-1/2 space-y-2 game-fade" role="status">
           {view.messages.map((m) => (
-            <div key={m} className="flex items-start justify-between gap-3 border border-brass/40 bg-[#161b20]/95 px-4 py-3 text-sm shadow-lg">
+            <div key={m} className="pointer-events-auto flex items-start justify-between gap-3 border border-brass/40 bg-[#161b20]/95 px-4 py-3 text-sm shadow-lg">
               <span>{m}</span>
               <button type="button" className="shrink-0 text-xs text-smoke hover:text-paper" onClick={() => dispatch({ type: "dismissMessages" })}>
                 Dismiss

@@ -858,8 +858,29 @@ function finish(s: InvestigationState, def: CaseDefinition) {
   runEvents(s, def);
   runContradictions(s, def);
   runDemeanor(s, def);
+  runBoardHint(s, def);
   // New discoveries can give a reason to question someone again.
   for (const note of runReinterviews(def, s)) s.messages.push(note);
+}
+
+/**
+ * Det. Bennett's nudge toward the board. Not a development of the case, just
+ * advice: it is offered once, when enough evidence is in hand and nothing has
+ * been connected, and rings only in the office like every call.
+ */
+function runBoardHint(s: InvestigationState, def: CaseDefinition) {
+  const h = def.boardHint;
+  if (!h || s.status === "closed" || s.flags.includes("board_hint_offered")) return;
+  if (s.evidence.length < h.evidenceCount || (s.board?.connections?.length ?? 0) > 0) return;
+  if (s.location !== def.startLocation) {
+    if (!s.flags.includes("board_hint_waiting")) {
+      s.flags.push("board_hint_waiting");
+      s.messages.push("Det. Bennett is trying to reach you at the office.");
+    }
+    return;
+  }
+  s.flags.push("board_hint_offered");
+  if (!s.answeredCalls.includes(h.callId) && !s.pendingCalls.includes(h.callId)) s.pendingCalls.push(h.callId);
 }
 
 const DEFAULT_PATIENCE: PatienceDef = {

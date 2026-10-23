@@ -17,6 +17,7 @@ export function check(c: Condition | undefined, s: InvestigationState): boolean 
   if ("env" in c) return (s.env[c.env] ?? "A") === c.is; // every environment starts in state A
   if ("at" in c) return s.location === c.at;
   if ("evidenceCount" in c) return s.evidence.length >= c.evidenceCount;
+  if ("boardConnections" in c) return (s.board?.connections?.length ?? 0) >= c.boardConnections;
   if ("presented" in c) return s.presented.includes(c.presented);
   if ("contradiction" in c) return (s.contradictions ?? []).includes(c.contradiction);
   if ("eventState" in c) {

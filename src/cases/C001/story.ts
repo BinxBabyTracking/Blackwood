@@ -152,6 +152,28 @@ export const calls: CallDef[] = [
       { timeline: { time: "12:30 AM", text: "The sedan is gone.", source: "Margaret Ellis (telephone)" } },
     ],
   },
+  {
+    id: "call_bennett_board",
+    from: "bennett",
+    title: "Call from Det. Bennett",
+    lines: [
+      "Bennett. You've been busy. I hear you've got a pocketful of evidence and nothing up on the wall yet.",
+      "Here's how I work a case. Every piece goes up on the board in your office. Then you run string between anything that belongs together: a cut and a blood type, a time and a place, a ledger and a bank statement.",
+      "Each one on its own doesn't say much. When two of them fit, you'll know it, and the picture starts to show up. Call me if you need me.",
+    ],
+    effects: [
+      {
+        note: {
+          id: "call:bennett_board",
+          kind: "call",
+          title: "Det. Bennett: use the board",
+          text: "Pin the evidence on the murder board and connect pieces that belong together. When two pieces fit, a deduction follows.",
+          characterId: "bennett",
+          important: true,
+        },
+      },
+    ],
+  },
 ];
 
 /*

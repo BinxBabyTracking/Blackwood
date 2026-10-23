@@ -710,6 +710,25 @@ console.log(`playthrough: status=${s.status} attempts=${s.attempts} events=${s.e
   }
 }
 
+// ---- Det. Bennett's nudge toward the board ----
+if (def.boardHint) {
+  const h = def.boardHint;
+  const base = reduce(def, newState(def), { type: "dismissIntro" }, 1).state;
+  const away = { ...base, location: "diner", evidence: def.evidence.slice(0, h.evidenceCount).map((e) => e.id) };
+  const a1 = reduce(def, away, { type: "saveNotes", text: "x" }, 2).state;
+  if (a1.pendingCalls.includes(h.callId)) problems.push("board hint rang away from the office");
+  if (!a1.messages.some((m) => /Bennett/.test(m))) problems.push("board hint gave no notice in the field");
+  const home = reduce(def, { ...a1, location: def.startLocation, messages: [] }, { type: "saveNotes", text: "y" }, 3).state;
+  if (!home.pendingCalls.includes(h.callId)) problems.push("board hint did not ring in the office");
+  const answered = reduce(def, home, { type: "answerCall", callId: h.callId }, 4).state;
+  const again = reduce(def, answered, { type: "saveNotes", text: "z" }, 5).state;
+  if (again.pendingCalls.includes(h.callId)) problems.push("board hint rang twice");
+  const connected = { ...base, location: def.startLocation, evidence: away.evidence, board: { items: [], connections: [["E01", "E02"]] as [string, string][] } };
+  if (reduce(def, connected, { type: "saveNotes", text: "q" }, 6).state.pendingCalls.includes(h.callId)) problems.push("board hint rang for someone already using the board");
+  const few = { ...base, location: def.startLocation, evidence: away.evidence.slice(0, h.evidenceCount - 1) };
+  if (reduce(def, few, { type: "saveNotes", text: "q" }, 6).state.pendingCalls.includes(h.callId)) problems.push("board hint rang too early");
+}
+
 if (problems.length) {
   console.error("PROBLEMS:\n- " + problems.join("\n- "));
   process.exit(1);

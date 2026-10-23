@@ -106,7 +106,7 @@ export const locations: LocationDef[] = [
       panel("office_casefile", "Case file from Det. Bennett", "folder", { x: 37, y: 69.5, w: 16, h: 14.5 }, "casefile"),
       inspect("office_labreport", "Laboratory report folder", "labfolder", { x: 16, y: 73, w: 11, h: 11 }, "Laboratory report", "A thin folder from the LAPD laboratory, clipped to the case file's covering note.", { evidence: "E11" }),
       panel("office_board", "Murder board", "board", { x: 0, y: 3, w: 22, h: 41 }, "board"),
-      { ...panel("office_phone", "Telephone", "phone", { x: 2, y: 68, w: 13, h: 17 }, "phone"), attention: { callPending: "call_margaret_sedan" } },
+      { ...panel("office_phone", "Telephone", "phone", { x: 2, y: 68, w: 13, h: 17 }, "phone"), attention: { any: [{ callPending: "call_margaret_sedan" }, { callPending: "call_bennett_board" }] } },
       panel("office_notebook", "Notebook", "notebook", { x: 26.5, y: 70.5, w: 9.5, h: 10.5 }, "notebook"),
       panel("office_map", "Street map of Los Angeles", "map", { x: 70, y: 6, w: 21, h: 37 }, "map"),
       panel("office_recorder", "Police interview tapes", "recorder", { x: 73, y: 78, w: 13, h: 14 }, "statements", briefed),
