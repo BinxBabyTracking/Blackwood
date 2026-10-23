@@ -5,6 +5,7 @@ import { sessionStatusLabel } from "@/components/portal/active-list";
 import { PortalHeading } from "@/components/portal/heading";
 import { ButtonLink, EmptyFile, LoadingFile, Ref } from "@/components/ui";
 import { formatDate } from "@/lib/format";
+import { reviewedCases } from "@/lib/feedback";
 import { getCaseFiles, requireInvestigator, type CaseFile } from "@/lib/investigator";
 
 export const metadata: Metadata = { title: "My Case Files" };
@@ -46,7 +47,7 @@ const SECTIONS: { id: string; title: string; match: (f: CaseFile) => boolean; em
 
 async function Files() {
   const me = await requireInvestigator();
-  const files = await getCaseFiles(me.id);
+  const [files, reviewed] = await Promise.all([getCaseFiles(me.id), reviewedCases(me.id).catch(() => new Set<string>())]);
 
   if (files.length === 0) {
     return (
@@ -69,7 +70,7 @@ async function Files() {
               {s.title}
               <span className="font-mono text-sm text-smoke">{rows.length}</span>
             </h2>
-            {rows.length ? <FileTable rows={rows} /> : <p className="border-y border-rule py-5 text-sm text-smoke">{s.empty}</p>}
+            {rows.length ? <FileTable rows={rows} reviewed={s.id === "closed" ? reviewed : null} /> : <p className="border-y border-rule py-5 text-sm text-smoke">{s.empty}</p>}
           </section>
         );
       })}
@@ -77,13 +78,15 @@ async function Files() {
   );
 }
 
-function FileTable({ rows }: { rows: CaseFile[] }) {
+/** `reviewed` is set for closed cases, which get a Review column. */
+function FileTable({ rows, reviewed }: { rows: CaseFile[]; reviewed: Set<string> | null }) {
+  const heads = ["Case", "Investigation ID", "Status", "Started", "Last activity", "Completed", "Save reference", "Replay", "Report", ...(reviewed ? ["Review"] : [])];
   return (
     <div className="overflow-x-auto border-y border-rule">
       <table className="w-full min-w-[62rem] text-left text-sm">
         <thead className="text-xs text-smoke">
           <tr className="border-b border-rule">
-            {["Case", "Investigation ID", "Status", "Started", "Last activity", "Completed", "Save reference", "Replay", "Report"].map((h) => (
+            {heads.map((h) => (
               <th key={h} scope="col" className="px-3 py-3 font-normal first:pl-0">
                 {h}
               </th>
@@ -123,6 +126,17 @@ function FileTable({ rows }: { rows: CaseFile[] }) {
                   <span className="text-smoke">None filed</span>
                 )}
               </td>
+              {reviewed ? (
+                <td className="px-3 py-3">
+                  {reviewed.has(f.case_id) ? (
+                    <span className="text-smoke">Reviewed</span>
+                  ) : (
+                    <Link href={`/agency/review/${f.case_id}`} className="text-brass underline-offset-4 hover:underline">
+                      Leave a review
+                    </Link>
+                  )}
+                </td>
+              ) : null}
             </tr>
           ))}
         </tbody>

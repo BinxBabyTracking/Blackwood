@@ -12,6 +12,7 @@ import { EvidenceInspection } from "./evidence-inspection";
 import { EvidenceInventory } from "./evidence-inventory";
 import { ExplorationScene } from "./exploration-scene";
 import { CaseResolution } from "./case-resolution";
+import { ReportDialog } from "./feedback-forms";
 import { FinalReport } from "./final-report";
 import {
   CallPanel,
@@ -74,7 +75,10 @@ export function InvestigationShell({
   homeLocation,
   investigator,
   party,
+  reviewed = false,
 }: {
+  /** This investigator already sent a review of the case. */
+  reviewed?: boolean;
   caseId: string;
   initial: ClientView;
   prefs: GamePrefs;
@@ -128,6 +132,7 @@ export function InvestigationShell({
   const [save, setSave] = useState<SaveStatus>({ state: "saved", at: null });
   const [toast, setToast] = useState<{ text: string; tone: "info" | "error" | "deduction" } | null>(null);
   const [menu, setMenu] = useState(false);
+  const [report, setReport] = useState<{ open: string; characterId: string | null } | null>(null);
   /** A call the player chose to let ring. It stays pending and rings again on the next visit to the office. */
   const [deferredCall, setDeferredCall] = useState<string | null>(null);
   /** The journey being shown, if any. */
@@ -478,6 +483,17 @@ export function InvestigationShell({
                   Travel scenes: {travelScenes ? "On" : "Off"}
                   <span className="block text-xs text-smoke">A short drive or walk, with sound, between locations. Click to skip.</span>
                 </button>
+                <button
+                  type="button"
+                  className="block w-full px-3 py-2 text-left hover:bg-white/5"
+                  onClick={() => {
+                    setMenu(false);
+                    setReport(describeLayer(layer, panel));
+                  }}
+                >
+                  Send feedback
+                  <span className="block text-xs text-smoke">Found a bug or a confusing clue? Tell us what happened.</span>
+                </button>
                 {guest ? null : (
                   <button type="button" className="block w-full px-3 py-2 text-left hover:bg-white/5" onClick={replay}>
                     Restart investigation
@@ -683,8 +699,11 @@ export function InvestigationShell({
           onEvidence={() => setLayer({ k: "panel", panel: "inventory" })}
           onReplay={guest ? undefined : replay}
           onClose={close}
+          reviewed={reviewed}
+          asGuest={guest}
         />
       ) : null}
+      {report ? <ReportDialog caseId={caseId} asGuest={guest} open={report.open} characterId={report.characterId} onClose={() => setReport(null)} /> : null}
       {locked && layer === null ? (
         <div className="fixed right-4 top-12 z-20 max-w-xs border border-[color:var(--color-ok)] bg-[#141a17]/95 p-4 text-sm shadow-lg">
           <p className="font-serif text-lg">Case closed</p>
@@ -888,4 +907,18 @@ function HudIcon({ kind }: { kind: "map" | "notebook" | "evidence" }) {
       {kind === "map" ? <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14" /> : kind === "notebook" ? <path d="M6 3h11a1 1 0 011 1v16a1 1 0 01-1 1H6zM6 3v18M9 8h6M9 12h6" /> : <path d="M5 8h14v12H5zM9 8V5h6v3M9 13h6" />}
     </svg>
   );
+}
+
+/** What the player had open when they sent feedback, for the report's context. */
+function describeLayer(layer: Layer, panel: string | null): { open: string; characterId: string | null } {
+  if (layer?.k === "conversation") {
+    return { open: `Interview: ${layer.data.name}`, characterId: layer.data.characterId };
+  }
+  if (layer?.k === "evidence") return { open: `Evidence ${layer.id}`, characterId: null };
+  if (layer?.k === "inspect") return { open: `Looking at: ${layer.title}`, characterId: null };
+  if (layer?.k === "document") return { open: "Document", characterId: null };
+  if (layer?.k === "call") return { open: "Phone call", characterId: null };
+  if (layer?.k === "closure") return { open: "Case resolution", characterId: null };
+  if (panel) return { open: `Panel: ${panel}`, characterId: null };
+  return { open: "Scene", characterId: null };
 }

@@ -14,6 +14,7 @@ import { soundtrackStatus } from "@/lib/soundtrack";
 import { SoundtrackPanel } from "@/components/portal/soundtrack-panel";
 import { InterviewAICheck } from "@/components/portal/interview-ai-check";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getFeedback } from "@/lib/feedback";
 
 export const metadata: Metadata = { title: "Admin", robots: { index: false, follow: false } };
 
@@ -165,6 +166,8 @@ async function Spending() {
         ) : null}
       </section>
 
+      <Feedback />
+
       <CaseAlertList />
 
       <InterviewAI />
@@ -288,5 +291,108 @@ async function CaseAlertList() {
         <textarea readOnly className="field mt-4 h-28 font-mono text-xs" value={unique.join(", ")} aria-label="Email addresses" />
       ) : null}
     </section>
+  );
+}
+
+const DIFF_LABEL = { too_easy: "Too easy", about_right: "About right", too_hard: "Too hard" } as const;
+
+/** Player reviews and problem reports. Private: only shown here. */
+async function Feedback() {
+  const fb = await getFeedback().catch(() => null);
+  if (!fb) return null;
+  return (
+    <section aria-labelledby="feedback" className="max-w-4xl">
+      <h2 id="feedback" className="font-serif text-xl text-smoke">
+        Player feedback
+      </h2>
+      <p className="mt-2 text-sm text-smoke">Case reviews from the end of a case, and reports sent from the in-game menu. Never shown publicly.</p>
+      {fb.cases.length === 0 ? (
+        <p className="mt-4 border-y border-rule py-5 text-sm text-smoke">No feedback yet.</p>
+      ) : (
+        <>
+          <div className="mt-4 overflow-x-auto border-y border-rule">
+            <table className="w-full min-w-[40rem] text-left text-sm">
+              <thead className="text-xs text-smoke">
+                <tr className="border-b border-rule">
+                  {["Case", "Reviews", "Average", "Too easy", "About right", "Too hard", "Reports"].map((h) => (
+                    <th key={h} scope="col" className="px-3 py-3 font-normal first:pl-0">
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-rule/70">
+                {fb.cases.map((c) => (
+                  <tr key={c.caseId}>
+                    <th scope="row" className="py-3 pl-0 pr-3 font-normal">
+                      <span className="font-mono text-brass">{c.caseId}</span>
+                      <span className="ml-2 font-serif text-paper">{loadCase(c.caseId)?.title ?? ""}</span>
+                    </th>
+                    <td className="px-3 py-3">{c.reviews}</td>
+                    <td className="px-3 py-3">{c.average === null ? "None" : `${c.average.toFixed(1)} ★`}</td>
+                    <td className="px-3 py-3">{c.difficulty.too_easy}</td>
+                    <td className="px-3 py-3">{c.difficulty.about_right}</td>
+                    <td className="px-3 py-3">{c.difficulty.too_hard}</td>
+                    <td className="px-3 py-3">{c.reports}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <h3 className="mt-8 font-mono text-xs uppercase tracking-[0.16em] text-smoke">Latest, newest first</h3>
+          <ul className="mt-3 divide-y divide-rule/70 border-y border-rule">
+            {fb.latest
+              .filter((r) => r.kind === "report" || r.stuck || r.message || r.rating || r.difficulty)
+              .map((r) => (
+                <li key={r.id} className="py-4 text-sm">
+                  <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 font-mono text-xs text-smoke">
+                    <span className={r.kind === "report" ? "text-[#e08a7f]" : "text-brass"}>{r.kind === "report" ? "REPORT" : "REVIEW"}</span>
+                    <span className="text-brass">{r.case_id}</span>
+                    <span>{r.who}</span>
+                    <span>{formatDate(r.created_at)}</span>
+                    {r.rating ? <span className="text-paper">{"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}</span> : null}
+                    {r.difficulty ? <span>{DIFF_LABEL[r.difficulty]}</span> : null}
+                  </p>
+                  {r.stuck ? (
+                    <p className="mt-2">
+                      <span className="text-smoke">Stuck: </span>
+                      {r.stuck}
+                    </p>
+                  ) : null}
+                  {r.message ? <p className="mt-2 whitespace-pre-wrap">{r.message}</p> : null}
+                  {r.context ? (
+                    <details className="mt-2">
+                      <summary className="cursor-pointer text-xs text-smoke hover:text-paper">Context</summary>
+                      <Context ctx={r.context} />
+                    </details>
+                  ) : null}
+                </li>
+              ))}
+          </ul>
+        </>
+      )}
+    </section>
+  );
+}
+
+function Context({ ctx }: { ctx: Record<string, unknown> }) {
+  const convo = ctx.conversation as { with: string; lines: string[] } | null | undefined;
+  const facts = (["location", "open", "status", "evidence", "photos", "deductions"] as const)
+    .filter((k) => ctx[k] !== undefined && ctx[k] !== null)
+    .map((k) => `${k[0].toUpperCase()}${k.slice(1)}: ${String(ctx[k])}`);
+  return (
+    <div className="mt-2 space-y-2 border-l border-rule pl-3 text-xs text-smoke">
+      {facts.length ? <p>{facts.join(" · ")}</p> : null}
+      {convo?.lines.length ? (
+        <div>
+          <p>Recent conversation with {convo.with}:</p>
+          <ul className="mt-1 space-y-1 text-paper/85">
+            {convo.lines.map((l, i) => (
+              <li key={i}>{l}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+    </div>
   );
 }

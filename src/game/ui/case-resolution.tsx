@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { ActionOutcome, ClientView } from "../engine/types";
+import { ReviewForm } from "./feedback-forms";
 import { Letterhead } from "./final-report";
 import { voiceSrc } from "./interview-screen";
 import { useLinePlayer } from "./use-line-player";
@@ -27,6 +28,8 @@ export function CaseResolution({
   onEvidence,
   onReplay,
   onClose,
+  reviewed = false,
+  asGuest = false,
 }: {
   caseId: string;
   view: ClientView;
@@ -39,7 +42,11 @@ export function CaseResolution({
   /** Absent for a guest in a joint investigation. */
   onReplay?: () => void;
   onClose: () => void;
+  /** This investigator already sent a review of the case. */
+  reviewed?: boolean;
+  asGuest?: boolean;
 }) {
+  const [review, setReview] = useState<"ask" | "sent" | "skipped">(reviewed ? "skipped" : "ask");
   const pages = closure.reconstruction.length;
   // 0 accepted, 1..pages reconstruction, pages+1 Bennett, pages+2 case closed
   const [stage, setStage] = useState(0);
@@ -93,14 +100,14 @@ export function CaseResolution({
   ) : null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black px-5 py-10" role="dialog" aria-modal="true" aria-label="Case resolution">
+    <div className="fixed inset-0 z-50 flex justify-center overflow-y-auto bg-black px-5 py-10 [&>*]:my-auto" role="dialog" aria-modal="true" aria-label="Case resolution">
       {stage === 0 ? (
         <div key="accepted" className="w-full max-w-2xl bg-[#efe8d6] px-6 py-9 text-[#231e17] shadow-2xl sm:px-12 game-closure">
           <Letterhead />
           <p className="mt-8 text-center font-mono text-sm font-bold tracking-[0.24em] text-[#4f6b4f]">REPORT ACCEPTED</p>
           <p className="mt-5 text-center font-serif text-xl leading-relaxed">{closure.accepted}</p>
           <p className="mt-6 text-center font-mono text-xs tracking-[0.12em] text-[#231e17]/65">
-            CASE C001 · {name.toUpperCase()}
+            CASE {view.caseId} · {name.toUpperCase()}
           </p>
           {controls ? <div className="text-[#231e17] [&_button]:border-[#231e17]/40 [&_button]:text-[#231e17] [&_span]:text-[#231e17]/60">{controls}</div> : null}
           <div className="mt-8 flex justify-center">
@@ -153,8 +160,8 @@ export function CaseResolution({
       ) : (
         <div key="closed" className="w-full max-w-xl text-center game-closure">
           <div className="relative mx-auto border border-white/15 bg-[#14171a] px-8 py-12">
-            <p className="font-mono text-sm tracking-[0.3em] text-smoke">CASE C001</p>
-            <p className="mt-3 font-display text-4xl text-paper sm:text-5xl">THE WHITMORE FILE</p>
+            <p className="font-mono text-sm tracking-[0.3em] text-smoke">CASE {view.caseId}</p>
+            <p className="mt-3 font-display text-4xl text-paper sm:text-5xl">{view.title.toUpperCase()}</p>
             <p className="mt-6 font-mono text-sm tracking-[0.24em] text-paper/90">STATUS: CLOSED</p>
             <p className="mt-2 font-mono text-xs tracking-[0.16em] text-smoke">
               Investigator: <span className="text-paper">{name}</span>
@@ -174,6 +181,19 @@ export function CaseResolution({
               </div>
             ) : null}
           </div>
+          {review === "ask" ? (
+            <div className="mt-8 border border-brass/40 bg-[#14171a] px-6 py-6 text-left">
+              <p className="font-display text-2xl text-paper">File your case review</p>
+              <p className="mt-1 text-sm text-smoke">A minute of your time helps us make the next case better.</p>
+              <div className="mt-5">
+                <ReviewForm caseId={caseId} asGuest={asGuest} onDone={() => setReview("sent")} onSkip={() => setReview("skipped")} />
+              </div>
+            </div>
+          ) : review === "sent" ? (
+            <p className="mt-6 font-mono text-xs tracking-[0.12em] text-brass" role="status">
+              REVIEW FILED. THANK YOU.
+            </p>
+          ) : null}
           <div className="mt-8 flex flex-wrap justify-center gap-3 text-sm">
             <StageButton onClick={onReviewReport}>Review the final report</StageButton>
             <StageButton onClick={onEvidence} ghost>

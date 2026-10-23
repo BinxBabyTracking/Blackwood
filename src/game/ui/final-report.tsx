@@ -109,7 +109,7 @@ export function FinalReport({
       {...backdrop}>
       <div ref={top} className="relative mx-auto w-full max-w-3xl bg-[#efe8d6] text-[#231e17] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9)]">
         <div className="flex items-center justify-between gap-4 border-b border-[#231e17]/15 px-5 py-2.5 font-mono text-xs">
-          <span className="tracking-[0.14em] text-[#231e17]/60">CASE C001 · FORM BI-7</span>
+          <span className="tracking-[0.14em] text-[#231e17]/60">CASE {view.caseId} · FORM BI-7</span>
           <button type="button" onClick={leave} className="underline-offset-4 hover:underline">
             {filed ? "Close the report" : "Return to investigating"}
           </button>
@@ -122,7 +122,7 @@ export function FinalReport({
           <dl className="mx-auto mt-6 grid max-w-xl grid-cols-[9.5rem_1fr] gap-x-4 gap-y-1 font-mono text-[0.9rem]">
             {[
               ["Case No.", "C001"],
-              ["Case", "THE WHITMORE FILE"],
+              ["Case", view.title.toUpperCase()],
               ["Classification", "Homicide"],
               ["Location", "Los Angeles, California"],
               ["Victim", "Eleanor Whitmore"],

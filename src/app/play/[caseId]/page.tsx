@@ -8,6 +8,7 @@ import { normalizeState, respond } from "@/game/engine/engine";
 import { findInvestigation, recordClosedCase } from "@/game/persistence";
 import { loadCase } from "@/game/registry";
 import { InvestigationShell } from "@/game/ui/investigation-shell";
+import { hasReviewed } from "@/lib/feedback";
 import { getSettings, requireInvestigator } from "@/lib/investigator";
 import { hostParty, lobbyGuests } from "@/lib/party";
 import { isAdminConfigured } from "@/lib/supabase/admin";
@@ -74,7 +75,7 @@ async function Desk({ params }: { params: Promise<{ caseId: string }> }) {
     // Recording is idempotent, so finishing it here can never count the case twice.
     await recordClosedCase(me.id, def, loaded, state).catch((e) => console.error("recordClosedCase", e));
   }
-  const [settings, party] = await Promise.all([getSettings(me.id), hostParty(me.id, def.id)]);
+  const [settings, party, reviewed] = await Promise.all([getSettings(me.id), hostParty(me.id, def.id), hasReviewed(me.id, def.id)]);
   const seated = party ? (await lobbyGuests(party.id)).length + 1 : 0;
   return (
     <main id="main">
@@ -83,6 +84,7 @@ async function Desk({ params }: { params: Promise<{ caseId: string }> }) {
         homeLocation={def.startLocation}
         initial={respond(def, state).view}
         investigator={me.profile.display_name ?? "Investigator"}
+        reviewed={reviewed}
         party={party ? { label: `Joint investigation · ${seated} at the table`, guest: false, stamp: loaded.updatedAt } : undefined}
         prefs={{
           reducedMotion: settings?.reduced_motion ?? false,
