@@ -225,7 +225,7 @@ export function FinalReport({
                 <legend className="w-full border-b border-[#231e17]/25 pb-1 font-mono text-sm font-bold tracking-[0.12em]">SECTION E. SUPPORTING EVIDENCE</legend>
                 <p className="mt-3 font-serif text-[1.05rem] italic">Which evidence supports your conclusions?</p>
                 <p className="mt-1 font-mono text-xs text-[#231e17]/65">
-                  Attach between {c.minItems} and {c.maxItems} items from your evidence. Attached: {shown.evidence.length}.
+                  Attach between {c.minItems} and {c.maxItems} items from your evidence: the key evidence that proves your findings, plus up to two supporting items or photographs if you like. Attached: {shown.evidence.length}.
                 </p>
                 {!filed && draft.evidence.length >= c.maxItems ? (
                   <p className="mt-1 font-mono text-xs font-bold text-[#7d3a33]" role="status">
@@ -252,7 +252,7 @@ export function FinalReport({
                               }}
                             />
                             <span aria-hidden className="w-7 shrink-0 font-bold">{on ? "[X]" : "[ ]"}</span>
-                            <span className="text-[#7d3a33]">{e.id}</span>
+                            <span className="text-[#7d3a33]">{e.label}</span>
                             <span className={on ? "font-bold" : ""}>{e.title}</span>
                           </label>
                           <button

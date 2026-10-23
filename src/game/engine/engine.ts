@@ -29,6 +29,7 @@ import type {
   CaseDefinition,
   ClientView,
   GameAction,
+  HotspotDef,
   InvestigationState,
   LocationDef,
   Theory,
@@ -48,6 +49,7 @@ export function newState(def: CaseDefinition, now = Date.now()): InvestigationSt
     unlocked: [],
     inspected: [],
     evidence: [],
+    photos: [],
     discoveries: {},
     evidenceNotes: {},
     narration: true,
@@ -129,6 +131,7 @@ export function normalizeState(def: CaseDefinition, raw: InvestigationState): In
   const fresh = newState(def, raw.lastActionAt ?? Date.now());
   const s = { ...fresh, ...raw } as InvestigationState;
   s.discoveries ??= {};
+  s.photos ??= [];
   s.evidenceNotes ??= {};
   s.narration ??= true;
   s.voices ??= true;
@@ -174,7 +177,52 @@ export function evidenceView(def: CaseDefinition, s: InvestigationState, id: str
       .filter((c) => e.characters.includes(c.id))
       .map((c) => c.name),
     note: s.evidenceNotes?.[id] ?? "",
+    label: e.id,
   };
+}
+
+/** Whether this evidence id, or photograph id, is in the investigator's files. */
+export function hasItem(s: InvestigationState, id: string) {
+  return s.evidence.includes(id) || (s.photos ?? []).some((p) => p.id === id);
+}
+
+/** A photograph, shown everywhere evidence is shown. */
+export function photoView(def: CaseDefinition, s: InvestigationState, p: InvestigationState["photos"][number]): ClientEvidence {
+  return {
+    id: p.id,
+    title: `Photo: ${p.title}`,
+    description: `A photograph you took at ${loc(def, p.locationId)?.name ?? "the scene"}.`,
+    inspection: p.text,
+    image: p.image,
+    source: loc(def, p.locationId)?.name ?? "",
+    boardable: true,
+    audio: null,
+    collected: true,
+    foundAt: loc(def, p.locationId)?.name ?? null,
+    collectedAt: p.at,
+    related: [],
+    note: s.evidenceNotes?.[p.id] ?? "",
+    photo: true,
+    label: `P${(s.photos ?? []).findIndex((x) => x.id === p.id) + 1}`,
+  };
+}
+
+/** The background a location shows right now (asset key). */
+function sceneBackground(def: CaseDefinition, s: InvestigationState, l: LocationDef) {
+  return typeof l.background === "string" ? l.background : l.background.states[s.env[l.background.env] ?? "A"] ?? Object.values(l.background.states)[0];
+}
+
+/** The painted object or person drawn over the scene for this hotspot, if any. */
+function hotspotSprite(def: CaseDefinition, s: InvestigationState, h: HotspotDef, painted: boolean) {
+  const sp = h.sprite?.find((x) => check(x.when, s));
+  if (sp) return def.assets.images[sp.image] || null;
+  // Painted objects and people only go over a painted scene; placeholder scenes draw their own.
+  return h.art && painted && def.assets.images[h.art] ? def.assets.images[h.art] : null;
+}
+
+/** Things in a scene that can be photographed: anything looked at that is not itself collectable evidence. */
+function photographable(h: HotspotDef) {
+  return h.interaction.type === "inspect" && !h.interaction.evidence;
 }
 
 function knownCharacters(def: CaseDefinition, s: InvestigationState) {
@@ -473,6 +521,7 @@ export function reduce(
         text,
         image: it.image ? def.assets.images[it.image] ?? null : ev?.image ?? null,
         evidence: ev,
+        photo: photographable(h) ? { hotspotId: h.id, taken: s.photos.some((p) => p.id === `PH_${h.id}`) } : null,
       };
       break;
     }
@@ -482,6 +531,26 @@ export function reduce(
       if (!via) fail("You have not found that yet.");
       if (s.evidence.includes(action.evidenceId)) fail("That evidence is already in your notebook.");
       collectEvidence(s, def, action.evidenceId, via, now);
+      break;
+    }
+
+    case "photograph": {
+      const l = loc(def, s.location)!;
+      const h = visibleHotspots(def, s, l).find((x) => x.id === action.hotspotId) ?? fail("There is nothing like that here to photograph.");
+      if (!photographable(h) || h.interaction.type !== "inspect") fail("That cannot be photographed.");
+      const id = `PH_${h.id}`;
+      if (s.photos.some((p) => p.id === id)) fail("You already have a photograph of that.");
+      const it = h.interaction;
+      const text = [...(it.textAfter ?? [])].reverse().find((t) => check(t.requires, s))?.text ?? it.text;
+      const bgKey = sceneBackground(def, s, l);
+      const bgUrl = def.assets.images[bgKey] ?? "";
+      const sprite = hotspotSprite(def, s, h, !bgUrl.endsWith(".svg"));
+      const q = new URLSearchParams({ bg: bgUrl, r: [h.rect.x, h.rect.y, h.rect.w, h.rect.h].join(",") });
+      if (sprite) q.set("s", sprite);
+      s.photos.push({ id, hotspotId: h.id, locationId: l.id, title: it.title, text, image: `/api/photo?${q}`, at: now });
+      s.discoveries[id] = { locationId: l.id, sceneState: (typeof l.background === "string" ? "A" : s.env[l.background.env]) ?? "A", via: "scene", at: now };
+      if (!s.inspected.includes(h.id)) s.inspected.push(h.id);
+      apply([{ note: { id: `photo:${id}`, kind: "observation", title: `Photographed: ${it.title}`, text } }], s, def);
       break;
     }
 
@@ -661,7 +730,9 @@ export function reduce(
     }
 
     case "boardAdd": {
-      const known = s.evidence.includes(action.itemId)
+      const known = s.photos.some((p) => p.id === action.itemId)
+        ? true
+        : s.evidence.includes(action.itemId)
         ? def.evidence.find((e) => e.id === action.itemId)?.boardable
         : knownCharacters(def, s).some((c) => c.id === action.itemId && c.onBoard);
       if (!known) fail("You cannot pin that to the board.");
@@ -712,7 +783,7 @@ export function reduce(
       break;
 
     case "saveEvidenceNote": {
-      if (!s.evidence.includes(action.evidenceId)) fail("Collect that evidence before adding notes to it.");
+      if (!hasItem(s, action.evidenceId)) fail("Collect that evidence before adding notes to it.");
       const text = String(action.text ?? "").slice(0, 4000);
       if (text.trim()) s.evidenceNotes[action.evidenceId] = text;
       else delete s.evidenceNotes[action.evidenceId];
@@ -739,7 +810,7 @@ export function reduce(
         return typeof id === "string" && c.options.some((o) => o.id === id) ? id : undefined;
       };
       const evidence = [...new Set(Array.isArray(d.evidence) ? d.evidence : [])]
-        .filter((id) => typeof id === "string" && s.evidence.includes(id))
+        .filter((id) => typeof id === "string" && hasItem(s, id))
         .slice(0, def.solution.standard.maxItems);
       s.report.draft = {
         culprit: pick(d.culprit, "culprit"),
@@ -871,7 +942,7 @@ export function progressOf(def: CaseDefinition, s: InvestigationState) {
 export function project(def: CaseDefinition, s: InvestigationState): ClientView {
   const img = (key: string) => def.assets.images[key] ?? "";
   const l = loc(def, s.location)!;
-  const bg = typeof l.background === "string" ? l.background : l.background.states[s.env[l.background.env] ?? "A"] ?? Object.values(l.background.states)[0];
+  const bg = sceneBackground(def, s, l);
   const painted = !img(bg).endsWith(".svg");
 
   return {
@@ -895,12 +966,7 @@ export function project(def: CaseDefinition, s: InvestigationState): ClientView 
         rect: h.rect,
         inspected: s.inspected.includes(h.id),
         collected: h.interaction.type === "inspect" && Boolean(h.interaction.evidence) && s.evidence.includes(h.interaction.evidence!),
-        sprite: (() => {
-          const sp = h.sprite?.find((x) => check(x.when, s));
-          if (sp) return img(sp.image) || null;
-          // Painted objects and people only go over a painted scene; placeholder scenes draw their own.
-          return h.art && painted && def.assets.images[h.art] ? def.assets.images[h.art] : null;
-        })(),
+        sprite: hotspotSprite(def, s, h, painted),
         figure: h.interaction.type === "talk",
         // A painted scene whose painting for this person or object has not arrived yet.
         pending: Boolean(h.art && painted && !def.assets.images[h.art] && !h.sprite?.some((x) => check(x.when, s))),
@@ -919,7 +985,7 @@ export function project(def: CaseDefinition, s: InvestigationState): ClientView 
         current: x.id === s.location,
         pin: x.mapPin ?? null,
       })),
-    evidence: s.evidence.map((id) => evidenceView(def, s, id)!),
+    evidence: [...s.evidence.map((id) => evidenceView(def, s, id)!), ...s.photos.map((p) => photoView(def, s, p))],
     characters: knownCharacters(def, s).map((c) => ({
       id: c.id,
       name: c.name,
@@ -981,7 +1047,7 @@ export function project(def: CaseDefinition, s: InvestigationState): ClientView 
       minItems: def.solution.standard.minItems,
       maxItems: def.solution.standard.maxItems,
       attempts: s.attempts,
-      draft: { ...s.report.draft, evidence: s.report.draft.evidence.filter((id) => s.evidence.includes(id)) },
+      draft: { ...s.report.draft, evidence: s.report.draft.evidence.filter((id) => hasItem(s, id)) },
       review: (() => {
         const last = s.report.submissions.at(-1);
         return last && !last.accepted ? { at: last.at, note: last.note, attempt: s.report.submissions.length, evidence: [...last.theory.evidence] } : null;

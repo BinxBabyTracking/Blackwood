@@ -34,7 +34,7 @@ export function EvidenceList({
             <img src={e.image} alt="" className="h-16 w-24 shrink-0 object-cover" />
             <dl className="grid min-w-0 grid-cols-[auto_1fr] content-start gap-x-3 font-mono text-[0.7rem] leading-relaxed">
               <dt className="opacity-60">Evidence ID</dt>
-              <dd className={tone === "paper" ? "text-[#7d3a33]" : "text-brass"}>{e.id}</dd>
+              <dd className={tone === "paper" ? "text-[#7d3a33]" : "text-brass"}>{e.label}</dd>
               <dt className="opacity-60">Title</dt>
               <dd className="truncate">{e.title}</dd>
               <dt className="opacity-60">Location</dt>

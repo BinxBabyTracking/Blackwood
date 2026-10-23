@@ -44,13 +44,13 @@ export function EvidenceInspection({
   const [note, setNote] = useState(e.note);
   const [noteState, setNoteState] = useState<"idle" | "saved" | "error">("idle");
   return (
-    <Overlay title={`${e.id}  ${e.title}`} onClose={onClose} wide closeLabel={closeLabel}>
+    <Overlay title={`${e.label}  ${e.title}`} onClose={onClose} wide closeLabel={closeLabel}>
       <div className="grid lg:grid-cols-[1.4fr_1fr]">
         <ZoomImage src={e.image} alt={e.title} />
         <div className="flex flex-col p-6">
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 font-mono text-xs">
             <dt className="text-smoke">Evidence ID</dt>
-            <dd className="text-brass">{e.id}</dd>
+            <dd className="text-brass">{e.label}</dd>
             <dt className="text-smoke">Location</dt>
             <dd>{e.foundAt ?? e.source}</dd>
             <dt className="text-smoke">Status</dt>

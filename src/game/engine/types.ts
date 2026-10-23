@@ -446,6 +446,8 @@ export interface EvidenceStandard {
   /** Independent lines of support, e.g. physical, timeline, financial. */
   lines: { id: string; label: string; anyOf: string[] }[];
   minLines: number;
+  /** At least this many attached items must be key evidence (items on a line of support). The rest may be anything. */
+  minKey?: number;
   /** At least one attached item must connect the named person to the events. */
   linkToSuspect: string[];
   /** Relevant items that belong to no line and are not held against the report. */
@@ -545,6 +547,20 @@ export interface CaseDefinition {
 // Saved state (stored in save_games.state, never contains case content)
 // ---------------------------------------------------------------------------
 
+/** A photograph the investigator took of something in a scene. It is filed with the evidence. */
+export interface PhotoRecord {
+  /** `PH_<hotspotId>`: one photograph per thing photographed. */
+  id: string;
+  hotspotId: string;
+  locationId: string;
+  title: string;
+  /** What the investigator observed, written on the back. */
+  text: string;
+  /** The picture: the scene cropped to the subject, as it looked when taken. */
+  image: string;
+  at: number;
+}
+
 export interface InvestigationState {
   version: 1;
   caseId: string;
@@ -555,6 +571,8 @@ export interface InvestigationState {
   unlocked: string[];
   inspected: string[];
   evidence: string[];
+  /** Photographs taken in scenes, filed alongside the evidence. */
+  photos: PhotoRecord[];
   /** Where and when each piece of evidence was collected. */
   discoveries: Record<string, Discovery>;
   /** The player's own notes on individual evidence items. */
@@ -659,6 +677,7 @@ export type GameAction =
   | { type: "travel"; locationId: string }
   | { type: "hotspot"; hotspotId: string }
   | { type: "collect"; evidenceId: string }
+  | { type: "photograph"; hotspotId: string }
   | { type: "readDocument"; documentId: string }
   | { type: "talk"; characterId: string }
   | { type: "ask"; questionId: string }
@@ -716,6 +735,10 @@ export interface ClientEvidence {
   related: string[];
   /** The player's own note on this item. */
   note: string;
+  /** A photograph the investigator took, rather than an item collected. */
+  photo?: boolean;
+  /** How the item is referred to on screen, e.g. "E07" or "P2". */
+  label: string;
 }
 
 export interface ClientCharacter {
@@ -852,7 +875,7 @@ export interface ClientView {
 /** One-off payloads returned alongside the view for the action just taken. */
 export type ActionOutcome =
   | { kind: "none" }
-  | { kind: "inspect"; title: string; text: string; image: string | null; evidence: ClientEvidence | null }
+  | { kind: "inspect"; title: string; text: string; image: string | null; evidence: ClientEvidence | null; photo: { hotspotId: string; taken: boolean } | null }
   | { kind: "panel"; panel: PanelId }
   | {
       kind: "conversation";

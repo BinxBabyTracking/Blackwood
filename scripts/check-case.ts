@@ -259,12 +259,12 @@ if (s.deductions.length !== def.deductions.length) problems.push(`deductions ${s
   try { reduce(def, newState(def), { type: "saveReport", draft: { evidence: [] } }, 1); problems.push("report opened with no investigation"); } catch {}
   if (project(def, newState(def)).conclusion.available) problems.push("report available at the start");
   if (!project(def, s).conclusion.available) problems.push("report not available after investigating");
-  // Only legitimately collected evidence, between three and six items, every section answered
-  rejects(s, right(["E14", "E03"]), "two items");
+  // Only legitimately collected evidence, between four and six items, every section answered
+  rejects(s, right(["E14", "E03", "E13"]), "three items");
   rejects(s, right(["E01", "E02", "E03", "E04", "E05", "E06", "E07"]), "seven items");
-  rejects({ ...s, evidence: s.evidence.filter((e) => e !== "E05") }, right(["E05", "E03", "E13"]), "uncollected evidence");
-  rejects(s, right(["E14", "E14", "E03"]), "duplicate evidence");
-  rejects(s, { ...right(["E14", "E03", "E13"]), weapon: "spoon" }, "unknown answer id");
+  rejects({ ...s, evidence: s.evidence.filter((e) => e !== "E05") }, right(["E05", "E03", "E13", "E14"]), "uncollected evidence");
+  rejects(s, right(["E14", "E14", "E03", "E13"]), "duplicate evidence");
+  rejects(s, { ...right(["E14", "E03", "E13", "E15"]), weapon: "spoon" }, "unknown answer id");
   // Drafts are sanitised and survive a reload
   const d = reduce(def, s, { type: "saveReport", draft: { culprit: "robert", motive: "nonsense", evidence: ["E03", "E99", "E03", "E14"] } }, 2).state;
   const dr = normalizeState(def, JSON.parse(JSON.stringify(d))).report.draft;
@@ -283,13 +283,15 @@ if (s.deductions.length !== def.deductions.length) problems.push(`deductions ${s
     return r.state;
   };
   returned(T("robert", "revenge", "blunt", "kitchen", ["E14", "E03", "E13", "E06"]), "wrong theory", /do not hold together/);
-  returned(T("daniel", "financial", "knife", "unknown", ["E14", "E03", "E13"]), "undecided", /open/);
-  returned(right(["E07", "E01", "E10"]), "correct guess, unrelated evidence", /lines of inquiry/);
-  returned(right(["E02", "E03", "E01"]), "correct guess, nothing linking the suspect", /connects the person/);
-  const afterWrong = returned(T("patricia", "financial", "knife", "living_room", ["E14", "E03", "E13"]), "wrong suspect", /do not hold together/);
+  returned(T("daniel", "financial", "knife", "unknown", ["E14", "E03", "E13", "E15"]), "undecided", /open/);
+  returned(right(["E07", "E01", "E10", "E12"]), "correct guess, too little key evidence", /key evidence/);
+  returned(right(["E02", "E03", "E01", "E15"]), "correct guess, nothing linking the suspect", /connects the person/);
+  const afterWrong = returned(T("patricia", "financial", "knife", "living_room", ["E14", "E03", "E13", "E15"]), "wrong suspect", /do not hold together/);
   // A returned report can be revised, and several different supported reports are accepted
-  for (const ev of [["E14", "E03", "E01"], ["E04", "E15", "E06"], ["E05", "E13", "E08", "E02"], ["E11", "E14", "E03", "E13", "E01", "E06"]]) {
-    const r = submit(afterWrong, right(ev));
+  // Four key items carry a report; two more may be anything, photographs included.
+  const withPhoto: InvestigationState = { ...afterWrong, photos: [{ id: "PH_test", hotspotId: "test", locationId: "office", title: "Test", text: "Test", image: "", at: 1 }] };
+  for (const ev of [["E14", "E03", "E01", "E15"], ["E04", "E15", "E06", "E03"], ["E05", "E13", "E08", "E02"], ["E11", "E14", "E03", "E13", "E01", "E06"], ["E14", "E03", "E13", "E15", "E07", "PH_test"]]) {
+    const r = submit(withPhoto, right(ev));
     if (r.outcome.kind !== "verdict" || !r.outcome.correct || r.state.status !== "closed") problems.push(`supported report rejected: ${ev}`);
   }
   for (const id of ["E02", "E03", "E04", "E05", "E06", "E11", "E13", "E14", "E15"]) {
@@ -681,6 +683,33 @@ for (const secret of ["\"standard\"", "linkToSuspect", "D_HAND", "Type B", "Frid
 
 console.log(`${id}: ${def.evidence.length} evidence, ${def.locations.length} locations, ${def.questions.length} questions, ${def.deductions.length} deductions`);
 console.log(`playthrough: status=${s.status} attempts=${s.attempts} events=${s.events.join(",")} active=${s.activeSeconds}s`);
+// ---- Photographs: anything looked at that is not collectable evidence can be photographed and filed ----
+{
+  let st = reduce(def, newState(def), { type: "dismissIntro" }, 1).state;
+  st = { ...st, location: "living_room", flags: [...st.flags, "casefile_read"] };
+  const spot = project(def, st).location.hotspots.find((h) => {
+    const hd = def.locations.find((l) => l.id === st.location)!.hotspots.find((x) => x.id === h.id)!;
+    return hd.interaction.type === "inspect" && !hd.interaction.evidence;
+  });
+  if (!spot) problems.push("photo: nothing photographable in the first scene");
+  else {
+    const look = reduce(def, st, { type: "hotspot", hotspotId: spot.id }, 2);
+    if (look.outcome.kind !== "inspect" || !look.outcome.photo || look.outcome.photo.taken) problems.push("photo: inspect outcome does not offer a photo");
+    st = reduce(def, look.state, { type: "photograph", hotspotId: spot.id }, 3).state;
+    const v = project(def, st);
+    const ph = v.evidence.find((e) => e.photo);
+    if (st.photos.length !== 1 || !ph || !ph.image.startsWith("/api/photo?") || ph.label !== "P1") problems.push(`photo: not filed with the evidence (${JSON.stringify(ph)})`);
+    try { reduce(def, st, { type: "photograph", hotspotId: spot.id }, 4); problems.push("photo: same thing photographed twice"); } catch {}
+    try { reduce(def, st, { type: "photograph", hotspotId: "nope" }, 4); problems.push("photo: photographed something not here"); } catch {}
+    const pinned = reduce(def, st, { type: "boardAdd", itemId: st.photos[0].id, x: 10, y: 10 }, 5).state;
+    if (!pinned.board.items.some((i) => i.id === st.photos[0].id)) problems.push("photo: cannot be pinned to the board");
+    const noted = reduce(def, st, { type: "saveEvidenceNote", evidenceId: st.photos[0].id, text: "check this" }, 6).state;
+    if (noted.evidenceNotes[st.photos[0].id] !== "check this") problems.push("photo: cannot take a note");
+    if (normalizeState(def, JSON.parse(JSON.stringify(st))).photos.length !== 1) problems.push("photo: lost on reload");
+    if (normalizeState(def, { ...JSON.parse(JSON.stringify(st)), photos: undefined }).photos.length !== 0) problems.push("photo: old saves not upgraded");
+  }
+}
+
 if (problems.length) {
   console.error("PROBLEMS:\n- " + problems.join("\n- "));
   process.exit(1);

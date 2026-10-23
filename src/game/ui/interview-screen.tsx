@@ -370,9 +370,9 @@ function EvidenceTray({ view, who, disabled, onPick, onBack }: { view: ClientVie
           Back to questions
         </button>
       </div>
-      {view.evidence.length ? (
+      {view.evidence.some((e) => !e.photo) ? (
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5">
-          {view.evidence.map((e) => (
+          {view.evidence.filter((e) => !e.photo).map((e) => (
             <li key={e.id}>
               <button
                 type="button"

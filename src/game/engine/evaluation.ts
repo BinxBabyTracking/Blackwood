@@ -27,7 +27,7 @@ export function reportProblem(def: CaseDefinition, s: InvestigationState, t: The
   if (!Array.isArray(t.evidence)) return "Attach the evidence that supports your conclusions.";
   const ev = [...new Set(t.evidence)];
   if (ev.length !== t.evidence.length) return "Each piece of evidence can be attached once.";
-  if (ev.some((id) => typeof id !== "string" || !s.evidence.includes(id))) return "You can only attach evidence collected in this investigation.";
+  if (ev.some((id) => typeof id !== "string" || !(s.evidence.includes(id) || (s.photos ?? []).some((p) => p.id === id)))) return "You can only attach evidence collected in this investigation.";
   if (ev.length < std.minItems || ev.length > std.maxItems) return `Attach between ${std.minItems} and ${std.maxItems} pieces of evidence.`;
   return null;
 }
@@ -36,7 +36,9 @@ export function evaluateReport(def: CaseDefinition, t: Theory): Review {
   const sol = def.solution;
   const std = sol.standard;
   const covered = std.lines.filter((l) => l.anyOf.some((id) => t.evidence.includes(id))).map((l) => l.id);
-  const related = new Set([...std.lines.flatMap((l) => l.anyOf), ...std.supporting]);
+  const keyIds = new Set(std.lines.flatMap((l) => l.anyOf));
+  const key = t.evidence.filter((id) => keyIds.has(id)).length;
+  const related = new Set([...keyIds, ...std.supporting]);
   const unrelated = t.evidence.filter((id) => !related.has(id)).length;
   const linked = std.linkToSuspect.some((id) => t.evidence.includes(id));
   const decided = ![t.culprit, t.motive, t.weapon, t.location].some((v) => std.undecided.includes(v));
@@ -45,6 +47,8 @@ export function evaluateReport(def: CaseDefinition, t: Theory): Review {
   // The first reason that applies is the one the reviewer writes down. None depends on the correct answers.
   let note = "";
   if (!decided) note = "The report leaves at least one question open. The agency cannot act on findings that do not commit to a conclusion.";
+  else if (std.minKey && key < std.minKey)
+    note = `Too few of the attached items bear directly on the conclusions. The agency looks for at least ${std.minKey} pieces of key evidence; the rest of a report may be supporting material.`;
   else if (covered.length < std.minLines) note = "The attached evidence rests on too few independent lines of inquiry. The agency looks for corroboration from more than one direction.";
   else if (unrelated > std.maxUnrelated) note = "Some of the attached evidence has no clear bearing on the conclusions presented.";
   else if (!linked) note = "Nothing attached connects the person named to the events of that night.";

@@ -43,7 +43,7 @@ export function MurderBoard({
   const onBoard = new Set(items.map((i) => i.id));
   const meta = (id: string) => {
     const e = view.evidence.find((x) => x.id === id);
-    if (e) return { title: e.title, image: e.image, tag: e.id, person: false };
+    if (e) return { title: e.title, image: e.image, tag: e.label, person: false };
     const c = view.characters.find((x) => x.id === id);
     return { title: c?.name ?? id, image: c?.portrait ?? "", tag: c?.role ?? "", person: true };
   };

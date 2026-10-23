@@ -82,21 +82,21 @@ export function EvidenceStamp({
       <button
         type="button"
         onClick={onDone}
-        aria-label={`Evidence collected: ${item.id}, ${item.title}. Dismiss.`}
+        aria-label={`${item.photo ? "Photograph filed" : "Evidence collected"}: ${item.title}. Dismiss.`}
         className={`pointer-events-auto relative w-[min(78vw,340px)] bg-[#efe6d3] p-3 pb-4 text-left text-[#2a231b] shadow-[0_24px_60px_rgba(0,0,0,0.7)] ${reducedMotion ? "evidence-card-still" : "evidence-card"}`}
         style={{ animationDuration: `${SHOW_MS}ms` }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={item.image} alt="" draggable={false} className="aspect-square w-full bg-black object-cover" />
-        <p className="mt-2.5 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-[#7a2a22]">{item.id}</p>
+        <p className="mt-2.5 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-[#7a2a22]">{item.photo ? "Photograph" : item.id}</p>
         <p className="font-display text-xl leading-tight">{item.title}</p>
         <span
           aria-hidden
           className={`absolute left-1/2 top-[38%] whitespace-nowrap rounded-[6px] border-[3px] border-[#c8382c] bg-[#efe6d3]/45 px-3 py-1.5 text-center font-mono text-[1.35rem] font-bold uppercase leading-none tracking-[0.12em] text-[#c8382c] shadow-[0_0_0_1px_rgba(0,0,0,0.25)] [text-shadow:0_1px_0_rgba(0,0,0,0.35)] ${reducedMotion ? "evidence-stamp-still" : "evidence-stamp"}`}
         >
-          Collected
+          {item.photo ? "Photo" : "Collected"}
           <br />
-          <span className="text-[0.95rem] tracking-[0.3em]">Evidence</span>
+          <span className="text-[0.95rem] tracking-[0.3em]">{item.photo ? "Filed" : "Evidence"}</span>
         </span>
       </button>
     </div>

@@ -30,7 +30,7 @@ import { isSpeaking, subscribeSpeaking } from "./audio-bus";
 import { setMusicEnabled, useBackgroundSound, useMusicEnabled } from "./background-sound";
 
 type Layer =
-  | { k: "inspect"; text: string; title: string; evidence: ClientEvidence | null }
+  | { k: "inspect"; text: string; title: string; evidence: ClientEvidence | null; photo: { hotspotId: string; taken: boolean } | null }
   | { k: "evidence"; id: string; back: "notebook" | "inventory" | "conclusion" }
   | { k: "panel"; panel: PanelId | "inventory" }
   | { k: "conversation"; data: Extract<ActionOutcome, { kind: "conversation" }> }
@@ -118,7 +118,7 @@ export function InvestigationShell({
       const o = res.outcome;
       switch (o.kind) {
         case "inspect":
-          setLayer({ k: "inspect", text: o.text, title: o.title, evidence: o.evidence });
+          setLayer({ k: "inspect", text: o.text, title: o.title, evidence: o.evidence, photo: o.photo });
           break;
         case "panel":
           setLayer({ k: "panel", panel: o.panel });
@@ -304,7 +304,7 @@ export function InvestigationShell({
   const pinned = (id: string) => view.board.items.some((i) => i.id === id);
   const dialogueVolume = Math.max(0, Math.min(1, (prefs.masterVolume / 100) * (prefs.dialogueVolume / 100)));
   const narrationFor = (id: string) =>
-    view.narration
+    view.narration && !view.evidence.find((e) => e.id === id)?.photo
       ? {
           src: `/api/narration?caseId=${encodeURIComponent(caseId)}&evidenceId=${encodeURIComponent(id)}`,
           volume: Math.max(0, Math.min(1, (prefs.masterVolume / 100) * (prefs.dialogueVolume / 100))),
@@ -492,7 +492,24 @@ export function InvestigationShell({
           locked={locked}
         />
       ) : null}
-      {layer?.k === "inspect" && !layer.evidence ? <ObservationCard title={layer.title} text={layer.text} onClose={close} /> : null}
+      {layer?.k === "inspect" && !layer.evidence ? (
+        <ObservationCard
+          title={layer.title}
+          text={layer.text}
+          onClose={close}
+          photo={layer.photo}
+          pending={pending}
+          locked={locked}
+          onPhoto={async () => {
+            if (!layer.photo) return;
+            const r = await dispatch({ type: "photograph", hotspotId: layer.photo.hotspotId });
+            if (r) {
+              cameraShutter((prefs.masterVolume / 100) * (prefs.sfxVolume / 100));
+              setLayer((l) => (l?.k === "inspect" && l.photo ? { ...l, photo: { ...l.photo, taken: true } } : l));
+            }
+          }}
+        />
+      ) : null}
       {layer?.k === "evidence" && fromNotebook ? (
         <EvidenceInspection
           key={`evidence-${fromNotebook.id}`}
@@ -594,7 +611,23 @@ export function InvestigationShell({
   );
 }
 
-function ObservationCard({ title, text, onClose }: { title: string; text: string; onClose: () => void }) {
+function ObservationCard({
+  title,
+  text,
+  onClose,
+  photo,
+  onPhoto,
+  pending,
+  locked,
+}: {
+  title: string;
+  text: string;
+  onClose: () => void;
+  photo: { hotspotId: string; taken: boolean } | null;
+  onPhoto: () => void;
+  pending: boolean;
+  locked: boolean;
+}) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
@@ -611,12 +644,77 @@ function ObservationCard({ title, text, onClose }: { title: string; text: string
       >
         <p className="font-serif text-xl">{title}</p>
         <p className="mt-3 font-serif text-lg leading-relaxed text-paper/90">{text}</p>
-        <button type="button" autoFocus onClick={onClose} className="mt-5 text-sm text-brass underline-offset-4 hover:underline">
-          Return to scene
-        </button>
+        <div className="mt-5 flex flex-wrap items-center gap-4">
+          {photo && !locked ? (
+            photo.taken ? (
+              <span className="inline-flex items-center gap-2 font-mono text-xs text-[color:var(--color-ok)]">
+                <CameraIcon /> Photographed. It is filed with your evidence.
+              </span>
+            ) : (
+              <button
+                type="button"
+                disabled={pending}
+                onClick={onPhoto}
+                className="inline-flex items-center gap-2 rounded-[2px] bg-brass px-4 py-2 text-sm font-semibold text-ink hover:bg-[#d4b585] disabled:opacity-50"
+              >
+                <CameraIcon /> Take a photo
+              </button>
+            )
+          ) : null}
+          <button type="button" autoFocus onClick={onClose} className="text-sm text-brass underline-offset-4 hover:underline">
+            Return to scene
+          </button>
+        </div>
       </div>
     </div>
   );
+}
+
+function CameraIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
+      <path d="M4 8h3l1.5-2h7L17 8h3v11H4z" />
+      <circle cx="12" cy="13" r="3.5" />
+    </svg>
+  );
+}
+
+/** A 1980s camera: the shutter's click and the film advance, synthesized, with a quick white flash on screen. */
+function cameraShutter(volume: number) {
+  if (typeof window === "undefined") return;
+  const flash = document.createElement("div");
+  flash.style.cssText = "position:fixed;inset:0;z-index:80;background:#fff;opacity:.85;pointer-events:none;transition:opacity .45s ease-out";
+  document.body.append(flash);
+  requestAnimationFrame(() => requestAnimationFrame(() => (flash.style.opacity = "0")));
+  setTimeout(() => flash.remove(), 600);
+  if (volume <= 0) return;
+  const Ctx = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  if (!Ctx) return;
+  const ctx = new Ctx();
+  const out = ctx.createGain();
+  out.gain.value = Math.min(1, volume) * 0.6;
+  out.connect(ctx.destination);
+  const click = (t: number, len: number, freq: number, level: number) => {
+    const n = Math.floor(ctx.sampleRate * len);
+    const buf = ctx.createBuffer(1, n, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 4);
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    const f = ctx.createBiquadFilter();
+    f.type = "bandpass";
+    f.frequency.value = freq;
+    const g = ctx.createGain();
+    g.gain.value = level;
+    src.connect(f).connect(g).connect(out);
+    src.start(t);
+  };
+  const t = ctx.currentTime + 0.01;
+  click(t, 0.03, 3200, 1);
+  click(t + 0.06, 0.04, 1800, 0.8);
+  // Film advance: a short ratchet.
+  for (let i = 0; i < 6; i++) click(t + 0.22 + i * 0.035, 0.02, 2400, 0.35);
+  setTimeout(() => ctx.close().catch(() => undefined), 800);
 }
 
 function SaveIndicator({ status }: { status: SaveStatus }) {

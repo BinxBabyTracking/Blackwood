@@ -134,18 +134,20 @@ export const solution: CaseDefinition["solution"] = {
   weapon: "knife",
   location: "living_room",
   standard: {
-    minItems: 3,
+    // Four key items carry the report; up to two more may be anything the investigator thinks supports it.
+    minItems: 4,
     maxItems: 6,
+    minKey: 4,
     lines: [
       { id: "physical", label: "Physical and blood evidence", anyOf: ["E02", "E05", "E06", "E11", "E14"] },
       { id: "timeline", label: "Timeline and movements", anyOf: ["E04", "E13", "E12"] },
       { id: "financial", label: "Financial motive", anyOf: ["E03", "E15", "E08", "E09"] },
       { id: "staging", label: "Staged entry", anyOf: ["E01", "E10"] },
     ],
-    minLines: 3,
+    minLines: 2,
     linkToSuspect: ["E04", "E13", "E14", "E05"],
     supporting: ["E07"],
-    maxUnrelated: 0,
+    maxUnrelated: 2,
     undecided: ["unknown"],
   },
   resolution: {

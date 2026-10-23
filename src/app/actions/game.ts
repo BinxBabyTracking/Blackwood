@@ -59,7 +59,7 @@ export async function restartCase(caseId: string): Promise<ActionResponse | { er
 
 const ACTIONS = new Set<GameAction["type"]>([
   // Interviews are asked in the player's own words ("askFree"); authored question ids are never accepted from the browser.
-  "dismissIntro", "travel", "hotspot", "collect", "readDocument", "talk", "askFree", "present", "extendInterview", "answerCall", "placeCall",
+  "dismissIntro", "travel", "hotspot", "collect", "photograph", "readDocument", "talk", "askFree", "present", "extendInterview", "answerCall", "placeCall",
   "openDelivery", "boardAdd", "boardMove", "boardRemove", "connect", "disconnect", "saveNotes", "saveEvidenceNote", "setNarration", "setVoices",
   "dismissMessages", "saveReport", "submitConclusion",
 ]);
