@@ -1,4 +1,5 @@
 import type { Condition, HotspotDef, LocationDef } from "@/game/engine/types";
+import { LAB_GLASS_RECT, LAB_SAMPLES_RECT } from "./desk";
 import { reportAvailable } from "./story";
 
 /*
@@ -104,7 +105,9 @@ export const locations: LocationDef[] = [
     onMap: true,
     hotspots: [
       panel("office_casefile", "Case file from Det. Bennett", "folder", { x: 37, y: 69.5, w: 16, h: 14.5 }, "casefile"),
-      inspect("office_labreport", "Laboratory report folder", "labfolder", { x: 16, y: 73, w: 11, h: 11 }, "Laboratory report", "A thin folder from the LAPD laboratory, clipped to the case file's covering note.", { evidence: "E11" }),
+      // Lab results arrive on the desk when the police lab is done (see labs in story.ts).
+      deskItem("office_labreport", "Lab results: the broken glass", "lab_glass", "E11", LAB_GLASS_RECT, "art.obj_labfolder", "art.obj_labfolder"),
+      deskItem("office_labsamples", "Lab results: the guests' blood", "lab_samples", "E16", LAB_SAMPLES_RECT, "art.obj_labfolder", "art.obj_labfolder"),
       panel("office_board", "Murder board", "board", { x: 0, y: 3, w: 22, h: 41 }, "board"),
       { ...panel("office_phone", "Telephone", "phone", { x: 2, y: 68, w: 13, h: 17 }, "phone"), attention: { any: [{ callPending: "call_margaret_sedan" }, { callPending: "call_bennett_board" }] } },
       panel("office_notebook", "Notebook", "notebook", { x: 26.5, y: 70.5, w: 9.5, h: 10.5 }, "notebook"),
@@ -127,6 +130,7 @@ export const locations: LocationDef[] = [
     area: "hollister",
     name: "Eleanor's Living Room",
     subtitle: "Whitmore residence, Hollister Avenue, Los Feliz",
+    mapTag: "CRIME SCENE",
     mapPin: { x: 31, y: 46 },
     background: "loc.living_room",
     ambience: "amb.whitmore",

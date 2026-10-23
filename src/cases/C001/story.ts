@@ -3,10 +3,12 @@ import type {
   CaseDefinition,
   DeliveryDef,
   DocumentDef,
+  LabDef,
   OutgoingCallDef,
   ReactiveEventDef,
   StatementDef,
 } from "@/game/engine/types";
+import { LAB_GLASS_RECT, LAB_SAMPLES_RECT } from "./desk";
 
 /* DRAFT CASE CONTENT: see characters.ts. Nothing in this file names the culprit. */
 
@@ -65,7 +67,7 @@ export const documents: DocumentDef[] = [
       },
       {
         heading: "Attached",
-        body: "My notes on when each guest left. The laboratory folder is on your desk. One shard of the broken glass is bagged and held at the scene for you; the knife block in the kitchen is tagged. Call me any time on the office line. F.B.",
+        body: "My notes on when each guest left. One shard of the broken glass is bagged and held at the scene for you; if you want it typed, tell me and I'll get it to the lab; the knife block in the kitchen is tagged. Call me any time on the office line. F.B.",
       },
     ],
   },
@@ -185,7 +187,42 @@ export const outgoingCalls: OutgoingCallDef[] = [
   { id: "call_bennett_general", to: "bennett", label: "Called Det. Bennett for an update", available: { not: { always: true } }, done: { always: true }, lines: [] },
 ];
 
+/*
+ * Police lab tests. Each takes real time from the moment Det. Bennett sends
+ * it, shown as a countdown on the office desk; the results then arrive there.
+ */
+export const labs: LabDef[] = [
+  {
+    id: "glass",
+    label: "Blood typing: the broken glass",
+    seconds: 180,
+    rect: LAB_GLASS_RECT,
+    onReady: [{ delivery: "lab_glass" }, { message: "The police lab's results on the broken glass are on your desk." }],
+  },
+  {
+    id: "samples",
+    label: "Blood typing: the guests",
+    seconds: 180,
+    rect: LAB_SAMPLES_RECT,
+    onReady: [{ delivery: "lab_samples" }, { message: "The lab's comparison of the guests' blood is on your desk." }],
+  },
+];
+
 export const deliveries: DeliveryDef[] = [
+  {
+    id: "lab_glass",
+    title: "Lab results: the broken glass",
+    exterior: "A thin LAPD laboratory folder, stamped RESULTS and clipped shut.",
+    text: "Det. Bennett's note on the folder: 'Typing on the glass you asked for. Read item 3. F.B.'",
+    evidence: ["E11"],
+  },
+  {
+    id: "lab_samples",
+    title: "Lab results: the guests' blood",
+    exterior: "A second LAPD laboratory folder, stamped SUPPLEMENTARY.",
+    text: "Det. Bennett's note on the folder: 'All four guests gave samples without a fuss. Here's how they compare to the glass. F.B.'",
+    evidence: ["E16"],
+  },
   {
     id: "jacket_recovered",
     title: "LAPD evidence bag",
@@ -304,6 +341,7 @@ export const objectives: CaseDefinition["objectives"] = [
   { id: "o_casefile", text: "Read Detective Bennett's case file", visible: { always: true }, done: { flag: "casefile_read" } },
   { id: "o_scene", text: "Examine the Whitmore residence, inside and out", visible: { flag: "casefile_read" }, done: { all: [{ visited: "living_room" }, { visited: "kitchen" }] } },
   { id: "o_bennett", text: "Speak with Det. Bennett on the office telephone", visible: { flag: "casefile_read" }, done: { talkedTo: "bennett" } },
+  { id: "o_lab", text: "Get the broken glass to the police lab", visible: { hasEvidence: "E02" }, done: { labStarted: "glass" } },
   { id: "o_tapes", text: "Review the recorded police statements", visible: { flag: "casefile_read" }, done: { inspected: "office_recorder" } },
   {
     id: "o_guests",

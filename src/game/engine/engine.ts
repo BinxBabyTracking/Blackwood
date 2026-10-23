@@ -50,6 +50,7 @@ export function newState(def: CaseDefinition, now = Date.now()): InvestigationSt
     inspected: [],
     evidence: [],
     photos: [],
+    labs: {},
     discoveries: {},
     evidenceNotes: {},
     narration: true,
@@ -138,6 +139,7 @@ export function normalizeState(def: CaseDefinition, raw: InvestigationState): In
   const s = { ...fresh, ...raw } as InvestigationState;
   s.discoveries ??= {};
   s.photos ??= [];
+  s.labs ??= {};
   s.evidenceNotes ??= {};
   s.narration ??= true;
   s.voices ??= true;
@@ -541,6 +543,9 @@ export function reduce(
       break;
     }
 
+    case "checkLabs":
+      break;
+
     case "photograph": {
       const l = loc(def, s.location)!;
       const h = visibleHotspots(def, s, l).find((x) => x.id === action.hotspotId) ?? fail("There is nothing like that here to photograph.");
@@ -862,12 +867,23 @@ export function reduce(
 
 /** Rules that run after every action: reactive events, established contradictions, changes of manner. */
 function finish(s: InvestigationState, def: CaseDefinition) {
+  runLabs(s, def);
   runEvents(s, def);
   runContradictions(s, def);
   runDemeanor(s, def);
   runBoardHint(s, def);
   // New discoveries can give a reason to question someone again.
   for (const note of runReinterviews(def, s)) s.messages.push(note);
+}
+
+/** Lab results come back once their time is up, checked on every action. */
+function runLabs(s: InvestigationState, def: CaseDefinition) {
+  for (const l of def.labs ?? []) {
+    const j = s.labs?.[l.id];
+    if (!j || j.done || s.lastActionAt < j.readyAt) continue;
+    j.done = true;
+    apply(l.onReady, s, def);
+  }
 }
 
 /**
@@ -967,7 +983,8 @@ export function progressOf(def: CaseDefinition, s: InvestigationState) {
 // Projection: the only thing the browser sees
 // ---------------------------------------------------------------------------
 
-export function project(def: CaseDefinition, s: InvestigationState): ClientView {
+/** `now` sets how long lab countdowns have left; the real clock unless a test passes its own. */
+export function project(def: CaseDefinition, s: InvestigationState, now = Date.now()): ClientView {
   const img = (key: string) => def.assets.images[key] ?? "";
   const l = loc(def, s.location)!;
   const bg = sceneBackground(def, s, l);
@@ -1012,6 +1029,7 @@ export function project(def: CaseDefinition, s: InvestigationState): ClientView 
         visited: s.visited.includes(x.id),
         current: x.id === s.location,
         pin: x.mapPin ?? null,
+        tag: x.mapTag ?? null,
       })),
     evidence: [...s.evidence.map((id) => evidenceView(def, s, id)!), ...s.photos.map((p) => photoView(def, s, p))],
     characters: knownCharacters(def, s).map((c) => ({
@@ -1068,6 +1086,10 @@ export function project(def: CaseDefinition, s: InvestigationState): ClientView 
     narration: s.narration,
     voices: s.voices,
     music: def.assets.audio["music.theme"] ?? null,
+    labs: (def.labs ?? []).flatMap((l) => {
+      const j = s.labs?.[l.id];
+      return j ? [{ id: l.id, label: l.label, remainingMs: Math.max(0, j.readyAt - now), done: j.done, rect: l.rect }] : [];
+    }),
     travelAudio: { drive: def.assets.audio["sfx.travel_drive"] ?? null, walk: def.assets.audio["sfx.travel_walk"] ?? null },
     conclusion: {
       available: check(def.reportAvailable, s),

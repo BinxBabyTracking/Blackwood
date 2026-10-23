@@ -33,8 +33,8 @@ export const deductions: DeductionDef[] = [
     code: "D05",
     title: "Possible Injury Connection",
     text: "Daniel Mercer had a freshly bandaged right palm the morning after, and his blood type is consistent with the laboratory's typing of the glass. Guests who sat with him at supper saw no injury.",
-    connections: [["E14", "E11"], ["E14", "E02"], ["daniel", "E11"]],
-    requires: { all: [{ hasEvidence: "E11" }, { hasEvidence: "E14" }] },
+    connections: [["E14", "E16"], ["daniel", "E16"], ["E14", "E02"]],
+    requires: { all: [{ hasEvidence: "E16" }, { hasEvidence: "E14" }] },
   },
   {
     id: "D_MOTIVE",
@@ -63,7 +63,7 @@ export const deductions: DeductionDef[] = [
     code: "D07",
     title: "Recovered Physical Evidence",
     text: "The windbreaker thrown out behind Mercer's building matches the one Margaret saw him wear at supper, and its stained right cuff ties it to the blood evidence from the living room.",
-    connections: [["E05", "E11"], ["E05", "E14"]],
+    connections: [["E05", "E11"], ["E05", "E14"], ["E05", "E16"]],
   },
 ];
 
@@ -139,13 +139,13 @@ export const solution: CaseDefinition["solution"] = {
     maxItems: 6,
     minKey: 4,
     lines: [
-      { id: "physical", label: "Physical and blood evidence", anyOf: ["E02", "E05", "E06", "E11", "E14"] },
+      { id: "physical", label: "Physical and blood evidence", anyOf: ["E02", "E05", "E06", "E11", "E14", "E16"] },
       { id: "timeline", label: "Timeline and movements", anyOf: ["E04", "E13", "E12"] },
       { id: "financial", label: "Financial motive", anyOf: ["E03", "E15", "E08", "E09"] },
       { id: "staging", label: "Staged entry", anyOf: ["E01", "E10"] },
     ],
     minLines: 2,
-    linkToSuspect: ["E04", "E13", "E14", "E05"],
+    linkToSuspect: ["E04", "E13", "E14", "E05", "E16"],
     supporting: ["E07"],
     maxUnrelated: 2,
     undecided: ["unknown"],

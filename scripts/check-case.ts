@@ -93,7 +93,9 @@ run({ type: "dismissIntro" });
 try { collect("E05"); problems.push("collected E05 without discovering it"); } catch {}
 run({ type: "readDocument", documentId: "casefile" });
 collect("E12");
-hot("office_labreport"); collect("E11");
+// Nothing from the lab is on the desk at the start: the glass has to be sent first.
+if (project(def, s).location.hotspots.some((h) => h.id === "office_labreport" || h.id === "office_labsamples")) problems.push("lab results on the desk before anything was sent");
+try { collect("E11"); problems.push("E11 collected before the glass went to the lab"); } catch {}
 go("living_room");
 for (const h of ["lr_chair", "lr_glass", "lr_ledger", "lr_drawer", "lr_diary", "lr_sideboard"]) hot(h);
 for (const e of ["E07", "E02", "E03", "E08", "E09"]) collect(e);
@@ -136,7 +138,8 @@ if (s.env.daniel_apartment === "B") problems.push("apartment changed without val
 hot("d_spike"); hot("d_schedule"); collect("E04"); collect("E13");
 run({ type: "talk", characterId: "rosa" });
 ask("rosa_friday"); ask("rosa_customer");
-const initial = [...evIds].filter((e) => e !== "E05" && e !== "E15");
+// Not on hand at the start: the jacket and the torn statement arrive later, and both lab reports wait for the lab.
+const initial = [...evIds].filter((e) => !["E05", "E15", "E11", "E16"].includes(e));
 const missingInitial = initial.filter((e) => !s.evidence.includes(e));
 if (missingInitial.length) problems.push(`initially discoverable evidence not collected: ${missingInitial}`);
 
@@ -161,6 +164,33 @@ if (!env?.sprite || !env.attention) problems.push("envelope not drawn on the des
 go("margaret_house"); go("office");
 if (!s.pendingCalls.includes("call_margaret_sedan") || s.eventStates.RE01 !== "active") problems.push("deferred call was lost");
 if (s.pendingCalls.filter((c) => c === "call_margaret_sedan").length !== 1) problems.push("call queued twice");
+
+// The lab: Bennett sends the glass and offers to get the guests' samples; results take real time.
+run({ type: "talk", characterId: "bennett" });
+if (!interviewCandidates(def, s, "bennett").some((x) => x.id === "bennett_send_glass")) problems.push("Bennett cannot be asked to send the glass");
+if (interviewCandidates(def, s, "bennett").some((x) => x.id === "bennett_samples")) problems.push("guest samples offered before the glass was sent");
+const sentGlass = ask("bennett_send_glass");
+if (!s.labs.glass || s.labs.glass.done) problems.push("glass not sent to the lab");
+if (sentGlass.kind !== "conversation" || !sentGlass.history.at(-1)?.text.includes("samples from the guests")) problems.push("Bennett did not offer the guest samples");
+ask("bennett_samples");
+if (!s.labs.samples) problems.push("guest samples not sent to the lab");
+const labView = project(def, s, t).labs;
+if (labView.length !== 2 || labView.some((l) => l.done || l.remainingMs <= 0)) problems.push(`lab countdowns wrong: ${JSON.stringify(labView)}`);
+run({ type: "checkLabs" });
+if (s.labs.glass.done || s.pendingDeliveries.includes("lab_glass")) problems.push("lab results came back early");
+try { collect("E11"); problems.push("E11 collected before the results came back"); } catch {}
+t += 180000;
+run({ type: "checkLabs" });
+if (!s.labs.glass.done || !s.labs.samples.done || !s.pendingDeliveries.includes("lab_glass") || !s.pendingDeliveries.includes("lab_samples")) problems.push("lab results did not arrive when their time was up");
+if (!s.messages.some((m) => /lab/i.test(m))) problems.push("no notice that the lab results are in");
+for (const [hid, did, eid] of [["office_labreport", "lab_glass", "E11"], ["office_labsamples", "lab_samples", "E16"]]) {
+  const folder = hot(hid);
+  if (folder.kind !== "delivery" || !folder.sealed) problems.push(`${did} not sealed on the desk`);
+  run({ type: "openDelivery", deliveryId: did });
+  collect(eid);
+}
+run({ type: "checkLabs" });
+if (s.pendingDeliveries.includes("lab_glass") || s.evidence.filter((e) => e === "E11").length !== 1) problems.push("lab results delivered twice");
 
 // RE02 becomes active once an injury deduction is established elsewhere
 run({ type: "boardAdd", itemId: "E02", x: 10, y: 10 }); run({ type: "boardAdd", itemId: "E11", x: 30, y: 10 });
@@ -218,7 +248,7 @@ const dev = project(def, s).developments;
 if (dev.length !== 3 || dev.some((d) => d.status !== "Resolved")) problems.push(`developments: ${JSON.stringify(dev.map((d) => [d.id, d.status]))}`);
 if (!dev.find((d) => d.id === "RE01")?.call || !dev.find((d) => d.id === "RE03")?.note || !dev.find((d) => d.id === "RE02")?.evidence.some((e) => e.id === "E05")) problems.push("developments missing transcript, note or evidence");
 if (s.events.length !== 3 || new Set(s.events).size !== 3) problems.push("an event repeated");
-if (s.evidence.length !== 15) problems.push(`collected ${s.evidence.length}/15: missing ${[...evIds].filter((e) => !s.evidence.includes(e))}`);
+if (s.evidence.length !== 16) problems.push(`collected ${s.evidence.length}/16: missing ${[...evIds].filter((e) => !s.evidence.includes(e))}`);
 
 // every evidence item has exactly one scene hotspot, document or delivery that reveals it
 for (const e of evIds) {
@@ -227,7 +257,7 @@ for (const e of evIds) {
   if (sources < 1) problems.push(`${e} has no discovery source`);
 }
 // assigned locations from the Step 4 brief
-const assigned: Record<string, string[]> = { office: ["E11", "E12"], living_room: ["E02", "E03", "E07", "E08", "E09"], kitchen: ["E01", "E06", "E10"], diner: ["E04", "E13"], daniel_apartment: ["E14"] };
+const assigned: Record<string, string[]> = { office: ["E11", "E12", "E16"], living_room: ["E02", "E03", "E07", "E08", "E09"], kitchen: ["E01", "E06", "E10"], diner: ["E04", "E13"], daniel_apartment: ["E14"] };
 for (const [locId, ids] of Object.entries(assigned)) for (const id of ids) if (def.evidence.find((e) => e.id === id)?.sourceLocationId !== locId) problems.push(`${id} not assigned to ${locId}`);
 for (const id of ["E01","E02","E03","E04","E06","E07","E08","E09","E10","E11","E13","E14"]) {
   const d = s.discoveries[id];
@@ -236,12 +266,12 @@ for (const id of ["E01","E02","E03","E04","E06","E07","E08","E09","E10","E11","E
 }
 
 // board
-const pins = ["E01", "E10", "E02", "E11", "E14", "E03", "E15", "E04", "E13", "E06", "E07", "E05", "E09", "E08", "E12", "daniel"];
+const pins = ["E01", "E10", "E02", "E11", "E16", "E14", "E03", "E15", "E04", "E13", "E06", "E07", "E05", "E09", "E08", "E12", "daniel"];
 pins.forEach((p, i) => run({ type: "boardAdd", itemId: p, x: (i * 7) % 90, y: (i * 13) % 90 }));
 const wrong = run({ type: "connect", a: "E01", b: "E05" });
 if (wrong.kind === "deduction") problems.push("wrong connection produced a deduction");
 run({ type: "disconnect", a: "E01", b: "E05" });
-for (const [a, b] of [["E01", "E10"], ["E02", "E11"], ["E14", "E11"], ["E03", "E15"], ["E09", "E03"], ["E04", "E13"], ["E05", "E11"], ["E06", "E07"]]) {
+for (const [a, b] of [["E01", "E10"], ["E02", "E11"], ["E14", "E16"], ["E03", "E15"], ["E09", "E03"], ["E04", "E13"], ["E05", "E11"], ["E06", "E07"]]) {
   const had = s.deductions.length;
   const o = run({ type: "connect", a, b });
   if (o.kind !== "deduction" && !(a === "E02" && had)) problems.push(`no deduction for ${a}-${b}`);
@@ -313,7 +343,7 @@ if (!closedView.closure || closedView.closure.reconstruction.length !== def.solu
 if (!spokenLine(def, s, { kind: "resolution", id: "bennett", n: 0 })) problems.push("Bennett's conclusion not voiceable after closing");
 try { run({ type: "submitConclusion", theory: { culprit: "daniel", motive: "financial", weapon: "knife", location: "living_room", evidence: ["E11", "E14", "E03"] } }); problems.push("closed case accepted another report"); } catch {}
 const reloaded = normalizeState(def, JSON.parse(JSON.stringify(s)));
-if (reloaded.status !== "closed" || !reloaded.report.final || reloaded.evidence.length !== 15 || reloaded.deductions.length !== s.deductions.length) problems.push("completion lost on reload");
+if (reloaded.status !== "closed" || !reloaded.report.final || reloaded.evidence.length !== 16 || reloaded.deductions.length !== s.deductions.length) problems.push("completion lost on reload");
 
 // saves from before discovery tracking must load without losing progress
 const legacy = structuredClone(s) as Partial<InvestigationState>;
@@ -515,8 +545,9 @@ for (let seed = 1; seed <= 40; seed++) {
 {
   const fresh = () => {
     let w = newState(def, 0);
+    let clock = 1;
     const A = (a: GameAction) => {
-      const r = reduce(def, w, a, 1);
+      const r = reduce(def, w, a, clock);
       w = r.state;
       return r.outcome;
     };
@@ -524,7 +555,8 @@ for (let seed = 1; seed <= 40; seed++) {
     const at = (l: string) => { if (w.location !== l) A({ type: "travel", locationId: l }); };
     const ask = (id: string) => { if (!w.asked.includes(id)) A({ type: "ask", questionId: id }); };
     A({ type: "dismissIntro" }); A({ type: "readDocument", documentId: "casefile" }); get("E12");
-    return { A, get, at, ask, state: () => w };
+    const wait = (ms: number) => { clock += ms; };
+    return { A, get, at, ask, wait, state: () => w };
   };
   type G = ReturnType<typeof fresh>;
   const beats: Record<string, (g: G) => void> = {
@@ -535,7 +567,8 @@ for (let seed = 1; seed <= 40; seed++) {
     RE02: (g) => {
       g.at("daniel_apartment"); g.A({ type: "hotspot", hotspotId: "da_coats_a" }); g.A({ type: "talk", characterId: "daniel" }); g.ask("daniel_evening");
       g.at("living_room"); g.A({ type: "hotspot", hotspotId: "lr_glass" }); g.get("E02");
-      g.at("office"); g.A({ type: "hotspot", hotspotId: "office_labreport" }); g.get("E11");
+      g.at("office"); g.A({ type: "talk", characterId: "bennett" }); g.ask("bennett_send_glass"); g.wait(180000); g.A({ type: "checkLabs" });
+      g.A({ type: "hotspot", hotspotId: "office_labreport" }); g.A({ type: "openDelivery", deliveryId: "lab_glass" }); g.get("E11");
       g.A({ type: "boardAdd", itemId: "E02", x: 1, y: 1 }); g.A({ type: "boardAdd", itemId: "E11", x: 2, y: 2 }); g.A({ type: "connect", a: "E02", b: "E11" });
       g.at("daniel_apartment"); g.A({ type: "hotspot", hotspotId: "da_coats_b" });
       g.at("office"); g.A({ type: "talk", characterId: "bennett" }); g.ask("bennett_jacket");

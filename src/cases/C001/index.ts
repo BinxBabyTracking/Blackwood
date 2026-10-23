@@ -7,7 +7,7 @@ import { reinterviews } from "./interviews";
 import { locations } from "./locations";
 import { SOUNDTRACK } from "./soundtrack";
 import { conclusionChoices, deductions, solution } from "./solution";
-import { calls, deliveries, documents, events, intro, objectives, outgoingCalls, reportAvailable, statements, timeline } from "./story";
+import { calls, deliveries, documents, events, intro, labs, objectives, outgoingCalls, reportAvailable, statements, timeline } from "./story";
 
 export const C001: CaseDefinition = {
   id: "C001",
@@ -39,4 +39,5 @@ export const C001: CaseDefinition = {
   reinterviews,
   soundtrack: SOUNDTRACK,
   boardHint: { evidenceCount: 4, callId: "call_bennett_board" },
+  labs,
 };

@@ -68,11 +68,14 @@ export function ExplorationScene({
   disabled,
   reducedMotion,
   onHotspot,
+  overlays,
 }: {
   location: ClientView["location"];
   disabled: boolean;
   reducedMotion: boolean;
   onHotspot: (id: string) => void;
+  /** Extra things pinned to the scene, positioned in scene percentages (lab countdowns). */
+  overlays?: React.ReactNode;
 }) {
   const [hover, setHover] = useState<string | null>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
@@ -156,6 +159,7 @@ export function ExplorationScene({
             {location.hotspots.map((h) => (
               <SceneHotspot key={h.id} hotspot={h} disabled={disabled} onSelect={onHotspot} onHover={setHover} reducedMotion={reducedMotion} />
             ))}
+            {overlays}
           </div>
           {pan ? null : caption}
           {pan ? null : label}

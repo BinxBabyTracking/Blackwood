@@ -28,6 +28,8 @@ export function check(c: Condition | undefined, s: InvestigationState): boolean 
   if ("callAnswered" in c) return s.answeredCalls.includes(c.callAnswered);
   if ("deliveryPending" in c) return s.pendingDeliveries.includes(c.deliveryPending);
   if ("deliveryOpened" in c) return s.openedDeliveries.includes(c.deliveryOpened);
+  if ("labStarted" in c) return Boolean(s.labs?.[c.labStarted]);
+  if ("labReady" in c) return Boolean(s.labs?.[c.labReady]?.done);
   if ("always" in c) return true;
   return false;
 }
@@ -54,6 +56,11 @@ export function apply(effects: Effect[] | undefined, s: InvestigationState, def:
       if (!s.openedDeliveries.includes(e.delivery)) add(s.pendingDeliveries, e.delivery);
     } else if ("message" in e) add(s.messages, e.message);
     else if ("unlockQuestion" in e) add((s.unlockedQuestions ??= []), e.unlockQuestion);
+    else if ("startLab" in e) {
+      const lab = def.labs?.find((l) => l.id === e.startLab);
+      s.labs ??= {};
+      if (lab && !s.labs[lab.id]) s.labs[lab.id] = { startedAt: s.lastActionAt, readyAt: s.lastActionAt + lab.seconds * 1000, done: false };
+    }
     else if ("when" in e) {
       if (check(e.when, s)) apply(e.then, s, def);
     }

@@ -35,6 +35,10 @@ export type Condition =
   | { callAnswered: string }
   | { deliveryPending: string }
   | { deliveryOpened: string }
+  /** A lab test has been sent off. */
+  | { labStarted: string }
+  /** A lab test's results are back. */
+  | { labReady: string }
   | { always: true };
 
 /** Reactive event lifecycle. An event with no recorded state is "locked". */
@@ -52,6 +56,7 @@ export type Effect =
   | { delivery: string } // delivery id, appears at the office
   | { message: string } // shown once to the player as a notice
   | { unlockQuestion: string } // reveals a follow-up dialogue entry
+  | { startLab: string } // sends a lab test off; results come back after its time
   | { when: Condition; then: Effect[] }; // applies only if the condition holds at that moment
 
 export interface NotebookEntryInput {
@@ -295,6 +300,8 @@ export interface LocationDef {
   onMap: boolean;
   /** Pin position on the travel map, as percentages. */
   mapPin?: { x: number; y: number };
+  /** A label always shown above the pin on the map, e.g. "CRIME SCENE", to draw players there. */
+  mapTag?: string;
   /** Neighbourhood. Travel within one area is on foot; between areas, by car. */
   area?: string;
   hotspots: HotspotDef[];
@@ -521,6 +528,21 @@ export interface SoundtrackDef {
   prompt: string;
 }
 
+/**
+ * A test sent to the police lab. It takes real time: the countdown runs on
+ * the server from the moment it is sent, whether or not anyone is playing.
+ */
+export interface LabDef {
+  id: string;
+  /** Shown on the countdown, e.g. "Blood typing: the broken glass". */
+  label: string;
+  seconds: number;
+  /** The office desk spot where the countdown is shown (a hotspot rect). */
+  rect: { x: number; y: number; w: number; h: number };
+  /** What happens when the results are back (usually a delivery to the desk). */
+  onReady: Effect[];
+}
+
 export interface CaseDefinition {
   id: string;
   title: string;
@@ -558,6 +580,8 @@ export interface CaseDefinition {
    * nothing connected on the board, this call rings at the office (once).
    */
   boardHint?: { evidenceCount: number; callId: string };
+  /** Tests the player can have the police lab run. */
+  labs?: LabDef[];
   /** Evidence and developments that earn extra questions with a particular person. */
   reinterviews?: ReinterviewDef[];
 }
@@ -592,6 +616,8 @@ export interface InvestigationState {
   evidence: string[];
   /** Photographs taken in scenes, filed alongside the evidence. */
   photos: PhotoRecord[];
+  /** Lab tests sent off, by lab id: when they were sent, when they come back, and whether they have. */
+  labs: Record<string, { startedAt: number; readyAt: number; done: boolean }>;
   /** Where and when each piece of evidence was collected. */
   discoveries: Record<string, Discovery>;
   /** The player's own notes on individual evidence items. */
@@ -697,6 +723,8 @@ export type GameAction =
   | { type: "hotspot"; hotspotId: string }
   | { type: "collect"; evidenceId: string }
   | { type: "photograph"; hotspotId: string }
+  /** Nothing to do but let time-based things (lab results) catch up. */
+  | { type: "checkLabs" }
   | { type: "readDocument"; documentId: string }
   | { type: "talk"; characterId: string }
   | { type: "ask"; questionId: string }
@@ -839,11 +867,13 @@ export interface ClientView {
     ambience: string | null;
     hotspots: { id: string; label: string; rect: HotspotDef["rect"]; inspected: boolean; collected: boolean; sprite: string | null; figure: boolean; pending: boolean; attention: boolean }[];
   };
-  map: { id: string; name: string; subtitle: string; area: string | null; available: boolean; visited: boolean; current: boolean; pin: { x: number; y: number } | null }[];
+  map: { id: string; name: string; subtitle: string; area: string | null; available: boolean; visited: boolean; current: boolean; pin: { x: number; y: number } | null; tag: string | null }[];
   /** Optional recordings for travel scenes; when null the game synthesizes the sound. */
   travelAudio: { drive: string | null; walk: string | null };
   /** Background music for the whole case. */
   music: string | null;
+  /** Lab tests in progress or back. `remainingMs` is as of when this view was made. */
+  labs: { id: string; label: string; remainingMs: number; done: boolean; rect: { x: number; y: number; w: number; h: number } }[];
   evidence: ClientEvidence[];
   characters: ClientCharacter[];
   notebook: InvestigationState["notebook"];

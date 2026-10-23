@@ -81,6 +81,8 @@ export function InvestigationShell({
   party?: PartyInfo;
 }) {
   const [view, setViewState] = useState(initial);
+  /** When each lab test's results are due, by this browser's clock. */
+  const [labDue, setLabDue] = useState<Record<string, number>>(() => Object.fromEntries(initial.labs.map((l) => [l.id, Date.now() + l.remainingMs])));
   /** Evidence collected since the page loaded, waiting to be shown with the COLLECTED stamp. */
   const [stamps, setStamps] = useState<ClientView["evidence"]>([]);
   const seenEvidence = useRef(new Set(initial.evidence.filter((e) => e.collected).map((e) => e.id)));
@@ -88,6 +90,7 @@ export function InvestigationShell({
     const fresh = next.evidence.filter((e) => e.collected && !seenEvidence.current.has(e.id));
     for (const e of fresh) seenEvidence.current.add(e.id);
     if (fresh.length) setStamps((q) => [...q, ...fresh]);
+    setLabDue(Object.fromEntries(next.labs.map((l) => [l.id, Date.now() + l.remainingMs])));
     setViewState(next);
   }, []);
   const nextStamp = useCallback(() => setStamps((q) => q.slice(1)), []);
@@ -197,6 +200,31 @@ export function InvestigationShell({
   );
 
   const close = useCallback(() => setLayer(null), []);
+
+  // Lab countdowns: tick once a second, and when one runs out, let the server deliver the results.
+  const waiting = view.labs.filter((l) => !l.done);
+  const [clock, setClock] = useState(0);
+  useEffect(() => {
+    if (!waiting.length) return;
+    const t = setInterval(() => setClock(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [waiting.length]);
+  const asked = useRef(new Set<string>());
+  useEffect(() => {
+    if (view.status === "closed" || !clock) return;
+    const due = waiting.filter((l) => (labDue[l.id] ?? 0) <= clock && !asked.current.has(l.id));
+    if (!due.length || busy.current) return;
+    for (const l of due) asked.current.add(l.id);
+    void dispatch({ type: "checkLabs" }).then((r) => {
+      // Not back yet by the server's clock (a slow device clock): try again shortly.
+      if (r?.view.labs.some((l) => due.some((d) => d.id === l.id) && !l.done)) for (const l of due) asked.current.delete(l.id);
+    });
+  }, [clock, waiting, labDue, view.status, dispatch]);
+  const labLeft = (id: string) => {
+    const ms = Math.max(0, (labDue[id] ?? 0) - (clock || labDue[id] || 0));
+    const sec = Math.ceil(ms / 1000);
+    return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
+  };
 
   // Agency notices clear themselves after a few seconds; the notebook keeps anything worth keeping.
   const messageKey = view.messages.join("|");
@@ -339,6 +367,13 @@ export function InvestigationShell({
           </span>
         </p>
         <div className="flex shrink-0 items-center gap-4">
+          {waiting.length ? (
+            <span className="font-mono text-brass" role="timer">
+              <span className="hidden sm:inline">Lab results in </span>
+              <span className="sm:hidden">Lab </span>
+              {labLeft(waiting[0].id)}
+            </span>
+          ) : null}
           {party ? <span className="hidden font-mono text-brass/80 md:inline">{party.label}</span> : null}
           <SaveIndicator status={save} />
           {guest ? (
@@ -354,6 +389,23 @@ export function InvestigationShell({
       </div>
 
       <ExplorationScene
+        overlays={
+          atHome
+            ? waiting.map((l) => (
+                <div
+                  key={l.id}
+                  className="pointer-events-none absolute flex flex-col items-center justify-center"
+                  style={{ left: `${l.rect.x}%`, top: `${l.rect.y}%`, width: `${l.rect.w}%`, height: `${l.rect.h}%` }}
+                  data-lab-countdown={l.id}
+                >
+                  <span className="whitespace-nowrap border border-brass/60 bg-[#0d1013]/90 px-2 py-1 text-center font-mono text-[0.6rem] uppercase tracking-[0.16em] text-brass shadow-lg sm:text-[0.7rem]">
+                    Lab results
+                    <span className="block text-sm tracking-[0.1em] text-paper sm:text-base">{labLeft(l.id)}</span>
+                  </span>
+                </div>
+              ))
+            : null
+        }
         location={view.location}
         disabled={pending}
         reducedMotion={prefs.reducedMotion}

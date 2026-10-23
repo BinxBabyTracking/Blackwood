@@ -70,6 +70,16 @@ export function TravelMap({
                   className={`absolute -translate-x-1/2 -translate-y-full p-1.5 ${focus === p.id || p.current ? "z-10" : ""} ${go ? "cursor-pointer" : "cursor-default"}`}
                   style={{ left: `${p.pin!.x}%`, top: `${p.pin!.y}%` }}
                 >
+                  {p.tag ? (
+                    <span
+                      // Beside the pin, on the side with more room, so it never covers a neighbour's name below.
+                      className={`absolute top-1 whitespace-nowrap border border-[#7a1410] bg-[#b3231b] px-1.5 py-0.5 font-mono text-[0.6rem] font-bold uppercase tracking-[0.18em] text-[#f3ead3] shadow-[0_2px_6px_rgba(0,0,0,0.45)] ${
+                        p.pin!.x < 25 ? "left-full ml-0.5" : "right-full mr-0.5"
+                      }`}
+                    >
+                      {p.tag}
+                    </span>
+                  ) : null}
                   <span
                     className={`block h-3.5 w-3.5 rounded-full border-2 border-[#2a241c] shadow transition-transform ${
                       p.current ? "bg-brass" : p.available ? (focus === p.id ? "scale-125 bg-[#b3231b]" : "bg-[#b3231b]") : "bg-[#8a8070]"
@@ -102,7 +112,10 @@ export function TravelMap({
                 onMouseLeave={() => setFocus(null)}
                 className="flex w-full flex-col items-start px-5 py-3 text-left transition-colors enabled:hover:bg-white/5 disabled:cursor-not-allowed"
               >
-                <span className={`font-serif text-lg ${m.available ? "text-paper" : "text-smoke/50"}`}>{m.name}</span>
+                <span className={`flex flex-wrap items-center gap-2 font-serif text-lg ${m.available ? "text-paper" : "text-smoke/50"}`}>
+                  {m.name}
+                  {m.tag ? <span className="bg-[#b3231b] px-1.5 py-0.5 font-mono text-[0.6rem] font-bold uppercase tracking-[0.18em] text-[#f3ead3]">{m.tag}</span> : null}
+                </span>
                 <span className="text-sm text-smoke">{m.available ? m.subtitle : "Not available yet. Read the case file first."}</span>
                 <span className="mt-1 font-mono text-xs text-brass">
                   {m.current ? "You are here" : !m.available ? "Unavailable" : m.visited ? "Visited" : "Not yet visited"}

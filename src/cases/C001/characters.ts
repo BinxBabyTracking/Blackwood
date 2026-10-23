@@ -557,9 +557,30 @@ export const questions: DialogueQuestion[] = [
     "After that, nothing until Mrs. Ellis let herself in at twenty to eight on Saturday morning. That's nine hours I can't account for.",
   ], { effects: [tl("8:00 PM", "Supper is underway.", "Det. Bennett"), tl("10:00 PM", "The guests leave between 10:00 and 10:30, by their own accounts.", "Det. Bennett")] }),
   q("bennett", "Evidence reports", "bennett_reports", "What reports have come back?", [
-    "The coroner's preliminary, and one sheet from the lab. The lab sheet is in the folder on your desk.",
+    "The coroner's preliminary. Nothing from the lab yet, because nobody's sent them anything. There's a shard of that broken glass bagged at the scene if you want the blood typed.",
     "I'll tell you what I tell my captain. Preliminary means preliminary. I won't read more into those pages than the people who wrote them.",
-  ]),
+  ], {
+    variants: [
+      { requires: { labStarted: "glass" }, reply: ["The coroner's preliminary, and the lab's working on your glass. Their results come to your desk."] },
+      { requires: { labReady: "glass" }, reply: ["The coroner's preliminary, and the lab's typing on the glass. It's on your desk."] },
+    ],
+    repeatable: true,
+  }),
+  q("bennett", "Evidence reports", "bennett_send_glass", "Can you get the broken glass to the lab and have the blood typed?", [
+    "I can. I'll run it over to SID myself; they owe me a favor. The results come straight to your desk.",
+    "Thing is, typing only tells you whether the blood is hers. If you want to know whose it is, I'd need samples from the guests to compare. Want me to ask them?",
+  ], {
+    requiresEvidence: ["E02"],
+    offers: "bennett_samples",
+    effects: [{ startLab: "glass" }],
+  }),
+  q("bennett", "Requests for assistance", "bennett_samples", "Can you get blood samples from all the guests to compare with the glass?", [
+    "I'll ask all four to come in and give a sample. People with nothing to hide usually do.",
+    "The lab will compare them with the glass. Same as before: the results come to your desk.",
+  ], {
+    requires: { labStarted: "glass" },
+    effects: [{ startLab: "samples" }],
+  }),
   q("bennett", "Forensic findings", "bennett_forensics", "What does the coroner's preliminary say?", [
     "An estimate. Somewhere between about eleven on Friday night and one on Saturday morning. One wound, consistent with a blade like the knife we recovered.",
     "Anything finer than that, they haven't given me, and I'm not going to guess.",
@@ -834,6 +855,8 @@ const KEYWORDS: Record<string, string> = {
   bennett_interviews: "how did the interviews go the statements what did the guests say",
   bennett_timeline: "what is the timeline when did things happen sequence of events",
   bennett_reports: "what reports have come back lab results coroner reports",
+  bennett_send_glass: "send the glass to the lab test the blood on the glass type the blood get it typed lab analysis forensic test the shard",
+  bennett_samples: "blood samples from the guests test the guests blood compare the suspects blood everyone's blood type samples from everyone yes get samples",
   bennett_forensics: "when did she die time of death what does the coroner say time of death autopsy cause of death",
   bennett_glass: "the blood on the glass is not hers lab typing second person",
   bennett_hand: "did mercer have an injury bandage when you interviewed him his hand",
