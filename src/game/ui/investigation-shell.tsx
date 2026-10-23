@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { playAction, restartCase, syncView } from "@/app/actions/game";
+import { saveGameVolumes } from "@/app/actions/settings";
 import type { ActionOutcome, ActionResponse, ClientEvidence, ClientView, GameAction, PanelId } from "../engine/types";
 import { MurderBoard } from "./board";
 import { DetectiveNotebook } from "./detective-notebook";
@@ -68,7 +69,7 @@ export interface GamePrefs {
 export function InvestigationShell({
   caseId,
   initial,
-  prefs,
+  prefs: basePrefs,
   homeLocation,
   investigator,
   party,
@@ -80,6 +81,33 @@ export function InvestigationShell({
   investigator: string;
   party?: PartyInfo;
 }) {
+  // Music, sound-effect and voice levels from the in-game menu. Signed-in players' levels are saved to their
+  // settings; a guest at a joint investigation keeps theirs in this browser.
+  const [levels, setLevels] = useState(() => {
+    const base = { musicVolume: basePrefs.musicVolume, sfxVolume: basePrefs.sfxVolume, dialogueVolume: basePrefs.dialogueVolume };
+    if (!party?.guest || typeof window === "undefined") return base;
+    try {
+      return { ...base, ...(JSON.parse(localStorage.getItem("bw-guest-volumes") ?? "{}") as Partial<typeof base>) };
+    } catch {
+      return base;
+    }
+  });
+  const prefs = { ...basePrefs, ...levels };
+  const saveLevels = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const setLevel = (key: keyof typeof levels, value: number) => {
+    const next = { ...levels, [key]: value };
+    setLevels(next);
+    if (saveLevels.current) clearTimeout(saveLevels.current);
+    saveLevels.current = setTimeout(() => {
+      if (party?.guest) {
+        try {
+          localStorage.setItem("bw-guest-volumes", JSON.stringify(next));
+        } catch {
+          /* storage unavailable; the levels last for this visit */
+        }
+      } else void saveGameVolumes({ music: next.musicVolume, sfx: next.sfxVolume, dialogue: next.dialogueVolume }).catch(() => undefined);
+    }, 600);
+  };
   const [view, setViewState] = useState(initial);
   /** When each lab test's results are due, by this browser's clock. */
   const [labDue, setLabDue] = useState<Record<string, number>>(() => Object.fromEntries(initial.labs.map((l) => [l.id, Date.now() + l.remainingMs])));
@@ -442,7 +470,7 @@ export function InvestigationShell({
           <div className="relative">
             <HudButton onClick={() => setMenu((m) => !m)}>Menu</HudButton>
             {menu ? (
-              <div className="absolute bottom-full right-0 z-30 mb-2 w-64 border border-white/10 bg-[#161b20] p-2 shadow-xl">
+              <div className="absolute bottom-full right-0 z-30 mb-2 w-72 max-w-[calc(100vw-1rem)] border border-white/10 bg-[#161b20] p-2 shadow-xl">
                 {guest ? (
                   <p className="px-3 py-2 text-xs text-smoke">You are helping the host. Everything you do is saved to their investigation.</p>
                 ) : (
@@ -471,9 +499,15 @@ export function InvestigationShell({
                   Character voices: {view.voices ? "On" : "Off"}
                   <span className="block text-xs text-smoke">Interviews, police tapes and calls are spoken aloud, with subtitles.</span>
                 </button>
+                <div className="space-y-2 border-b border-white/10 px-3 pb-3 pt-2">
+                  <p className="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-smoke">Volume</p>
+                  <VolumeSlider label="Music" value={levels.musicVolume} onChange={(v) => setLevel("musicVolume", v)} />
+                  <VolumeSlider label="Sound effects" value={levels.sfxVolume} onChange={(v) => setLevel("sfxVolume", v)} />
+                  <VolumeSlider label="Voices" value={levels.dialogueVolume} onChange={(v) => setLevel("dialogueVolume", v)} />
+                </div>
                 <button type="button" role="switch" aria-checked={musicOn} className="block w-full px-3 py-2 text-left hover:bg-white/5" onClick={() => setMusicEnabled(!musicOn)}>
                   Music: {musicOn ? "On" : "Off"}
-                  <span className="block text-xs text-smoke">Background score for the case. Room sounds stay on; set their level in Agency Settings.</span>
+                  <span className="block text-xs text-smoke">Background score for the case. Room sounds stay on.</span>
                 </button>
                 <button
                   type="button"
@@ -728,6 +762,27 @@ function ObservationCard({
           </button>
         </div>
       </div>
+    </div>
+  );
+}
+
+/** One labelled 0 to 100 slider in the game menu. Sound effects covers room sound, travel, the phone and stamps. */
+function VolumeSlider({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
+  const id = `vol-${label.toLowerCase().replace(/\s+/g, "-")}`;
+  return (
+    <div className="grid grid-cols-[6.5rem_1fr_2rem] items-center gap-2 text-sm">
+      <label htmlFor={id}>{label}</label>
+      <input
+        id={id}
+        type="range"
+        min={0}
+        max={100}
+        step={5}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="w-full accent-[color:var(--color-brass)]"
+      />
+      <span className="text-right font-mono text-xs text-smoke">{value}</span>
     </div>
   );
 }

@@ -94,3 +94,16 @@ export async function changePassword(_prev: ActionResult, fd: FormData): Promise
   if (error) return { status: "error", message: error.message };
   return { status: "success", message: "Password updated." };
 }
+
+/** The in-game volume sliders: music, sound effects and voices, each 0 to 100. Saved quietly, without reloading the page. */
+export async function saveGameVolumes(v: { music: number; sfx: number; dialogue: number }): Promise<{ ok: boolean }> {
+  const n = (x: unknown) => (Number.isFinite(Number(x)) ? Math.min(100, Math.max(0, Math.round(Number(x)))) : null);
+  const patch = { music_volume: n(v?.music), sfx_volume: n(v?.sfx), dialogue_volume: n(v?.dialogue) };
+  if (Object.values(patch).some((x) => x === null)) return { ok: false };
+  const supabase = await createClient();
+  if (!supabase) return { ok: false };
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) return { ok: false };
+  const { error } = await supabase.from("user_settings").update(patch).eq("user_id", auth.user.id);
+  return { ok: !error };
+}
