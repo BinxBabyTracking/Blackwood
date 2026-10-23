@@ -220,7 +220,7 @@ These are built once and work for any new case with no extra work.
 - **Admin page.** The Admin link sits at the bottom of the navigation (desktop and phone menu), behind a password stored only as a hash, open for 12 hours per device.
 - **Accounts.** Sign-up is open to everyone. Each player has a service record, rank and awards.
 - **Site wording.** The agency is fictional. Cases are drawn from real investigations with names, places, dates and details changed; no character is a real person; solutions to unsolved cases are dramatized reconstructions.
-- **Controls.** No bottom bar: painted Map, Notebook and Evidence buttons sit in the bottom-left corner of every scene, the murder board is on the office wall, and Menu (with volume sliders) is in the top bar.
+- **Controls.** No bottom bar: painted Map, Notebook and Evidence buttons sit in the bottom-left corner of each scene (in the office only Evidence, since the map and notebook are in the room), the murder board is on the office wall, and Menu (with volume sliders) is in the top bar.
 - **Phone play.** Swipe to look around wide scenes, the board tray at the bottom, interviews full screen. Clicking or tapping off a window closes it (phone interviews use End Interview).
 
 ## Testing and deployment

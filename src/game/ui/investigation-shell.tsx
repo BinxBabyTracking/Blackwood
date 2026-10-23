@@ -516,8 +516,13 @@ export function InvestigationShell({
 
       {/* Map, notebook and evidence: painted objects in the corner of the scene. The murder board is on the office wall. */}
       <nav aria-label="Investigation" className="pointer-events-none fixed bottom-3 left-3 z-20 flex items-end gap-2 sm:bottom-4 sm:left-4 sm:gap-3">
-        <HudObject label="Map" image={paintedArt(`${caseId.toLowerCase()}_map`)} fallback="map" onClick={() => setLayer({ k: "panel", panel: "map" })} />
-        <HudObject label="Notebook" image={paintedArt(`${caseId.toLowerCase()}_obj_notebook`)} fallback="notebook" onClick={() => setLayer({ k: "panel", panel: "notebook" })} />
+        {/* In the office the map and notebook are in the room itself; only the evidence stays in the corner. */}
+        {atHome ? null : (
+          <>
+            <HudObject label="Map" image={paintedArt(`${caseId.toLowerCase()}_map`)} fallback="map" onClick={() => setLayer({ k: "panel", panel: "map" })} />
+            <HudObject label="Notebook" image={paintedArt(`${caseId.toLowerCase()}_obj_notebook`)} fallback="notebook" onClick={() => setLayer({ k: "panel", panel: "notebook" })} />
+          </>
+        )}
         <HudObject
           label="Evidence"
           image={paintedArt(`${caseId.toLowerCase()}_obj_evidence_bag`)}
