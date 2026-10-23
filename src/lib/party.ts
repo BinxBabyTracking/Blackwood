@@ -28,6 +28,9 @@ export type Lobby = {
   created_at: string;
   started_at: string | null;
   expires_at: string;
+  group_name: string | null;
+  session_id: string | null;
+  max_size: number;
 };
 export type Guest = { id: string; lobby_id: string; name: string; joined_at: string };
 
@@ -95,7 +98,11 @@ export async function addGuest(lobby: Lobby, name: string): Promise<Guest | null
   const seated = await lobbyGuests(lobby.id);
   if (seated.length >= MAX_PARTY - 1) return null;
   const { data, error } = await db().from("party_guests").insert({ lobby_id: lobby.id, name }).select("id, lobby_id, name, joined_at").single();
-  return error ? null : (data as Guest);
+  if (error) return null;
+  // The largest the table has been: a joint investigation goes on the group leaderboard.
+  const size = seated.length + 2;
+  await db().from("party_lobbies").update({ max_size: size }).eq("id", lobby.id).lt("max_size", size);
+  return data as Guest;
 }
 
 export async function removeGuest(guestId: string) {

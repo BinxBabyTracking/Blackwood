@@ -46,9 +46,16 @@ export function DetectiveNotebook({
               {t}
             </button>
           ))}
+          <p className="mt-auto hidden px-3 pb-1 pt-4 font-mono text-xs text-[#2a241c]/70 md:block">
+            Questions asked: <span className="text-[#2a241c]">{view.questionsAsked}</span>
+          </p>
         </nav>
         <div className="min-w-0 flex-1 p-6 font-serif">
           {tab === "Objectives" ? (
+            <>
+            <p className="mb-4 font-mono text-xs text-[#2a241c]/70 md:hidden">
+              Questions asked: <span className="text-[#2a241c]">{view.questionsAsked}</span>
+            </p>
             <ul className="space-y-3">
               {view.objectives.map((o) => (
                 <li key={o.id} className={`flex gap-3 ${o.done ? "line-through opacity-60" : ""}`}>
@@ -60,6 +67,7 @@ export function DetectiveNotebook({
                 </li>
               ))}
             </ul>
+            </>
           ) : null}
           {tab === "Evidence" ? <EvidenceList items={view.evidence} onOpen={onOpenEvidence} tone="paper" detailed /> : null}
           {tab === "People" ? (

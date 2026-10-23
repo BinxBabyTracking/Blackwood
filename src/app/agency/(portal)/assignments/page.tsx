@@ -24,5 +24,5 @@ export default function AssignmentsPage() {
 async function Catalog() {
   const catalog = await getCatalog();
   if (!catalog.ok) return <SetupNotice reason={catalog.reason} message={catalog.message} />;
-  return <CatalogBrowser cases={catalog.data} hrefBase="/agency/assignments" />;
+  return <CatalogBrowser cases={catalog.data} hrefBase="/agency/assignments" leaderboards />;
 }

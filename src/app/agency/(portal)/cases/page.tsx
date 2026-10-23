@@ -5,6 +5,7 @@ import { sessionStatusLabel } from "@/components/portal/active-list";
 import { PortalHeading } from "@/components/portal/heading";
 import { ButtonLink, EmptyFile, LoadingFile, Ref } from "@/components/ui";
 import { formatDate } from "@/lib/format";
+import { LeaderboardButton } from "@/components/leaderboard";
 import { reviewedCases } from "@/lib/feedback";
 import { getCaseFiles, requireInvestigator, type CaseFile } from "@/lib/investigator";
 
@@ -99,6 +100,11 @@ function FileTable({ rows, reviewed }: { rows: CaseFile[]; reviewed: Set<string>
               <th scope="row" className="py-3 pl-0 pr-3 font-normal">
                 <span className="font-mono text-brass">{f.case_id}</span>
                 <span className="ml-2 font-serif text-paper">{f.case?.title}</span>
+                {reviewed ? (
+                  <span className="mt-1 block">
+                    <LeaderboardButton caseId={f.case_id} title={f.case?.title ?? f.case_id} />
+                  </span>
+                ) : null}
               </th>
               <td className="px-3 py-3">
                 <Ref>{f.id.slice(0, 8).toUpperCase()}</Ref>

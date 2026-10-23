@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { ActionOutcome, ClientView } from "../engine/types";
 import { ReviewForm } from "./feedback-forms";
+import { LeaderboardResult } from "./leaderboard-result";
 import { Letterhead } from "./final-report";
 import { voiceSrc } from "./interview-screen";
 import { useLinePlayer } from "./use-line-player";
@@ -181,6 +182,7 @@ export function CaseResolution({
               </div>
             ) : null}
           </div>
+          {asGuest ? null : <LeaderboardResult caseId={caseId} title={view.title} />}
           {review === "ask" ? (
             <div className="mt-8 border border-brass/40 bg-[#14171a] px-6 py-6 text-left">
               <p className="font-display text-2xl text-paper">File your case review</p>

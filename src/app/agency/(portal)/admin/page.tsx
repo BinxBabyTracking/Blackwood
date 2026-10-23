@@ -15,6 +15,8 @@ import { SoundtrackPanel } from "@/components/portal/soundtrack-panel";
 import { InterviewAICheck } from "@/components/portal/interview-ai-check";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getFeedback } from "@/lib/feedback";
+import { allEntries } from "@/lib/leaderboard";
+import { adminRemoveEntry } from "@/app/actions/leaderboard";
 
 export const metadata: Metadata = { title: "Admin", robots: { index: false, follow: false } };
 
@@ -167,6 +169,8 @@ async function Spending() {
       </section>
 
       <Feedback />
+
+      <LeaderboardAdmin />
 
       <CaseAlertList />
 
@@ -394,5 +398,62 @@ function Context({ ctx }: { ctx: Record<string, unknown> }) {
         </div>
       ) : null}
     </div>
+  );
+}
+
+/** Every leaderboard entry, newest first, with a way to take one down. */
+async function LeaderboardAdmin() {
+  const rows = await allEntries().catch(() => null);
+  if (!rows) return null;
+  const t = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  return (
+    <section aria-labelledby="lb" className="max-w-4xl">
+      <h2 id="lb" className="font-serif text-xl text-smoke">
+        Leaderboard entries
+      </h2>
+      <p className="mt-2 text-sm text-smoke">Names players put on the case leaderboards. Remove anything that shouldn&apos;t be there; it is deleted for good.</p>
+      {rows.length === 0 ? (
+        <p className="mt-4 border-y border-rule py-5 text-sm text-smoke">No entries yet.</p>
+      ) : (
+        <div className="mt-4 overflow-x-auto border-y border-rule">
+          <table className="w-full min-w-[44rem] text-left text-sm">
+            <thead className="text-xs text-smoke">
+              <tr className="border-b border-rule">
+                {["Case", "Name", "Board", "Score", "Time", "Questions", "Returned", "Added", ""].map((h) => (
+                  <th key={h} scope="col" className="px-3 py-3 font-normal first:pl-0">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-rule/70">
+              {rows.map((r) => (
+                <tr key={r.id} className={r.hidden ? "opacity-50" : ""}>
+                  <td className="py-2 pl-0 pr-3 font-mono text-brass">{r.case_id}</td>
+                  <td className="px-3 py-2 font-serif">
+                    {r.name}
+                    {r.hidden ? <span className="ml-1.5 text-xs text-smoke">(hidden by player)</span> : null}
+                  </td>
+                  <td className="px-3 py-2">{r.mode === "group" ? `Group of ${r.group_size}` : "Solo"}</td>
+                  <td className="px-3 py-2 font-mono">{r.score}</td>
+                  <td className="px-3 py-2 font-mono">{t(r.active_seconds)}</td>
+                  <td className="px-3 py-2 font-mono">{r.questions}</td>
+                  <td className="px-3 py-2 font-mono">{r.returned}</td>
+                  <td className="px-3 py-2 font-mono text-xs">{formatDate(r.created_at)}</td>
+                  <td className="px-3 py-2">
+                    <form action={adminRemoveEntry}>
+                      <input type="hidden" name="id" value={r.id} />
+                      <button type="submit" className="text-xs text-[#e08a7f] underline-offset-4 hover:underline">
+                        Remove
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </section>
   );
 }

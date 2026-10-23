@@ -875,6 +875,8 @@ export interface ClientView {
   map: { id: string; name: string; subtitle: string; area: string | null; available: boolean; visited: boolean; current: boolean; pin: { x: number; y: number } | null; tag: string | null }[];
   /** Optional recordings for travel scenes; when null the game synthesizes the sound. */
   travelAudio: { drive: string | null; walk: string | null };
+  /** Questions put to anyone so far, by everyone at the table. */
+  questionsAsked: number;
   /** Background music for the whole case: tracks played one after another, round and round. */
   music: string[];
   /** Lab tests in progress or back. `remainingMs` is as of when this view was made. */

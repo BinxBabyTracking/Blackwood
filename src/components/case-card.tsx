@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LeaderboardButton } from "./leaderboard";
 import type { CatalogCase } from "@/lib/types";
 import {
   STATUS_LABELS,
@@ -38,7 +39,7 @@ export function CaseFacts({ c, className = "" }: { c: CatalogCase; className?: s
   );
 }
 
-export function CaseCard({ c, href }: { c: CatalogCase; href: string }) {
+export function CaseCard({ c, href, leaderboard = false }: { c: CatalogCase; href: string; leaderboard?: boolean }) {
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-[var(--radius-file)] border border-rule bg-card transition-colors duration-300 hover:border-brass/60">
       <div className="relative aspect-[5/3]">
@@ -61,6 +62,11 @@ export function CaseCard({ c, href }: { c: CatalogCase; href: string }) {
         </div>
         <p className="mb-5 mt-3 line-clamp-3 text-sm leading-relaxed text-smoke">{c.synopsis}</p>
         <CaseFacts c={c} className="mt-auto border-t border-rule pt-4" />
+        {leaderboard ? (
+          <div className="mt-4 border-t border-rule pt-3">
+            <LeaderboardButton caseId={c.id} title={c.title} />
+          </div>
+        ) : null}
       </div>
     </article>
   );

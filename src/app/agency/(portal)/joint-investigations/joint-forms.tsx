@@ -1,14 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { setGroupName } from "@/app/actions/leaderboard";
 import { hostLobbyStatus, removePartyGuest, startParty, type LobbyStatus } from "@/app/actions/party";
 import { SubmitButton } from "@/components/form";
 import { buttonClass } from "@/components/ui";
 
 /** The lobby under the QR code: how many are at the table, and the button that starts it for everyone. */
-export function HostLobby({ caseId, initial, host, max }: { caseId: string; initial: LobbyStatus; host: string; max: number }) {
+export function HostLobby({ caseId, initial, host, max, groupName }: { caseId: string; initial: LobbyStatus; host: string; max: number; groupName: string }) {
   const [lobby, setLobby] = useState(initial);
+  const [name, setName] = useState(groupName);
+  const [saved, setSaved] = useState(groupName);
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [savingName, startSaving] = useTransition();
+  const saveName = () =>
+    startSaving(async () => {
+      setNameError(null);
+      const res = await setGroupName(name);
+      if ("error" in res) setNameError(res.error ?? "That name can't be used.");
+      else setSaved(res.name ?? "");
+    });
 
   useEffect(() => {
     let stopped = false;
@@ -50,6 +62,37 @@ export function HostLobby({ caseId, initial, host, max }: { caseId: string; init
         ))}
       </ul>
       {count >= max ? <p className="mt-2 text-xs text-smoke">The table is full.</p> : null}
+      <form
+        className="mt-5 text-left"
+        onSubmit={(e) => {
+          e.preventDefault();
+          saveName();
+        }}
+      >
+        <label htmlFor="group-name" className="text-sm text-smoke">
+          Name your group <span className="text-xs">(for the leaderboard)</span>
+        </label>
+        <div className="mt-1.5 flex gap-2">
+          <input
+            id="group-name"
+            className="field min-w-0 flex-1"
+            maxLength={30}
+            placeholder="The Night Shift"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            aria-invalid={nameError ? true : undefined}
+            aria-describedby={nameError ? "group-name-err" : undefined}
+          />
+          <button type="submit" disabled={savingName || name.trim() === saved} className={buttonClass("secondary", "shrink-0 disabled:opacity-50")}>
+            {savingName ? "Saving" : name.trim() === saved && saved ? "Saved" : "Save"}
+          </button>
+        </div>
+        {nameError ? (
+          <p id="group-name-err" className="mt-1 text-xs text-[#e08a7f]">
+            {nameError}
+          </p>
+        ) : null}
+      </form>
       <div className="mt-5">
         {lobby.status === "started" ? (
           <Link href={`/play/${caseId}`} className={buttonClass("primary", "w-full justify-center")}>

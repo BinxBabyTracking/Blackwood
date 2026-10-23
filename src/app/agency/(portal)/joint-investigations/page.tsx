@@ -97,6 +97,7 @@ async function Joint({ searchParams }: { searchParams: Promise<Record<string, st
         max={MAX_PARTY}
         initial={{ status: lobby.status, guests: guests.map((g) => ({ id: g.id, name: g.name })) }}
         host={me.profile.display_name ?? "You"}
+        groupName={lobby.group_name ?? ""}
       />
       <form action={closeParty} className="mt-4">
         <button type="submit" className="text-sm text-smoke underline-offset-4 hover:text-paper hover:underline">

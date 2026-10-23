@@ -1092,6 +1092,7 @@ export function project(def: CaseDefinition, s: InvestigationState, now = Date.n
       return j ? [{ id: l.id, label: l.label, remainingMs: Math.max(0, j.readyAt - now), done: j.done, rect: l.rect, image: l.image ? def.assets.images[l.image] ?? null : null }] : [];
     }),
     travelAudio: { drive: def.assets.audio["sfx.travel_drive"] ?? null, walk: def.assets.audio["sfx.travel_walk"] ?? null },
+    questionsAsked: Object.values(s.conversations).reduce((n, lines) => n + lines.filter((l) => l.speaker === "you" && l.kind === "question").length, 0),
     conclusion: {
       available: check(def.reportAvailable, s),
       choices: def.conclusionChoices,

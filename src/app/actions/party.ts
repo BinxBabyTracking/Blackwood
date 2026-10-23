@@ -2,7 +2,8 @@
 
 import { timingSafeEqual } from "node:crypto";
 import { redirect } from "next/navigation";
-import { PersistenceError, startInvestigation } from "@/game/persistence";
+import { findInvestigation, PersistenceError, startInvestigation } from "@/game/persistence";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { loadCase } from "@/game/registry";
 import { requireInvestigator } from "@/lib/investigator";
 import {
@@ -51,6 +52,9 @@ export async function startParty() {
   const l = await hostLobby(me.id);
   if (!l) redirect("/agency/joint-investigations");
   await setLobbyStatus(me.id, l.id, "started");
+  // Remember which investigation this table played, for the group leaderboard.
+  const inv = await findInvestigation(me.id, l.case_id).catch(() => null);
+  if (inv) await createAdminClient()?.from("party_lobbies").update({ session_id: inv.sessionId }).eq("id", l.id);
   redirect(`/play/${l.case_id}`);
 }
 

@@ -83,7 +83,8 @@ function Select<T extends string>({
   );
 }
 
-export function CatalogBrowser({ cases, hrefBase }: { cases: CatalogCase[]; hrefBase: string }) {
+/** `leaderboards` adds a Leaderboard button to every open case (signed-in pages only). */
+export function CatalogBrowser({ cases, hrefBase, leaderboards = false }: { cases: CatalogCase[]; hrefBase: string; leaderboards?: boolean }) {
   const [filters, setFilters] = useState<Filters>(initial);
   const [sort, setSort] = useState<Sort>("newest");
   const set = <K extends keyof Filters>(k: K) => (v: Filters[K]) => setFilters((f) => ({ ...f, [k]: v }));
@@ -172,7 +173,7 @@ export function CatalogBrowser({ cases, hrefBase }: { cases: CatalogCase[]; href
       {visible.length ? (
         <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {visible.map((c) => (
-            <CaseCard key={c.id} c={c} href={`${hrefBase}/${c.id}`} />
+            <CaseCard key={c.id} c={c} href={`${hrefBase}/${c.id}`} leaderboard={leaderboards && !c.is_preview && c.status === "available"} />
           ))}
         </div>
       ) : (
