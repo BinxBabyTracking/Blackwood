@@ -54,13 +54,13 @@ A new case is ready when every file below exists and `npm run check:case -- CXXX
 
 | File in `src/cases/CXXX/` | What it holds | C001 |
 | --- | --- | --- |
-| `index.ts` | Case id, title, year, start location, question limit, soundtrack, board hint, re-interview grants | 20 questions per person; board hint at 4 evidence |
-| `story.ts` | Intro cards, case file (dossier), documents, incoming calls, deliveries, reactive events, objectives, report availability, starting timeline | 1 intro, 2 calls, 2 deliveries, 3 events |
+| `index.ts` | Case id, title, year, start location, question limit, soundtrack, board hint, lab tests, re-interview grants | 20 questions per person; board hint at 4 evidence |
+| `story.ts` | Intro cards, case file (dossier), documents, incoming calls, deliveries, reactive events, objectives, report availability, starting timeline | 1 intro, 2 calls, 4 deliveries, 3 events, 2 lab tests (3 minutes each) |
 | `locations.ts` | Scenes, map pins, hotspots (people, objects, doors), ambience key, scene states | 8 locations |
 | `characters.ts` | People, voices, demeanor stages, authored questions and answers, reactions to evidence, contradictions, match keywords | 7 people, 84 questions |
 | `knowledge.ts` | Each person's persona and the facts they may say, each gated like the answer that reveals it | 6 people with knowledge |
 | `interviews.ts` | Patience lines when questions run low, who is unlimited, re-interview grants | Bennett unlimited; 10 grants |
-| `evidence.ts` | Every evidence item: title, image, inspection text (the full document text), discovery, related people | 15 items, E01 to E15 |
+| `evidence.ts` | Every evidence item: title, image, inspection text (the full document text), discovery, related people | 16 items, E01 to E16 |
 | `solution.ts` | Deductions (board connections), report choices, the solution, the evidence standard, the closing reconstruction | 8 deductions |
 | `assets.ts` | Asset manifest: scene, portrait, evidence and object images; audio keys | 69 painted images |
 | `soundtrack.ts` | Music and room-sound prompts for ElevenLabs | 1 theme + 7 room sounds |
@@ -90,10 +90,11 @@ Every evidence item is reached exactly one way: a scene hotspot, a document, a d
 
 - **Inspection text is the document.** Ledgers, tickets, diaries, lab reports and schedules must carry their full contents, with paragraph breaks. C001 shipped with seven placeholders; players could not use them. Never leave "to be supplied" text.
 - **The painted image never has legible text.** The image is atmosphere; the inspection text carries the readable content.
-- **Lab and forensic results must narrow, not name.** C001's typing: Eleanor Group A, the glass edge Group B, guests O, A, B, B. Typing leaves two suspects; the hand injury separates them.
+- **Lab and forensic results must narrow, not name.** C001's typing: Eleanor Group A, the glass edge Group B (E11), then the guests O, A, B, B (E16). Typing leaves two suspects; the hand injury separates them.
 - **Evidence from interviews.** A knowledge fact can carry the evidence it hands over, so asking in any words gets it (Rosa's ticket, the diner schedule). People also volunteer facts and make offers ("Let me get his ticket").
 - **Collected stamp.** Any new item shows a COLLECTED EVIDENCE stamp for 2.6 seconds; photos show PHOTO FILED.
 - **Photos.** Anything inspected that is not itself evidence (the jacket on the rack, the empty rack, the ashtray) can be photographed. The photo is cut from the scene as it looked at that moment, filed as P1, P2..., and can be noted, pinned and attached to the report. Photos are not shown to witnesses.
+- **Lab tests take real time.** Nothing from the lab is on hand at the start. Once the player has the broken glass, they ask Bennett (in any words) to send it; he then offers to collect the guests' blood samples, so nobody has to think of that alone. Each test is a 3-minute countdown shown on the office desk and in the top bar, kept on the server so it runs even when the player is away. The results arrive as folders on the desk. The glass's own description and a notebook objective point the player at the lab.
 - **Notes.** Players can write a note on any item; notes are saved with the game.
 
 ## Interviews
@@ -139,13 +140,13 @@ Players pin evidence, photos and people on the board, then connect two items wit
 | Possible Staged Entry | E01 screen + E10 back door |
 | Signs of a Struggle | E06 knife + E07 chair, or E06 + E02 glass |
 | An Injured Assailant | E02 glass + E11 blood report |
-| Possible Injury Connection | E14 bandage + E11, E14 + E02, or Daniel + E11 |
+| Possible Injury Connection | E14 bandage + E16 guest comparison, E14 + E02, or Daniel + E16 |
 | Financial Irregularities | any two of E03 ledger, E15 statement, E08 missing folder |
 | Financial Motive | E09 diary + E03, E15 or E08 |
 | Timeline Inconsistency | any two of E04 ticket, E13 shift sheet, E12 Bennett's notes |
-| Recovered Physical Evidence | E05 jacket + E11 or E14 |
+| Recovered Physical Evidence | E05 jacket + E11, E14 or E16 |
 
-Offer more than one pair per deduction, so players reasoning differently still get there. Some deductions require evidence the player may not have yet (D_HAND needs both E11 and E14). Deductions also unlock questions and events.
+Offer more than one pair per deduction, so players reasoning differently still get there. Some deductions require evidence the player may not have yet (D_HAND needs both E16 and E14). Deductions also unlock questions and events.
 
 ## Final report and the solution standard
 
@@ -158,12 +159,12 @@ The report form (BI-7) asks who, why, how and where, each with an "Unknown" opti
 1. No answer left as Unknown.
 2. At least 4 key items: evidence on one of the lines of inquiry below. Up to 2 more may be anything, photos included.
 3. The key items cover at least 2 lines of inquiry.
-4. At least one item ties the suspect to the night (C001: E04, E13, E14 or E05).
+4. At least one item ties the suspect to the night (C001: E04, E13, E14, E05 or E16).
 5. Culprit, motive, weapon and location all correct.
 
 | Line of inquiry | C001 evidence |
 | --- | --- |
-| Physical and blood | E02, E05, E06, E11, E14 |
+| Physical and blood | E02, E05, E06, E11, E14, E16 |
 | Timeline and movements | E04, E12, E13 |
 | Financial motive | E03, E08, E09, E15 |
 | Staged entry | E01, E10 |
@@ -241,6 +242,8 @@ Do these from day one on the next case:
 - [ ] Tie evidence handovers to knowledge facts, so any phrasing gets the item (Rosa's ticket was only reachable by one exact question at first).
 - [ ] Give each deduction several connection pairs, and keep the report standard at 4 key + 2 supporting.
 - [ ] Expect players to ignore the board; the board hint covers it, but early scenes can also point at the board.
+- [ ] Mark the crime scene on the map (`mapTag: "CRIME SCENE"`); players skipped Eleanor's house without it.
+- [ ] Make key forensic results something the player sends for (a lab test with a countdown), not a report waiting on the desk at the start.
 - [ ] Keep lab results to narrowing a field, so the case needs more than one line of proof.
 - [ ] Check the calendar and every time in the timeline before writing dialogue.
 
