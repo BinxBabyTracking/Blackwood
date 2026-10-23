@@ -165,6 +165,8 @@ async function Spending() {
         ) : null}
       </section>
 
+      <CaseAlertList />
+
       <InterviewAI />
 
       <Soundtracks />
@@ -255,6 +257,36 @@ async function InterviewAI() {
         Questions without a scripted answer are answered by Claude. If it can&apos;t be reached, people fall back to &quot;I don&apos;t know&quot;.
       </p>
       <InterviewAICheck lastError={(data?.value as { at: string; message: string } | null) ?? null} />
+    </section>
+  );
+}
+
+/** Everyone who wants to hear about new cases, with the address to use, ready to copy into an email. */
+async function CaseAlertList() {
+  const db = createAdminClient();
+  if (!db) return null;
+  const [{ data: rows }, users] = await Promise.all([
+    db.from("user_settings").select("user_id, notify_new_assignments, new_case_email"),
+    db.auth.admin.listUsers({ perPage: 1000 }),
+  ]);
+  const emailOf = new Map((users.data?.users ?? []).map((u) => [u.id, u.email ?? ""]));
+  const list = ((rows ?? []) as { user_id: string; notify_new_assignments: boolean; new_case_email: string | null }[])
+    .filter((r) => r.notify_new_assignments)
+    .map((r) => r.new_case_email || emailOf.get(r.user_id) || "")
+    .filter(Boolean);
+  const unique = [...new Set(list)].sort();
+  return (
+    <section aria-labelledby="alerts" className="max-w-3xl">
+      <h2 id="alerts" className="font-serif text-xl text-smoke">
+        New-case email list
+      </h2>
+      <p className="mt-2 text-sm text-smoke">
+        {unique.length} {unique.length === 1 ? "investigator wants" : "investigators want"} an email when a new case opens (set on their Personnel File).
+        Copy the addresses into the Bcc line of your announcement.
+      </p>
+      {unique.length ? (
+        <textarea readOnly className="field mt-4 h-28 font-mono text-xs" value={unique.join(", ")} aria-label="Email addresses" />
+      ) : null}
     </section>
   );
 }

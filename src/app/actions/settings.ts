@@ -107,3 +107,26 @@ export async function saveGameVolumes(v: { music: number; sfx: number; dialogue:
   const { error } = await supabase.from("user_settings").update(patch).eq("user_id", auth.user.id);
   return { ok: !error };
 }
+
+/** Personnel File: whether to hear about new cases, and at which address. */
+export async function saveCaseAlerts(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
+  const on = fd.get("notify") === "on";
+  const email = String(fd.get("email") ?? "").trim().toLowerCase();
+  if (on && !email) return { status: "error", message: "Enter the email address to notify.", fieldErrors: { email: "Enter an email address." } };
+  if (email && (email.length > 254 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)))
+    return { status: "error", message: "That email address doesn't look right.", fieldErrors: { email: "Check the email address." } };
+  const supabase = await createClient();
+  if (!supabase) return { status: "error", message: "Supabase is not configured." };
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) return { status: "error", message: "Your session has ended. Sign in again." };
+  const own = (auth.user.email ?? "").toLowerCase();
+  const { data, error } = await supabase
+    .from("user_settings")
+    .update({ notify_new_assignments: on, new_case_email: email && email !== own ? email : null })
+    .eq("user_id", auth.user.id)
+    .select("user_id");
+  if (error) return { status: "error", message: `Not saved: ${error.message}` };
+  if (!data?.length) return { status: "error", message: "Not saved: no settings record exists for this account." };
+  refresh();
+  return { status: "success", message: on ? `Saved. We'll email ${email} when a new case opens.` : "Saved. You won't get new-case emails." };
+}

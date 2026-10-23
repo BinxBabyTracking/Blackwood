@@ -101,6 +101,8 @@ export interface UserSettings {
   notify_announcements: boolean;
   notify_new_assignments: boolean;
   notify_joint_invites: boolean;
+  /** Where new-case emails go; null means the sign-in email. */
+  new_case_email?: string | null;
 }
 
 export type SessionStatus = "forming" | "active" | "closed" | "archived" | "abandoned";

@@ -5,7 +5,8 @@ import { PortalHeading } from "@/components/portal/heading";
 import { LoadingFile, Panel } from "@/components/ui";
 import { getRanks } from "@/lib/catalog";
 import { formatDate, formatHours } from "@/lib/format";
-import { getServiceRecord, requireInvestigator } from "@/lib/investigator";
+import { getServiceRecord, getSettings, requireInvestigator } from "@/lib/investigator";
+import { CaseAlerts } from "./case-alerts";
 import { PersonnelForm } from "./personnel-form";
 
 export const metadata: Metadata = { title: "Personnel File" };
@@ -23,7 +24,7 @@ export default function PersonnelPage() {
 
 async function Personnel() {
   const me = await requireInvestigator();
-  const [record, ranks] = await Promise.all([getServiceRecord(me.id), getRanks()]);
+  const [record, ranks, settings] = await Promise.all([getServiceRecord(me.id), getRanks(), getSettings(me.id)]);
   const rank = ranks.ok ? ranks.data.find((r) => r.level === me.profile.rank_level)?.title : undefined;
   const p = me.profile;
 
@@ -69,6 +70,12 @@ async function Personnel() {
         <p className="mt-8 text-sm text-smoke">
           Your sign-in email is {me.email ?? "not available"}. Change it, or your password, in Agency Settings.
         </p>
+
+        <Panel className="mt-12 p-6">
+          <h2 className="font-serif text-xl">Get notified when a new case is available</h2>
+          <p className="mb-5 mt-1 text-sm text-smoke">One short email when the agency opens a new case. Nothing else.</p>
+          <CaseAlerts email={settings?.new_case_email ?? me.email ?? ""} on={settings?.notify_new_assignments ?? true} />
+        </Panel>
       </section>
     </div>
   );
