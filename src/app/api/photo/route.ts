@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
 
     let composed = sharp(scene);
     if (sprite) {
-      // The object is drawn the way the scene draws it: contained in its box, centred.
+      // The object is drawn the way the scene draws it: contained in its box, centered.
       const obj = await sharp(await load(sprite)).resize(box.width, box.height, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } }).png().toBuffer();
       composed = sharp(await composed.composite([{ input: obj, left: box.left, top: box.top }]).toBuffer());
     }

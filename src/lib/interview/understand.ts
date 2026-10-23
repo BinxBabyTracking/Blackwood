@@ -134,7 +134,7 @@ export async function interpretQuestion(
     "- If the facts do not give the exact detail asked, say so briefly in character, then share what you DO know that is closest to it, the way a real witness would. Example: asked what a customer looked like when the facts only mention his jacket, say you didn't get a good look, all you remember is the jacket. Do not guess or invent the missing detail.",
     "- Only if nothing in the facts relates at all, say plainly in character that you don't know. Never say you can't answer 'right now'.",
     "- Never accuse anyone and never confess. Some facts are the character's own claims; state them as the character would.",
-    "- One to three short spoken sentences, natural American English of 1985. No stage directions, no quotation marks, no em dashes.",
+    "- One to three short spoken sentences, natural American English of 1985 with American spelling (check, color, neighbor, jewelry). No stage directions, no quotation marks, no em dashes.",
     "- Stay consistent with the conversation so far.",
     "- Hand over, show or offer an object or document only when a fact you use says you do (then list that fact in USED). Otherwise never offer, promise or pretend to hand anything over; if asked for something you don't have, say so plainly.",
     `Character: ${person.persona ?? person.name}`,
@@ -199,7 +199,7 @@ export async function interpretQuestion(
 /** Admin check: one tiny call to the interview model, reporting exactly what comes back. Never returns the key. */
 export async function testInterviewModel(): Promise<{ ok: boolean; model: string; keyType: string; workspace: string; status: number | null; message: string }> {
   const workspace = WORKSPACE ? `set (${WORKSPACE.slice(0, 12)}...)` : "not set";
-  const keyType = !API_KEY ? "none" : API_KEY.startsWith("sk-ant-api") ? "API key (sk-ant-api...)" : API_KEY.startsWith("sk-ant-usr") ? "user key (sk-ant-usr...)" : API_KEY.startsWith("sk-ant-oat") ? "OAuth token (sk-ant-oat...)" : "unrecognised format";
+  const keyType = !API_KEY ? "none" : API_KEY.startsWith("sk-ant-api") ? "API key (sk-ant-api...)" : API_KEY.startsWith("sk-ant-usr") ? "user key (sk-ant-usr...)" : API_KEY.startsWith("sk-ant-oat") ? "OAuth token (sk-ant-oat...)" : "unrecognized format";
   if (!API_KEY) return { ok: false, model: MODEL, keyType, workspace, status: null, message: "ANTHROPIC_API_KEY is not set in the server's environment variables." };
   try {
     const res = await fetch(`${API_BASE}/v1/messages`, {

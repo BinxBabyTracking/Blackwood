@@ -253,7 +253,7 @@ export interface EvidenceReaction {
 
 /**
  * A discrepancy between testimony and what the investigator has established.
- * Recorded only when `when` holds, so nobody is labelled inconsistent
+ * Recorded only when `when` holds, so nobody is labeled inconsistent
  * without supporting evidence. Written neutrally; it never says who lied.
  */
 export interface ContradictionDef {
@@ -302,7 +302,7 @@ export interface LocationDef {
   mapPin?: { x: number; y: number };
   /** A label always shown above the pin on the map, e.g. "CRIME SCENE", to draw players there. */
   mapTag?: string;
-  /** Neighbourhood. Travel within one area is on foot; between areas, by car. */
+  /** Neighborhood. Travel within one area is on foot; between areas, by car. */
   area?: string;
   hotspots: HotspotDef[];
   effectsOnEnter?: Effect[];
@@ -359,7 +359,8 @@ export interface DocumentDef {
   dossier?: { label: string; value: string }[];
   /** Characters introduced by this document, shown with portraits. */
   people?: string[];
-  pages: { heading?: string; body: string }[];
+  /** `spoken` is what the narrator reads aloud, written for the ear (dates and times in words); otherwise heading and body. */
+  pages: { heading?: string; body: string; spoken?: string }[];
   /** Heading above the people list. */
   peopleHeading?: string;
   /** Evidence that can be collected from this document. */

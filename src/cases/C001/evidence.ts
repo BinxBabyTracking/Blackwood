@@ -22,7 +22,7 @@ export const evidence: EvidenceDef[] = [
     sourceLocationId: "kitchen",
     image: "ev.e01",
     inspection:
-      "An L-shaped cut runs through the aluminium mesh of the screen above the sink. The edges of the cut are bent away from the room. The flower bed below the window is undisturbed.",
+      "An L-shaped cut runs through the aluminum mesh of the screen above the sink. The edges of the cut are bent away from the room. The flower bed below the window is undisturbed.",
     discovery: "Inspect the window over the kitchen sink.",
     characters: [],
     related: ["E10"],
@@ -51,7 +51,7 @@ export const evidence: EvidenceDef[] = [
       "A household ledger in Eleanor's pencil hand, open at a page headed 'Harold's estate account, Pacific Crest S&L'. Two columns of quarterly balances run side by side.",
       "Left column, headed 'Mr. Mercer's report': Sept. 30, 1984, $184,200. Dec. 31, 1984, $186,900. Mar. 31, 1985, $189,450. June 30, 1985, $191,700. Steady growth every quarter.",
       "Right column, headed 'Bank (from Pat's copies)': Sept. 30, 1984, $176,950. Dec. 31, 1984, $169,300. Mar. 31, 1985, $160,880. June 30, 1985, $151,425. It falls every quarter.",
-      "At the foot, underlined twice: 'Difference $40,275.' Below it: 'Cheques I never signed. Ask D. on Friday. If no answer, take everything to Mr. Albright.'",
+      "At the foot, underlined twice: 'Difference $40,275.' Below it: 'Checks I never signed. Ask D. on Friday. If no answer, take everything to Mr. Albright.'",
     ].join("\n\n"),
     discovery: "Inspect the writing desk in the living room.",
     characters: ["eleanor"],
@@ -217,7 +217,7 @@ export const evidence: EvidenceDef[] = [
     image: "ev.e13",
     inspection: [
       "A typed staff schedule for the week of August 12, 1985, pinned beside the kitchen pass. Each waitress initials her line when she clocks out.",
-      "Friday 16: Evening shift, 3 PM to 11 PM: Linda K., initialled 'LK 11:00'. Night shift, 11 PM to 7 AM: Rosa D., initialled 'RD 7:05'. Cook, 3 to 11: Manny. Cook, 11 to 7: Joe.",
+      "Friday 16: Evening shift, 3 PM to 11 PM: Linda K., initialed 'LK 11:00'. Night shift, 11 PM to 7 AM: Rosa D., initialed 'RD 7:05'. Cook, 3 to 11: Manny. Cook, 11 to 7: Joe.",
       "Linda's line is the same every weekday: off at 11 sharp. Nobody else waited tables on Friday after eleven.",
     ].join("\n\n"),
     discovery: "Inspect the staff schedule in the diner.",
@@ -245,7 +245,7 @@ export const evidence: EvidenceDef[] = [
     image: "ev.e15",
     inspection: [
       "The left half of a Pacific Crest Savings & Loan statement for the Harold Whitmore estate account, July 1985, torn top to bottom. The payee and amount columns are on the missing half.",
-      "Four lines are circled in pencil: July 3, cheque 1187. July 12, cheque 1191. July 19, cheque 1194. July 26, cheque 1196. Each is marked 'cheque drawn', and each is ticked twice.",
+      "Four lines are circled in pencil: July 3, check 1187. July 12, check 1191. July 19, check 1194. July 26, check 1196. Each is marked 'check drawn', and each is ticked twice.",
       "In the margin, in Eleanor's hand: 'None of these are mine. Not on D.'s report. Other half kept safe for Mr. Albright.'",
     ].join("\n\n"),
     discovery: "Reserved for Patricia's envelope event (RE03). Arrives at the office.",

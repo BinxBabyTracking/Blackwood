@@ -40,7 +40,7 @@ export const deductions: DeductionDef[] = [
     id: "D_MOTIVE",
     code: "D03",
     title: "Financial Irregularities",
-    text: "Eleanor's own ledger and the bank's statements disagree by thousands. Cheques payable to Mercer's business were not authorised, and the file on his reports has vanished from her desk.",
+    text: "Eleanor's own ledger and the bank's statements disagree by thousands. Checks payable to Mercer's business were not authorized, and the file on his reports has vanished from her desk.",
     connections: [["E03", "E15"], ["E15", "E08"], ["E03", "E08"]],
   },
   {
@@ -156,7 +156,7 @@ export const solution: CaseDefinition["solution"] = {
     reconstruction: [
       {
         heading: "The money",
-        body: "Cheques drawn on Harold Whitmore's estate account had been made out to D. Mercer Management without Eleanor's authorisation. She kept her own ledger beside Daniel Mercer's quarterly reports, asked Patricia for the bank's statements, and found that the figures did not agree. She made an appointment with Harold's attorney for Monday the 19th.",
+        body: "Checks drawn on Harold Whitmore's estate account had been made out to D. Mercer Management without Eleanor's authorization. She kept her own ledger beside Daniel Mercer's quarterly reports, asked Patricia for the bank's statements, and found that the figures did not agree. She made an appointment with Harold's attorney for Monday the 19th.",
       },
       {
         heading: "Friday, 9:15 PM",
@@ -172,7 +172,7 @@ export const solution: CaseDefinition["solution"] = {
       },
       {
         heading: "The break-in that never happened",
-        body: "He took the folder of his own reports from her desk. In the kitchen he cut the window screen from the inside, so the mesh bent outward, and drew back the bolt that could only be opened from within. At ten past twelve Margaret Ellis saw his car still at the kerb. At a quarter past, he drove away.",
+        body: "He took the folder of his own reports from her desk. In the kitchen he cut the window screen from the inside, so the mesh bent outward, and drew back the bolt that could only be opened from within. At ten past twelve Margaret Ellis saw his car still at the curb. At a quarter past, he drove away.",
       },
       {
         heading: "What he left behind",
@@ -180,7 +180,7 @@ export const solution: CaseDefinition["solution"] = {
       },
     ],
     bennett: [
-      "I read your report twice. It holds up. The diner, the cheques, the screen cut from the inside, the jacket in his trash.",
+      "I read your report twice. It holds up. The diner, the checks, the screen cut from the inside, the jacket in his trash.",
       "This afternoon it goes to the District Attorney's office with my request for a warrant for Daniel Mercer's arrest. After that it's up to the D.A., and in the end a jury. Nothing on paper is a conviction.",
       "But Eleanor Whitmore's file is not going in the drawer marked burglary. That's your doing. Thank you.",
     ],

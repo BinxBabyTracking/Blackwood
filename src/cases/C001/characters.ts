@@ -28,7 +28,7 @@ export const characters: CharacterDef[] = [
     portrait: "char.eleanor",
     bio: [
       { text: "Sixty-four. Widowed in 1981 when her husband Harold, a building contractor, died. Lived alone on Hollister Avenue in Los Feliz." },
-      { text: "Well known in the neighbourhood for funding the reading room at the Hollister branch library." },
+      { text: "Well known in the neighborhood for funding the reading room at the Hollister branch library." },
       { text: "Her late husband's estate had been managed by Daniel Mercer since 1981.", requires: { any: [{ talkedTo: "daniel" }, { hasEvidence: "E03" }] } },
       { text: "Had told Margaret Ellis she was seeing Harold's attorney on Monday the 19th.", requires: { any: [{ hasEvidence: "E09" }, { asked: "margaret_eleanor_mood" }] } },
     ],
@@ -41,7 +41,7 @@ export const characters: CharacterDef[] = [
   {
     id: "margaret",
     name: "Margaret Ellis",
-    role: "Party guest, neighbour",
+    role: "Party guest, neighbor",
     portrait: "char.margaret",
     bio: [
       { text: "Retired schoolteacher. Lives directly across Hollister Avenue from the Whitmore house and knew Eleanor for twenty years." },
@@ -228,7 +228,7 @@ export const questions: DialogueQuestion[] = [
   // =====================================================================
   q("margaret", "Relationship", "margaret_relationship", "How did you know Eleanor?", [
     "Twenty years across the street. We took the paper over to each other on Saturday mornings, whoever was up first.",
-    "After Harold died she leaned on me a little, and I leaned on her. That's what neighbours do.",
+    "After Harold died she leaned on me a little, and I leaned on her. That's what neighbors do.",
   ]),
   q("margaret", "The evening", "margaret_evening", "Tell me about Friday evening.", [
     "Eleanor had four of us for supper. A roast, and a lemon cake she cut herself at the sideboard. I came over at seven, before the others.",
@@ -488,7 +488,7 @@ export const questions: DialogueQuestion[] = [
   }),
   q("patricia", "Relationship", "patricia_inheritance", "Who inherits Eleanor's estate?", [
     "I do, mostly. I know how that sounds. The police have already asked me where I was.",
-    "I was home by a quarter to eleven. My downstairs neighbour heard me drop my keys on the landing and complained about it the next day.",
+    "I was home by a quarter to eleven. My downstairs neighbor heard me drop my keys on the landing and complained about it the next day.",
   ], {}),
   q("patricia", "Eleanor's concerns", "patricia_concerns", "Was your aunt worried about anything lately?", [
     "She'd been quiet. Distracted. I told the police I thought she was tired.",
@@ -518,9 +518,9 @@ export const questions: DialogueQuestion[] = [
     "She wasn't confused. She was a contractor's wife for forty years. She could add.",
   ], { requiresEvidence: ["E03"], reveals: "In Eleanor's ledger, the first column follows Daniel's reports and the second follows the bank's statements." }),
   q("patricia", "Additional financial information", "patricia_more", "How much money are we talking about?", [
-    "I never finished going through the copies. The cheques I did see were made out to D. Mercer Management, and none of them had her signature on the authorisation.",
+    "I never finished going through the copies. The checks I did see were made out to D. Mercer Management, and none of them had her signature on the authorization.",
     "I didn't know what to think. I still don't want to think it.",
-  ], { requiresDeductions: ["D_MOTIVE"], reveals: "Cheques Patricia saw were payable to D. Mercer Management, with no authorisation signed by Eleanor." }),
+  ], { requiresDeductions: ["D_MOTIVE"], reveals: "Checks Patricia saw were payable to D. Mercer Management, with no authorization signed by Eleanor." }),
   q("patricia", "Additional financial information", "patricia_lawyer", "She had an appointment with Mr. Albright on Monday.", [
     "Mr. Albright was Uncle Harold's attorney. If she was taking the papers to him, she'd made up her mind.",
     "She never told me that part. I think she was protecting me.",
@@ -530,7 +530,7 @@ export const questions: DialogueQuestion[] = [
     "I couldn't keep looking at it. I thought you would know what to do with it.",
   ], { reveals: "Patricia found the torn statement page folded in Eleanor's handbag when the police returned her belongings." }),
   q("patricia", "Financial documentation", "patricia_circled", "Eleanor marked lines on this statement. What are they?", [
-    "They're cheques drawn on the estate account. I can tell you what a line on a statement means. Who a cheque was made out to is on the half that's missing, or in the bank's files.",
+    "They're checks drawn on the estate account. I can tell you what a line on a statement means. Who a check was made out to is on the half that's missing, or in the bank's files.",
     "She tore it on purpose, I think. She was keeping the other half somewhere.",
   ], { requiresEvidence: ["E15"] }),
   q("patricia", "Other guests", "patricia_daniel", "How well do you know Daniel Mercer?", [
@@ -546,7 +546,7 @@ export const questions: DialogueQuestion[] = [
   // =====================================================================
   q("bennett", "Crime scene", "bennett_scene", "What did your people find at the house?", [
     "Mrs. Whitmore on the living room carpet, between the sofa and an overturned chair. A single stab wound. The carving knife was on the floor beside her. It's in our property room.",
-    "Broken crystal near the chair, a cut screen over the kitchen sink, the back door unbolted, front door locked. Nothing taken that anyone can name. Purse, jewellery, a hundred and forty dollars, all still there.",
+    "Broken crystal near the chair, a cut screen over the kitchen sink, the back door unbolted, front door locked. Nothing taken that anyone can name. Purse, jewelry, a hundred and forty dollars, all still there.",
   ]),
   q("bennett", "Police interviews", "bennett_interviews", "How did the four interviews go?", [
     "Smoothly. That's what bothers me. Four people, four statements, and nobody saw anything after half past ten.",
@@ -789,7 +789,7 @@ export const contradictions: ContradictionDef[] = [
  * only to match free-form questions; never shown.
  */
 const KEYWORDS: Record<string, string> = {
-  margaret_relationship: "how long have you known eleanor her friends neighbour across the street",
+  margaret_relationship: "how long have you known eleanor her friends neighbor across the street",
   margaret_evening: "what happened at the party supper dinner that night tell me about the evening",
   margaret_mostly: "what was not pleasant anything happen mostly why",
   margaret_guests: "how was everyone acting other guests behave mood",
@@ -800,7 +800,7 @@ const KEYWORDS: Record<string, string> = {
   margaret_unusual: "did eleanor lock her doors at night anything unusual about the house back door bolt locks habits",
   margaret_hands: "anyone injured bandage cut hand hurt at supper",
   margaret_screen: "worried about burglars prowlers break in garden window back of the house",
-  margaret_sedan_more: "tell me about the car you saw describe what the car looked like what kind of car colour fender details describe the car what did the car look like colour make model which car sedan details",
+  margaret_sedan_more: "tell me about the car you saw describe what the car looked like what kind of car fender details describe the car what did the car look like make model which car sedan details",
   margaret_sedan_driver: "did you see who was in the car anyone get in or out driver whose car",
   margaret_confidence: "are you sure about the time how certain clock how do you know it was ten past twelve",
   margaret_struggle: "would you have heard a fight struggle argument screams",
@@ -823,7 +823,7 @@ const KEYWORDS: Record<string, string> = {
   daniel_left_early: "you left the diner at eleven the night waitress saw you leave early tan jacket",
   daniel_sedan: "your car was seen outside her house after midnight buick crumpled fender parked",
   daniel_hand_glass: "the blood on the glass your cut hand broken glass",
-  daniel_money_confront: "the ledger and bank statements do not match explain the missing money cheques",
+  daniel_money_confront: "the ledger and bank statements do not match explain the missing money checks",
   daniel_lawyer_appt: "did you know about her lawyer appointment albright monday",
   daniel_again: "anything else you left out of your statement anything to add",
   robert_relationship: "how do you know the whitmores harold and eleanor how long did you know them",
@@ -845,7 +845,7 @@ const KEYWORDS: Record<string, string> = {
   patricia_money: "did she ask you for help with money bank statements accounts",
   patricia_missing: "the estate folder is missing from her desk drawer papers missing",
   patricia_ledger: "her ledger two columns figures do not agree",
-  patricia_more: "how much money is missing how much was taken cheques",
+  patricia_more: "how much money is missing how much was taken checks",
   patricia_lawyer: "she had an appointment with a lawyer albright monday",
   patricia_daniel: "what do you think of daniel mercer how well do you know him",
   patricia_hands: "was anyone injured at supper bandage cut hand",

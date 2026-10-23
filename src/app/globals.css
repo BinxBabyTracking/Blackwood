@@ -93,7 +93,7 @@ html[data-motion="reduced"] *::after {
   transition-duration: 0.001ms !important;
 }
 
-/* Colour vision support: status colours shift to a palette distinguishable
+/* Color vision support: status colors shift to a palette distinguishable
    without red/green, and every status also carries a text label. */
 html[data-vision="protanopia"], html[data-vision="deuteranopia"] {
   --color-ok: #5b8db8;

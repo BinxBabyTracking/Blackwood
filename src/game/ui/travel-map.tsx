@@ -10,7 +10,7 @@ import { Overlay } from "./overlay";
  * (or a drawn stand-in until it exists), each with its name on a paper tag;
  * pins can be tapped to travel, and the list beside the map carries the same
  * choices for keyboard and screen readers.
- * Travelling swaps the scene in place without reloading the investigation.
+ * Traveling swaps the scene in place without reloading the investigation.
  */
 export function TravelMap({
   view,
@@ -72,7 +72,7 @@ export function TravelMap({
                 >
                   {p.tag ? (
                     <span
-                      // Beside the pin, on the side with more room, so it never covers a neighbour's name below.
+                      // Beside the pin, on the side with more room, so it never covers a neighbor's name below.
                       className={`absolute top-1 whitespace-nowrap border border-[#7a1410] bg-[#b3231b] px-1.5 py-0.5 font-mono text-[0.6rem] font-bold uppercase tracking-[0.18em] text-[#f3ead3] shadow-[0_2px_6px_rgba(0,0,0,0.45)] ${
                         p.pin!.x < 25 ? "left-full ml-0.5" : "right-full mr-0.5"
                       }`}

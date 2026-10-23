@@ -1073,7 +1073,7 @@ export function project(def: CaseDefinition, s: InvestigationState, now = Date.n
             recordedAt: st.recordedAt,
             officer: st.officer,
             tape: st.tape,
-            status: audio ? "Original recording on file" : canVoice ? "Cassette on file. Transcript verified" : "Transcript only. Tape not yet digitised",
+            status: audio ? "Original recording on file" : canVoice ? "Cassette on file. Transcript verified" : "Transcript only. Tape not yet digitized",
             audio,
             voiced: !audio && canVoice,
             transcript: st.transcript,
@@ -1154,8 +1154,14 @@ function interviewsView(def: CaseDefinition, s: InvestigationState): ClientInter
 export function spokenLine(
   def: CaseDefinition,
   s: InvestigationState,
-  ref: { kind: "conversation" | "statement" | "call" | "delivery" | "resolution"; id: string; n: number },
+  ref: { kind: "conversation" | "statement" | "call" | "delivery" | "resolution" | "document"; id: string; n: number },
 ): { speakerId: string; text: string } | null {
+  if (ref.kind === "document") {
+    // A document the player has opened can be read aloud by the narrator, page by page.
+    const doc = def.documents.find((d) => d.id === ref.id);
+    const page = doc && s.readDocuments.includes(doc.id) ? doc.pages[ref.n] : undefined;
+    return page ? { speakerId: "narrator", text: page.spoken ?? (page.heading ? `${page.heading}. ${page.body}` : page.body) } : null;
+  }
   if (ref.kind === "conversation") {
     const line = s.conversations[ref.id]?.[ref.n];
     if (!line || line.speaker === "you" || line.speaker === "cue") return null;

@@ -331,8 +331,8 @@ export function InvestigationShell({
   const guest = Boolean(party?.guest);
 
   /**
-   * Travel with a short journey scene: on foot within a neighbourhood, by car
-   * between neighbourhoods. The move is saved on the server while the scene
+   * Travel with a short journey scene: on foot within a neighborhood, by car
+   * between neighborhoods. The move is saved on the server while the scene
    * plays; the scene ends when both are done, or sooner if the player skips.
    */
   const travelTo = useCallback(
@@ -672,7 +672,7 @@ export function InvestigationShell({
       {layer?.k === "conversation" ? (
         <InterviewScreen key={`interview-${layer.data.characterId}`} caseId={caseId} data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} volume={dialogueVolume} />
       ) : null}
-      {layer?.k === "document" ? <DocumentPanel data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} /> : null}
+      {layer?.k === "document" ? <DocumentPanel caseId={caseId} data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} volume={dialogueVolume} /> : null}
       {layer?.k === "call" ? <CallPanel caseId={caseId} data={layer.data} voices={view.voices} volume={dialogueVolume} onClose={() => setLayer({ k: "panel", panel: "phone" })} /> : null}
       {layer?.k === "delivery" ? (
         <DeliveryPanel caseId={caseId} data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} volume={dialogueVolume} />
@@ -816,7 +816,7 @@ function ObservationCard({
   );
 }
 
-/** One labelled 0 to 100 slider in the game menu. Sound effects covers room sound, travel, the phone and stamps. */
+/** One labeled 0 to 100 slider in the game menu. Sound effects covers room sound, travel, the phone and stamps. */
 function VolumeSlider({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
   const id = `vol-${label.toLowerCase().replace(/\s+/g, "-")}`;
   return (

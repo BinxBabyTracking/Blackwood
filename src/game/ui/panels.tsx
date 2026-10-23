@@ -52,10 +52,69 @@ function CollectList({
 }
 
 /** The case dossier: a manila folder with a typed summary sheet, the people involved, and the report. */
-export function DocumentPanel({ data, view, dispatch, onClose, pending }: { data: Out<"document">; view: ClientView; dispatch: Dispatch; onClose: () => void; pending: boolean }) {
+export function DocumentPanel({
+  caseId,
+  data,
+  view,
+  dispatch,
+  onClose,
+  pending,
+  volume,
+}: {
+  caseId: string;
+  data: Out<"document">;
+  view: ClientView;
+  dispatch: Dispatch;
+  onClose: () => void;
+  pending: boolean;
+  volume: number;
+}) {
+  const player = useLinePlayer(volume);
+  const { play } = player;
+  const srcs = useMemo(() => data.pages.map((_, i) => voiceSrc(caseId, "document", data.id, i)), [caseId, data.id, data.pages]);
+  // The narrator reads the file aloud the first time it is opened (when voices are on); after that, on request.
+  useEffect(() => {
+    if (!view.voices) return;
+    const key = `bw-heard-${caseId}-${data.id}`;
+    try {
+      if (localStorage.getItem(key)) return;
+      localStorage.setItem(key, "1");
+    } catch {
+      /* storage unavailable: read it anyway */
+    }
+    play(0, srcs);
+  }, [view.voices, caseId, data.id, srcs, play]);
+
+  const reading = player.status === "playing" || player.status === "loading" || player.status === "paused";
+  const btn = "rounded-[2px] border border-[#2a241c]/40 px-3 py-1 font-mono text-xs text-[#2a241c] hover:border-[#7d3a33] hover:text-[#7d3a33] disabled:opacity-50";
   return (
     <Overlay title={data.title} onClose={onClose} tone="paper" closeLabel="Close the file" wide>
       <div className="relative p-5 sm:p-8">
+        {view.voices ? (
+          <div className="mb-5 flex flex-wrap items-center gap-2">
+            {player.status === "playing" ? (
+              <button type="button" className={btn} onClick={player.pause}>
+                Pause reading
+              </button>
+            ) : player.status === "paused" ? (
+              <button type="button" className={btn} onClick={player.resume}>
+                Resume reading
+              </button>
+            ) : (
+              <button type="button" className={btn} disabled={player.status === "loading"} onClick={() => play(0, srcs)}>
+                {player.status === "loading" ? "Listening" : "Read the file aloud"}
+              </button>
+            )}
+            {reading ? (
+              <button type="button" className={btn} onClick={player.stop}>
+                Stop
+              </button>
+            ) : null}
+            <span role="status" className="font-mono text-xs text-[#2a241c]/60">
+              {player.error ? `${player.error} The text is complete.` : ""}
+            </span>
+          </div>
+        ) : null}
         <span aria-hidden className="pointer-events-none absolute right-8 top-6 hidden rotate-[-8deg] border-[3px] border-[#7d3a33]/70 px-3 py-1 font-mono text-sm font-bold tracking-[0.2em] text-[#7d3a33]/70 sm:block">
           CONFIDENTIAL
         </span>
@@ -88,7 +147,7 @@ export function DocumentPanel({ data, view, dispatch, onClose, pending }: { data
 
         <div className="mt-8 space-y-6">
           {data.pages.map((p, i) => (
-            <section key={i}>
+            <section key={i} className={`transition-opacity duration-300 ${reading && player.current !== null && player.current !== i ? "opacity-55" : ""}`}>
               {p.heading ? <h3 className="font-mono text-xs font-bold uppercase tracking-[0.14em] text-[#7d3a33]">{p.heading}</h3> : null}
               <p className="mt-1 max-w-[70ch] font-mono text-[0.95rem] leading-relaxed">{p.body}</p>
             </section>

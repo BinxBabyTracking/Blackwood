@@ -92,7 +92,7 @@ function WindowScene({ id }: { id: string }) {
   );
 }
 
-/** A single streetlamp in low fog, the kerb running out of frame. */
+/** A single streetlamp in low fog, the curb running out of frame. */
 function StreetScene({ id }: { id: string }) {
   return (
     <g>

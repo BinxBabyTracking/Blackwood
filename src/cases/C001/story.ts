@@ -47,26 +47,38 @@ export const documents: DocumentDef[] = [
     pages: [
       {
         heading: "Summary",
-        body: "Victim: Eleanor Ruth Whitmore, 64, widow, 1418 Hollister Avenue. Found deceased in her living room at 0740 hours Saturday 8/17/85 by neighbour Margaret Ellis. Cause of death: stab wound to the chest. Coroner's preliminary estimate of time of death: approximately 2300 Friday 8/16 to 0100 Saturday 8/17.",
+        spoken:
+          "Los Angeles Police Department, Northeast Division. Case file eighty-five, N E, twenty-two ninety-one. Summary. The victim is Eleanor Ruth Whitmore, sixty-four, a widow, of fourteen eighteen Hollister Avenue. She was found dead in her living room at seven forty on Saturday morning, August seventeenth, nineteen eighty-five, by her neighbor, Margaret Ellis. Cause of death: a stab wound to the chest. The coroner's first estimate puts the time of death between about eleven on Friday night and one on Saturday morning.",
+        body: "Victim: Eleanor Ruth Whitmore, 64, widow, 1418 Hollister Avenue. Found deceased in her living room at 0740 hours Saturday 8/17/85 by neighbor Margaret Ellis. Cause of death: stab wound to the chest. Coroner's preliminary estimate of time of death: approximately 2300 Friday 8/16 to 0100 Saturday 8/17.",
       },
       {
         heading: "Scene",
-        body: "Signs of a struggle in the living room. Kitchen window screen cut. Rear door to yard found unlocked. Working theory: intruder entered through kitchen. No property reported missing; jewellery and $140 in the victim's handbag untouched.",
+        spoken:
+          "The scene. Signs of a struggle in the living room. The kitchen window screen was cut, and the back door to the yard was found unlocked. The working theory is an intruder who came in through the kitchen. But nothing was reported missing. Her jewelry, and a hundred and forty dollars in her handbag, were not touched.",
+        body: "Signs of a struggle in the living room. Kitchen window screen cut. Rear door to yard found unlocked. Working theory: intruder entered through kitchen. No property reported missing; jewelry and $140 in the victim's handbag untouched.",
       },
       {
         heading: "Persons present Friday evening",
-        body: "Margaret Ellis, neighbour. Daniel Mercer, manages the late husband's estate. Robert Hale, mechanic and family friend. Patricia Wells, niece. Supper from approximately 1900; all four guests state they had left by 2230. All four gave recorded statements on 8/17. Tapes and transcripts attached.",
+        spoken:
+          "Persons present on Friday evening. Margaret Ellis, the neighbor. Daniel Mercer, who manages her late husband's estate. Robert Hale, a mechanic and a friend of the family. And Patricia Wells, her niece. Supper began at about seven. All four guests say they had left by ten thirty. All four gave recorded statements on Saturday. The tapes and transcripts are attached.",
+        body: "Margaret Ellis, neighbor. Daniel Mercer, manages the late husband's estate. Robert Hale, mechanic and family friend. Patricia Wells, niece. Supper from approximately 1900; all four guests state they had left by 2230. All four gave recorded statements on 8/17. Tapes and transcripts attached.",
       },
       {
         heading: "Addresses",
+        spoken:
+          "Addresses. Margaret Ellis lives directly across the street, at fourteen twenty-one Hollister. Daniel Mercer has an apartment on Griffith Park Boulevard in Silver Lake. Robert Hale runs Hale Automotive on Fletcher Drive. Patricia Wells works at Pacific Crest Savings and Loan on Vermont Avenue. Mercer says he spent the night at the Maple Street Diner, on Sunset at Maple.",
         body: "Ellis: 1421 Hollister Ave (opposite). Mercer: 2240 Griffith Park Blvd, apt 2B, Silver Lake. Hale: Hale Automotive, Fletcher Dr. Wells: Pacific Crest Savings & Loan, Vermont Ave. Mercer reports spending the night at the Maple Street Diner, Sunset at Maple.",
       },
       {
         heading: "Open questions (Det. Bennett)",
-        body: "Why cut a screen and then use the door? Why is nothing missing? Why did no neighbour hear glass break? I have not been able to answer any of these.",
+        spoken:
+          "Open questions, from Detective Bennett. Why cut a screen and then use the door? Why is nothing missing? Why did no neighbor hear glass break? I have not been able to answer any of these.",
+        body: "Why cut a screen and then use the door? Why is nothing missing? Why did no neighbor hear glass break? I have not been able to answer any of these.",
       },
       {
         heading: "Attached",
+        spoken:
+          "Attached. My notes on when each guest left. One shard of the broken glass is bagged and held at the scene for you. If you want it typed, tell me and I'll get it to the lab. The knife block in the kitchen is tagged. Call me any time on the office line. F. B.",
         body: "My notes on when each guest left. One shard of the broken glass is bagged and held at the scene for you; if you want it typed, tell me and I'll get it to the lab; the knife block in the kitchen is tagged. Call me any time on the office line. F.B.",
       },
     ],

@@ -50,7 +50,7 @@ export async function saveSettings(_prev: ActionResult, fd: FormData): Promise<A
       patch[key] = v;
     } else if (key === "color_vision") {
       const v = String(fd.get(key));
-      if (!VISION.includes(v)) return { status: "error", message: "Choose a colour setting." };
+      if (!VISION.includes(v)) return { status: "error", message: "Choose a color setting." };
       patch[key] = v;
     }
   }

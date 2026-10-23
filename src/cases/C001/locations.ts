@@ -141,7 +141,7 @@ export const locations: LocationDef[] = [
       inspect("lr_glass", "Broken glass", "glass", { x: 52, y: 78, w: 8, h: 7 }, "Broken glass", "Crystal shards on the carpet, a bagged piece beside them with an LAPD tag.", { evidence: "E02" }),
       inspect("lr_ledger", "Writing desk", "desk", { x: 18.5, y: 25, w: 11, h: 9 }, "Eleanor's writing desk", "A roll-top desk. Her household ledger lies open on the blotter.", { evidence: "E03" }),
       inspect("lr_diary", "Desk diary", "diary", { x: 17, y: 17, w: 6, h: 8 }, "Desk diary", "A leather desk diary propped open on the shelf above the blotter.", { evidence: "E09" }),
-      inspect("lr_drawer", "Desk filing drawer", "drawer", { x: 23, y: 40, w: 8, h: 10 }, "Filing drawer", "A deep drawer of hanging files, each labelled in Eleanor's handwriting. One gap stands out.", { evidence: "E08" }),
+      inspect("lr_drawer", "Desk filing drawer", "drawer", { x: 23, y: 40, w: 8, h: 10 }, "Filing drawer", "A deep drawer of hanging files, each labeled in Eleanor's handwriting. One gap stands out.", { evidence: "E08" }),
       inspect("lr_sideboard", "Sideboard", "sideboard", { x: 72, y: 27, w: 13, h: 38 }, "Sideboard", "A glass cake stand with a few crumbs of lemon cake, five dessert plates stacked beside it, and a tray of crystal water glasses. One place in the set is empty. A space on the runner where something long lay."),
       inspect("lr_wine", "Wine bottle", "bottle", { x: 85.5, y: 25, w: 3.5, h: 13 }, "Wine bottle", "A 1979 Burgundy, two-thirds empty. Fingerprint powder on the neck. The police lab report found only Eleanor's prints."),
       inspect("lr_poker", "Fireplace tools", "poker", { x: 89.5, y: 41, w: 7, h: 33 }, "Fireplace tools", "Poker, brush and shovel, hanging neatly in their stand. A film of dust on all three. The grate holds old, cold ash. No one has lit a fire here since spring."),
@@ -162,7 +162,7 @@ export const locations: LocationDef[] = [
     hotspots: [
       inspect("k_window", "Window over the sink", "window", { x: 43, y: 6, w: 15, h: 33 }, "Kitchen window", "The window over the sink stands open a few inches behind its screen.", { evidence: "E01" }),
       inspect("k_door", "Rear door", "backdoor", { x: 73, y: 10, w: 16, h: 62 }, "Rear door", "The back door to the yard. The police found it unlocked on Saturday morning.", { evidence: "E10" }),
-      inspect("k_calendar", "Wall calendar", "calendar", { x: 12.5, y: 12.5, w: 6.5, h: 29.5 }, "Wall calendar", "A pharmacy calendar beside the telephone. Friday's square has a pencilled note: 'Supper, 7. M, R, P, D.'"),
+      inspect("k_calendar", "Wall calendar", "calendar", { x: 12.5, y: 12.5, w: 6.5, h: 29.5 }, "Wall calendar", "A pharmacy calendar beside the telephone. Friday's square has a penciled note: 'Supper, 7. M, R, P, D.'"),
       inspect("k_phone", "Kitchen telephone", "wallphone", { x: 20.5, y: 23, w: 3.5, h: 12 }, "Kitchen telephone", "A beige wall telephone with a long coiled cord. A pad beside it lists numbers: Patricia (work), Margaret, Hale Automotive, D. Mercer, Mr. Albright."),
       inspect("k_knives", "Knife block", "knives", { x: 24.5, y: 37, w: 6, h: 11 }, "Knife block", "A wooden block of French knives on the counter.", { evidence: "E06" }),
       inspect("k_rack", "Drying rack", "rack", { x: 57, y: 36, w: 12, h: 11 }, "Drying rack", "Five dessert plates, five coffee cups and the cake server, washed and drying. Eleanor tidied up after her guests left."),
@@ -201,9 +201,9 @@ export const locations: LocationDef[] = [
     hotspots: [
       person("da_daniel", "Daniel Mercer", "daniel", { x: 30, y: 26, w: 14, h: 58 }),
       inspect("da_hand", "Daniel's right hand", "hand", { x: 30.8, y: 52.5, w: 3, h: 7 }, "Daniel's right hand", "Daniel keeps his right hand close to his side.", { evidence: "E14" }),
-      inspect("da_coats_a", "Coat rack", "coatrack", { x: 10, y: 20, w: 9, h: 52 }, "Coat rack by the door", "A grey raincoat, a navy blazer and a tan nylon windbreaker. The windbreaker's right cuff looks darker than the left, and damp, as though it has been rinsed.", { visible: { env: "daniel_apartment", is: "A" }, effects: [{ setFlag: "saw_jacket" }] }),
-      inspect("da_coats_b", "Coat rack", "coatrack_empty", { x: 10, y: 20, w: 9, h: 52 }, "Coat rack by the door", "A grey raincoat and a navy blazer.", { visible: { env: "daniel_apartment", is: "B" }, effects: [{ when: { flag: "saw_jacket" }, then: [{ setFlag: "jacket_missing" }] }], textAfter: [{ requires: { flag: "saw_jacket" }, text: "A grey raincoat and a navy blazer. The tan windbreaker that hung here on your last visit is gone." }] }),
-      inspect("da_desk", "Desk and client files", "desk", { x: 70, y: 47, w: 30, h: 20 }, "Client files", "Neat stacks of client folders, each labelled. The one marked 'Whitmore' is thin.", { textAfter: [{ requires: { env: "daniel_apartment", is: "B" }, text: "The stacks have been gone through. The folder marked 'Whitmore' is no longer here." }] }),
+      inspect("da_coats_a", "Coat rack", "coatrack", { x: 10, y: 20, w: 9, h: 52 }, "Coat rack by the door", "A gray raincoat, a navy blazer and a tan nylon windbreaker. The windbreaker's right cuff looks darker than the left, and damp, as though it has been rinsed.", { visible: { env: "daniel_apartment", is: "A" }, effects: [{ setFlag: "saw_jacket" }] }),
+      inspect("da_coats_b", "Coat rack", "coatrack_empty", { x: 10, y: 20, w: 9, h: 52 }, "Coat rack by the door", "A gray raincoat and a navy blazer.", { visible: { env: "daniel_apartment", is: "B" }, effects: [{ when: { flag: "saw_jacket" }, then: [{ setFlag: "jacket_missing" }] }], textAfter: [{ requires: { flag: "saw_jacket" }, text: "A gray raincoat and a navy blazer. The tan windbreaker that hung here on your last visit is gone." }] }),
+      inspect("da_desk", "Desk and client files", "desk", { x: 70, y: 47, w: 30, h: 20 }, "Client files", "Neat stacks of client folders, each labeled. The one marked 'Whitmore' is thin.", { textAfter: [{ requires: { env: "daniel_apartment", is: "B" }, text: "The stacks have been gone through. The folder marked 'Whitmore' is no longer here." }] }),
       inspect("da_waste", "Wastebasket", "basket", { x: 63, y: 64, w: 5, h: 9 }, "Wastebasket", "Nearly empty. A receipt from Rexall Drugs on Sunset: 'Gauze 4in, adhesive tape, iodine. 8/17/85 9:02 AM.'", { visible: { env: "daniel_apartment", is: "A" } }),
       inspect("da_firstaid", "First aid tin", "tin", { x: 84, y: 33, w: 6, h: 5.5 }, "First aid tin", "Open on the kitchen counter. Gauze, tape, a half-used bottle of iodine.", { visible: { env: "daniel_apartment", is: "A" } }),
       inspect("da_ashtray", "Ashtray", "ashtray", { x: 47, y: 49.5, w: 5.5, h: 5.5 }, "Ashtray", "Fresh ash and the curled corner of a typed page. Legible on the scrap: '...ESTATE ACCO...'", { visible: { env: "daniel_apartment", is: "B" } }),
@@ -222,7 +222,7 @@ export const locations: LocationDef[] = [
     onMap: true,
     hotspots: [
       person("m_margaret", "Margaret Ellis", "margaret", { x: 40, y: 21, w: 14, h: 63 }),
-      inspect("m_window", "Front window", "frontwindow", { x: 6, y: 2, w: 34, h: 52 }, "Front window", "Through the lace curtains you can see Eleanor's porch and the jacaranda tree at her kerb. The streetlight is directly beside it."),
+      inspect("m_window", "Front window", "frontwindow", { x: 6, y: 2, w: 34, h: 52 }, "Front window", "Through the lace curtains you can see Eleanor's porch and the jacaranda tree at her curb. The streetlight is directly beside it."),
       inspect("m_tv", "Television", "tv", { x: 52.5, y: 21, w: 18, h: 43 }, "Television", "A Zenith console set. A TV Guide lies open at Friday: the late news on Channel 2 ended at 11:30."),
       inspect("m_photo", "Framed photograph", "photo", { x: 53.5, y: 31, w: 5, h: 8 }, "Framed photograph", "Opening of the reading room at the Hollister branch library, 1983. Eleanor holds the scissors at the ribbon. Margaret stands beside her."),
       inspect("m_cat", "Cat", "cat", { x: 24, y: 80, w: 11, h: 11 }, "Cat", "A large ginger tom, asleep on the rug. He has a habit of being let in late."),
@@ -242,7 +242,7 @@ export const locations: LocationDef[] = [
       person("g_robert", "Robert Hale", "robert", { x: 36, y: 26, w: 12, h: 56 }),
       inspect("g_lift", "Pickup on the lift", "lift", { x: 50, y: 0, w: 40, h: 40 }, "On the lift", "A 1978 Ford pickup with the oil pan off. A drop light hangs from the frame."),
       inspect("g_orders", "Work order board", "orders", { x: 91.5, y: 20, w: 8.5, h: 34 }, "Work order board", "Carbon copies of quotes and work orders on nails. One near the bottom: 'D. Mercer. 1981 Buick LeSabre, dk green. Rear L fender crumpled, quote $240. Declined 6/22.'", { effects: [{ setFlag: "knows_fender" }] }),
-      inspect("g_bench", "Tool bench", "bench", { x: 0, y: 48, w: 25, h: 30 }, "Tool bench", "Sockets in labelled trays, a radio tuned to the Dodgers, a coffee can full of bolts. Everything has its place."),
+      inspect("g_bench", "Tool bench", "bench", { x: 0, y: 48, w: 25, h: 30 }, "Tool bench", "Sockets in labeled trays, a radio tuned to the Dodgers, a coffee can full of bolts. Everything has its place."),
     ],
   },
   {

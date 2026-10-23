@@ -137,10 +137,10 @@ export function AccessibilityForm({ settings: s }: { settings: UserSettings }) {
       />
       <Choice
         name="color_vision"
-        label="Colour accessibility"
+        label="Color accessibility"
         initial={s.color_vision}
         options={[
-          ["default", "Default colours"],
+          ["default", "Default colors"],
           ["protanopia", "Protanopia (red-weak)"],
           ["deuteranopia", "Deuteranopia (green-weak)"],
           ["tritanopia", "Tritanopia (blue-weak)"],

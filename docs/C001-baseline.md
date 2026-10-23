@@ -63,7 +63,9 @@ A new case is ready when every file below exists and `npm run check:case -- CXXX
 | `evidence.ts` | Every evidence item: title, image, inspection text (the full document text), discovery, related people | 16 items, E01 to E16 |
 | `solution.ts` | Deductions (board connections), report choices, the solution, the evidence standard, the closing reconstruction | 8 deductions |
 | `assets.ts` | Asset manifest: scene, portrait, evidence and object images; audio keys | 69 painted images |
-| `soundtrack.ts` | Music and room-sound prompts for ElevenLabs | 1 theme + 7 room sounds |
+| `soundtrack.ts` | Music and room-sound prompts for ElevenLabs | 3 themes + 7 room sounds |
+
+All player-facing text uses American spelling (check, color, neighbor, jewelry, gray, curb). The interview AI is told to answer the same way.
 
 Also required outside the case folder:
 
@@ -200,6 +202,7 @@ All sound comes from ElevenLabs through the server; the key never reaches the br
 | --- | --- | --- |
 | Character voices | Text to speech, one fixed voice per person | Interviews, police tapes, calls; subtitles always shown |
 | Evidence narration | Text to speech, narrator voice | Plays only when the player presses Play |
+| Case file narration | Text to speech, narrator voice, page by page | Reads itself the first time the file opens (voices on), then on request. Each page has a `spoken` version written for the ear: times, dates and case numbers in words |
 | Push-to-talk | Speech to text (Scribe) | Hold the button or Space; the key needs the Speech to Text permission |
 | Case music | Eleven Music, 2.5 minute noir theme | Made once from Admin; needs a paid plan and the Music permission |
 | Room sound | Sound effects, 30 second seamless loops | One per scene type; Sound Effects permission |

@@ -40,7 +40,7 @@ function loadMask(url: string, done: () => void) {
 function onPaint(h: Hotspot, fx: number, fy: number, box: { w: number; h: number }) {
   const m = h.sprite ? masks.get(h.sprite) : undefined;
   if (!m || m === "loading") return true;
-  // object-contain: the image fills one dimension of the box and is centred (people stand on the bottom edge).
+  // object-contain: the image fills one dimension of the box and is centered (people stand on the bottom edge).
   const s = Math.min(box.w / m.w, box.h / m.h);
   const iw = (m.w * s) / box.w;
   const ih = (m.h * s) / box.h;

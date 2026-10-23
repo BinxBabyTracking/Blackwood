@@ -49,7 +49,7 @@ export async function reviewedCases(userId: string): Promise<Set<string>> {
   return new Set(((data ?? []) as { case_id: string }[]).map((r) => r.case_id));
 }
 
-/** Admin: reviews summarised per case, and the latest entries with their names. */
+/** Admin: reviews summarized per case, and the latest entries with their names. */
 export async function getFeedback() {
   const { data, error } = await db().from("case_feedback").select("*").order("created_at", { ascending: false }).limit(500);
   if (error) throw new Error(error.message);

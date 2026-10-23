@@ -60,7 +60,7 @@ function drive(ctx: AudioContext, out: AudioNode, seconds: number) {
     o.frequency.exponentialRampToValueAtTime(70 * mul, t0 + 1.3); // pulling away
     o.frequency.exponentialRampToValueAtTime(58 * mul, t0 + 2); // cruising
     o.frequency.setValueAtTime(58 * mul, end - 1);
-    o.frequency.exponentialRampToValueAtTime(38 * mul, end); // slowing to the kerb
+    o.frequency.exponentialRampToValueAtTime(38 * mul, end); // slowing to the curb
   };
   for (const [type, mul, level] of [["sawtooth", 1, 0.6], ["square", 2, 0.18], ["sine", 0.5, 0.5]] as const) {
     const o = ctx.createOscillator();
@@ -81,7 +81,7 @@ function drive(ctx: AudioContext, out: AudioNode, seconds: number) {
   lfo.start(t0 + 0.25);
   lfo.stop(end + 0.1);
 
-  // Tyres on asphalt.
+  // Tires on asphalt.
   const road = ctx.createBufferSource();
   road.buffer = noise;
   road.loop = true;

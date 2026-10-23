@@ -19,11 +19,11 @@ const STOP = new Set(
 );
 // "go", "get" are stop words alone but carry meaning in phrases; phrases are handled first.
 
-/** Multi-word phrases rewritten before tokenising. */
+/** Multi-word phrases rewritten before tokenizing. */
 const PHRASES: [RegExp, string][] = [
   [/\bwent home\b|\bgo(?:ne|ing)? home\b|\bgot home\b|\bget home\b|\bheaded home\b/g, " leave home "],
   [/\bwalk(?:ed)? home\b|\bdrove home\b|\bdrive home\b/g, " leave home "],
-  [/\bacross the street\b/g, " neighbour "],
+  [/\bacross the street\b/g, " neighbor "],
   [/\bcatch(?:es)? your (?:eye|attention)\b|\bcaught your (?:eye|attention)\b/g, " perceive unusual "],
   [/\bwhen did (?:she|eleanor) die\b|\btime of death\b|\bwhen was she killed\b/g, " death time coroner "],
   [/\bgets? (?:her|eleanor'?s|the) (?:money|estate|house)\b/g, " inherit money "],
