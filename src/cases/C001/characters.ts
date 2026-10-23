@@ -453,7 +453,7 @@ export const questions: DialogueQuestion[] = [
     reveals: "Daniel Mercer drives a green 1981 Buick LeSabre with a crumpled rear fender. Robert quoted $240 to fix it; Mercer declined.",
     effects: [{ setFlag: "fender_identified" }],
   }),
-  q("robert", "Vehicles", "robert_buick", "Did Mercer say how he damaged the fender?", [
+  q("robert", "Vehicles", "robert_buick", "Did he say how the fender got damaged?", [
     "Said he backed into a pole in a parking structure downtown. Could be. A fender doesn't tell you who was driving.",
   ], { requires: { any: [{ eventState: "RE01", is: "completed" }, { flag: "knows_fender" }, { asked: "robert_cars_night" }] } }),
   q("robert", "Rear entrance", "robert_staged", "So nobody came in through the kitchen.", ["You said that, not me. But I won't argue with you."], { requiresDeductions: ["D_STAGED"] }),
@@ -833,8 +833,8 @@ const KEYWORDS: Record<string, string> = {
   robert_property: "who fixed the bolt who installed put in the lock on the kitchen door how well do you know the house have you worked on the house odd jobs",
   robert_reardoor: "can the back door be opened from outside the yard bolt from outside",
   robert_screen: "how can you tell which side a screen was cut from window screen cut outside inside",
-  robert_cars: "does mercer bring his car here what does daniel drive his car fender damage",
-  robert_buick: "how did he damage the fender what happened to his car",
+  robert_cars: "does mercer bring his car here what does daniel drive his car fender damage what car does mercer drive what kind of car did you fix mercer's car work on his car",
+  robert_buick: "how did he damage the fender how did the fender get dented what did he hit the pole the damage",
   robert_staged: "nobody broke in it was staged the break in was fake",
   robert_again: "anything else you remember about the evening",
   patricia_relationship: "were you close to your aunt what was she like your relationship",
@@ -871,7 +871,7 @@ const KEYWORDS: Record<string, string> = {
   bennett_lawyer: "she had an appointment with a lawyer albright",
   bennett_again: "anything new any news updates on your side",
   rosa_friday: "were you working friday night your shift who was working",
-  rosa_customer: "do you remember a man alone around eleven customer tan jacket serving him did you serve him did you see him",
+  rosa_customer: "do you remember a man alone around eleven customer tan jacket serving him did you serve him did you see him who did you serve what did he look like describe him",
   rosa_schedule: "can I see the schedule the staff schedule shift sheet the roster who works when show me the schedule",
   rosa_ticket: "give me the ticket can I have the ticket the check guest check note the spike hand it over can I see it get it for me",
   rosa_return: "did he come back later return that night",

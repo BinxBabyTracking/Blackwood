@@ -12,6 +12,8 @@ import { getSpending, type Money } from "@/lib/spending";
 import { loadCase } from "@/game/registry";
 import { soundtrackStatus } from "@/lib/soundtrack";
 import { SoundtrackPanel } from "@/components/portal/soundtrack-panel";
+import { InterviewAICheck } from "@/components/portal/interview-ai-check";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = { title: "Admin", robots: { index: false, follow: false } };
 
@@ -163,6 +165,8 @@ async function Spending() {
         ) : null}
       </section>
 
+      <InterviewAI />
+
       <Soundtracks />
 
       <form action={lockAdmin}>
@@ -234,6 +238,23 @@ async function Soundtracks() {
         caseId={def.id}
         tracks={def.soundtrack.map((t) => ({ key: t.key, label: t.label, kind: t.kind, seconds: t.seconds, made: made[t.key] ?? null }))}
       />
+    </section>
+  );
+}
+
+/** Whether interviews can reach the AI, and the last time they couldn't. */
+async function InterviewAI() {
+  const db = createAdminClient();
+  const { data } = db ? await db.from("site_settings").select("value").eq("key", "interview_ai_last_error").maybeSingle() : { data: null };
+  return (
+    <section aria-labelledby="ai" className="max-w-3xl">
+      <h2 id="ai" className="font-serif text-xl text-smoke">
+        Interview AI
+      </h2>
+      <p className="mt-2 text-sm text-smoke">
+        Questions without a scripted answer are answered by Claude. If it can&apos;t be reached, people fall back to &quot;I don&apos;t know&quot;.
+      </p>
+      <InterviewAICheck lastError={(data?.value as { at: string; message: string } | null) ?? null} />
     </section>
   );
 }
