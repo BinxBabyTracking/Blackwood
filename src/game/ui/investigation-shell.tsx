@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { playAction, restartCase, syncView } from "@/app/actions/game";
 import { saveGameVolumes } from "@/app/actions/settings";
+import { paintedArt } from "@/lib/art";
 import type { ActionOutcome, ActionResponse, ClientEvidence, ClientView, GameAction, PanelId } from "../engine/types";
 import { MurderBoard } from "./board";
 import { DetectiveNotebook } from "./detective-notebook";
@@ -403,6 +404,11 @@ export function InvestigationShell({
             </span>
           ) : null}
           {party ? <span className="hidden font-mono text-brass/80 md:inline">{party.label}</span> : null}
+          {view.phone.ringing ? (
+            <span className="hidden whitespace-nowrap font-mono text-brass sm:inline" role="status">
+              {atHome ? "Telephone ringing" : "A call is waiting at the office"}
+            </span>
+          ) : null}
           <SaveIndicator status={save} />
           {guest ? (
             <Link href="/party/leave" prefetch={false} className="text-paper/80 underline-offset-4 hover:text-brass hover:underline">
@@ -413,64 +419,17 @@ export function InvestigationShell({
               Return to Agency HQ
             </Link>
           )}
-        </div>
-      </div>
-
-      <ExplorationScene
-        overlays={
-          atHome
-            ? waiting.map((l) => (
-                <div
-                  key={l.id}
-                  className="pointer-events-none absolute flex flex-col items-center justify-center"
-                  style={{ left: `${l.rect.x}%`, top: `${l.rect.y}%`, width: `${l.rect.w}%`, height: `${l.rect.h}%` }}
-                  data-lab-countdown={l.id}
-                >
-                  <span className="whitespace-nowrap border border-brass/60 bg-[#0d1013]/90 px-2 py-1 text-center font-mono text-[0.6rem] uppercase tracking-[0.16em] text-brass shadow-lg sm:text-[0.7rem]">
-                    Lab results
-                    <span className="block text-sm tracking-[0.1em] text-paper sm:text-base">{labLeft(l.id)}</span>
-                  </span>
-                </div>
-              ))
-            : null
-        }
-        location={view.location}
-        disabled={pending}
-        reducedMotion={prefs.reducedMotion}
-        onHotspot={(id) => dispatch({ type: "hotspot", hotspotId: id })}
-      />
-
-      {/* Controls */}
-      {/* One row on every screen; on a phone the buttons scroll sideways rather than stacking over the scene. */}
-      <div className="flex shrink-0 items-center justify-between gap-2 border-t border-white/10 bg-[#0d1013] px-2 py-1.5 text-sm sm:px-3 sm:py-2">
-        <nav aria-label="Investigation" className="no-scrollbar flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto sm:gap-1">
-          <HudButton onClick={() => setLayer({ k: "panel", panel: "notebook" })}>Notebook</HudButton>
-          <HudButton onClick={() => setLayer({ k: "panel", panel: "inventory" })}>
-            Evidence <span className="font-mono text-xs text-brass">{view.evidence.length}</span>
-          </HudButton>
-          <HudButton onClick={() => setLayer({ k: "panel", panel: "map" })}>Map</HudButton>
-          <HudButton onClick={() => setLayer({ k: "panel", panel: "board" })}>
-            <span className="sm:hidden">Board</span>
-            <span className="hidden sm:inline">Murder Board</span>
-          </HudButton>
-          {!atHome ? (
-            <HudButton disabled={pending || !view.map.find((m) => m.id === homeLocation)?.available} onClick={() => travelTo(homeLocation)}>
-              <span className="sm:hidden">Office</span>
-              <span className="hidden sm:inline">Back to the office</span>
-            </HudButton>
-          ) : null}
-          {view.phone.ringing ? (
-            <span className="ml-2 hidden whitespace-nowrap font-mono text-xs text-brass/80 sm:inline" role="status">
-              {atHome ? "Agency telephone ringing." : "A call is waiting at the office."}
-            </span>
-          ) : null}
-        </nav>
-        <div className="flex shrink-0 items-center gap-1">
-          {view.draft ? <span className="mr-2 hidden font-mono text-[0.65rem] text-smoke sm:inline">Draft case content</span> : null}
           <div className="relative">
-            <HudButton onClick={() => setMenu((m) => !m)}>Menu</HudButton>
+            <button
+              type="button"
+              aria-expanded={menu}
+              onClick={() => setMenu((m) => !m)}
+              className="rounded-[2px] border border-white/15 px-2.5 py-1 text-paper/90 hover:border-brass hover:text-brass"
+            >
+              Menu
+            </button>
             {menu ? (
-              <div className="absolute bottom-full right-0 z-30 mb-2 w-72 max-w-[calc(100vw-1rem)] border border-white/10 bg-[#161b20] p-2 shadow-xl">
+              <div className="absolute right-0 top-full z-50 mt-1.5 max-h-[calc(100dvh-3rem)] overflow-y-auto w-72 max-w-[calc(100vw-1rem)] border border-white/10 bg-[#161b20] p-2 shadow-xl">
                 {guest ? (
                   <p className="px-3 py-2 text-xs text-smoke">You are helping the host. Everything you do is saved to their investigation.</p>
                 ) : (
@@ -530,6 +489,43 @@ export function InvestigationShell({
           </div>
         </div>
       </div>
+
+      <ExplorationScene
+        overlays={
+          atHome
+            ? waiting.map((l) => (
+                <div
+                  key={l.id}
+                  className="pointer-events-none absolute flex flex-col items-center justify-center"
+                  style={{ left: `${l.rect.x}%`, top: `${l.rect.y}%`, width: `${l.rect.w}%`, height: `${l.rect.h}%` }}
+                  data-lab-countdown={l.id}
+                >
+                  <span className="whitespace-nowrap border border-brass/60 bg-[#0d1013]/90 px-2 py-1 text-center font-mono text-[0.6rem] uppercase tracking-[0.16em] text-brass shadow-lg sm:text-[0.7rem]">
+                    Lab results
+                    <span className="block text-sm tracking-[0.1em] text-paper sm:text-base">{labLeft(l.id)}</span>
+                  </span>
+                </div>
+              ))
+            : null
+        }
+        location={view.location}
+        disabled={pending}
+        reducedMotion={prefs.reducedMotion}
+        onHotspot={(id) => dispatch({ type: "hotspot", hotspotId: id })}
+      />
+
+      {/* Map, notebook and evidence: painted objects in the corner of the scene. The murder board is on the office wall. */}
+      <nav aria-label="Investigation" className="pointer-events-none fixed bottom-3 left-3 z-20 flex items-end gap-2 sm:bottom-4 sm:left-4 sm:gap-3">
+        <HudObject label="Map" image={paintedArt(`${caseId.toLowerCase()}_map`)} fallback="map" onClick={() => setLayer({ k: "panel", panel: "map" })} />
+        <HudObject label="Notebook" image={paintedArt(`${caseId.toLowerCase()}_obj_notebook`)} fallback="notebook" onClick={() => setLayer({ k: "panel", panel: "notebook" })} />
+        <HudObject
+          label="Evidence"
+          image={paintedArt(`${caseId.toLowerCase()}_obj_evidence_bag`)}
+          fallback="evidence"
+          count={view.evidence.length}
+          onClick={() => setLayer({ k: "panel", panel: "inventory" })}
+        />
+      </nav>
 
       {/* Agency messages: shown for a few seconds, never in the way of the scene */}
       {view.messages.length ? (
@@ -849,15 +845,42 @@ function SaveIndicator({ status }: { status: SaveStatus }) {
   );
 }
 
-function HudButton({ children, onClick, disabled }: { children: React.ReactNode; onClick: () => void; disabled?: boolean }) {
+/** A painted object in the corner of the scene that opens a panel (the map, the notebook, the evidence). */
+function HudObject({ label, image, fallback, count, onClick }: { label: string; image: string | null; fallback: "map" | "notebook" | "evidence"; count?: number; onClick: () => void }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      disabled={disabled}
-      className="shrink-0 whitespace-nowrap rounded-[2px] px-2.5 py-1.5 text-paper/80 transition-colors hover:bg-white/5 hover:text-paper disabled:opacity-40 sm:px-3"
+      aria-label={count !== undefined ? `${label}, ${count} items` : label}
+      className="group pointer-events-auto relative flex w-14 flex-col items-center gap-1 sm:w-[4.5rem]"
     >
-      {children}
+      <span className="relative block h-12 w-14 transition-transform duration-200 group-hover:-translate-y-1 group-hover:scale-105 sm:h-16 sm:w-[4.5rem]">
+        {image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={image}
+            alt=""
+            draggable={false}
+            className={`h-full w-full drop-shadow-[0_6px_8px_rgba(0,0,0,0.75)] ${fallback === "map" ? "rotate-[-6deg] rounded-[3px] border-2 border-[#e8dcc0] object-cover" : "object-contain"}`}
+          />
+        ) : (
+          <span className="flex h-full w-full items-center justify-center rounded-[4px] border border-white/20 bg-[#161b20]/90 text-paper">
+            <HudIcon kind={fallback} />
+          </span>
+        )}
+        {count !== undefined ? (
+          <span className="absolute -right-1 -top-1 min-w-5 rounded-full border border-[#0d1013] bg-brass px-1 text-center font-mono text-[0.65rem] font-bold leading-5 text-ink">{count}</span>
+        ) : null}
+      </span>
+      <span className="rounded-[2px] bg-[#0d1013]/80 px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-[0.14em] text-paper/90 group-hover:text-brass sm:text-[0.65rem]">{label}</span>
     </button>
+  );
+}
+
+function HudIcon({ kind }: { kind: "map" | "notebook" | "evidence" }) {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+      {kind === "map" ? <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14" /> : kind === "notebook" ? <path d="M6 3h11a1 1 0 011 1v16a1 1 0 01-1 1H6zM6 3v18M9 8h6M9 12h6" /> : <path d="M5 8h14v12H5zM9 8V5h6v3M9 13h6" />}
+    </svg>
   );
 }

@@ -182,7 +182,7 @@ export function ExplorationScene({
               <span aria-hidden className="font-mono text-2xl leading-none">{side === "left" ? "\u2039" : "\u203a"}</span>
             </button>
           ))}
-          <p key={`hint-${location.id}`} className="pointer-events-none absolute inset-x-0 bottom-12 text-center font-mono text-xs text-paper/80 look-hint">
+          <p key={`hint-${location.id}`} className="pointer-events-none absolute inset-x-0 bottom-28 text-center font-mono text-xs text-paper/80 look-hint">
             <span className="rounded-[2px] bg-black/55 px-3 py-1">Swipe to look around</span>
           </p>
         </>
