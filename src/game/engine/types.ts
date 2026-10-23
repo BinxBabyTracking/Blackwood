@@ -108,8 +108,20 @@ export interface CharacterDef {
   bio: { text: string; requires?: Condition }[];
   /** Whether the character can be met or interviewed right now. */
   available: Condition;
+  /**
+   * When the player learns this person exists, so they appear in the case file,
+   * people list and board. Defaults to reading the case file. Use it for anyone
+   * the case file must not name yet (the culprit found mid-case, a later victim).
+   */
+  known?: Condition;
   /** Where the character can be interviewed. Null means nowhere. */
   locationId: string | null;
+  /**
+   * Later places the character moves to (a suspect taken into custody). The
+   * last entry whose condition holds wins; otherwise `locationId` applies.
+   * The scene at each place needs a person hotspot shown under the same condition.
+   */
+  moves?: { when: Condition; locationId: string }[];
   /** How the interview happens. Telephone interviews are opened from the office phone. */
   medium?: "in person" | "telephone";
   /** Characters that the player may pin to the murder board. */

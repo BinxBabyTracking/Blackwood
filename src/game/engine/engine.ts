@@ -99,9 +99,15 @@ function visibleHotspots(def: CaseDefinition, s: InvestigationState, l: Location
   return l.hotspots.filter((h) => check(h.visible, s));
 }
 
+/** Where a character is right now: their last move whose condition holds, else their home location. */
+export function characterLocation(c: CharacterDef, s: InvestigationState): string | null {
+  const moved = (c.moves ?? []).filter((m) => check(m.when, s)).pop();
+  return moved ? moved.locationId : c.locationId;
+}
+
 function characterHere(def: CaseDefinition, s: InvestigationState, id: string) {
   const c = char(def, id);
-  return Boolean(c && c.locationId === s.location && check(c.available, s));
+  return Boolean(c && characterLocation(c, s) === s.location && check(c.available, s));
 }
 
 /** How the player legitimately uncovered a piece of evidence, or null if they have not. */
@@ -226,7 +232,7 @@ function photographable(h: HotspotDef) {
 }
 
 function knownCharacters(def: CaseDefinition, s: InvestigationState) {
-  return def.characters.filter((c) => s.flags.includes("casefile_read") || s.talkedTo.includes(c.id));
+  return def.characters.filter((c) => s.talkedTo.includes(c.id) || (c.known ? check(c.known, s) : s.flags.includes("casefile_read")));
 }
 
 // ---------------------------------------------------------------------------
@@ -268,9 +274,10 @@ function shortName(c: CharacterDef) {
   return parts[0].endsWith(".") ? `${parts[0]} ${parts[parts.length - 1]}` : parts[0];
 }
 
-function whereOf(def: CaseDefinition, c: CharacterDef) {
+function whereOf(def: CaseDefinition, s: InvestigationState, c: CharacterDef) {
   if (c.medium === "telephone") return "By telephone from your office";
-  return c.locationId ? loc(def, c.locationId)?.name ?? "" : "";
+  const at = characterLocation(c, s);
+  return at ? loc(def, at)?.name ?? "" : "";
 }
 
 /** Whether a character has a voice. The browser combines this with the player's voices setting. */
@@ -298,7 +305,7 @@ function conversationOutcome(def: CaseDefinition, s: InvestigationState, charact
     name: c.name,
     role: c.role,
     portrait: def.assets.images[c.portrait] ?? "",
-    where: whereOf(def, c),
+    where: whereOf(def, s, c),
     medium: c.medium ?? "in person",
     demeanor: d?.label ?? null,
     refusing: Boolean(d?.refuses),
@@ -1103,7 +1110,7 @@ function interviewsView(def: CaseDefinition, s: InvestigationState): ClientInter
         name: c.name,
         role: c.role,
         portrait: def.assets.images[c.portrait] ?? "",
-        where: whereOf(def, c),
+        where: whereOf(def, s, c),
         medium: c.medium ?? "in person",
         demeanor: talked ? d?.label ?? null : null,
         status,

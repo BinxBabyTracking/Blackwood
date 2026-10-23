@@ -5,7 +5,8 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { loadCase } from "../src/game/registry";
-import { newState, normalizeState, reduce, project, spokenLine, questionOpen, interviewCandidates, characterKnowledge } from "../src/game/engine/engine";
+import { newState, normalizeState, reduce, project, spokenLine, questionOpen, interviewCandidates, characterKnowledge, characterLocation } from "../src/game/engine/engine";
+import { check } from "../src/game/engine/rules";
 import { bestMatch } from "../src/game/engine/matcher";
 import { credits, questionsLeft } from "../src/game/engine/questions";
 import { CASES as MATCH_CASES } from "./match-eval";
@@ -331,8 +332,9 @@ if (JSON.stringify(rt.conversations) !== JSON.stringify(s.conversations)) proble
   const R = (a: GameAction) => (f = reduce(def, f, a, 1).state);
   R({ type: "dismissIntro" }); R({ type: "readDocument", documentId: "casefile" });
   // every interviewee offers opening questions
-  for (const c of interviewees) {
-    const here = { ...f, location: c.locationId ?? f.location };
+  // People who arrive later in the story (a missing person found) are checked once they can be met.
+  for (const c of interviewees.filter((x) => check(x.available, f))) {
+    const here = { ...f, location: characterLocation(c, f) ?? f.location };
     const o = reduce(def, here, { type: "talk", characterId: c.id }, 1).outcome;
     if (o.kind !== "conversation" || interviewCandidates(def, here, c.id).length === 0) problems.push(`${c.id} has no opening questions`);
     if (o.kind === "conversation") {
@@ -479,7 +481,7 @@ for (let seed = 1; seed <= 40; seed++) {
           if (o.kind === "panel" && o.panel === "delivery") for (const d of [...w.pendingDeliveries]) W({ type: "openDelivery", deliveryId: d });
         }
       } else {
-        const people = def.characters.filter((c) => c.locationId === w.location && def.questions.some((q) => q.characterId === c.id));
+        const people = def.characters.filter((c) => characterLocation(c, w) === w.location && check(c.available, w) && def.questions.some((q) => q.characterId === c.id));
         const c = people[rnd(people.length)];
         if (!c) continue;
         const o = W({ type: "talk", characterId: c.id });
