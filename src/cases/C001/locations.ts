@@ -104,14 +104,24 @@ export const locations: LocationDef[] = [
     available: { always: true },
     onMap: true,
     hotspots: [
-      panel("office_casefile", "Case file from Det. Bennett", "folder", { x: 30, y: 66, w: 20.2, h: 29 }, "casefile"),
+      panel("office_casefile", "Case file from Det. Bennett", "folder", { x: 29, y: 68, w: 20, h: 23.3 }, "casefile"),
       // Lab results arrive on the desk when the police lab is done (see labs in story.ts).
       deskItem("office_labreport", "Lab results: the broken glass", "lab_glass", "E11", LAB_GLASS_RECT, "art.obj_labfolder", "art.obj_labfolder"),
       deskItem("office_labsamples", "Lab results: the guests' blood", "lab_samples", "E16", LAB_SAMPLES_RECT, "art.obj_labfolder", "art.obj_labfolder"),
-      panel("office_board", "Murder board", "board", { x: 0, y: 3, w: 22, h: 41 }, "board"),
-      { ...panel("office_phone", "Telephone", "phone", { x: 2, y: 68, w: 13, h: 17 }, "phone"), attention: { any: [{ callPending: "call_margaret_sedan" }, { callPending: "call_bennett_board" }] } },
-      panel("office_notebook", "Notebook", "notebook", { x: 14, y: 67, w: 14.2, h: 21 }, "notebook"),
-      panel("office_map", "Street map of Los Angeles", "map", { x: 70, y: 6, w: 21, h: 37 }, "map"),
+      {
+        ...panel("office_board", "Murder board", "board", { x: 0, y: 3, w: 22, h: 41 }, "board"),
+        // After Det. Bennett's call about the board, point to it until the first thread is pinned.
+        attention: { all: [{ callAnswered: "call_bennett_board" }, { not: { boardConnections: 1 } }] },
+        callout: { text: "Tap here to connect your evidence", when: { all: [{ callAnswered: "call_bennett_board" }, { not: { boardConnections: 1 } }] } },
+      },
+      { ...panel("office_phone", "Telephone", "phone", { x: 0.5, y: 64, w: 16.7, h: 23.8 }, "phone"), attention: { any: [{ callPending: "call_margaret_sedan" }, { callPending: "call_bennett_board" }] } },
+      panel("office_notebook", "Notebook", "notebook", { x: 16.5, y: 69, w: 11.4, h: 16.8 }, "notebook"),
+      {
+        ...panel("office_map", "Street map of Los Angeles", "map", { x: 70, y: 6, w: 21, h: 37 }, "map"),
+        // A first-time pointer: once the case file is read, show where to go until the map has been used.
+        attention: { all: [{ flag: "casefile_read" }, { not: { inspected: "office_map" } }] },
+        callout: { text: "Tap here to travel", when: { all: [{ flag: "casefile_read" }, { not: { inspected: "office_map" } }] } },
+      },
       panel("office_recorder", "Police interview tapes", "recorder", { x: 74, y: 72, w: 22, h: 28 }, "statements", briefed),
       panel("office_mail", "Opened mail", "tray", { x: 76, y: 68, w: 11, h: 10 }, "delivery", { any: [{ deliveryOpened: "jacket_recovered" }, { deliveryOpened: "patricia_envelope" }] }),
       // Event objects: they appear on the desk when a delivery arrives and stay until their evidence is collected.

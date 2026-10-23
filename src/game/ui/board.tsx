@@ -25,7 +25,7 @@ export function MurderBoard({
   const [linkFrom, setLinkFrom] = useState<string | null>(null);
   const [selectedString, setSelectedString] = useState<[string, string] | null>(null);
   const [trayOpen, setTrayOpen] = useState(true);
-  const drag = useRef<{ id: string; dx: number; dy: number; moved: boolean } | null>(null);
+  const drag = useRef<{ id: string; dx: number; dy: number; sx: number; sy: number; moved: boolean } | null>(null);
   const readOnly = view.status === "closed";
 
   useEffect(() => {
@@ -103,6 +103,11 @@ export function MurderBoard({
         </div>
       </div>
 
+      {readOnly ? null : (
+        <p className={`px-4 py-1.5 text-center text-xs md:hidden ${linkFrom ? "bg-[#ffdf9e] font-semibold text-[#2a1d10]" : "bg-[#1d1610] text-smoke"}`} aria-live="polite">
+          {linkFrom ? `Now tap a second item to tie to ${meta(linkFrom).title}.` : "Tap one item, then another, to tie them with string. Tap a string to remove it."}
+        </p>
+      )}
       {/* On a phone the tray sits along the bottom, so the board keeps the full width. */}
       <div className="relative flex min-h-0 flex-1 flex-col md:flex-row">
         <div
@@ -118,6 +123,8 @@ export function MurderBoard({
           onPointerMove={(e) => {
             const d = drag.current;
             if (!d) return;
+            // A finger always wobbles a little: only a real movement is a drag, anything less is a tap.
+            if (!d.moved && Math.hypot(e.clientX - d.sx, e.clientY - d.sy) < (e.pointerType === "mouse" ? 4 : 12)) return;
             const p = pct(e.clientX, e.clientY);
             d.moved = true;
             onLocalBoard({
@@ -133,6 +140,9 @@ export function MurderBoard({
               const it = items.find((i) => i.id === d.id)!;
               dispatch({ type: "boardMove", itemId: d.id, x: it.x, y: it.y });
             } else clickCard(d.id);
+          }}
+          onPointerCancel={() => {
+            drag.current = null;
           }}
           onDragOver={(e) => e.preventDefault()}
           onDrop={(e) => {
@@ -183,7 +193,7 @@ export function MurderBoard({
                     if (readOnly) return;
                     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
                     const p = pct(e.clientX, e.clientY);
-                    drag.current = { id: it.id, dx: p.x - it.x, dy: p.y - it.y, moved: false };
+                    drag.current = { id: it.id, dx: p.x - it.x, dy: p.y - it.y, sx: e.clientX, sy: e.clientY, moved: false };
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
@@ -205,7 +215,7 @@ export function MurderBoard({
                   <button
                     type="button"
                     onClick={() => dispatch({ type: "boardRemove", itemId: it.id })}
-                    className="absolute -right-2 -top-2 hidden h-5 w-5 rounded-full bg-black/70 text-xs leading-5 text-paper hover:bg-black group-hover:block group-focus-within:block"
+                    className={`absolute -right-2.5 -top-2.5 h-6 w-6 rounded-full bg-black/75 text-sm leading-6 text-paper hover:bg-black [.group:has(:focus-visible)_&]:block pointer-fine:group-hover:block ${active ? "block" : "hidden"}`}
                     aria-label={`Unpin ${m.title}`}
                   >
                     ×

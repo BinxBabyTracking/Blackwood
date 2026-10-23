@@ -209,6 +209,7 @@ export const labs: LabDef[] = [
     label: "Blood typing: the broken glass",
     seconds: 180,
     rect: LAB_GLASS_RECT,
+    image: "art.obj_labfolder",
     onReady: [{ delivery: "lab_glass" }, { message: "The police lab's results on the broken glass are on your desk." }],
   },
   {
@@ -216,6 +217,7 @@ export const labs: LabDef[] = [
     label: "Blood typing: the guests",
     seconds: 180,
     rect: LAB_SAMPLES_RECT,
+    image: "art.obj_labfolder",
     onReady: [{ delivery: "lab_samples" }, { message: "The lab's comparison of the guests' blood is on your desk." }],
   },
 ];

@@ -117,8 +117,44 @@ export function SceneHotspot({
           <span className="truncate px-1 pb-0.5 font-mono text-[0.6rem] leading-tight text-[#f3ede3]/80">{hotspot.label}</span>
         </span>
       ) : null}
-      {hotspot.attention ? <span aria-hidden className={`pointer-events-none absolute inset-0 rounded-[3px] ${reducedMotion ? "shadow-[0_0_0_1px_rgba(196,163,107,0.5)]" : "game-attention"}`} /> : null}
+      {hotspot.attention ? (
+        <span
+          aria-hidden
+          className={`pointer-events-none absolute inset-0 rounded-[3px] ${
+            hotspot.callout
+              ? reducedMotion
+                ? "shadow-[0_0_0_2px_rgba(196,163,107,0.8)]"
+                : "game-guide"
+              : reducedMotion
+                ? "shadow-[0_0_0_1px_rgba(196,163,107,0.5)]"
+                : "game-attention"
+          }`}
+        />
+      ) : null}
+      {hotspot.callout ? <Callout text={hotspot.callout} reducedMotion={reducedMotion} align={r.x + r.w / 2 < 18 ? "left" : r.x + r.w / 2 > 82 ? "right" : "center"} /> : null}
     </button>
+  );
+}
+
+/** A pointer under a hotspot for a first-time player. "Tap" reads "Click" where there is a mouse. */
+function Callout({ text, reducedMotion, align }: { text: string; reducedMotion: boolean; align: "left" | "center" | "right" }) {
+  const tap = /^Tap\b/.test(text);
+  const rest = tap ? text.slice(3) : text;
+  // Near the edge of the scene the label hangs from that side instead of the middle, so it stays on screen.
+  const place = align === "left" ? "left-10 items-start" : align === "right" ? "right-10 items-end" : "left-1/2 -translate-x-1/2 items-center";
+  return (
+    <span aria-hidden className={`pointer-events-none absolute top-full z-10 mt-2 flex flex-col ${place} ${reducedMotion ? "" : align === "center" ? "game-callout" : "game-callout-side"}`}>
+      <span className={`h-0 w-0 border-x-[7px] border-b-[8px] border-x-transparent border-b-brass ${align === "left" ? "ml-6" : align === "right" ? "mr-6" : ""}`} />
+      <span className="whitespace-nowrap rounded-[2px] bg-brass px-3 py-1.5 font-mono text-[0.7rem] font-bold uppercase tracking-[0.12em] text-ink shadow-[0_4px_14px_rgba(0,0,0,0.6)] sm:text-xs">
+        {tap ? (
+          <>
+            <span className="pointer-fine:hidden">Tap</span>
+            <span className="hidden pointer-fine:inline">Click</span>
+          </>
+        ) : null}
+        {rest}
+      </span>
+    </span>
   );
 }
 
@@ -136,8 +172,11 @@ export function ExplorationScene({
   reducedMotion,
   onHotspot,
   overlays,
+  underlays,
   stack = [],
 }: {
+  /** Pinned to the scene surface, under any painted object placed on top (a grayed-out spot for lab results). */
+  underlays?: React.ReactNode;
   /** Hotspot ids in the order they were last handled; later ones lie on top. */
   stack?: string[];
   location: ClientView["location"];
@@ -213,8 +252,11 @@ export function ExplorationScene({
   useLayoutEffect(() => {
     const el = scroller.current;
     if (!el) return;
-    el.scrollLeft = pan ? (el.scrollWidth - el.clientWidth) / 2 : 0;
+    // A first-time pointer (the map on the wall) is brought into view; otherwise the room opens at its middle.
+    const guide = location.hotspots.find((h) => h.callout);
+    el.scrollLeft = !pan ? 0 : guide ? ((guide.rect.x + guide.rect.w / 2) / 100) * el.scrollWidth - el.clientWidth / 2 : (el.scrollWidth - el.clientWidth) / 2;
     updateEdges();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pan, location.id]);
 
   const look = (dir: -1 | 1) => {
@@ -285,6 +327,8 @@ export function ExplorationScene({
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={location.background} alt={`${location.name}, ${location.subtitle}`} className="h-full w-full object-cover" draggable={false} />
+            {/* Pinned extras (lab countdowns) lie on the surface, under anything placed on top of them. */}
+            <div className="pointer-events-none absolute inset-0">{underlays}</div>
             {location.hotspots.map((h) => (
               <SceneHotspot
                 key={h.id}
@@ -300,6 +344,7 @@ export function ExplorationScene({
             <div className="pointer-events-none absolute inset-0" style={{ zIndex: painted.length + 1 }}>
               {overlays}
             </div>
+
           </div>
           {pan ? null : caption}
           {pan ? null : label}

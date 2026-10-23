@@ -284,6 +284,8 @@ export interface HotspotDef {
   sprite?: { image: string; when?: Condition }[];
   /** A subtle cue (a ringing telephone, something new on the desk) while the condition holds. */
   attention?: Condition;
+  /** A short pointer shown beside the hotspot while the condition holds, e.g. "Tap here to travel". */
+  callout?: { text: string; when: Condition };
 }
 
 export type PanelId = "casefile" | "board" | "notebook" | "map" | "phone" | "statements" | "delivery" | "conclusion";
@@ -540,6 +542,8 @@ export interface LabDef {
   seconds: number;
   /** The office desk spot where the countdown is shown (a hotspot rect). */
   rect: { x: number; y: number; w: number; h: number };
+  /** Image key of what will arrive there, shown grayed out with the countdown while the lab works. */
+  image?: string;
   /** What happens when the results are back (usually a delivery to the desk). */
   onReady: Effect[];
 }
@@ -866,7 +870,7 @@ export interface ClientView {
     subtitle: string;
     background: string;
     ambience: string | null;
-    hotspots: { id: string; label: string; rect: HotspotDef["rect"]; inspected: boolean; collected: boolean; sprite: string | null; figure: boolean; pending: boolean; attention: boolean }[];
+    hotspots: { id: string; label: string; rect: HotspotDef["rect"]; inspected: boolean; collected: boolean; sprite: string | null; figure: boolean; pending: boolean; attention: boolean; callout: string | null }[];
   };
   map: { id: string; name: string; subtitle: string; area: string | null; available: boolean; visited: boolean; current: boolean; pin: { x: number; y: number } | null; tag: string | null }[];
   /** Optional recordings for travel scenes; when null the game synthesizes the sound. */
@@ -874,7 +878,7 @@ export interface ClientView {
   /** Background music for the whole case: tracks played one after another, round and round. */
   music: string[];
   /** Lab tests in progress or back. `remainingMs` is as of when this view was made. */
-  labs: { id: string; label: string; remainingMs: number; done: boolean; rect: { x: number; y: number; w: number; h: number } }[];
+  labs: { id: string; label: string; remainingMs: number; done: boolean; rect: { x: number; y: number; w: number; h: number }; image: string | null }[];
   evidence: ClientEvidence[];
   characters: ClientCharacter[];
   notebook: InvestigationState["notebook"];

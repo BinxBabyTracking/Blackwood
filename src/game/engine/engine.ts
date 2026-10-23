@@ -1016,6 +1016,7 @@ export function project(def: CaseDefinition, s: InvestigationState, now = Date.n
         // A painted scene whose painting for this person or object has not arrived yet.
         pending: Boolean(h.art && painted && !def.assets.images[h.art] && !h.sprite?.some((x) => check(x.when, s))),
         attention: h.attention ? check(h.attention, s) : false,
+        callout: h.callout && check(h.callout.when, s) ? h.callout.text : null,
       })),
     },
     map: def.locations
@@ -1088,7 +1089,7 @@ export function project(def: CaseDefinition, s: InvestigationState, now = Date.n
     music: (def.soundtrack ?? []).filter((t) => t.kind === "music").flatMap((t) => (def.assets.audio[t.key] ? [def.assets.audio[t.key]!] : [])),
     labs: (def.labs ?? []).flatMap((l) => {
       const j = s.labs?.[l.id];
-      return j ? [{ id: l.id, label: l.label, remainingMs: Math.max(0, j.readyAt - now), done: j.done, rect: l.rect }] : [];
+      return j ? [{ id: l.id, label: l.label, remainingMs: Math.max(0, j.readyAt - now), done: j.done, rect: l.rect, image: l.image ? def.assets.images[l.image] ?? null : null }] : [];
     }),
     travelAudio: { drive: def.assets.audio["sfx.travel_drive"] ?? null, walk: def.assets.audio["sfx.travel_walk"] ?? null },
     conclusion: {

@@ -542,12 +542,30 @@ export function InvestigationShell({
                   style={{ left: `${l.rect.x}%`, top: `${l.rect.y}%`, width: `${l.rect.w}%`, height: `${l.rect.h}%` }}
                   data-lab-countdown={l.id}
                 >
-                  <span className="whitespace-nowrap border border-brass/60 bg-[#0d1013]/90 px-2 py-1 text-center font-mono text-[0.6rem] uppercase tracking-[0.16em] text-brass shadow-lg sm:text-[0.7rem]">
+                  <span className="relative whitespace-nowrap border border-brass/60 bg-[#0d1013]/90 px-2 py-1 text-center font-mono text-[0.6rem] uppercase tracking-[0.16em] text-brass shadow-lg sm:text-[0.7rem]">
                     Lab results
                     <span className="block text-sm tracking-[0.1em] text-paper sm:text-base">{labLeft(l.id)}</span>
                   </span>
                 </div>
               ))
+            : null
+        }
+        underlays={
+          atHome
+            ? waiting.map((l) =>
+                l.image ? (
+                  // Where the results will land: the folder, grayed out, until the lab is done.
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    key={l.id}
+                    src={l.image}
+                    alt=""
+                    draggable={false}
+                    className="absolute object-contain opacity-45 grayscale brightness-75"
+                    style={{ left: `${l.rect.x}%`, top: `${l.rect.y}%`, width: `${l.rect.w}%`, height: `${l.rect.h}%` }}
+                  />
+                ) : null,
+              )
             : null
         }
         location={view.location}
