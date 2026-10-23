@@ -221,6 +221,7 @@ These are built once and work for any new case with no extra work.
 - **Accounts.** Sign-up is open to everyone. Each player has a service record, rank and awards.
 - **Site wording.** The agency is fictional. Cases are drawn from real investigations with names, places, dates and details changed; no character is a real person; solutions to unsolved cases are dramatized reconstructions.
 - **Controls.** No bottom bar: painted Map, Notebook and Evidence buttons sit in the bottom-left corner of each scene (in the office only Evidence, since the map and notebook are in the room), the murder board is on the office wall, and Menu (with volume sliders) is in the top bar.
+- **Player feedback.** When a case closes, the closing screen asks for a review: 1 to 5 stars, difficulty (Too easy, About right, Too hard), where they got stuck and anything else, or Skip. Anyone who skipped can leave one later from Leave a review on the closed case in My Case Files. Send feedback in the game Menu takes a note at any time and attaches the location, what was open, evidence count and the last few lines of the most recent interview. Admin shows each case's average rating and difficulty split, then every review and report, newest first, with that context. Feedback is private and never shown publicly. Use it to tune difficulty and time estimates for each new case.
 - **Phone play.** Swipe to look around wide scenes, the board tray at the bottom, interviews full screen. Clicking or tapping off a window closes it (phone interviews use End Interview).
 
 ## Testing and deployment
