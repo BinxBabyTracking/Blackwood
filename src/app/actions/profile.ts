@@ -1,5 +1,6 @@
 "use server";
 
+import { screenName } from "@/lib/moderation";
 import { redirect } from "next/navigation";
 import { refresh } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
@@ -16,9 +17,12 @@ async function session() {
   return { supabase, user: data.user } as const;
 }
 
-function validateName(raw: FormDataEntryValue | null) {
+async function validateName(raw: FormDataEntryValue | null): Promise<{ name: string; error?: undefined } | { error: string }> {
   const name = typeof raw === "string" ? raw.trim().replace(/\s+/g, " ") : "";
   if (name.length < 2 || name.length > 40) return { error: "Use between 2 and 40 characters." };
+  // Other players see this name (joint investigations, the leaderboard).
+  const screened = await screenName(name);
+  if (!screened.ok) return { error: screened.error };
   return { name };
 }
 
@@ -47,7 +51,7 @@ export async function completeOnboarding(_prev: ActionResult, fd: FormData): Pro
   if ("error" in s) return { status: "error", message: s.error! };
 
   const fieldErrors: Record<string, string> = {};
-  const name = validateName(fd.get("display_name"));
+  const name = await validateName(fd.get("display_name"));
   if ("error" in name) fieldErrors.display_name = name.error!;
   const pref = fd.get("investigation_preference");
   if (pref !== "solo" && pref !== "collaborative") fieldErrors.investigation_preference = "Choose how you prefer to work.";
@@ -79,7 +83,7 @@ export async function updateProfile(_prev: ActionResult, fd: FormData): Promise<
   const s = await session();
   if ("error" in s) return { status: "error", message: s.error! };
 
-  const name = validateName(fd.get("display_name"));
+  const name = await validateName(fd.get("display_name"));
   if ("error" in name) return { status: "error", message: name.error!, fieldErrors: { display_name: name.error! } };
   const pref = fd.get("investigation_preference");
   if (pref !== "solo" && pref !== "collaborative") {

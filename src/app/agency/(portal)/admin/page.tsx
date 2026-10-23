@@ -17,6 +17,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getFeedback } from "@/lib/feedback";
 import { allEntries } from "@/lib/leaderboard";
 import { adminRemoveEntry } from "@/app/actions/leaderboard";
+import { NameCheck } from "@/components/portal/name-check";
 
 export const metadata: Metadata = { title: "Admin", robots: { index: false, follow: false } };
 
@@ -411,7 +412,12 @@ async function LeaderboardAdmin() {
       <h2 id="lb" className="font-serif text-xl text-smoke">
         Leaderboard entries
       </h2>
-      <p className="mt-2 text-sm text-smoke">Names players put on the case leaderboards. Remove anything that shouldn&apos;t be there; it is deleted for good.</p>
+      <p className="mt-2 text-sm text-smoke">
+        Names players put on the case leaderboards. Every name other players can see (display names, guest names, group names, leaderboard names) is screened when it is entered:
+        a word check that sees through misspellings and look-alike letters, then a quick Claude check for names that only sound rude out loud. Remove anything that still slips
+        through; it is deleted for good.
+      </p>
+      <NameCheck />
       {rows.length === 0 ? (
         <p className="mt-4 border-y border-rule py-5 text-sm text-smoke">No entries yet.</p>
       ) : (

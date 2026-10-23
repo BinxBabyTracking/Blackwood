@@ -3,6 +3,7 @@ import { normalizeState } from "@/game/engine/engine";
 import { findInvestigation } from "@/game/persistence";
 import type { CaseDefinition, InvestigationState } from "@/game/engine/types";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { screenName } from "@/lib/moderation";
 
 /*
  * Case leaderboards. Only a player's first solve of a case can go on the
@@ -51,15 +52,12 @@ export function runOf(s: InvestigationState): Run {
   return { seconds, questions, returned, score };
 }
 
-/* A short list of words no name on the board may contain. Not exhaustive; Admin can remove anything. */
-const BLOCKED = /(fuck|shit|cunt|bitch|nigg|fag|retard|whore|slut|dick|cock|pussy|rape|nazi|hitler|kkk)/i;
 
-/** Tidies a name for the board, or says why it can't be used. */
+/** Tidies a name for the board, or says why it can't be used. Screening for offensive names is in `moderation.ts`. */
 export function cleanName(raw: unknown): { name: string } | { error: string } {
   const name = String(raw ?? "").replace(/\s+/g, " ").trim();
   if (name.length < 2 || name.length > 30) return { error: "Use 2 to 30 characters." };
   if (!/^[\p{L}\p{N} .,'&!?()-]+$/u.test(name)) return { error: "Use letters, numbers and simple punctuation only." };
-  if (BLOCKED.test(name.replace(/[^a-z]/gi, ""))) return { error: "Choose a different name." };
   return { name };
 }
 
@@ -181,6 +179,8 @@ export async function myResult(def: CaseDefinition, userId: string, displayName:
 export async function submit(def: CaseDefinition, userId: string, rawName: string) {
   const clean = cleanName(rawName);
   if ("error" in clean) return clean;
+  const screened = await screenName(clean.name);
+  if (!screened.ok) return { error: screened.error };
   const { data: done } = await db().from("case_completions").select("first_session_id").eq("user_id", userId).eq("case_id", def.id).maybeSingle();
   const sessionId = (done as { first_session_id: string } | null)?.first_session_id;
   if (!sessionId) return { error: "Only your first solve of a case can go on the board." };

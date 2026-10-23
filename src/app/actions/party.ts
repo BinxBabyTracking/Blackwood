@@ -4,6 +4,7 @@ import { timingSafeEqual } from "node:crypto";
 import { redirect } from "next/navigation";
 import { findInvestigation, PersistenceError, startInvestigation } from "@/game/persistence";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { screenName } from "@/lib/moderation";
 import { loadCase } from "@/game/registry";
 import { requireInvestigator } from "@/lib/investigator";
 import {
@@ -82,6 +83,8 @@ export async function joinParty(_prev: JoinState, fd: FormData): Promise<JoinSta
   const key = String(fd.get("key") ?? "");
   const name = String(fd.get("name") ?? "").replace(/\s+/g, " ").trim().slice(0, 40);
   if (!name) return { error: "Enter a name so the table knows who you are." };
+  const screened = await screenName(name);
+  if (!screened.ok) return { error: screened.error };
   const lobby = await lobbyByCode(code).catch(() => null);
   const ok = lobby && key.length === lobby.join_key.length && timingSafeEqual(Buffer.from(key), Buffer.from(lobby.join_key));
   if (!lobby || !ok) return { error: "This invitation has ended. Ask the host to show the code again." };
