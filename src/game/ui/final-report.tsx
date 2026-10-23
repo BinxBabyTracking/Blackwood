@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useBackdropClose } from "./overlay";
 import type { ActionResponse, ClientView, GameAction, ReportDraft, Theory } from "../engine/types";
 
 type Dispatch = (a: GameAction) => Promise<ActionResponse | null>;
@@ -98,11 +99,14 @@ export function FinalReport({
     if (r?.outcome.kind === "verdict" && !r.outcome.correct) setMode("returned");
   };
 
+  const backdrop = useBackdropClose(() => void leave());
+  const confirmBackdrop = useBackdropClose(() => setConfirming(false));
   const shown: ReportDraft = filed ? { ...filed.theory } : draft;
   const name = filed?.investigator ?? investigator;
 
   return (
-    <div className="fixed inset-0 z-40 overflow-y-auto bg-black/80 px-3 py-6 backdrop-blur-[2px] sm:px-6 game-fade" role="dialog" aria-modal="true" aria-label="Final investigative report">
+    <div className="fixed inset-0 z-40 overflow-y-auto bg-black/80 px-3 py-6 backdrop-blur-[2px] sm:px-6 game-fade" role="dialog" aria-modal="true" aria-label="Final investigative report"
+      {...backdrop}>
       <div ref={top} className="relative mx-auto w-full max-w-3xl bg-[#efe8d6] text-[#231e17] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9)]">
         <div className="flex items-center justify-between gap-4 border-b border-[#231e17]/15 px-5 py-2.5 font-mono text-xs">
           <span className="tracking-[0.14em] text-[#231e17]/60">CASE C001 · FORM BI-7</span>
@@ -293,7 +297,7 @@ export function FinalReport({
         </div>
 
         {confirming ? (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="alertdialog" aria-modal="true" aria-labelledby="confirm-h">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="alertdialog" aria-modal="true" aria-labelledby="confirm-h" {...confirmBackdrop}>
             <div className="w-full max-w-md bg-[#efe8d6] p-6 text-[#231e17] shadow-2xl">
               <p id="confirm-h" className="font-mono text-sm font-bold tracking-[0.12em]">SUBMIT FINDINGS?</p>
               <p className="mt-3 font-serif leading-relaxed">

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ActionOutcome, ActionResponse, ClientLine, ClientView, GameAction } from "../engine/types";
+import { useBackdropClose } from "./overlay";
 import { QuestionBar } from "./question-bar";
 import { useLinePlayer } from "./use-line-player";
 
@@ -72,8 +73,10 @@ export function InterviewScreen({
     await dispatch(a);
   };
 
+  const backdrop = useBackdropClose(onClose);
   return (
-    <div className="fixed inset-0 z-40 flex flex-col bg-[#08090a] text-paper game-fade" role="dialog" aria-modal="true" aria-label={`Interview with ${data.name}`}>
+    <div className="fixed inset-0 z-40 flex bg-black/70 backdrop-blur-[2px] game-fade md:p-6 lg:p-10" {...backdrop}>
+    <div className="mx-auto flex h-full w-full max-w-7xl flex-col overflow-hidden bg-[#08090a] text-paper md:border md:border-white/10 md:shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9)]" role="dialog" aria-modal="true" aria-label={`Interview with ${data.name}`}>
       {/* Letterbox: case, place, manner, and the way out */}
       <header className="flex shrink-0 items-center justify-between gap-3 border-b border-white/5 bg-black px-4 py-2.5 sm:px-6">
         <p className="min-w-0 truncate font-mono text-[0.7rem] uppercase tracking-[0.18em] text-smoke">
@@ -212,8 +215,10 @@ export function InterviewScreen({
                       onAsk={(text) => ask({ type: "askFree", characterId: data.characterId, text })}
                     />
                     <p className="mt-2 text-xs leading-snug text-smoke">
-                      {first} only knows what {data.characterId === "bennett" ? "is in the police file" : "they saw, heard and did around the case"}. Ask about the
-                      people, the night and the evidence. Questions about anything else get short answers.
+                      {data.characterId === "bennett"
+                        ? "Det. Bennett only knows what is in the police file."
+                        : "Witnesses only know what they saw, heard and did around the case."}{" "}
+                      Ask about the people, the night and the evidence. Questions about anything else get short answers.
                     </p>
                     {data.questions.limited && data.available && !closed ? (
                       <QuestionCount
@@ -243,6 +248,7 @@ export function InterviewScreen({
           </div>
         </section>
       </div>
+    </div>
     </div>
   );
 }

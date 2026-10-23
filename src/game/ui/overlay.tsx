@@ -1,6 +1,24 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, type PointerEvent, type ReactNode } from "react";
+
+/**
+ * Props for a modal's dimmed backdrop: clicking or tapping it, off the panel,
+ * closes the modal. Only a press that starts and ends on the backdrop counts,
+ * so selecting text inside the panel and releasing outside does not close it.
+ */
+export function useBackdropClose(onClose: () => void) {
+  const down = useRef(false);
+  return {
+    onPointerDown: (e: PointerEvent<HTMLElement>) => {
+      down.current = e.target === e.currentTarget;
+    },
+    onClick: (e: { target: EventTarget; currentTarget: EventTarget }) => {
+      if (down.current && e.target === e.currentTarget) onClose();
+      down.current = false;
+    },
+  };
+}
 
 /**
  * Modal layer used by every in-case panel. Traps focus loosely (focuses the
@@ -24,6 +42,7 @@ export function Overlay({
   full?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const backdrop = useBackdropClose(onClose);
   useEffect(() => {
     ref.current?.focus();
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -32,7 +51,7 @@ export function Overlay({
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/70 p-3 backdrop-blur-[2px] sm:p-6 game-fade">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/70 p-3 backdrop-blur-[2px] sm:p-6 game-fade" {...backdrop}>
       <div
         ref={ref}
         tabIndex={-1}
