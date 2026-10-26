@@ -510,6 +510,12 @@
       "model": "hand-imported",
       "generatedAt": "2026-10-26T14:55:37.576Z"
     },
+    "c002_obj_slip": {
+      "url": "/art/c002_obj_slip.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T14:58:36.176Z"
+    },
     "c002_portrait_diane": {
       "url": "/art/c002_portrait_diane.webp",
       "kind": "portrait",

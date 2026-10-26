@@ -167,7 +167,7 @@ export const locations: LocationDef[] = [
     hotspots: [
       person("hk_tom", "Tom Hale", "tom", { x: 29, y: 24, w: 12, h: 62 }),
       inspect("hk_letter", "Kitchen table", "letter", { x: 5, y: 60, w: 13, h: 9 }, "The kitchen table", "A police photocopy of the ransom letter lies on the table beside the telephone, where Tom has read it until the paper went soft.", { evidence: "E04" }),
-      inspect("hk_slip", "Hall table", "slip", { x: 90, y: 43, w: 8, h: 7 }, "The hall table", "Keys, the mail, and a bank envelope with a withdrawal slip tucked into it.", { evidence: "E22" }),
+      inspect("hk_slip", "Hall table", "slip", { x: 92.5, y: 44.2, w: 6.5, h: 4.6 }, "The hall table", "Keys, the mail, and a bank envelope with a withdrawal slip tucked into it.", { evidence: "E22" }),
       inspect("hk_garage", "Door to the garage", "door", { x: 60, y: 5, w: 19, h: 59 }, "Garage and side door", "Through the kitchen door, the garage: a surveyor's tripod, a bicycle, the trash cans. The side door from the garage to the yard has a thumb lock on the inside and a keyhole outside. No marks on the lock, the frame or the strike plate."),
       inspect("hk_drawer", "Kitchen drawer", "drawer", { x: 43, y: 42, w: 14, h: 20 }, "Kitchen drawer", "The scissors Tom used to cut himself free, and a few snipped ends of black plastic tie he swept up afterward."),
       inspect("hk_phone", "Wall telephone", "wallphone", { x: 2, y: 21, w: 4, h: 27 }, "Wall telephone", "A beige wall telephone with a long cord. A pad beside it, in Laura's handwriting: 'Ruth (work)', 'Junior High office', 'Mom's birthday 10/22'."),
