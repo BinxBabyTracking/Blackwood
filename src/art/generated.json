@@ -444,6 +444,12 @@
       "model": "hand-imported",
       "generatedAt": "2026-10-26T13:46:28.558Z"
     },
+    "c002_portrait_tom": {
+      "url": "/art/c002_portrait_tom.webp",
+      "kind": "portrait",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T14:05:57.306Z"
+    },
     "site_hero": {
       "url": "/art/site_hero.webp",
       "kind": "site",
