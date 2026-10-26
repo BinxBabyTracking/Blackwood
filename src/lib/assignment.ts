@@ -17,10 +17,12 @@ export type AssignmentAction =
  */
 export function resolveAssignmentAction(
   c: Pick<CatalogCase, "status" | "is_preview" | "tier">,
-  viewer: { signedIn: boolean; entitled: boolean; playable: boolean; session: "active" | "closed" | null },
+  viewer: { signedIn: boolean; entitled: boolean; playable: boolean; session: "active" | "closed" | null; earlyAccess?: boolean },
 ): AssignmentAction {
   if (c.is_preview || c.status === "in_development") return { kind: "in_preparation" };
-  if (c.status === "coming_soon" || (c.status === "available" && !viewer.playable)) return { kind: "coming_soon" };
+  // Testers with an early-access grant can play a case that everyone else sees as Coming Soon.
+  const early = c.status === "coming_soon" && viewer.earlyAccess === true && viewer.playable;
+  if (!early && (c.status === "coming_soon" || (c.status === "available" && !viewer.playable))) return { kind: "coming_soon" };
   if (c.status === "retired") return { kind: "retired" };
   if (!viewer.signedIn) return { kind: "sign_in" };
   if (viewer.session === "active") return { kind: "resume" };

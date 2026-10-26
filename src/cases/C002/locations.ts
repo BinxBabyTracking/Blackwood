@@ -79,10 +79,7 @@ const ART: Record<string, string> = {
   cr_nora: "art.figure_nora",
   ra_ruth: "art.figure_ruth",
   ra_laura: "art.figure_laura",
-  ts_board: "art.obj_noticeboard",
-  ts_ledger: "art.obj_ledger",
   cb_gordon: "art.figure_gordon",
-  cb_van: "art.obj_van_tarp",
   mh_diane: "art.figure_diane",
 };
 

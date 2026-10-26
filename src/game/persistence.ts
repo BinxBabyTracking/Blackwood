@@ -64,13 +64,16 @@ export async function startInvestigation(userId: string, def: CaseDefinition): P
   const db = admin();
   const { data: c, error } = await db.from("cases").select("id, status, is_preview, tier:pricing_tiers(price_cents)").eq("id", def.id).maybeSingle();
   if (error) throw new PersistenceError(error.message);
-  if (!c || c.status !== "available" || c.is_preview) throw new PersistenceError("This case is not open for assignment.");
+  if (!c || c.is_preview) throw new PersistenceError("This case is not open for assignment.");
+  const { data: ent } = await db.from("case_entitlements").select("id, source").eq("user_id", userId).eq("case_id", def.id).maybeSingle();
+  // A Coming Soon case is open only to testers with an early-access grant.
+  const early = c.status === "coming_soon" && ent?.source === "grant";
+  if (c.status !== "available" && !early) throw new PersistenceError("This case is not open for assignment.");
 
   const existing = await findInvestigation(userId, def.id);
   if (existing && existing.sessionStatus === "active") return existing;
 
   const price = (c.tier as unknown as { price_cents: number } | null)?.price_cents ?? 0;
-  const { data: ent } = await db.from("case_entitlements").select("id").eq("user_id", userId).eq("case_id", def.id).maybeSingle();
   if (!ent) {
     if (price > 0) throw new PersistenceError("You need to purchase this case before accepting it.");
     const { error: entError } = await db.from("case_entitlements").insert({ user_id: userId, case_id: def.id, source: "free" });

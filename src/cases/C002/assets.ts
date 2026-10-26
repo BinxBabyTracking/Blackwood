@@ -59,7 +59,7 @@ const OFFICE_OVERLAYS = ["obj_casefile", "obj_labfolder", "obj_phone", "obj_note
 /** People and objects drawn over C002's painted scenes (hotspot `art` keys). Only present once painted. */
 const OVERLAYS = [
   "figure_tom", "figure_howard", "figure_ferris", "figure_gordon_custody", "figure_nora", "figure_ruth", "figure_laura", "figure_gordon", "figure_diane",
-  "obj_glasses", "obj_letter", "obj_slip", "obj_noticeboard", "obj_ledger", "obj_van_tarp",
+  "obj_glasses", "obj_letter", "obj_slip",
 ];
 
 export const assets: AssetManifest = {

@@ -2,16 +2,66 @@
   "about": "Every generated image in Blackwood Investigations. Run: node scripts/generate-art.mjs (see art/README.md). Prompts are built as style + kind + subject. Characters reuse the same description everywhere so they look like the same person.",
   "style": "Painted noir illustration in the manner of a 1980s paperback mystery cover and classic hand-painted point-and-click adventure game backgrounds. Gouache and oil textures with visible brushwork, warm tungsten lamplight against deep blue-black shadows, a muted palette of ochre, oxblood, bottle green, slate and nicotine cream, subtle film grain. Los Angeles, August 1985. Period-accurate details. Absolutely no text, lettering, numbers, logos, brand names, watermarks or signatures anywhere; any paperwork shows only illegible scribbles or blurred typing.",
   "kinds": {
-    "background": { "size": "1536x1024", "quality": "high", "background": "opaque", "suffix": "A wide establishing interior view at standing eye level, composed for a 16:9 game screen, with depth and atmosphere. The room is empty of people. Keep the described empty surfaces and floor areas genuinely clear, because objects and people will be placed there separately." },
-    "portrait": { "size": "1024x1536", "quality": "high", "background": "opaque", "suffix": "A painted head-and-shoulders portrait, three-quarter view, looking slightly off to the side, softly lit from the upper left, against a dark, muted painted backdrop. Natural, believable face; not a caricature." },
-    "figure": { "size": "1024x1536", "quality": "high", "background": "transparent", "suffix": "The same person as the reference portrait, shown full length from head to toe, standing naturally, turned three-quarters toward the viewer, lit warmly from the upper left. Isolated cut-out on a fully transparent background: no floor, no backdrop, only a faint contact shadow at the feet." },
-    "sprite": { "size": "1024x1024", "quality": "medium", "background": "transparent", "suffix": "A single isolated object, centered, entirely in frame, seen at a three-quarter angle from slightly above as it would sit in a room, lit warmly from the upper left to match a painted scene. Isolated cut-out on a fully transparent background with only a soft contact shadow; nothing else in the image." },
-    "evidence": { "size": "1024x1024", "quality": "medium", "background": "opaque", "suffix": "A close-up evidence still life, raking lamplight, shallow depth of field, dark muted surroundings, the subject filling most of the frame." },
-    "site": { "size": "1536x1024", "quality": "high", "background": "opaque", "suffix": "A cinematic wide composition with room on the left third for page text, moody and atmospheric." },
-    "panorama": {"size": "1536x1024", "quality": "high", "background": "opaque", "suffix": "A wide side-on panorama, as seen through the side window of a moving car, composed for a 16:9 screen. The horizon runs level across the whole image and nothing important touches the left or right edge, so the image can repeat side by side. The bottom fifth is plain dark ground."},
-    "strip": {"size": "1536x1024", "quality": "high", "background": "transparent", "suffix": "Seen exactly side-on, lit by warm dusk and streetlight. Output a PNG with a truly transparent background (a real alpha channel, not a painted checkerboard pattern): nothing in the image except the subject."},
-    "pov": {"size": "1536x1024", "quality": "high", "background": "opaque", "suffix": "A cinematic first-person view at standing eye level, composed for a 16:9 screen, the way ahead leading into the picture. No people."},
-    "map": {"size": "1536x1024", "quality": "high", "background": "opaque", "suffix": "A hand-painted fold-out street map from the 1980s, seen flat from directly above and filling the whole image edge to edge like a sheet laid on a table: no table, no border, no frame. Muted period map colours: cream paper, ochre streets, sage green parkland, pale blue water, faint fold creases. Absolutely no words, letters, numbers, street names or symbols anywhere on the map."}
+    "background": {
+      "size": "1536x1024",
+      "quality": "high",
+      "background": "opaque",
+      "suffix": "A wide establishing interior view at standing eye level, composed for a 16:9 game screen, with depth and atmosphere. The room is empty of people. Keep the described empty surfaces and floor areas genuinely clear, because objects and people will be placed there separately."
+    },
+    "portrait": {
+      "size": "1024x1536",
+      "quality": "high",
+      "background": "opaque",
+      "suffix": "A painted head-and-shoulders portrait, three-quarter view, looking slightly off to the side, softly lit from the upper left, against a dark, muted painted backdrop. Natural, believable face; not a caricature."
+    },
+    "figure": {
+      "size": "1024x1536",
+      "quality": "high",
+      "background": "transparent",
+      "suffix": "The same person as the reference portrait, shown full length from head to toe, standing naturally, turned three-quarters toward the viewer, lit warmly from the upper left. Isolated cut-out on a fully transparent background: no floor, no backdrop, only a faint contact shadow at the feet."
+    },
+    "sprite": {
+      "size": "1024x1024",
+      "quality": "medium",
+      "background": "transparent",
+      "suffix": "A single isolated object, centered, entirely in frame, seen at a three-quarter angle from slightly above as it would sit in a room, lit warmly from the upper left to match a painted scene. Isolated cut-out on a fully transparent background with only a soft contact shadow; nothing else in the image."
+    },
+    "evidence": {
+      "size": "1024x1024",
+      "quality": "medium",
+      "background": "opaque",
+      "suffix": "A close-up evidence still life, raking lamplight, shallow depth of field, dark muted surroundings, the subject filling most of the frame."
+    },
+    "site": {
+      "size": "1536x1024",
+      "quality": "high",
+      "background": "opaque",
+      "suffix": "A cinematic wide composition with room on the left third for page text, moody and atmospheric."
+    },
+    "panorama": {
+      "size": "1536x1024",
+      "quality": "high",
+      "background": "opaque",
+      "suffix": "A wide side-on panorama, as seen through the side window of a moving car, composed for a 16:9 screen. The horizon runs level across the whole image and nothing important touches the left or right edge, so the image can repeat side by side. The bottom fifth is plain dark ground."
+    },
+    "strip": {
+      "size": "1536x1024",
+      "quality": "high",
+      "background": "transparent",
+      "suffix": "Seen exactly side-on, lit by warm dusk and streetlight. Output a PNG with a truly transparent background (a real alpha channel, not a painted checkerboard pattern): nothing in the image except the subject."
+    },
+    "pov": {
+      "size": "1536x1024",
+      "quality": "high",
+      "background": "opaque",
+      "suffix": "A cinematic first-person view at standing eye level, composed for a 16:9 screen, the way ahead leading into the picture. No people."
+    },
+    "map": {
+      "size": "1536x1024",
+      "quality": "high",
+      "background": "opaque",
+      "suffix": "A hand-painted fold-out street map from the 1980s, seen flat from directly above and filling the whole image edge to edge like a sheet laid on a table: no table, no border, no frame. Muted period map colours: cream paper, ochre streets, sage green parkland, pale blue water, faint fold creases. Absolutely no words, letters, numbers, street names or symbols anywhere on the map."
+    }
   },
   "people": {
     "eleanor": "Eleanor Whitmore, a 64-year-old white widow, silver hair in a neat set, pearl earrings, navy cardigan over a cream blouse, kind but tired grey eyes",
@@ -20,82 +70,733 @@
     "robert": "Robert Hale, a broad-shouldered white mechanic in his mid fifties, weathered face, grey-flecked brown crew cut, navy work coveralls with oil stains, a red shop rag in his back pocket, a no-nonsense expression",
     "patricia": "Patricia Wells, a 31-year-old African American woman, natural hair in a short 1980s style, burgundy business suit with shoulder pads, small gold earrings, composed but visibly grieving",
     "bennett": "Detective Frank Bennett, a white LAPD detective in his mid fifties, grey moustache, heavy-lidded tired eyes, brown tweed sport coat, loosened tie, white shirt, a steady professional look",
-    "rosa": "Rosa Delgado, a Latina night-shift waitress in her mid thirties, dark hair pulled back in a ponytail, pink-and-white 1980s diner uniform with a white apron, warm and quick, a little tired"
+    "rosa": "Rosa Delgado, a Latina night-shift waitress in her mid thirties, dark hair pulled back in a ponytail, pink-and-white 1980s diner uniform with a white apron, warm and quick, a little tired",
+    "c002_laura": "Laura Kessler, a 29-year-old white woman, a junior high music teacher, shoulder-length brown hair, oval face, wearing an oversized oatmeal cardigan over a plain blouse, faint red marks around her eyes from tape, tired but steady expression",
+    "c002_ruth": "Ruth Kessler, a 34-year-old white woman, Laura's older sister with the same brown hair pinned up, sharper features, a practical navy blazer over a striped blouse, small gold hoop earrings, tense and protective",
+    "c002_tom": "Tom Hale, a 31-year-old white man, county land surveyor, sandy brown hair, a few days of stubble, dark circles under his eyes, faded plaid flannel shirt over a gray T-shirt, quiet, exhausted and controlled",
+    "c002_ferris": "Sergeant Walter Ferris, a heavyset white police sergeant in his mid fifties, gray crew cut, ruddy face, short-sleeved white shirt with a loosened brown tie, a badge clipped to his belt and a shoulder holster, blunt and tired",
+    "c002_nora": "Nora Pruitt, an African American newspaper crime reporter in her mid forties, close-cropped natural hair, reading glasses pushed up on her head, rolled-up shirtsleeves, a pencil behind one ear, dry and skeptical",
+    "c002_howard": "Howard Lisk, a 70-year-old white retired machinist, bald on top with a white fringe, bushy eyebrows, reading glasses, a brown zip cardigan over a checked shirt, leaning on a wooden cane, friendly and precise",
+    "c002_diane": "Diane Moss, a 41-year-old white woman with auburn hair in a loose clip, a florist, a green canvas apron over a cream sweater, shaken but angry and determined",
+    "c002_gordon": "Gordon Pell, a 38-year-old white man, slight build, thinning light brown hair combed neatly, wire-rimmed glasses, a soft polite face, brown corduroy shirt with a pocket protector holding small screwdrivers, faint solder burns on his fingertips"
   },
   "images": [
-    { "id": "site_hero", "kind": "site", "subject": "Night view across a private investigator's desk in 1985 Los Angeles: venetian blinds throw stripes of streetlight over a fedora, a manila case folder and a glass of whiskey; beyond the window, city lights and palm-tree silhouettes against a deep blue sky." },
-    { "id": "c001_cover", "kind": "site", "subject": "A 1920s Spanish-revival house on a quiet Los Feliz street at night under a purple jacaranda tree, a single lamp lit in one window, a large dark sedan parked at the curb with its lights off, a streetlight casting a pool of amber light." },
-
-    { "id": "c001_loc_office", "kind": "background", "subject": "A private investigator's office on the eleventh floor of an older Wilshire Boulevard building at night, seen from a standing position just in front of a large dark wooden desk, looking slightly down onto it. The desk is close to the viewer and runs the full width of the lower part of the frame; its wide, flat top is clearly visible as a broad surface filling the bottom third of the image, completely clear and empty except a green banker's lamp at the far right end. Beyond the desk, an empty leather desk chair, and behind it a tall window with venetian blinds and city lights. On the left wall, a cork board with pinned papers, photographs and red string, above a filing cabinet. On the right wall, a large framed street map. At the far right, a small side table holding a black manual typewriter, and a coat stand with a trench coat and fedora. No people." },
-    { "id": "c001_loc_living_room", "kind": "background", "subject": "The living room of a widow's 1920s Spanish-revival house in Los Feliz, the quiet morning after a crime. Against the left wall, a roll-top writing desk with its top clear and one filing drawer pulled partly open. Left of center on the back wall, a solid oak front door. In the middle of the back wall, an arched doorway leading to a kitchen. On the right, a mahogany sideboard with a glass cake stand, stacked dessert plates and a two-thirds empty wine bottle. At the far right, a brick fireplace with a stand of fireplace tools. A chintz sofa on the left side of the floor. A patterned rug with a large open, clear area of floor in the center foreground. Faint police tape outlines on the carpet. No people." },
-    { "id": "c001_loc_kitchen", "kind": "background", "subject": "The small, tidy kitchen of the same 1920s house, morning light. At center back, a window above a white enamel sink, the window open a few inches behind an aluminium insect screen. At the right, a wooden back door with a small window and a brass bolt. On the left wall, a pharmacy wall calendar and a beige wall telephone with a long coiled cord. Tiled counters with clear empty counter space to the left of the sink and beside it. At the far left edge, a doorway back to the living room." },
-    { "id": "c001_loc_diner", "kind": "background", "subject": "A 24-hour diner on Sunset Boulevard at night in 1985. At the left, a red vinyl window booth with the night street and a pay phone visible outside. A long counter with chrome stools runs across the middle; behind the counter in the center is open, clear space where a waitress will stand. On the counter, a glass pie display case. At the right end of the counter, a cash register with clear counter space beside it. On the back wall near the kitchen pass, a pinned paper staff schedule. At the far right, a chrome 1950s jukebox. Warm neon glow." },
-    { "id": "c001_loc_daniel_apartment", "kind": "background", "subject": "A tidy bachelor apartment on the second floor of a Silver Lake building in 1985. At the left near the entry door, a clear empty stretch of wall and floor where a coat rack will stand. On the right, a modern desk with neat stacks of labelled client folders and a clear patch of desktop. A low coffee table in the center foreground with a clear top. Beige walls, venetian blinds, a framed abstract print, a kitchenette counter with clear space at the far right. A clear open area of floor in the center for a person to stand." },
-    { "id": "c001_loc_margaret_house", "kind": "background", "subject": "The front room of a retired schoolteacher's modest 1950s bungalow. At the left, a large front window with lace curtains looking across the street at a Spanish-revival house, a purple jacaranda tree and a streetlight. At the right, a wood console television set with rabbit-ear antennas, a reading armchair, bookshelves, and a clear patch of wall above the television for a framed photograph. A braided rug with clear open floor in the center for a person to stand and a clear spot near the front for a cat." },
-    { "id": "c001_loc_robert_garage", "kind": "background", "subject": "An independent auto repair garage in Atwater Village in 1985, daytime. Center right, an old pickup truck raised on a hydraulic lift with a drop light hanging under it. Along the left wall, a long tool bench with tools in labelled trays, a coffee can of bolts and a radio. On the right wall, a board of carbon-copy work orders on nails. Concrete floor with oil stains, an open roll-up bay door with daylight. A clear open area of floor at left of center for a mechanic to stand." },
-    { "id": "c001_loc_patricia_office", "kind": "background", "subject": "The loan department of a 1985 savings and loan office on Vermont Avenue, daytime. On the left wall, a row of steel four-drawer filing cabinets. A wooden desk at center right with a clear empty desktop, and a chair behind it with clear space for a person to stand. On the right wall, a cork notice board with rate sheets. Large windows with venetian blinds and daylight, beige and brown corporate decor, a potted plant." },
-
-    { "id": "c001_portrait_eleanor", "kind": "portrait", "person": "eleanor", "subject": "A gentle portrait, as if from a framed photograph on a mantel." },
-    { "id": "c001_portrait_margaret", "kind": "portrait", "person": "margaret", "subject": "In her front room, lamplight." },
-    { "id": "c001_portrait_daniel", "kind": "portrait", "person": "daniel", "subject": "In his apartment, the window blinds behind him." },
-    { "id": "c001_portrait_robert", "kind": "portrait", "person": "robert", "subject": "In his garage, a work light behind him." },
-    { "id": "c001_portrait_patricia", "kind": "portrait", "person": "patricia", "subject": "At her office, daylight through blinds." },
-    { "id": "c001_portrait_bennett", "kind": "portrait", "person": "bennett", "subject": "At a squad-room desk, holding a telephone receiver near his ear." },
-    { "id": "c001_portrait_rosa", "kind": "portrait", "person": "rosa", "subject": "Behind a diner counter, neon glow." },
-
-    { "id": "c001_figure_margaret", "kind": "figure", "person": "margaret", "reference": "c001_portrait_margaret", "subject": "Hands folded in front of her." },
-    { "id": "c001_figure_daniel", "kind": "figure", "person": "daniel", "reference": "c001_portrait_daniel", "subject": "His right hand held close to his side, the palm wrapped in a fresh white gauze bandage; his left hand in his trouser pocket." },
-    { "id": "c001_figure_robert", "kind": "figure", "person": "robert", "reference": "c001_portrait_robert", "subject": "Wiping his hands on the red shop rag." },
-    { "id": "c001_figure_patricia", "kind": "figure", "person": "patricia", "reference": "c001_portrait_patricia", "subject": "Holding a manila folder against her chest." },
-    { "id": "c001_figure_rosa", "kind": "figure", "person": "rosa", "reference": "c001_portrait_rosa", "subject": "Holding a glass coffee pot." },
-
-    { "id": "c001_obj_casefile", "kind": "sprite", "subject": "A thick closed manila police case folder held with a metal clip, a typed cover sheet slightly showing, lying flat." },
-    { "id": "c001_obj_labfolder", "kind": "sprite", "subject": "A thin pale blue laboratory report folder lying flat." },
-    { "id": "c001_obj_phone", "kind": "sprite", "subject": "A black 1970s rotary desk telephone with its handset in the cradle and a coiled cord." },
-    { "id": "c001_obj_notebook", "kind": "sprite", "subject": "A worn brown leather pocket notebook lying closed with a pencil on top." },
-    { "id": "c001_obj_recorder", "kind": "sprite", "subject": "A portable 1980s cassette tape recorder with a small stack of labelled-looking cassette tapes beside it." },
-    { "id": "c001_obj_mailtray", "kind": "sprite", "subject": "An empty wire desk mail tray." },
-    { "id": "c001_obj_envelope_sealed", "kind": "sprite", "subject": "A sealed manila envelope lying flat with an illegible handwritten address." },
-    { "id": "c001_obj_envelope_open", "kind": "sprite", "subject": "An opened manila envelope lying flat with a folded letter and a torn half page sticking out." },
-    { "id": "c001_obj_evidence_bag", "kind": "sprite", "subject": "A brown paper police evidence bag, folded over at the top and sealed with red tape and a paper tag." },
-    { "id": "c001_obj_evidence_bag_open", "kind": "sprite", "subject": "An opened brown paper police evidence bag with a torn red seal, a tan nylon sleeve visible inside." },
-    { "id": "c001_obj_report_folder", "kind": "sprite", "subject": "A plain manila folder with a typed report form partly sticking out, lying flat." },
-    { "id": "c001_obj_chair", "kind": "sprite", "subject": "A carved wooden dining chair with a tapestry seat, knocked over and lying on its back on the floor." },
-    { "id": "c001_obj_glass", "kind": "sprite", "subject": "Shards of a heavy broken crystal water glass on the floor, one large shard with a dried dark stain along its edge, a small white police evidence tag beside them." },
-    { "id": "c001_obj_ledger", "kind": "sprite", "subject": "An open household ledger book lying flat, pages of pencilled columns of figures, a pencil across it." },
-    { "id": "c001_obj_diary", "kind": "sprite", "subject": "A burgundy leather desk diary standing propped open." },
-    { "id": "c001_obj_knives", "kind": "sprite", "subject": "A wooden kitchen knife block holding matching knives, the largest slot empty, a small police property tag tied to it." },
-    { "id": "c001_obj_rack", "kind": "sprite", "subject": "A wire dish drying rack holding five washed dessert plates and five coffee cups." },
-    { "id": "c001_obj_spike", "kind": "sprite", "subject": "A diner ticket spike on a small base with several paper guest checks stuck on it." },
-    { "id": "c001_obj_coatrack_jacket", "kind": "sprite", "subject": "A tall wooden standing coat rack holding a grey raincoat, a navy blazer and a tan nylon windbreaker whose right cuff looks darker and damp." },
-    { "id": "c001_obj_coatrack_empty", "kind": "sprite", "subject": "A tall wooden standing coat rack holding only a grey raincoat and a navy blazer, one hook empty." },
-    { "id": "c001_obj_wastebasket", "kind": "sprite", "subject": "A small woven wastebasket, nearly empty, a crumpled pharmacy receipt inside." },
-    { "id": "c001_obj_firstaid", "kind": "sprite", "subject": "An open metal first aid tin with a roll of gauze, adhesive tape and a small brown iodine bottle." },
-    { "id": "c001_obj_ashtray", "kind": "sprite", "subject": "A heavy glass ashtray with fresh grey ash and the curled, burnt corner of a typed page." },
-    { "id": "c001_obj_suitcase", "kind": "sprite", "subject": "A packed brown leather suitcase standing upright with an airline baggage tag on the handle." },
-    { "id": "c001_obj_photo", "kind": "sprite", "subject": "A framed photograph in a simple wooden frame showing two older women smiling at a ribbon-cutting, hanging straight on." },
-    { "id": "c001_obj_cat", "kind": "sprite", "subject": "A large ginger tom cat asleep, curled up." },
-    { "id": "c001_obj_adder", "kind": "sprite", "subject": "A 1980s electric adding machine with a long curl of paper tape spilling from it." },
-
-    { "id": "c001_ev_e01", "kind": "evidence", "subject": "An aluminium window insect screen above a kitchen sink, with an L-shaped cut through the mesh whose edges are bent outward, away from the room; an undisturbed flower bed beyond." },
-    { "id": "c001_ev_e02", "kind": "evidence", "subject": "Shards of a heavy crystal water glass on a patterned carpet, the largest shard with a dried bloodstain along its broken edge, a white police evidence tag beside it." },
-    { "id": "c001_ev_e03", "kind": "evidence", "subject": "An open household ledger in pencil on a desk blotter, with a second column of figures added beside the first; the handwriting is illegible." },
-    { "id": "c001_ev_e04", "kind": "evidence", "subject": "The back of a diner guest check with a short illegible handwritten note, lying on a counter beside a ticket spike." },
-    { "id": "c001_ev_e05", "kind": "evidence", "subject": "A men's tan nylon windbreaker spread on a table beside an opened brown paper evidence bag, the right cuff and sleeve stiff with dark staining that looks scrubbed." },
-    { "id": "c001_ev_e06", "kind": "evidence", "subject": "A wooden block of matching kitchen knives on a tiled counter, the largest slot empty, a police property tag tied to the block." },
-    { "id": "c001_ev_e07", "kind": "evidence", "subject": "A wooden dining chair lying on its back on a patterned rug in a living room." },
-    { "id": "c001_ev_e08", "kind": "evidence", "subject": "An open desk filing drawer of hanging files, every file full of papers except one empty hanging file in the middle." },
-    { "id": "c001_ev_e09", "kind": "evidence", "subject": "A leather desk diary open at a week, one appointment written in ink and underlined twice; the writing is illegible." },
-    { "id": "c001_ev_e10", "kind": "evidence", "subject": "The inside of a wooden back door: a brass bolt drawn back and the latch open, a thumb-turn on the inside, no scratches or pry marks on the frame." },
-    { "id": "c001_ev_e11", "kind": "evidence", "subject": "A typed laboratory report sheet with columns of blurred typed results, in an open pale blue folder on a desk." },
-    { "id": "c001_ev_e12", "kind": "evidence", "subject": "A sheet of lined notepaper covered in a detective's illegible handwritten notes, clipped to a manila case folder." },
-    { "id": "c001_ev_e13", "kind": "evidence", "subject": "A typed weekly staff schedule pinned to a diner wall beside the kitchen pass, initials pencilled beside some shifts; the typing is blurred and illegible." },
-    { "id": "c001_ev_e14", "kind": "evidence", "subject": "A man's right hand held at his side, the palm and heel wrapped in a fresh, clean white gauze bandage, the cuff of a pale blue shirt and a gold wristwatch visible." },
-    { "id": "c001_ev_e15", "kind": "evidence", "subject": "The left half of a typed bank statement torn from top to bottom, several lines circled in pencil and a short pencilled note in the margin; all text blurred and illegible." },
-    {"id": "travel_drive_far", "kind": "panorama", "subject": "Los Angeles at dusk in 1985, seen side-on from a boulevard: a long line of low hills with scattered house lights, the downtown towers small on the far horizon, a deep violet to amber sky with a few long clouds, and rows of low commercial buildings and apartment blocks in near-silhouette with warm lit windows. No cars, no people, no signs with lettering."},
-    {"id": "travel_drive_near", "kind": "strip", "subject": "A long row of roadside silhouettes beside a Los Angeles boulevard: tall palm trees of different heights, two curved 1960s streetlights with warm glowing lamps, a low stucco wall and a few shrubs. Everything stands on one level baseline along the very bottom edge of the image, evenly spaced across the full width so the row can repeat. No sky, no road, no buildings."},
-    {"id": "travel_drive_car", "kind": "strip", "subject": "A 1979 four-door American sedan in faded brown with chrome trim, seen exactly side-on in profile and facing right, headlights on and a warm glow from the dashboard, the silhouette of a man in a fedora at the wheel. Whole car in frame with space around it; only a faint contact shadow under the tyres."},
-    {"id": "travel_walk", "kind": "pov", "subject": "Crossing Hollister Avenue in Los Feliz at night, looking straight across the quiet street: a row of 1920s Spanish-revival houses with red tile roofs and warm lit windows, a jacaranda tree in purple blossom under an amber streetlight, a few 1970s and 80s sedans parked along the curb, palm silhouettes against a deep blue sky, the asphalt and painted crosswalk leading toward the far curb."},
-    {"id": "c001_map", "kind": "map", "subject": "Northeast Los Angeles in 1985. Across the top quarter, the green wooded hills of Griffith Park with a few winding park roads. The Los Angeles River, a pale blue channel with concrete banks, enters at the top just right of centre and curves down through the right third to the bottom right corner. A broad boulevard crosses the lower third from left to right. Everywhere else a dense grid of streets with small blocks of houses and tiny palm trees, a few larger avenues running north to south, and a small cluster of downtown towers drawn in the bottom right corner beside the river."}
-  ]
+    {
+      "id": "site_hero",
+      "kind": "site",
+      "subject": "Night view across a private investigator's desk in 1985 Los Angeles: venetian blinds throw stripes of streetlight over a fedora, a manila case folder and a glass of whiskey; beyond the window, city lights and palm-tree silhouettes against a deep blue sky."
+    },
+    {
+      "id": "c001_cover",
+      "kind": "site",
+      "subject": "A 1920s Spanish-revival house on a quiet Los Feliz street at night under a purple jacaranda tree, a single lamp lit in one window, a large dark sedan parked at the curb with its lights off, a streetlight casting a pool of amber light."
+    },
+    {
+      "id": "c001_loc_office",
+      "kind": "background",
+      "subject": "A private investigator's office on the eleventh floor of an older Wilshire Boulevard building at night, seen from a standing position just in front of a large dark wooden desk, looking slightly down onto it. The desk is close to the viewer and runs the full width of the lower part of the frame; its wide, flat top is clearly visible as a broad surface filling the bottom third of the image, completely clear and empty except a green banker's lamp at the far right end. Beyond the desk, an empty leather desk chair, and behind it a tall window with venetian blinds and city lights. On the left wall, a cork board with pinned papers, photographs and red string, above a filing cabinet. On the right wall, a large framed street map. At the far right, a small side table holding a black manual typewriter, and a coat stand with a trench coat and fedora. No people."
+    },
+    {
+      "id": "c001_loc_living_room",
+      "kind": "background",
+      "subject": "The living room of a widow's 1920s Spanish-revival house in Los Feliz, the quiet morning after a crime. Against the left wall, a roll-top writing desk with its top clear and one filing drawer pulled partly open. Left of center on the back wall, a solid oak front door. In the middle of the back wall, an arched doorway leading to a kitchen. On the right, a mahogany sideboard with a glass cake stand, stacked dessert plates and a two-thirds empty wine bottle. At the far right, a brick fireplace with a stand of fireplace tools. A chintz sofa on the left side of the floor. A patterned rug with a large open, clear area of floor in the center foreground. Faint police tape outlines on the carpet. No people."
+    },
+    {
+      "id": "c001_loc_kitchen",
+      "kind": "background",
+      "subject": "The small, tidy kitchen of the same 1920s house, morning light. At center back, a window above a white enamel sink, the window open a few inches behind an aluminium insect screen. At the right, a wooden back door with a small window and a brass bolt. On the left wall, a pharmacy wall calendar and a beige wall telephone with a long coiled cord. Tiled counters with clear empty counter space to the left of the sink and beside it. At the far left edge, a doorway back to the living room."
+    },
+    {
+      "id": "c001_loc_diner",
+      "kind": "background",
+      "subject": "A 24-hour diner on Sunset Boulevard at night in 1985. At the left, a red vinyl window booth with the night street and a pay phone visible outside. A long counter with chrome stools runs across the middle; behind the counter in the center is open, clear space where a waitress will stand. On the counter, a glass pie display case. At the right end of the counter, a cash register with clear counter space beside it. On the back wall near the kitchen pass, a pinned paper staff schedule. At the far right, a chrome 1950s jukebox. Warm neon glow."
+    },
+    {
+      "id": "c001_loc_daniel_apartment",
+      "kind": "background",
+      "subject": "A tidy bachelor apartment on the second floor of a Silver Lake building in 1985. At the left near the entry door, a clear empty stretch of wall and floor where a coat rack will stand. On the right, a modern desk with neat stacks of labelled client folders and a clear patch of desktop. A low coffee table in the center foreground with a clear top. Beige walls, venetian blinds, a framed abstract print, a kitchenette counter with clear space at the far right. A clear open area of floor in the center for a person to stand."
+    },
+    {
+      "id": "c001_loc_margaret_house",
+      "kind": "background",
+      "subject": "The front room of a retired schoolteacher's modest 1950s bungalow. At the left, a large front window with lace curtains looking across the street at a Spanish-revival house, a purple jacaranda tree and a streetlight. At the right, a wood console television set with rabbit-ear antennas, a reading armchair, bookshelves, and a clear patch of wall above the television for a framed photograph. A braided rug with clear open floor in the center for a person to stand and a clear spot near the front for a cat."
+    },
+    {
+      "id": "c001_loc_robert_garage",
+      "kind": "background",
+      "subject": "An independent auto repair garage in Atwater Village in 1985, daytime. Center right, an old pickup truck raised on a hydraulic lift with a drop light hanging under it. Along the left wall, a long tool bench with tools in labelled trays, a coffee can of bolts and a radio. On the right wall, a board of carbon-copy work orders on nails. Concrete floor with oil stains, an open roll-up bay door with daylight. A clear open area of floor at left of center for a mechanic to stand."
+    },
+    {
+      "id": "c001_loc_patricia_office",
+      "kind": "background",
+      "subject": "The loan department of a 1985 savings and loan office on Vermont Avenue, daytime. On the left wall, a row of steel four-drawer filing cabinets. A wooden desk at center right with a clear empty desktop, and a chair behind it with clear space for a person to stand. On the right wall, a cork notice board with rate sheets. Large windows with venetian blinds and daylight, beige and brown corporate decor, a potted plant."
+    },
+    {
+      "id": "c001_portrait_eleanor",
+      "kind": "portrait",
+      "person": "eleanor",
+      "subject": "A gentle portrait, as if from a framed photograph on a mantel."
+    },
+    {
+      "id": "c001_portrait_margaret",
+      "kind": "portrait",
+      "person": "margaret",
+      "subject": "In her front room, lamplight."
+    },
+    {
+      "id": "c001_portrait_daniel",
+      "kind": "portrait",
+      "person": "daniel",
+      "subject": "In his apartment, the window blinds behind him."
+    },
+    {
+      "id": "c001_portrait_robert",
+      "kind": "portrait",
+      "person": "robert",
+      "subject": "In his garage, a work light behind him."
+    },
+    {
+      "id": "c001_portrait_patricia",
+      "kind": "portrait",
+      "person": "patricia",
+      "subject": "At her office, daylight through blinds."
+    },
+    {
+      "id": "c001_portrait_bennett",
+      "kind": "portrait",
+      "person": "bennett",
+      "subject": "At a squad-room desk, holding a telephone receiver near his ear."
+    },
+    {
+      "id": "c001_portrait_rosa",
+      "kind": "portrait",
+      "person": "rosa",
+      "subject": "Behind a diner counter, neon glow."
+    },
+    {
+      "id": "c001_figure_margaret",
+      "kind": "figure",
+      "person": "margaret",
+      "reference": "c001_portrait_margaret",
+      "subject": "Hands folded in front of her."
+    },
+    {
+      "id": "c001_figure_daniel",
+      "kind": "figure",
+      "person": "daniel",
+      "reference": "c001_portrait_daniel",
+      "subject": "His right hand held close to his side, the palm wrapped in a fresh white gauze bandage; his left hand in his trouser pocket."
+    },
+    {
+      "id": "c001_figure_robert",
+      "kind": "figure",
+      "person": "robert",
+      "reference": "c001_portrait_robert",
+      "subject": "Wiping his hands on the red shop rag."
+    },
+    {
+      "id": "c001_figure_patricia",
+      "kind": "figure",
+      "person": "patricia",
+      "reference": "c001_portrait_patricia",
+      "subject": "Holding a manila folder against her chest."
+    },
+    {
+      "id": "c001_figure_rosa",
+      "kind": "figure",
+      "person": "rosa",
+      "reference": "c001_portrait_rosa",
+      "subject": "Holding a glass coffee pot."
+    },
+    {
+      "id": "c001_obj_casefile",
+      "kind": "sprite",
+      "subject": "A thick closed manila police case folder held with a metal clip, a typed cover sheet slightly showing, lying flat."
+    },
+    {
+      "id": "c001_obj_labfolder",
+      "kind": "sprite",
+      "subject": "A thin pale blue laboratory report folder lying flat."
+    },
+    {
+      "id": "c001_obj_phone",
+      "kind": "sprite",
+      "subject": "A black 1970s rotary desk telephone with its handset in the cradle and a coiled cord."
+    },
+    {
+      "id": "c001_obj_notebook",
+      "kind": "sprite",
+      "subject": "A worn brown leather pocket notebook lying closed with a pencil on top."
+    },
+    {
+      "id": "c001_obj_recorder",
+      "kind": "sprite",
+      "subject": "A portable 1980s cassette tape recorder with a small stack of labelled-looking cassette tapes beside it."
+    },
+    {
+      "id": "c001_obj_mailtray",
+      "kind": "sprite",
+      "subject": "An empty wire desk mail tray."
+    },
+    {
+      "id": "c001_obj_envelope_sealed",
+      "kind": "sprite",
+      "subject": "A sealed manila envelope lying flat with an illegible handwritten address."
+    },
+    {
+      "id": "c001_obj_envelope_open",
+      "kind": "sprite",
+      "subject": "An opened manila envelope lying flat with a folded letter and a torn half page sticking out."
+    },
+    {
+      "id": "c001_obj_evidence_bag",
+      "kind": "sprite",
+      "subject": "A brown paper police evidence bag, folded over at the top and sealed with red tape and a paper tag."
+    },
+    {
+      "id": "c001_obj_evidence_bag_open",
+      "kind": "sprite",
+      "subject": "An opened brown paper police evidence bag with a torn red seal, a tan nylon sleeve visible inside."
+    },
+    {
+      "id": "c001_obj_report_folder",
+      "kind": "sprite",
+      "subject": "A plain manila folder with a typed report form partly sticking out, lying flat."
+    },
+    {
+      "id": "c001_obj_chair",
+      "kind": "sprite",
+      "subject": "A carved wooden dining chair with a tapestry seat, knocked over and lying on its back on the floor."
+    },
+    {
+      "id": "c001_obj_glass",
+      "kind": "sprite",
+      "subject": "Shards of a heavy broken crystal water glass on the floor, one large shard with a dried dark stain along its edge, a small white police evidence tag beside them."
+    },
+    {
+      "id": "c001_obj_ledger",
+      "kind": "sprite",
+      "subject": "An open household ledger book lying flat, pages of pencilled columns of figures, a pencil across it."
+    },
+    {
+      "id": "c001_obj_diary",
+      "kind": "sprite",
+      "subject": "A burgundy leather desk diary standing propped open."
+    },
+    {
+      "id": "c001_obj_knives",
+      "kind": "sprite",
+      "subject": "A wooden kitchen knife block holding matching knives, the largest slot empty, a small police property tag tied to it."
+    },
+    {
+      "id": "c001_obj_rack",
+      "kind": "sprite",
+      "subject": "A wire dish drying rack holding five washed dessert plates and five coffee cups."
+    },
+    {
+      "id": "c001_obj_spike",
+      "kind": "sprite",
+      "subject": "A diner ticket spike on a small base with several paper guest checks stuck on it."
+    },
+    {
+      "id": "c001_obj_coatrack_jacket",
+      "kind": "sprite",
+      "subject": "A tall wooden standing coat rack holding a grey raincoat, a navy blazer and a tan nylon windbreaker whose right cuff looks darker and damp."
+    },
+    {
+      "id": "c001_obj_coatrack_empty",
+      "kind": "sprite",
+      "subject": "A tall wooden standing coat rack holding only a grey raincoat and a navy blazer, one hook empty."
+    },
+    {
+      "id": "c001_obj_wastebasket",
+      "kind": "sprite",
+      "subject": "A small woven wastebasket, nearly empty, a crumpled pharmacy receipt inside."
+    },
+    {
+      "id": "c001_obj_firstaid",
+      "kind": "sprite",
+      "subject": "An open metal first aid tin with a roll of gauze, adhesive tape and a small brown iodine bottle."
+    },
+    {
+      "id": "c001_obj_ashtray",
+      "kind": "sprite",
+      "subject": "A heavy glass ashtray with fresh grey ash and the curled, burnt corner of a typed page."
+    },
+    {
+      "id": "c001_obj_suitcase",
+      "kind": "sprite",
+      "subject": "A packed brown leather suitcase standing upright with an airline baggage tag on the handle."
+    },
+    {
+      "id": "c001_obj_photo",
+      "kind": "sprite",
+      "subject": "A framed photograph in a simple wooden frame showing two older women smiling at a ribbon-cutting, hanging straight on."
+    },
+    {
+      "id": "c001_obj_cat",
+      "kind": "sprite",
+      "subject": "A large ginger tom cat asleep, curled up."
+    },
+    {
+      "id": "c001_obj_adder",
+      "kind": "sprite",
+      "subject": "A 1980s electric adding machine with a long curl of paper tape spilling from it."
+    },
+    {
+      "id": "c001_ev_e01",
+      "kind": "evidence",
+      "subject": "An aluminium window insect screen above a kitchen sink, with an L-shaped cut through the mesh whose edges are bent outward, away from the room; an undisturbed flower bed beyond."
+    },
+    {
+      "id": "c001_ev_e02",
+      "kind": "evidence",
+      "subject": "Shards of a heavy crystal water glass on a patterned carpet, the largest shard with a dried bloodstain along its broken edge, a white police evidence tag beside it."
+    },
+    {
+      "id": "c001_ev_e03",
+      "kind": "evidence",
+      "subject": "An open household ledger in pencil on a desk blotter, with a second column of figures added beside the first; the handwriting is illegible."
+    },
+    {
+      "id": "c001_ev_e04",
+      "kind": "evidence",
+      "subject": "The back of a diner guest check with a short illegible handwritten note, lying on a counter beside a ticket spike."
+    },
+    {
+      "id": "c001_ev_e05",
+      "kind": "evidence",
+      "subject": "A men's tan nylon windbreaker spread on a table beside an opened brown paper evidence bag, the right cuff and sleeve stiff with dark staining that looks scrubbed."
+    },
+    {
+      "id": "c001_ev_e06",
+      "kind": "evidence",
+      "subject": "A wooden block of matching kitchen knives on a tiled counter, the largest slot empty, a police property tag tied to the block."
+    },
+    {
+      "id": "c001_ev_e07",
+      "kind": "evidence",
+      "subject": "A wooden dining chair lying on its back on a patterned rug in a living room."
+    },
+    {
+      "id": "c001_ev_e08",
+      "kind": "evidence",
+      "subject": "An open desk filing drawer of hanging files, every file full of papers except one empty hanging file in the middle."
+    },
+    {
+      "id": "c001_ev_e09",
+      "kind": "evidence",
+      "subject": "A leather desk diary open at a week, one appointment written in ink and underlined twice; the writing is illegible."
+    },
+    {
+      "id": "c001_ev_e10",
+      "kind": "evidence",
+      "subject": "The inside of a wooden back door: a brass bolt drawn back and the latch open, a thumb-turn on the inside, no scratches or pry marks on the frame."
+    },
+    {
+      "id": "c001_ev_e11",
+      "kind": "evidence",
+      "subject": "A typed laboratory report sheet with columns of blurred typed results, in an open pale blue folder on a desk."
+    },
+    {
+      "id": "c001_ev_e12",
+      "kind": "evidence",
+      "subject": "A sheet of lined notepaper covered in a detective's illegible handwritten notes, clipped to a manila case folder."
+    },
+    {
+      "id": "c001_ev_e13",
+      "kind": "evidence",
+      "subject": "A typed weekly staff schedule pinned to a diner wall beside the kitchen pass, initials pencilled beside some shifts; the typing is blurred and illegible."
+    },
+    {
+      "id": "c001_ev_e14",
+      "kind": "evidence",
+      "subject": "A man's right hand held at his side, the palm and heel wrapped in a fresh, clean white gauze bandage, the cuff of a pale blue shirt and a gold wristwatch visible."
+    },
+    {
+      "id": "c001_ev_e15",
+      "kind": "evidence",
+      "subject": "The left half of a typed bank statement torn from top to bottom, several lines circled in pencil and a short pencilled note in the margin; all text blurred and illegible."
+    },
+    {
+      "id": "travel_drive_far",
+      "kind": "panorama",
+      "subject": "Los Angeles at dusk in 1985, seen side-on from a boulevard: a long line of low hills with scattered house lights, the downtown towers small on the far horizon, a deep violet to amber sky with a few long clouds, and rows of low commercial buildings and apartment blocks in near-silhouette with warm lit windows. No cars, no people, no signs with lettering."
+    },
+    {
+      "id": "travel_drive_near",
+      "kind": "strip",
+      "subject": "A long row of roadside silhouettes beside a Los Angeles boulevard: tall palm trees of different heights, two curved 1960s streetlights with warm glowing lamps, a low stucco wall and a few shrubs. Everything stands on one level baseline along the very bottom edge of the image, evenly spaced across the full width so the row can repeat. No sky, no road, no buildings."
+    },
+    {
+      "id": "travel_drive_car",
+      "kind": "strip",
+      "subject": "A 1979 four-door American sedan in faded brown with chrome trim, seen exactly side-on in profile and facing right, headlights on and a warm glow from the dashboard, the silhouette of a man in a fedora at the wheel. Whole car in frame with space around it; only a faint contact shadow under the tyres."
+    },
+    {
+      "id": "travel_walk",
+      "kind": "pov",
+      "subject": "Crossing Hollister Avenue in Los Feliz at night, looking straight across the quiet street: a row of 1920s Spanish-revival houses with red tile roofs and warm lit windows, a jacaranda tree in purple blossom under an amber streetlight, a few 1970s and 80s sedans parked along the curb, palm silhouettes against a deep blue sky, the asphalt and painted crosswalk leading toward the far curb."
+    },
+    {
+      "id": "c001_map",
+      "kind": "map",
+      "subject": "Northeast Los Angeles in 1985. Across the top quarter, the green wooded hills of Griffith Park with a few winding park roads. The Los Angeles River, a pale blue channel with concrete banks, enters at the top just right of centre and curves down through the right third to the bottom right corner. A broad boulevard crosses the lower third from left to right. Everywhere else a dense grid of streets with small blocks of houses and tiny palm trees, a few larger avenues running north to south, and a small cluster of downtown towers drawn in the bottom right corner beside the river."
+    },
+    {
+      "id": "c002_loc_hale_bedroom",
+      "kind": "background",
+      "style": "c002",
+      "subject": "The bedroom of a small 1950s stucco house in a California coastal town, late afternoon light through a window on the left. A double bed in the middle with its sheets pulled off and heaped on the floor, a strip of gray tape stuck to the headboard. A nightstand on the right with a clock radio and a paperback, a dresser with a framed photograph further right, a doorway to the hall at the far right. The floor in front of the bed is clear. Nothing on the nightstand top except the clock radio and paperback."
+    },
+    {
+      "id": "c002_loc_hale_kitchen",
+      "kind": "background",
+      "style": "c002",
+      "subject": "A small 1950s kitchen and hall in a modest California house, afternoon. A Formica kitchen table with chairs on the left, its top clear; a beige wall telephone with a coiled cord on the left wall; a counter and drawers in the middle; a doorway to an attached garage on the right with a glimpse of a bicycle and trash cans; a narrow hall table near the front door at the far right, its top clear. A doorway to the bedroom at the far left. Clear floor space in the center."
+    },
+    {
+      "id": "c002_loc_elm_street",
+      "kind": "background",
+      "style": "c002",
+      "subject": "A quiet residential street in a California coastal town on a gray afternoon, seen from the sidewalk. On the left, a small stucco house with a one-car garage and a narrow side path along a fence. Across the street in the middle distance, a modest house with a front porch and a porch chair. On the right, a streetlight on the corner. Palm trees and low fog. The curb and the asphalt in the foreground are clear except a dark oil stain.",
+      "suffix": "A wide establishing exterior view at standing eye level, composed for a 16:9 game screen, with depth and atmosphere. No people. Keep the described open ground and surfaces genuinely clear, because objects and people will be placed there separately."
+    },
+    {
+      "id": "c002_loc_police_station",
+      "kind": "background",
+      "style": "c002",
+      "subject": "A small-town 1980s police detective bureau: metal desks with typewriters and phones, a squad-room cork board on the left wall, green-shaded lights, a window to an interview room on the right. A cluttered desk in the middle foreground with its front edge clear. Clear floor in the center for a standing person."
+    },
+    {
+      "id": "c002_loc_courier",
+      "kind": "background",
+      "style": "c002",
+      "subject": "A small-town 1980s newspaper newsroom in the afternoon: rows of desks with typewriters, telephones and stacks of paper, a teletype machine, a window at the right looking into a quiet press room. A reporter's desk in the foreground, its surface clear in the middle. Clear floor in the center for a standing person."
+    },
+    {
+      "id": "c002_loc_ruth_apartment",
+      "kind": "background",
+      "style": "c002",
+      "subject": "A modest second-floor apartment living and dining room in Long Beach, 1988, afternoon light. A sofa on the left with a framed photograph on the wall above, a small dining table on the right with an electric typewriter and invoices, a tall window at the far right looking over trees in a park. Clear floor in the center for two standing people."
+    },
+    {
+      "id": "c002_loc_tamarack_store",
+      "kind": "background",
+      "style": "c002",
+      "subject": "Inside a small general store in a pine-forest mountain town in autumn: wooden shelves of groceries and hardware, a wood stove, a community cork notice board on the left wall, a counter with a cash register and an open green ledger in the middle, a newspaper rack, a front window on the right showing gas pumps and a payphone on a post, a window toward a lake with pine trees and a mill stack beyond."
+    },
+    {
+      "id": "c002_loc_cabin14",
+      "kind": "background",
+      "style": "c002",
+      "subject": "Outside a small, isolated wooden cabin on a dirt road by a mountain lake, in late afternoon among tall pines. The cabin door in the center with a porch step; an oversized TV antenna on the roof; on the left side of the cabin, one window covered from inside with plywood; a woodpile at the far left; on the right, a full-size van completely covered by a brown tarp weighted with firewood. Pine needles on the ground; the ground in front of the door is clear.",
+      "suffix": "A wide establishing exterior view at standing eye level, composed for a 16:9 game screen, with depth and atmosphere. No people. Keep the described open ground and surfaces genuinely clear, because objects and people will be placed there separately."
+    },
+    {
+      "id": "c002_loc_moss_house",
+      "kind": "background",
+      "style": "c002",
+      "subject": "The bedroom and back of a suburban house in the San Gabriel Valley on a gray morning, seen from inside the bedroom doorway. A bed on the right, a nightstand with a cracked ceramic lamp base, a window on the right to a side yard and a wooden back gate to an alley, a door on the left to the garage. Clear floor in the center for a standing person."
+    },
+    {
+      "id": "c002_portrait_laura",
+      "kind": "portrait",
+      "style": "c002",
+      "subject": "Muted indoor light.",
+      "person": "c002_laura"
+    },
+    {
+      "id": "c002_portrait_ruth",
+      "kind": "portrait",
+      "style": "c002",
+      "subject": "Muted indoor light.",
+      "person": "c002_ruth"
+    },
+    {
+      "id": "c002_portrait_tom",
+      "kind": "portrait",
+      "style": "c002",
+      "subject": "Muted indoor light.",
+      "person": "c002_tom"
+    },
+    {
+      "id": "c002_portrait_ferris",
+      "kind": "portrait",
+      "style": "c002",
+      "subject": "Muted indoor light.",
+      "person": "c002_ferris"
+    },
+    {
+      "id": "c002_portrait_nora",
+      "kind": "portrait",
+      "style": "c002",
+      "subject": "Muted indoor light.",
+      "person": "c002_nora"
+    },
+    {
+      "id": "c002_portrait_howard",
+      "kind": "portrait",
+      "style": "c002",
+      "subject": "Muted indoor light.",
+      "person": "c002_howard"
+    },
+    {
+      "id": "c002_portrait_diane",
+      "kind": "portrait",
+      "style": "c002",
+      "subject": "Muted indoor light.",
+      "person": "c002_diane"
+    },
+    {
+      "id": "c002_portrait_gordon",
+      "kind": "portrait",
+      "style": "c002",
+      "subject": "Muted indoor light.",
+      "person": "c002_gordon"
+    },
+    {
+      "id": "c002_figure_tom",
+      "kind": "figure",
+      "style": "c002",
+      "subject": "Arms folded, shoulders slumped.",
+      "person": "c002_tom",
+      "reference": "c002_portrait_tom"
+    },
+    {
+      "id": "c002_figure_howard",
+      "kind": "figure",
+      "style": "c002",
+      "subject": "Leaning on his cane.",
+      "person": "c002_howard",
+      "reference": "c002_portrait_howard"
+    },
+    {
+      "id": "c002_figure_ferris",
+      "kind": "figure",
+      "style": "c002",
+      "subject": "Hands on his belt.",
+      "person": "c002_ferris",
+      "reference": "c002_portrait_ferris"
+    },
+    {
+      "id": "c002_figure_nora",
+      "kind": "figure",
+      "style": "c002",
+      "subject": "Holding a reporter's notebook.",
+      "person": "c002_nora",
+      "reference": "c002_portrait_nora"
+    },
+    {
+      "id": "c002_figure_ruth",
+      "kind": "figure",
+      "style": "c002",
+      "subject": "Arms crossed.",
+      "person": "c002_ruth",
+      "reference": "c002_portrait_ruth"
+    },
+    {
+      "id": "c002_figure_laura",
+      "kind": "figure",
+      "style": "c002",
+      "subject": "Holding the cardigan closed at her chest.",
+      "person": "c002_laura",
+      "reference": "c002_portrait_laura"
+    },
+    {
+      "id": "c002_figure_gordon",
+      "kind": "figure",
+      "style": "c002",
+      "subject": "Standing in a doorway pose, hands loosely clasped.",
+      "person": "c002_gordon",
+      "reference": "c002_portrait_gordon"
+    },
+    {
+      "id": "c002_figure_diane",
+      "kind": "figure",
+      "style": "c002",
+      "subject": "One hand on her hip.",
+      "person": "c002_diane",
+      "reference": "c002_portrait_diane"
+    },
+    {
+      "id": "c002_figure_gordon_custody",
+      "kind": "figure",
+      "style": "c002",
+      "subject": "Hands cuffed in front of him, a small white dressing on his scalp above the hairline, his glasses slightly crooked.",
+      "person": "c002_gordon",
+      "reference": "c002_portrait_gordon"
+    },
+    {
+      "id": "c002_obj_glasses",
+      "kind": "sprite",
+      "style": "c002",
+      "subject": "Two plain kitchen tumblers side by side, each with a dried cloudy orange film in the bottom."
+    },
+    {
+      "id": "c002_obj_letter",
+      "kind": "sprite",
+      "style": "c002",
+      "subject": "A single typed sheet of paper lying flat, illegible typed capitals, beside a beige telephone handset cord."
+    },
+    {
+      "id": "c002_obj_slip",
+      "kind": "sprite",
+      "style": "c002",
+      "subject": "A small bank envelope with a withdrawal slip tucked into it, lying on a table beside a set of keys."
+    },
+    {
+      "id": "c002_obj_newspaper",
+      "kind": "sprite",
+      "style": "c002",
+      "subject": "A folded small-town newspaper with a large front-page headline circled in red pencil, all text illegible."
+    },
+    {
+      "id": "c002_ev_e01",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "Two loops of black plastic cable tie, each cut cleanly through, lying on a dusty wooden floor under a bed frame."
+    },
+    {
+      "id": "c002_ev_e02",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "Two plain kitchen tumblers on a nightstand, each with a dried cloudy orange film in the bottom."
+    },
+    {
+      "id": "c002_ev_e03",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "A hospital laboratory report form with a printed header and typed results, illegible, on a kitchen table."
+    },
+    {
+      "id": "c002_ev_e04",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "A photocopy of a typed letter in capitals, illegible, stamped COPY in faint ink, on a Formica table."
+    },
+    {
+      "id": "c002_ev_e05",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "A police witness statement form, several typed pages stapled, with handwritten notes in the margins, illegible."
+    },
+    {
+      "id": "c002_ev_e06",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "A page torn from a small pocket notebook, careful block capitals in pen, illegible, with a note clipped to it."
+    },
+    {
+      "id": "c002_ev_e07",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "A typed letter in capitals and its plain white envelope with a postmark, illegible, under a glass paperweight."
+    },
+    {
+      "id": "c002_ev_e08",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "A blank cassette tape in a clear plastic case beside a small portable cassette player and a folded typed transcript."
+    },
+    {
+      "id": "c002_ev_e09",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "A carbon copy of a telephone company call record with columns of numbers, illegible, with a handwritten note clipped on."
+    },
+    {
+      "id": "c002_ev_e10",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "A second typed letter in capitals with its envelope, illegible, on a newsroom desk."
+    },
+    {
+      "id": "c002_ev_e11",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "A folded small-town newspaper with a large front-page headline circled in red pencil, all text illegible."
+    },
+    {
+      "id": "c002_ev_e12",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "Several typed pages of a personal statement, signed at the bottom, illegible, on a dining table beside an electric typewriter."
+    },
+    {
+      "id": "c002_ev_e13",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "A pair of cheap children's swim goggles with a blue rubber strap, both lenses covered in black electrical tape."
+    },
+    {
+      "id": "c002_ev_e14",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "A hand-lettered index card pinned to a cork board beside a small printed card, illegible."
+    },
+    {
+      "id": "c002_ev_e15",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "An open green clothbound store ledger with handwritten entries and signatures, illegible."
+    },
+    {
+      "id": "c002_ev_e16",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "A suburban police crime report form, typed, several pages, illegible, in a manila envelope."
+    },
+    {
+      "id": "c002_ev_e17",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "A paging company subscriber record form, typed, illegible, beside a small black pocket pager."
+    },
+    {
+      "id": "c002_ev_e18",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "A sheriff's search warrant inventory, several typed pages, illegible, in a sealed evidence envelope cut open."
+    },
+    {
+      "id": "c002_ev_e19",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "A crime laboratory report with typewritten letters side by side under a magnifying loupe, illegible."
+    },
+    {
+      "id": "c002_ev_e20",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "A small portable cassette recorder with a cassette labeled in pen (illegible), beside a typed transcript."
+    },
+    {
+      "id": "c002_ev_e21",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "A polygraph chart printout with wavering lines and a typed summary sheet, illegible."
+    },
+    {
+      "id": "c002_ev_e22",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "A bank withdrawal slip with handwriting on the back, illegible, half out of a bank envelope."
+    },
+    {
+      "id": "c002_ev_e23",
+      "kind": "evidence",
+      "style": "c002",
+      "subject": "A county crime laboratory bench note, typed, illegible, clipped to a folder, with two glass tumblers in evidence bags."
+    },
+    {
+      "id": "c002_map",
+      "kind": "map",
+      "style": "c002",
+      "subject": "Southern California in 1988. Along the left edge and the bottom, the Pacific coastline in pale blue: a small coastal town on the coast at the far left a third of the way down, and a harbor city on the bottom coast just right of center. A large city grid fills the center, slightly below the middle. To the right of the city, a broad valley of small towns. Across the top right corner, green pine-covered mountains with a small lake near the top right. Highways in ochre link the coast town, the city, the valley and the mountains."
+    }
+  ],
+  "styles": {
+    "c002": "Painted noir illustration in the manner of a 1980s paperback mystery cover and classic hand-painted point-and-click adventure game backgrounds. Gouache and oil textures with visible brushwork, warm tungsten lamplight against deep blue-black shadows, a muted palette of ochre, oxblood, bottle green, slate and nicotine cream, subtle film grain. Southern California, October 1988: a foggy coastal town, Los Angeles, and the pine-covered San Bernardino Mountains. Period-accurate details. Absolutely no text, lettering, numbers, logos, brand names, watermarks or signatures anywhere; any paperwork shows only illegible scribbles or blurred typing."
+  }
 }

@@ -59,7 +59,9 @@ const concurrency = Number(value("concurrency") ?? 3);
 function promptFor(img) {
   const k = manifest.kinds[img.kind];
   const person = img.person ? `${manifest.people[img.person]}. ` : "";
-  return `${manifest.style}\n\n${k.suffix}\n\nSubject: ${person}${img.subject}`;
+  // A case can have its own style line (its year and place), and an image its own framing.
+  const style = img.style ? manifest.styles[img.style] : manifest.style;
+  return `${style}\n\n${img.suffix ?? k.suffix}\n\nSubject: ${person}${img.subject}`;
 }
 
 const fileFor = (img) => join(outDir, `${img.id}.webp`);

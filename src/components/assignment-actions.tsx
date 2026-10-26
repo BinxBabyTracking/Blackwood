@@ -12,6 +12,7 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
   const supabase = await createClient();
   let signedIn = false;
   let entitled = false;
+  let earlyAccess = false;
   let session: "active" | "closed" | null = null;
 
   if (supabase) {
@@ -19,7 +20,7 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
     if (data.user) {
       signedIn = true;
       const [{ data: ent }, { data: rows }] = await Promise.all([
-        supabase.from("case_entitlements").select("id").eq("case_id", c.id).eq("user_id", data.user.id).maybeSingle(),
+        supabase.from("case_entitlements").select("id, source").eq("case_id", c.id).eq("user_id", data.user.id).maybeSingle(),
         supabase
           .from("investigation_participants")
           .select("session:investigation_sessions!inner(id, case_id, status, mode)")
@@ -29,12 +30,13 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
           .in("session.status", ["active", "closed"]),
       ]);
       entitled = Boolean(ent);
+      earlyAccess = (ent as { source?: string } | null)?.source === "grant";
       const statuses = ((rows ?? []) as unknown as { session: { status: string } }[]).map((r) => r.session.status);
       session = statuses.includes("active") ? "active" : statuses.includes("closed") ? "closed" : null;
     }
   }
 
-  const action = resolveAssignmentAction(c, { signedIn, entitled, playable: isPlayable(c.id), session });
+  const action = resolveAssignmentAction(c, { signedIn, entitled, playable: isPlayable(c.id), session, earlyAccess });
 
   switch (action.kind) {
     case "in_preparation":
