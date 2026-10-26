@@ -504,6 +504,12 @@
       "model": "hand-imported",
       "generatedAt": "2026-10-26T14:53:03.971Z"
     },
+    "c002_obj_letter": {
+      "url": "/art/c002_obj_letter.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T14:55:37.576Z"
+    },
     "c002_portrait_diane": {
       "url": "/art/c002_portrait_diane.webp",
       "kind": "portrait",
