@@ -252,6 +252,14 @@ Added for C002. Each is off unless a case uses it, so older cases behave exactly
 | `requires` | a report option | Keeps a choice off the report form until it holds (a suspect not found yet). |
 | `mapTitle` | the case | Title of the travel map. |
 | `reportHeader` | the case | The lines under the report heading (Classification, Location, Victim or Subject). |
+| `phone: "mobile"` | the case | Added for C003. The investigator carries a phone: calls ring anywhere, telephone contacts and lab reports are reachable from anywhere, and a Phone button sits in the corner. |
+| `phone`, `contact` | a person | In a mobile case, the person can also be called from anywhere while the condition holds; `contact` is the line under their name in the phone. |
+| `texts` and the `text` effect | the case | Text messages that arrive on the phone, kept in its Messages list and the notebook. |
+| `deceased` | a person | Once it holds, the person can no longer be interviewed and is listed as deceased; earlier interviews stay. |
+| `status` | the case | A status line in the top bar that events can change (Active homicide, Active multiple homicide). |
+| `boardSections` | the case | Labeled sections of the murder board, opened by a condition. Cards and string can cross them. |
+| `multi` on a report question, `solution.answers` | the case | Any number of report questions, keyed by id; a question can take several answers. Older cases keep culprit, motive, weapon and location. |
+| `reportDate`, `resolution.caller`, `standard.linkNote` | the case | The date by the report signature, who makes the closing call, and the reviewer's note when nothing ties the suspect in. |
 
 ## Lessons from C001, and parked ideas
 

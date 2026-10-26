@@ -56,6 +56,18 @@ export function apply(effects: Effect[] | undefined, s: InvestigationState, def:
       if (!s.openedDeliveries.includes(e.delivery)) add(s.pendingDeliveries, e.delivery);
     } else if ("message" in e) add(s.messages, e.message);
     else if ("unlockQuestion" in e) add((s.unlockedQuestions ??= []), e.unlockQuestion);
+    else if ("text" in e) {
+      const t = def.texts?.find((x) => x.id === e.text);
+      s.texts ??= [];
+      if (t && !s.texts.includes(t.id)) {
+        s.texts.push(t.id);
+        const from = def.characters.find((c) => c.id === t.from)?.name ?? "Unknown";
+        add(s.messages, `New text from ${from}: "${t.body}"`);
+        if (!s.notebook.some((n) => n.id === `text:${t.id}`)) {
+          s.notebook.push({ id: `text:${t.id}`, kind: "call", title: `Text from ${from}`, text: t.body, characterId: t.from, at: Date.now() });
+        }
+      }
+    }
     else if ("startLab" in e) {
       const lab = def.labs?.find((l) => l.id === e.startLab);
       s.labs ??= {};

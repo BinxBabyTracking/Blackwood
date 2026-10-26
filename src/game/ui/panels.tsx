@@ -284,29 +284,50 @@ export function CallPanel({ caseId, data, onClose, voices, volume }: { caseId: s
 
 export function PhonePanel({ view, dispatch, onClose, pending, onDefer }: { view: ClientView; dispatch: Dispatch; onClose: () => void; pending: boolean; onDefer: () => void }) {
   const closed = view.status === "closed";
+  const mobile = view.phone.mobile;
   return (
-    <Overlay title="Telephone" onClose={onClose}>
+    <Overlay title={mobile ? "Phone" : "Telephone"} onClose={onClose}>
       <div className="space-y-8 p-6">
-        {view.characters.some((c) => c.id === "bennett") ? (
-          <div className="border border-white/10 p-4">
-            <p className="font-serif text-lg">Det. Frank Bennett</p>
-            <p className="text-xs text-smoke">LAPD Northeast Division. Ask about the scene, the reports, or request assistance.</p>
-            <GameButton className="mt-3" disabled={pending || closed} onClick={() => dispatch({ type: "talk", characterId: "bennett" })}>
-              Call Det. Bennett
-            </GameButton>
-          </div>
-        ) : null}
         {view.phone.ringing ? (
           <div className="border border-brass/50 bg-brass/10 p-4">
-            <p className="font-serif text-lg">The line is ringing.</p>
+            <p className="font-serif text-lg">{mobile ? `${view.phone.ringing.from} is calling.` : "The line is ringing."}</p>
             <div className="mt-3 flex flex-wrap items-center gap-3">
               <GameButton disabled={pending || closed} onClick={() => dispatch({ type: "answerCall", callId: view.phone.ringing!.id })}>
-                Answer the telephone
+                {mobile ? "Answer" : "Answer the telephone"}
               </GameButton>
               <button type="button" onClick={onDefer} className="text-sm text-smoke underline-offset-4 hover:text-paper hover:underline">
                 Let it ring
               </button>
             </div>
+          </div>
+        ) : null}
+        {view.phone.contacts.length ? (
+          <div>
+            {mobile ? <h3 className="text-sm text-smoke">Contacts</h3> : null}
+            <ul className={mobile ? "mt-3 space-y-2" : "space-y-2"}>
+              {view.phone.contacts.map((c) => (
+                <li key={c.id} className="border border-white/10 p-4">
+                  <p className="font-serif text-lg">{c.name}</p>
+                  <p className="text-xs text-smoke">{c.note || c.role}</p>
+                  <GameButton className="mt-3" disabled={pending || closed} onClick={() => dispatch({ type: "talk", characterId: c.id })}>
+                    Call {c.name.startsWith("Det.") ? `Det. ${c.name.split(" ").slice(-1)[0]}` : c.name}
+                  </GameButton>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+        {mobile && view.phone.texts.length ? (
+          <div>
+            <h3 className="text-sm text-smoke">Messages</h3>
+            <ul className="mt-3 space-y-2">
+              {view.phone.texts.map((t) => (
+                <li key={t.id} className="border border-white/10 bg-white/[0.03] px-4 py-3">
+                  <span className="block text-xs text-smoke">{t.from}</span>
+                  <span className="text-sm">{t.body}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         ) : null}
         <div>
@@ -340,6 +361,25 @@ export function PhonePanel({ view, dispatch, onClose, pending, onDefer }: { view
               ))}
             </ul>
             <p className="mt-2 text-xs text-smoke">What was said is recorded in your notebook.</p>
+          </div>
+        ) : null}
+        {mobile && view.deliveries.length ? (
+          <div>
+            <h3 className="text-sm text-smoke">Inbox</h3>
+            <ul className="mt-2 space-y-2">
+              {view.deliveries.map((d) => (
+                <li key={d.id}>
+                  <button
+                    type="button"
+                    disabled={pending}
+                    onClick={() => dispatch({ type: "openDelivery", deliveryId: d.id })}
+                    className="w-full border border-white/10 px-4 py-3 text-left text-sm hover:border-brass disabled:opacity-50"
+                  >
+                    {d.title}
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
         ) : null}
       </div>

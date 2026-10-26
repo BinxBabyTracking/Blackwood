@@ -152,6 +152,20 @@ export function MurderBoard({
             dispatch({ type: "boardAdd", itemId: id, x: p.x - 5, y: p.y - 5 });
           }}
         >
+          {/* Labeled sections, once a case opens a second one: strips of tape across the cork. Cards and string can cross them. */}
+          {view.boardSections.length > 1
+            ? view.boardSections.map((sec, i) => {
+                const w = 100 / view.boardSections.length;
+                return (
+                  <div key={sec.id} className="pointer-events-none absolute inset-y-0" style={{ left: `${i * w}%`, width: `${w}%` }}>
+                    {i > 0 ? <div className="absolute inset-y-0 left-0 border-l-2 border-dashed border-[#efe8d6]/45" /> : null}
+                    <p className="absolute left-1/2 top-2 -translate-x-1/2 rotate-[-1deg] bg-[#efe8d6]/85 px-3 py-0.5 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-[#231e17] shadow">
+                      {sec.label}
+                    </p>
+                  </div>
+                );
+              })
+            : null}
           <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
             {view.board.connections.map(([a, b]) => {
               if (!onBoard.has(a) || !onBoard.has(b)) return null;

@@ -7,7 +7,8 @@ import type { ActionResponse, ClientView, GameAction, ReportDraft, Theory } from
 type Dispatch = (a: GameAction) => Promise<ActionResponse | null>;
 type Mode = "form" | "review" | "returned";
 
-const ANSWERS = ["culprit", "motive", "weapon", "location"] as const;
+/** An answer as a list: one option, or several for a question that allows more than one. */
+const picks = (v: string | string[] | undefined) => (Array.isArray(v) ? v : v ? [v] : []);
 
 /**
  * The final investigative report: an agency form typed on the office
@@ -55,8 +56,14 @@ export function FinalReport({
     setDraft((mine) => (JSON.stringify(mine) === lastServer.current ? { ...c.draft, evidence: [...c.draft.evidence] } : mine));
     lastServer.current = serverDraft;
   }, [serverDraft, c.draft]);
-  const complete = ANSWERS.every((k) => draft[k]) && draft.evidence.length >= c.minItems && draft.evidence.length <= c.maxItems;
-  const label = (set: (typeof ANSWERS)[number], id?: string) => c.choices.find((x) => x.id === set)?.options.find((o) => o.id === id)?.label ?? "Not answered";
+  const complete = c.choices.every((ch) => picks(draft[ch.id]).length > 0) && draft.evidence.length >= c.minItems && draft.evidence.length <= c.maxItems;
+  const label = (set: string, v?: string | string[]) => {
+    const opts = c.choices.find((x) => x.id === set)?.options ?? [];
+    const words = picks(v).map((id) => opts.find((o) => o.id === id)?.label ?? id);
+    return words.length ? words.join("; ") : "Not answered";
+  };
+  /** The evidence section comes after the questions: E with four questions, G with six. */
+  const evidenceSection = String.fromCharCode(65 + c.choices.length);
   const evidenceTitle = (id: string) => view.evidence.find((e) => e.id === id)?.title ?? id;
 
   // scrollIntoView returns a Promise in current browsers; an effect must not return it.
@@ -94,7 +101,8 @@ export function FinalReport({
 
   const submit = async () => {
     setConfirming(false);
-    const theory: Theory = { culprit: draft.culprit!, motive: draft.motive!, weapon: draft.weapon!, location: draft.location!, evidence: draft.evidence };
+    const theory: Theory = { evidence: draft.evidence };
+    for (const ch of c.choices) theory[ch.id] = ch.multi ? picks(draft[ch.id]) : (draft[ch.id] as string);
     const r = await dispatch({ type: "submitConclusion", theory });
     if (r?.outcome.kind === "verdict" && !r.outcome.correct) setMode("returned");
   };
@@ -152,7 +160,7 @@ export function FinalReport({
                   </div>
                 ))}
                 <div className="grid gap-1 sm:grid-cols-[12rem_1fr]">
-                  <dt className="text-xs uppercase tracking-[0.1em] text-[#231e17]/60">E. Supporting Evidence</dt>
+                  <dt className="text-xs uppercase tracking-[0.1em] text-[#231e17]/60">{evidenceSection}. Supporting Evidence</dt>
                   <dd>
                     <ol className="space-y-0.5">
                       {draft.evidence.map((id, i) => (
@@ -164,7 +172,7 @@ export function FinalReport({
                   </dd>
                 </div>
               </dl>
-              <Signature name={name} />
+              <Signature name={name} date={c.date} />
               <div className="mt-8 flex flex-wrap gap-3">
                 <PaperButton onClick={() => setMode("form")}>Return to Report</PaperButton>
                 {guest ? (
@@ -192,19 +200,24 @@ export function FinalReport({
                     SECTION {ch.section}. {ch.title.toUpperCase()}
                   </legend>
                   <p className="mt-3 font-serif text-[1.05rem] italic">{ch.question}</p>
+                  {ch.multi ? <p className="mt-1 font-mono text-xs text-[#231e17]/65">Mark every answer that applies.</p> : null}
                   <ul className="mt-3 space-y-1 font-mono text-[0.95rem]">
                     {ch.options.map((o) => {
-                      const on = shown[ch.id] === o.id;
+                      const on = picks(shown[ch.id]).includes(o.id);
                       return (
                         <li key={o.id}>
                           <label className={`flex cursor-pointer items-baseline gap-3 rounded-[2px] px-2 py-1 hover:bg-[#231e17]/5 ${filed ? "cursor-default" : ""}`}>
                             <input
-                              type="radio"
+                              type={ch.multi ? "checkbox" : "radio"}
                               name={ch.id}
                               value={o.id}
                               checked={on}
-                              onChange={() => {
-                                setDraft((d) => ({ ...d, [ch.id]: o.id }));
+                              onChange={(ev) => {
+                                setDraft((d) => {
+                                  if (!ch.multi) return { ...d, [ch.id]: o.id };
+                                  const cur = picks(d[ch.id]).filter((x) => x !== o.id);
+                                  return { ...d, [ch.id]: ev.target.checked ? [...cur, o.id] : cur };
+                                });
                                 setSaved("idle");
                               }}
                               className="sr-only"
@@ -220,7 +233,7 @@ export function FinalReport({
               ))}
 
               <fieldset className="mt-10" disabled={Boolean(filed)}>
-                <legend className="w-full border-b border-[#231e17]/25 pb-1 font-mono text-sm font-bold tracking-[0.12em]">SECTION E. SUPPORTING EVIDENCE</legend>
+                <legend className="w-full border-b border-[#231e17]/25 pb-1 font-mono text-sm font-bold tracking-[0.12em]">SECTION {evidenceSection}. SUPPORTING EVIDENCE</legend>
                 <p className="mt-3 font-serif text-[1.05rem] italic">Which evidence supports your conclusions?</p>
                 <p className="mt-1 font-mono text-xs text-[#231e17]/65">
                   Attach between {c.minItems} and {c.maxItems} items from your evidence: the key evidence that proves your findings, plus up to two supporting items or photographs if you like. Attached: {shown.evidence.length}.
@@ -272,7 +285,7 @@ export function FinalReport({
                 )}
               </fieldset>
 
-              <Signature name={name} />
+              <Signature name={name} date={c.date} />
 
               {filed ? null : (
                 <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -327,7 +340,7 @@ export function Letterhead() {
   );
 }
 
-function Signature({ name }: { name: string }) {
+function Signature({ name, date }: { name: string; date: string }) {
   return (
     <div className="mt-10 grid gap-6 font-mono text-xs sm:grid-cols-2">
       <div>
@@ -335,7 +348,7 @@ function Signature({ name }: { name: string }) {
         <p className="mt-1 tracking-[0.12em] text-[#231e17]/60">SIGNATURE OF INVESTIGATOR</p>
       </div>
       <div>
-        <p className="border-b border-[#231e17]/60 pb-1 font-serif text-lg">August 1985</p>
+        <p className="border-b border-[#231e17]/60 pb-1 font-serif text-lg">{date}</p>
         <p className="mt-1 tracking-[0.12em] text-[#231e17]/60">DATE</p>
       </div>
     </div>

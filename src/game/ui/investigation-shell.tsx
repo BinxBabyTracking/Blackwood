@@ -394,8 +394,9 @@ export function InvestigationShell({
 
   const panel = layer?.k === "panel" ? layer.panel : null;
   const atHome = view.location.id === homeLocation;
-  // The telephone rings only in the office, and never over an interview, a document or an inspection.
-  const ringing = Boolean(!trip && view.phone.ringing && atHome && view.introSeen && (layer === null || panel === "phone") && deferredCall !== view.phone.ringing.id);
+  // The telephone rings only in the office (anywhere, with a mobile phone), and never over an interview, a document or an inspection.
+  const phoneHere = atHome || view.phone.mobile;
+  const ringing = Boolean(!trip && view.phone.ringing && phoneHere && view.introSeen && (layer === null || panel === "phone") && deferredCall !== view.phone.ringing.id);
   useTelephoneRing(ringing, (prefs.masterVolume / 100) * (prefs.sfxVolume / 100));
   const locked = view.status === "closed";
   const pin = (id: string) => dispatch({ type: "boardAdd", itemId: id, x: 10 + Math.random() * 70, y: 10 + Math.random() * 60 });
@@ -421,6 +422,7 @@ export function InvestigationShell({
       <div className="flex shrink-0 items-center justify-between gap-3 bg-[#0d1013] px-3 py-1.5 text-xs">
         <p className="truncate font-mono text-paper/70">
           <span className="text-brass">{view.caseId}</span> {view.title}
+          {view.caseStatus ? <span className="hidden text-fault md:inline"> · {view.caseStatus}</span> : null}
           <span className="hidden sm:inline">
             {" "}
             / <span className="text-paper">{view.location.name}</span>
@@ -437,7 +439,7 @@ export function InvestigationShell({
           {party ? <span className="hidden font-mono text-brass/80 md:inline">{party.label}</span> : null}
           {view.phone.ringing ? (
             <span className="hidden whitespace-nowrap font-mono text-brass sm:inline" role="status">
-              {atHome ? "Telephone ringing" : "A call is waiting at the office"}
+              {view.phone.mobile ? `${view.phone.ringing.from} calling` : atHome ? "Telephone ringing" : "A call is waiting at the office"}
             </span>
           ) : null}
           <SaveIndicator status={save} />
@@ -594,6 +596,16 @@ export function InvestigationShell({
           count={view.evidence.length}
           onClick={() => setLayer({ k: "panel", panel: "inventory" })}
         />
+        {/* A case with a mobile phone carries it everywhere; it shakes while a call is coming in. */}
+        {view.phone.mobile ? (
+          <HudObject
+            label="Phone"
+            image={paintedArt(`${caseId.toLowerCase()}_obj_phone`)}
+            fallback="phone"
+            alert={Boolean(view.phone.ringing)}
+            onClick={() => setLayer({ k: "panel", panel: "phone" })}
+          />
+        ) : null}
       </nav>
 
       {/* Agency messages: shown for a few seconds, never in the way of the scene */}
@@ -918,7 +930,7 @@ function SaveIndicator({ status }: { status: SaveStatus }) {
 }
 
 /** A painted object in the corner of the scene that opens a panel (the map, the notebook, the evidence). */
-function HudObject({ label, image, fallback, count, onClick }: { label: string; image: string | null; fallback: "map" | "notebook" | "evidence"; count?: number; onClick: () => void }) {
+function HudObject({ label, image, fallback, count, alert, onClick }: { label: string; image: string | null; fallback: "map" | "notebook" | "evidence" | "phone"; count?: number; alert?: boolean; onClick: () => void }) {
   return (
     <button
       type="button"
@@ -926,7 +938,7 @@ function HudObject({ label, image, fallback, count, onClick }: { label: string; 
       aria-label={count !== undefined ? `${label}, ${count} items` : label}
       className="group pointer-events-auto relative flex w-14 flex-col items-center gap-1 sm:w-[4.5rem]"
     >
-      <span className="relative block h-12 w-14 transition-transform duration-200 group-hover:-translate-y-1 group-hover:scale-105 sm:h-16 sm:w-[4.5rem]">
+      <span className={`relative block h-12 w-14 transition-transform duration-200 group-hover:-translate-y-1 group-hover:scale-105 sm:h-16 sm:w-[4.5rem] ${alert ? "animate-bounce" : ""}`}>
         {image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -949,10 +961,10 @@ function HudObject({ label, image, fallback, count, onClick }: { label: string; 
   );
 }
 
-function HudIcon({ kind }: { kind: "map" | "notebook" | "evidence" }) {
+function HudIcon({ kind }: { kind: "map" | "notebook" | "evidence" | "phone" }) {
   return (
     <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
-      {kind === "map" ? <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14" /> : kind === "notebook" ? <path d="M6 3h11a1 1 0 011 1v16a1 1 0 01-1 1H6zM6 3v18M9 8h6M9 12h6" /> : <path d="M5 8h14v12H5zM9 8V5h6v3M9 13h6" />}
+      {kind === "phone" ? <path d="M8 2h8a1 1 0 011 1v18a1 1 0 01-1 1H8a1 1 0 01-1-1V3a1 1 0 011-1zM11 18h2" /> : kind === "map" ? <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14" /> : kind === "notebook" ? <path d="M6 3h11a1 1 0 011 1v16a1 1 0 01-1 1H6zM6 3v18M9 8h6M9 12h6" /> : <path d="M5 8h14v12H5zM9 8V5h6v3M9 13h6" />}
     </svg>
   );
 }

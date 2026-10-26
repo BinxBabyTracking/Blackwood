@@ -1,4 +1,4 @@
-import { evaluateReport, reportProblem, REVIEW_FEEDBACK } from "./evaluation";
+import { cleanAnswer, evaluateReport, reportProblem, REVIEW_FEEDBACK } from "./evaluation";
 import { concepts } from "./matcher";
 import {
   allowance,
@@ -77,6 +77,7 @@ export function newState(def: CaseDefinition, now = Date.now()): InvestigationSt
     openedDeliveries: [],
     readDocuments: [],
     messages: [],
+    texts: [],
     attempts: 0,
     report: { draft: { evidence: [] }, submissions: [], final: null },
     activeSeconds: 0,
@@ -106,9 +107,42 @@ export function characterLocation(c: CharacterDef, s: InvestigationState): strin
   return moved ? moved.locationId : c.locationId;
 }
 
+/** Whether a person has died in this investigation. */
+export function isDeceased(c: CharacterDef, s: InvestigationState) {
+  return Boolean(c.deceased && check(c.deceased, s));
+}
+
+const mobile = (def: CaseDefinition) => def.phone === "mobile";
+
+/**
+ * How the investigator can reach a person right now: face to face where they
+ * are, by telephone (from the office, or from anywhere with a mobile phone),
+ * or not at all.
+ */
+function reachOf(def: CaseDefinition, s: InvestigationState, c: CharacterDef): "in person" | "telephone" | null {
+  if (!check(c.available, s) || isDeceased(c, s)) return null;
+  const here = characterLocation(c, s) === s.location;
+  if (c.medium === "telephone") return here || mobile(def) ? "telephone" : null;
+  if (here) return "in person";
+  if (mobile(def) && c.phone && check(c.phone, s)) return "telephone";
+  return null;
+}
+
 function characterHere(def: CaseDefinition, s: InvestigationState, id: string) {
   const c = char(def, id);
-  return Boolean(c && characterLocation(c, s) === s.location && check(c.available, s));
+  return Boolean(c && reachOf(def, s, c));
+}
+
+/** Why a person cannot be talked to right now, in words. */
+function unreachable(def: CaseDefinition, s: InvestigationState, c: CharacterDef) {
+  if (isDeceased(c, s)) return `${c.name} is dead.`;
+  if (c.medium === "telephone") return `${c.name} can be reached from your office telephone.`;
+  return `${c.name} is not here.`;
+}
+
+/** Whether the telephone is within reach: always with a mobile phone, else only at the office. */
+function phoneInReach(def: CaseDefinition, s: InvestigationState) {
+  return mobile(def) || s.location === def.startLocation;
 }
 
 /** How the player legitimately uncovered a piece of evidence, or null if they have not. */
@@ -150,6 +184,7 @@ export function normalizeState(def: CaseDefinition, raw: InvestigationState): In
   s.demeanor ??= {};
   s.conversations ??= {};
   s.eventStates ??= {};
+  s.texts ??= [];
   s.report ??= { draft: { evidence: [] }, submissions: [], final: null };
   // Saves from before the event lifecycle recorded only which events had fired.
   for (const id of s.events ?? []) s.eventStates[id] ??= "active";
@@ -277,7 +312,9 @@ function shortName(c: CharacterDef) {
 }
 
 function whereOf(def: CaseDefinition, s: InvestigationState, c: CharacterDef) {
-  if (c.medium === "telephone") return "By telephone from your office";
+  if (isDeceased(c, s)) return "Deceased";
+  if (c.medium === "telephone") return mobile(def) ? "By phone" : "By telephone from your office";
+  if (reachOf(def, s, c) === "telephone") return "By phone";
   const at = characterLocation(c, s);
   return at ? loc(def, at)?.name ?? "" : "";
 }
@@ -308,7 +345,7 @@ function conversationOutcome(def: CaseDefinition, s: InvestigationState, charact
     role: c.role,
     portrait: def.assets.images[c.portrait] ?? "",
     where: whereOf(def, s, c),
-    medium: c.medium ?? "in person",
+    medium: reachOf(def, s, c) ?? c.medium ?? "in person",
     demeanor: d?.label ?? null,
     refusing: Boolean(d?.refuses),
     history: clientLines(def, s, characterId),
@@ -589,7 +626,7 @@ export function reduce(
 
     case "talk": {
       const c = char(def, action.characterId) ?? fail("Unknown person.");
-      if (!characterHere(def, s, c.id)) fail(c.medium === "telephone" ? `${c.name} can be reached from your office telephone.` : `${c.name} is not here.`);
+      if (!characterHere(def, s, c.id)) fail(unreachable(def, s, c));
       if (!s.talkedTo.includes(c.id)) s.talkedTo.push(c.id);
       outcome = conversationOutcome(def, s, c.id);
       break;
@@ -607,7 +644,7 @@ export function reduce(
 
     case "askFree": {
       const c = char(def, action.characterId) ?? fail("Unknown person.");
-      if (!characterHere(def, s, c.id)) fail(c.medium === "telephone" ? `${c.name} can be reached from your office telephone.` : `${c.name} is not here.`);
+      if (!characterHere(def, s, c.id)) fail(unreachable(def, s, c));
       const text = String(action.text ?? "").replace(/\s+/g, " ").trim().slice(0, 300);
       if (!text) fail("Ask a question first.");
       if (!s.talkedTo.includes(c.id)) s.talkedTo.push(c.id);
@@ -655,7 +692,7 @@ export function reduce(
 
     case "present": {
       const c = char(def, action.characterId) ?? fail("Unknown person.");
-      if (!characterHere(def, s, c.id)) fail(`${c.name} is not here.`);
+      if (!characterHere(def, s, c.id)) fail(unreachable(def, s, c));
       if (!s.evidence.includes(action.evidenceId)) fail("You do not have that evidence.");
       const ev = def.evidence.find((e) => e.id === action.evidenceId)!;
       const fund = chargeQuestion(def, s, c);
@@ -665,7 +702,7 @@ export function reduce(
       if (!s.presented.includes(key)) s.presented.push(key);
       if (!s.talkedTo.includes(c.id)) s.talkedTo.push(c.id);
       const lines = d?.refuses ? [d.refuses] : r ? r.reply : [c.defaultEvidenceReply];
-      const verb = c.medium === "telephone" ? "read" : "show";
+      const verb = reachOf(def, s, c) === "telephone" ? "read" : "show";
       const said = say(s, c.id, `You ${verb} ${shortName(c)} ${ev.id}, the ${ev.title.toLowerCase()}.`, lines, { you: "present", them: d?.refuses ? "refusal" : "reaction" }, ev.id);
       markFund(s, c.id, fund);
       const latest = [...said, ...patienceLines(def, s, c, fund)];
@@ -702,7 +739,7 @@ export function reduce(
     }
 
     case "answerCall": {
-      if (!inOffice) fail("The telephone is at the office.");
+      if (!phoneInReach(def, s)) fail("The telephone is at the office.");
       if (!s.pendingCalls.includes(action.callId)) fail("No one is on the line.");
       const call = def.calls.find((x) => x.id === action.callId)!;
       s.pendingCalls = s.pendingCalls.filter((x) => x !== call.id);
@@ -710,7 +747,7 @@ export function reduce(
       apply([{ note: { id: `call:${call.id}`, kind: "call", title: call.title, text: call.lines.join(" "), characterId: call.from } }], s, def);
       // The call belongs to the caller's interview record too, so it can be revisited and followed up.
       const log = (s.conversations[call.from] ??= []);
-      log.push({ speaker: "cue", text: `${call.title}, at your office.`, kind: "cue", q: call.id });
+      log.push({ speaker: "cue", text: inOffice ? `${call.title}, at your office.` : `${call.title}, on your phone.`, kind: "cue", q: call.id });
       for (const l of call.lines) log.push({ speaker: call.from, text: l, kind: "call", q: call.id });
       apply(call.effects, s, def);
       outcome = { kind: "call", id: call.id, title: call.title, from: char(def, call.from)?.name ?? "Caller", fromId: call.from, lines: call.lines, voiced: voiced(char(def, call.from)) };
@@ -718,7 +755,7 @@ export function reduce(
     }
 
     case "placeCall": {
-      if (!inOffice) fail("The telephone is at the office.");
+      if (!phoneInReach(def, s)) fail("The telephone is at the office.");
       const call = def.outgoingCalls.find((x) => x.id === action.callId) ?? fail("Unknown call.");
       if (!check(call.available, s) || check(call.done, s)) fail("There is no reason to make that call right now.");
       apply([{ note: { id: `call:${call.id}`, kind: "call", title: call.label, text: call.lines.join(" "), characterId: call.to } }], s, def);
@@ -729,7 +766,8 @@ export function reduce(
     }
 
     case "openDelivery": {
-      if (!inOffice) fail("Deliveries arrive at the office.");
+      // With a mobile phone, reports also come by email and can be read anywhere.
+      if (!inOffice && !mobile(def)) fail("Deliveries arrive at the office.");
       const d = def.deliveries.find((x) => x.id === action.deliveryId) ?? fail("Unknown delivery.");
       if (!s.pendingDeliveries.includes(d.id) && !s.openedDeliveries.includes(d.id)) fail("Nothing has arrived.");
       s.pendingDeliveries = s.pendingDeliveries.filter((x) => x !== d.id);
@@ -817,20 +855,12 @@ export function reduce(
     case "saveReport": {
       if (!check(def.reportAvailable, s)) fail("You are not ready to write the final report yet.");
       const d = action.draft ?? { evidence: [] };
-      const pick = (id: Theory["culprit"] | undefined, set: string) => {
-        const c = def.conclusionChoices.find((x) => x.id === set)!;
-        return typeof id === "string" && c.options.some((o) => o.id === id) ? id : undefined;
-      };
       const evidence = [...new Set(Array.isArray(d.evidence) ? d.evidence : [])]
         .filter((id) => typeof id === "string" && hasItem(s, id))
         .slice(0, def.solution.standard.maxItems);
-      s.report.draft = {
-        culprit: pick(d.culprit, "culprit"),
-        motive: pick(d.motive, "motive"),
-        weapon: pick(d.weapon, "weapon"),
-        location: pick(d.location, "location"),
-        evidence,
-      };
+      const draft: InvestigationState["report"]["draft"] = { evidence };
+      for (const c of def.conclusionChoices) draft[c.id] = cleanAnswer(c, d[c.id]);
+      s.report.draft = draft;
       break;
     }
 
@@ -839,7 +869,8 @@ export function reduce(
       const t = action.theory;
       const problem = reportProblem(def, s, t);
       if (problem) fail(problem);
-      const theory: Theory = { culprit: t.culprit, motive: t.motive, weapon: t.weapon, location: t.location, evidence: [...t.evidence] };
+      const theory: Theory = { evidence: [...t.evidence] };
+      for (const c of def.conclusionChoices) theory[c.id] = cleanAnswer(c, t[c.id])!;
       s.attempts += 1;
       s.report.draft = { ...theory, evidence: [...theory.evidence] };
       const review = evaluateReport(def, theory);
@@ -895,7 +926,7 @@ function runBoardHint(s: InvestigationState, def: CaseDefinition) {
   const h = def.boardHint;
   if (!h || s.status === "closed" || s.flags.includes("board_hint_offered")) return;
   if (s.evidence.length < h.evidenceCount || (s.board?.connections?.length ?? 0) > 0) return;
-  if (s.location !== def.startLocation) {
+  if (!phoneInReach(def, s)) {
     if (!s.flags.includes("board_hint_waiting")) {
       s.flags.push("board_hint_waiting");
       s.messages.push("Det. Bennett is trying to reach you at the office.");
@@ -1040,6 +1071,7 @@ export function project(def: CaseDefinition, s: InvestigationState, now = Date.n
       portrait: img(c.portrait),
       bio: c.bio.filter((b) => check(b.requires, s)).map((b) => b.text),
       onBoard: c.onBoard,
+      deceased: isDeceased(c, s),
     })),
     notebook: s.notebook,
     timeline: s.timeline,
@@ -1051,6 +1083,7 @@ export function project(def: CaseDefinition, s: InvestigationState, now = Date.n
     objectives: def.objectives.filter((o) => check(o.visible, s)).map((o) => ({ id: o.id, text: o.text, done: check(o.done, s) })),
     board: s.board,
     phone: {
+      mobile: mobile(def),
       ringing: s.pendingCalls.length
         ? { id: s.pendingCalls[0], from: char(def, def.calls.find((c) => c.id === s.pendingCalls[0])!.from)?.name ?? "Unknown caller" }
         : null,
@@ -1061,7 +1094,14 @@ export function project(def: CaseDefinition, s: InvestigationState, now = Date.n
         id,
         title: def.calls.find((c) => c.id === id)?.title ?? def.outgoingCalls.find((c) => c.id === id)?.label ?? id,
       })),
+      contacts: phoneContacts(def, s),
+      texts: [...(s.texts ?? [])].reverse().flatMap((id) => {
+        const t = def.texts?.find((x) => x.id === id);
+        return t ? [{ id: t.id, from: char(def, t.from)?.name ?? "Unknown", body: t.body }] : [];
+      }),
     },
+    caseStatus: [...(def.status ?? [])].reverse().find((x) => check(x.when, s))?.label ?? null,
+    boardSections: (def.boardSections ?? []).filter((b) => check(b.when, s)).map((b) => ({ id: b.id, label: b.label })),
     deliveries: [...s.pendingDeliveries, ...s.openedDeliveries].map((id) => ({ id, title: def.deliveries.find((d) => d.id === id)!.title })),
     documents: def.documents.map((d) => ({ id: d.id, title: d.title, read: s.readDocuments.includes(d.id) })),
     statements: s.flags.includes("casefile_read")
@@ -1098,6 +1138,7 @@ export function project(def: CaseDefinition, s: InvestigationState, now = Date.n
       header: def.reportHeader ?? [],
       available: check(def.reportAvailable, s),
       choices: def.conclusionChoices.map((c) => ({ ...c, options: c.options.filter((o) => check(o.requires, s)).map((o) => ({ id: o.id, label: o.label })) })),
+      date: def.reportDate ?? "August 1985",
       minItems: def.solution.standard.minItems,
       maxItems: def.solution.standard.maxItems,
       attempts: s.attempts,
@@ -1122,6 +1163,19 @@ export function conversationFor(def: CaseDefinition, s: InvestigationState, char
   return conversationOutcome(def, s, characterId);
 }
 
+/** People the investigator can ring right now: telephone contacts, and in a mobile case anyone who has given a number. */
+function phoneContacts(def: CaseDefinition, s: InvestigationState) {
+  if (!phoneInReach(def, s)) return [];
+  return def.characters
+    .filter((c) => (c.medium === "telephone" || (mobile(def) && c.phone && check(c.phone, s))) && reachOf(def, s, c) === "telephone")
+    .map((c) => ({
+      id: c.id,
+      name: c.name,
+      role: c.role,
+      note: c.contact ?? (c.id === "bennett" && !mobile(def) ? "LAPD Northeast Division. Ask about the scene, the reports, or request assistance." : ""),
+    }));
+}
+
 function interviewsView(def: CaseDefinition, s: InvestigationState): ClientInterview[] {
   return def.characters
     .filter((c) => def.questions.some((q) => q.characterId === c.id) && (s.talkedTo.includes(c.id) || knownCharacters(def, s).some((k) => k.id === c.id)))
@@ -1129,7 +1183,7 @@ function interviewsView(def: CaseDefinition, s: InvestigationState): ClientInter
       const d = demeanorOf(def, s, c.id);
       const open = availableQuestions(def, s, c.id).filter((q) => !q.repeatable).length;
       const talked = s.talkedTo.includes(c.id);
-      const status = !talked ? "Not interviewed" : d?.refuses ? "Declining to answer" : open ? "Open lines of questioning" : "No further questions for now";
+      const status = isDeceased(c, s) ? "Deceased" : !talked ? "Not interviewed" : d?.refuses ? "Declining to answer" : open ? "Open lines of questioning" : "No further questions for now";
       const notes = s.notebook.filter((n) => n.characterId === c.id);
       return {
         characterId: c.id,
@@ -1137,8 +1191,8 @@ function interviewsView(def: CaseDefinition, s: InvestigationState): ClientInter
         role: c.role,
         portrait: def.assets.images[c.portrait] ?? "",
         where: whereOf(def, s, c),
-        medium: c.medium ?? "in person",
-        demeanor: talked ? d?.label ?? null : null,
+        medium: reachOf(def, s, c) ?? c.medium ?? "in person",
+        demeanor: talked && !isDeceased(c, s) ? d?.label ?? null : null,
         status,
         asked: def.questions.filter((q) => q.characterId === c.id && s.asked.includes(q.id)).length,
         transcript: clientLines(def, s, c.id),
@@ -1182,7 +1236,7 @@ export function spokenLine(
     const r = def.solution.resolution;
     if (ref.id === "accepted" && ref.n === 0) return { speakerId: "narrator", text: r.accepted };
     if (ref.id === "reconstruction" && r.reconstruction[ref.n]) return { speakerId: "narrator", text: r.reconstruction[ref.n].body };
-    if (ref.id === "bennett" && r.bennett[ref.n]) return { speakerId: "bennett", text: r.bennett[ref.n] };
+    if (ref.id === "bennett" && r.bennett[ref.n]) return { speakerId: r.caller?.characterId ?? "bennett", text: r.bennett[ref.n] };
     return null;
   }
   if (ref.kind === "delivery") {

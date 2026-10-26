@@ -57,6 +57,8 @@ export type Effect =
   | { message: string } // shown once to the player as a notice
   | { unlockQuestion: string } // reveals a follow-up dialogue entry
   | { startLab: string } // sends a lab test off; results come back after its time
+  /** A text message arrives on the investigator's phone (a TextDef id). */
+  | { text: string }
   | { when: Condition; then: Effect[] }; // applies only if the condition holds at that moment
 
 export interface NotebookEntryInput {
@@ -127,8 +129,23 @@ export interface CharacterDef {
    * The scene at each place needs a person hotspot shown under the same condition.
    */
   moves?: { when: Condition; locationId: string }[];
-  /** How the interview happens. Telephone interviews are opened from the office phone. */
+  /**
+   * How the interview happens. Telephone interviews are opened from the office
+   * phone, or from anywhere in a case with a mobile phone.
+   */
   medium?: "in person" | "telephone";
+  /**
+   * In a case with a mobile phone: while this holds, the person can also be
+   * called from anywhere (a detective you can see at the station or ring).
+   */
+  phone?: Condition;
+  /** A line under the person's name in the phone's contacts. */
+  contact?: string;
+  /**
+   * Once this holds the person has died: they can no longer be interviewed,
+   * are listed as deceased, and their earlier interviews stay in the notebook.
+   */
+  deceased?: Condition;
   /** Characters that the player may pin to the murder board. */
   onBoard: boolean;
   /** Reply used when the player presents evidence with no authored reaction. */
@@ -452,7 +469,10 @@ export interface ObjectiveDef {
 }
 
 export interface ChoiceSet {
-  id: "culprit" | "motive" | "weapon" | "location";
+  /** A stable id, e.g. "culprit". Answers are keyed by it. */
+  id: string;
+  /** More than one option may be chosen (several people carried it out). */
+  multi?: boolean;
   /** Report section letter and heading, e.g. "A", "Primary Suspect". */
   section: string;
   title: string;
@@ -477,6 +497,8 @@ export interface EvidenceStandard {
   minKey?: number;
   /** At least one attached item must connect the named person to the events. */
   linkToSuspect: string[];
+  /** The reviewer's note when nothing attached makes that connection. Defaults to one about "the events of that night". */
+  linkNote?: string;
   /** Relevant items that belong to no line and are not held against the report. */
   supporting: string[];
   /** How many attached items may have no bearing on the conclusions. */
@@ -486,10 +508,13 @@ export interface EvidenceStandard {
 }
 
 export interface SolutionDef {
-  culprit: string;
-  motive: string;
-  weapon: string;
-  location: string;
+  /** The classic four answers. Cases with other report questions use `answers`. */
+  culprit?: string;
+  motive?: string;
+  weapon?: string;
+  location?: string;
+  /** The right answer to each report question, by choice id. A multi-select answer lists every option needed, in any order. */
+  answers?: Record<string, string | string[]>;
   standard: EvidenceStandard;
   /** Revealed only after the report is accepted. */
   resolution: {
@@ -497,15 +522,15 @@ export interface SolutionDef {
     reconstruction: { heading: string; body: string }[];
     /** Det. Bennett's response, spoken in his voice. */
     bennett: string[];
+    /** Who makes the closing call, when it is not Det. Bennett of the LAPD. */
+    caller?: { characterId: string; name: string; tag: string };
   };
 }
 
+/** A report in progress: an answer per report question (a list for multi-select), and the attached evidence. */
 export interface ReportDraft {
-  culprit?: string;
-  motive?: string;
-  weapon?: string;
-  location?: string;
   evidence: string[];
+  [choice: string]: string | string[] | undefined;
 }
 
 export interface ReportSubmission {
@@ -596,6 +621,27 @@ export interface CaseDefinition {
   reportHeader?: { label: string; value: string }[];
   /** Evidence and developments that earn extra questions with a particular person. */
   reinterviews?: ReinterviewDef[];
+  /**
+   * "mobile": the investigator carries a phone. Calls ring wherever they are,
+   * telephone contacts can be called from anywhere, deliveries such as lab
+   * reports can be read from anywhere, and texts arrive. Default: the office telephone only.
+   */
+  phone?: "office" | "mobile";
+  /** Text messages the case can send with the `text` effect. */
+  texts?: TextDef[];
+  /** The case's status line; the last entry whose condition holds is shown (e.g. "Active homicide"). */
+  status?: { label: string; when?: Condition }[];
+  /** Labeled sections of the murder board, each shown once its condition holds. Items and string can cross them. */
+  boardSections?: { id: string; label: string; when?: Condition }[];
+  /** The date typed by the signature on the final report, e.g. "October 2018". Default "August 1985". */
+  reportDate?: string;
+}
+
+export interface TextDef {
+  id: string;
+  /** Character id of the sender. */
+  from: string;
+  body: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -669,6 +715,8 @@ export interface InvestigationState {
   openedDeliveries: string[];
   readDocuments: string[];
   messages: string[];
+  /** Text messages received on the investigator's phone, oldest first. */
+  texts?: string[];
   attempts: number;
   /** The final report: the working draft, every submission, and the accepted report. */
   report: { draft: ReportDraft; submissions: ReportSubmission[]; final: FinalReport | null };
@@ -765,12 +813,10 @@ export type GameAction =
   /** `investigator` is set by the server from the signed-in profile, never by the browser. */
   | { type: "submitConclusion"; theory: Theory; investigator?: string };
 
+/** A filed report: an answer per report question (a list for multi-select), and the attached evidence. */
 export interface Theory {
-  culprit: string;
-  motive: string;
-  weapon: string;
-  location: string;
   evidence: string[];
+  [choice: string]: string | string[];
 }
 
 // ---------------------------------------------------------------------------
@@ -807,6 +853,7 @@ export interface ClientCharacter {
   portrait: string;
   bio: string[];
   onBoard: boolean;
+  deceased?: boolean;
 }
 
 export interface ClientLine {
@@ -897,10 +944,20 @@ export interface ClientView {
   objectives: { id: string; text: string; done: boolean }[];
   board: InvestigationState["board"];
   phone: {
+    /** The investigator carries a phone: it rings anywhere, and contacts can be called from anywhere. */
+    mobile: boolean;
     ringing: { id: string; from: string } | null;
     outgoing: { id: string; to: string; label: string }[];
     log: { id: string; title: string }[];
+    /** People who can be called right now. */
+    contacts: { id: string; name: string; role: string; note: string }[];
+    /** Text messages, newest first. */
+    texts: { id: string; from: string; body: string }[];
   };
+  /** The case's status line, if the case has one. */
+  caseStatus: string | null;
+  /** Labeled sections of the murder board that are open. */
+  boardSections: { id: string; label: string }[];
   deliveries: { id: string; title: string }[];
   documents: { id: string; title: string; read: boolean }[];
   statements: {
@@ -926,6 +983,8 @@ export interface ClientView {
     header: { label: string; value: string }[];
     available: boolean;
     choices: ChoiceSet[];
+    /** The date by the signature. */
+    date: string;
     minItems: number;
     maxItems: number;
     attempts: number;

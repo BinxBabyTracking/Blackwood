@@ -190,7 +190,7 @@ export function InterviewScreen({
             {mode === "evidence" ? (
               <EvidenceTray
                 view={view}
-                who={data.medium === "telephone" ? `Read Det. ${data.name.split(" ").slice(-1)[0]} a piece of evidence` : `Show ${first} a piece of evidence`}
+                who={data.medium === "telephone" ? `Read ${data.name.startsWith("Det.") ? `Det. ${data.name.split(" ").slice(-1)[0]}` : first} a piece of evidence` : `Show ${first} a piece of evidence`}
                 disabled={pending || closed || !data.available}
                 onPick={(id) => ask({ type: "present", characterId: data.characterId, evidenceId: id })}
                 onBack={() => setMode("questions")}

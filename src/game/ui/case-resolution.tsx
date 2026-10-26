@@ -54,7 +54,9 @@ export function CaseResolution({
   const player = useLinePlayer(volume);
   const { play, stop } = player;
   const voices = view.voices;
-  const bennett = view.characters.find((c) => c.id === "bennett");
+  // The closing call: Det. Bennett of the LAPD, unless the case names someone else.
+  const caller = closure.caller ?? { characterId: "bennett", name: "Det. Frank Bennett", tag: "LAPD Northeast Division · by telephone" };
+  const bennett = view.characters.find((c) => c.id === caller.characterId);
   const name = closure.final?.investigator ?? "Investigator";
 
   const srcs = useMemo(() => {
@@ -134,10 +136,10 @@ export function CaseResolution({
           <div className="mx-auto w-40 md:w-full">
             {bennett ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={bennett.portrait} alt="Det. Frank Bennett" className="aspect-[4/5] w-full object-cover sepia-[0.3]" />
+              <img src={bennett.portrait} alt={caller.name} className="aspect-[4/5] w-full object-cover sepia-[0.3]" />
             ) : null}
-            <p className="mt-3 text-center font-display text-xl text-paper">Det. Frank Bennett</p>
-            <p className="text-center font-mono text-xs text-smoke">LAPD Northeast Division · by telephone</p>
+            <p className="mt-3 text-center font-display text-xl text-paper">{caller.name}</p>
+            <p className="text-center font-mono text-xs text-smoke">{caller.tag}</p>
           </div>
           <div>
             <div className="space-y-4" aria-live="polite">

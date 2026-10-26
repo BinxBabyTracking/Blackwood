@@ -152,7 +152,8 @@ export async function investigatorName(userId: string): Promise<string> {
 /** The filed report as stored with the closed investigation: answers in words, evidence by id and title. */
 function filedReport(def: CaseDefinition, state: InvestigationState) {
   const f = state.report.final!;
-  const label = (set: string, id: string) => def.conclusionChoices.find((c) => c.id === set)?.options.find((o) => o.id === id)?.label ?? id;
+  const one = (set: string, id: string) => def.conclusionChoices.find((c) => c.id === set)?.options.find((o) => o.id === id)?.label ?? id;
+  const label = (set: string, v: string | string[]) => (Array.isArray(v) ? v : [v]).map((id) => one(set, id)).join("; ");
   return {
     caseId: def.id,
     title: def.title,
