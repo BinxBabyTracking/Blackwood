@@ -636,6 +636,12 @@
       "model": "hand-imported",
       "generatedAt": "2026-10-26T13:46:28.558Z"
     },
+    "c002_map": {
+      "url": "/art/c002_map.webp",
+      "kind": "map",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T17:23:40.647Z"
+    },
     "c002_obj_glasses": {
       "url": "/art/c002_obj_glasses.webp",
       "kind": "sprite",
