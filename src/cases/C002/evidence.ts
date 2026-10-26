@@ -121,7 +121,7 @@ export const evidence: EvidenceDef[] = [
     image: "ev.e06",
     inspection: P(
       "A sheet torn from a pocket notebook, written in a careful machinist's capitals. Howard Lisk keeps a sleep log on his doctor's orders and writes down anything that wakes him.",
-      "SUN-MON OCT 9-10\n2:55 AWAKE. KNEES. TOOK 2 ASPIRIN.\n3:00 APPROX. DARK VAN PARKED ACROSS AT CURB IN FRONT OF 418 (HALE). NOT A NEIGHBOR'S. FULL SIZE. DARK BLUE OR BLACK. NO LADDER.\n3:40 VAN PULLED OUT. NO HEADLIGHTS UNTIL CORNER OF ELM AND 3RD. ONE MAN DRIVING, I THINK. PLATE BEGINS 2K, REST NOT SEEN. CALIF.\n3:45 BACK TO BED.",
+      "SUN-MON OCT 9-10\n2:55 AWAKE. KNEES. TOOK 2 ASPIRIN.\n3:00 DARK VAN AT CURB, 418.\n3:40 VAN PULLED OUT. NO HEADLIGHTS.\n     PLATE BEGINS 2K. CALIF.\n3:45 BACK TO BED.",
       "Clipped to it, in pen: \"Gave copy to the young officer Monday 4 PM. Nobody called back. H.L.\"",
     ),
     discovery: "Howard Lisk hands it over when asked what he saw that night.",
