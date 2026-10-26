@@ -334,7 +334,7 @@ export const questions: DialogueQuestion[] = [
   q("tom", "That night", "tom_blood", "Did you see a doctor afterward?", [
     "I asked for a blood test at County General on Monday evening, between Ferris's sessions. I wanted it on paper that he drugged us.",
     "It came back positive. Here. Ferris has a copy too, for all the good it did.",
-  ], {
+  ], { volunteer: { near: "drug drugged drink sedative sedated hospital doctor proof believe police lie lying", after: 4, reply: ["And before you ask, I can prove he drugged us. I went to County General on Monday evening and asked for a blood test, between Ferris's sessions.", "It came back positive. Here, take my copy. Ferris has one too, for all the good it did."] },
     reveals: "Tom's blood, drawn at 6:10 PM Monday at his own request, was positive for a sedative.",
     effects: [{ giveEvidence: "E03" }, tl("6:10 PM (Mon)", "Tom's blood is drawn at County General at his own request. Positive for a sedative.", "Tom Hale")],
   }),
@@ -435,7 +435,7 @@ export const questions: DialogueQuestion[] = [
   q("laura", "Where she was held", "laura_held", "Where were you held?", [
     "I never saw it. But I wrote down everything I heard and smelled, all of it, while it was fresh. Ruth typed it and I signed it.",
     "Here. It's better than anything I can tell you now.",
-  ], {
+  ], { volunteer: { near: "where held kept place room house taken happened remember", after: 1 },
     reveals: "Laura has given you her written statement: a long drive, climbing, pines and woodsmoke, a small room, one man.",
     effects: [{ giveEvidence: "E12" }],
   }),
@@ -462,7 +462,7 @@ export const questions: DialogueQuestion[] = [
   q("laura", "Where she was held", "laura_goggles", "What did he put over your eyes?", [
     "Swim goggles with black tape all over the lenses. Children's goggles, I think; the strap's too small. There's a little gap at the bottom of one where I could see light.",
     "I still have them. I couldn't throw them away. Take them.",
-  ], { reveals: "Laura has given you the taped swim goggles she wore.", effects: [{ giveEvidence: "E13" }] }),
+  ], { volunteer: { near: "eyes see saw blindfold goggles face", after: 4 }, reveals: "Laura has given you the taped swim goggles she wore.", effects: [{ giveEvidence: "E13" }] }),
   q("laura", "Release", "laura_release", "How were you released?", [
     "Early Wednesday he put me back in the van. We drove downhill for a long time. He walked me a little way, sat me on a bench, and told me to count to three hundred before I took the goggles off.",
     "When I did, I was in Alamitos Park, two blocks from Ruth's. I walked to her door.",
@@ -502,7 +502,7 @@ export const questions: DialogueQuestion[] = [
   }),
   q("ferris", "The investigation", "ferris_statement", "Can I see Tom Hale's statement?", [
     "Bennett vouches for you, so all right. Here's his statement, with my notes. Read the notes.",
-  ], { reveals: "Sgt. Ferris has given you Tom Hale's statement, with his own notes added.", effects: [{ giveEvidence: "E05" }] }),
+  ], { volunteer: { after: 2, reply: ["Look, don't take my word for it. Bennett vouches for you, so here's Hale's statement, with my notes. Read the notes."] }, reveals: "Sgt. Ferris has given you Tom Hale's statement, with his own notes added.", effects: [{ giveEvidence: "E05" }] }),
   q("ferris", "The investigation", "ferris_polygraph", "How did the polygraph go?", [
     "Inconclusive. Here's the summary. It doesn't clear him.",
     "The examiner wants to blame the sedative. I'd want to know who gave it to him.",
@@ -566,7 +566,7 @@ export const questions: DialogueQuestion[] = [
   q("nora", "The package", "nora_calls", "Did anyone contact you besides the letter?", [
     "Three phone calls to my desk on Tuesday afternoon. Quarter past three, ten to four, twenty past four.",
     "The first two started with a tape: 'Print the story tonight. The crew is waiting.' The last one was a live man, whispering. He asked if the police had been here and if the tape was clear enough.",
-  ], { reveals: "Three calls reached Nora's desk on Tuesday afternoon: two began with a tape, the third was a whispering man.", effects: [tl("3:15 PM (Tue)", "First of three calls to Nora Pruitt's desk. The caller plays a tape.", "Nora Pruitt")] }),
+  ], { volunteer: { near: "else anything call called calls phone contact heard caller crew", after: 1, reply: ["There's something else you should know, and the police haven't asked. Three phone calls came to my desk this afternoon, at quarter past three, ten to four and twenty past four.", "The first two started with a tape: 'Print the story tonight. The crew is waiting.' The last one was a live man, whispering. He asked if the police had been here, and if the tape was clear enough."] }, reveals: "Three calls reached Nora's desk on Tuesday afternoon: two began with a tape, the third was a whispering man.", effects: [tl("3:15 PM (Tue)", "First of three calls to Nora Pruitt's desk. The caller plays a tape.", "Nora Pruitt")] }),
   q("nora", "The package", "nora_voice", "Describe the caller.", [
     "On the tape, a flat man's voice, like a radio announcer with a cold. Live, a whisper. Same man, I'd bet.",
     "On the last call I heard coins drop twice, wind, and a truck going by on gravel. That's not a city phone booth.",

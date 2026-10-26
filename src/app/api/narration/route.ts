@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { canNarrate, normalizeState } from "@/game/engine/engine";
 import { findInvestigation } from "@/game/persistence";
 import { loadCase } from "@/game/registry";
-import { narrate, NarrationError } from "@/lib/narration/elevenlabs";
+import { castVoice, narrate, NarrationError } from "@/lib/narration/elevenlabs";
 import { actingUser, fromGuestScreen } from "@/lib/party";
 
 const recent = new Map<string, number[]>();
@@ -38,8 +38,25 @@ export async function GET(request: NextRequest) {
   try {
     const loaded = await findInvestigation(user.id, def.id);
     if (!loaded || !canNarrate(def, normalizeState(def, loaded.state), ev.id)) return fail("You have not found that evidence yet.", 403);
-    const { audio, cached } = await narrate(`${def.id}/${ev.id}`, ev.inspection);
-    recordUsage({ userId: user.id, sessionId: loaded.sessionId, caseId: def.id, service: "tts", purpose: "narration", characters: ev.inspection.length, saved: cached });
+    // Most items are one narrated read; a few (a voice on a tape) are read part by part in each speaker's own voice.
+    const parts = ev.readAloud?.length ? ev.readAloud : [{ text: ev.inspection }];
+    const clips: ArrayBuffer[] = [];
+    let cached = true;
+    for (const [i, part] of parts.entries()) {
+      const who = part.speakerId ? def.characters.find((c) => c.id === part.speakerId) : undefined;
+      const voice = who?.voice ? castVoice(who.id, who.voice) : undefined;
+      const clip = await narrate(ev.readAloud?.length ? `${def.id}/${ev.id}-${i}` : `${def.id}/${ev.id}`, part.text, voice);
+      recordUsage({ userId: user.id, sessionId: loaded.sessionId, caseId: def.id, service: "tts", purpose: "narration", characters: part.text.length, saved: clip.cached });
+      clips.push(clip.audio);
+      cached &&= clip.cached;
+    }
+    // MP3 clips of the same format play back to back when joined.
+    const audio = new Uint8Array(clips.reduce((n, c) => n + c.byteLength, 0));
+    let at = 0;
+    for (const c of clips) {
+      audio.set(new Uint8Array(c), at);
+      at += c.byteLength;
+    }
     return new Response(audio, {
       headers: { "Content-Type": "audio/mpeg", "Cache-Control": "private, max-age=86400", "X-Narration-Cache": cached ? "hit" : "miss" },
     });

@@ -166,6 +166,13 @@ export const evidence: EvidenceDef[] = [
     discovery: "Inspect the cassette on Nora Pruitt's desk at the Courier.",
     characters: ["laura", "nora"],
     related: ["E07", "E09", "E14"],
+    readAloud: [
+      { text: "A blank C-60 cassette in a plain case. Nora Pruitt's typed transcript is folded around it. The tape." },
+      { speakerId: "laura", text: "My name is Laura Kessler. Today is Monday, October tenth, nineteen eighty-eight. The headline in the Daily Star says, Freeway Bond Measure Trails in New Poll. Ruthie, I'm okay. Tom, I'm okay. They say if everyone does what they're told, I'll be home soon. Please don\"t..." },
+      { text: "The recording stops, then resumes." },
+      { speakerId: "laura", text: "Please do what they ask." },
+      { text: "In the background, a long, low mechanical whistle, about four seconds. Then the recording ends. Nora Pruitt's notes. Voice confirmed as Laura by her sister by phone, at five past three. The Daily Star is a Los Angeles morning paper; that headline ran on Monday. The whistle is not a train; too steady. Ask someone." },
+    ],
     boardable: true,
   }),
   ev({
@@ -385,6 +392,11 @@ export const evidence: EvidenceDef[] = [
     discovery: "Enclosed with the search inventory (RE06).",
     characters: ["gordon", "tom"],
     related: ["E05", "E16", "E18"],
+    readAloud: [
+      { text: "Sheriff's transcript. Cassette labeled M S G, from the cassette recorder at Cabin 14. A single male voice, flat, with tape hiss throughout." },
+      { speakerId: "gordon", text: "Listen carefully. You are being visited by a crew. We are professionals. We have been watching this house. Others from our crew are outside. Nobody gets hurt if you follow instructions. Lie still. Do not speak. You will each drink something to keep you calm. Drink all of it. If you fight, the woman will be hurt. If you call the police, we will know. This is business. Do exactly what we say." },
+      { text: "Click. End of recording. A note at the bottom: voice comparison with the payphone calls to the Courier requested." },
+    ],
     boardable: true,
   }),
   ev({

@@ -342,6 +342,12 @@ export interface EvidenceDef {
   related: string[];
   boardable: boolean;
   audio?: string;
+  /**
+   * How "read aloud" voices this item, part by part. A part with a speaker is
+   * read in that character's own voice (a voice on a tape); the rest by the
+   * narrator. Without it the whole inspection text is narrated.
+   */
+  readAloud?: { speakerId?: string; text: string }[];
 }
 
 export interface CallDef {
