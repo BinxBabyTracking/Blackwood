@@ -221,11 +221,11 @@ export const locations: LocationDef[] = [
     available: { callAnswered: "call_nora" },
     onMap: true,
     hotspots: [
-      person("cr_nora", "Nora Pruitt, crime reporter", "nora", { x: 40, y: 22, w: 13, h: 60 }),
-      inspect("cr_letter", "Letters on Nora's desk", "letter", { x: 58, y: 60, w: 12, h: 10 }, "Nora's desk", "A typed letter and its envelope, laid flat under a glass paperweight so nobody handles them more than they have to.", { evidence: "E07" }),
-      inspect("cr_cassette", "Cassette and transcript", "cassette", { x: 72, y: 60, w: 9, h: 9 }, "The cassette", "A plain cassette in a clear case beside a portable player, with Nora's typed transcript folded around it.", { evidence: "E08" }),
-      inspect("cr_phone", "Nora's telephone", "phone", { x: 26, y: 56, w: 8, h: 9 }, "Nora's telephone", "Her direct line. A pad beside it is covered in shorthand and three times written in a column: 3:15, 3:50, 4:20."),
-      inspect("cr_presses", "Window to the press room", "window", { x: 80, y: 10, w: 18, h: 38 }, "The press room", "Through the glass, the presses are quiet. Tonight's edition goes at eleven."),
+      person("cr_nora", "Nora Pruitt, crime reporter", "nora", { x: 44, y: 24, w: 13, h: 62 }),
+      inspect("cr_letter", "Letters on Nora's desk", "letter", { x: 73, y: 51, w: 12, h: 9 }, "Nora's desk", "A typed letter and its envelope, laid flat under a glass paperweight so nobody handles them more than they have to.", { evidence: "E07" }),
+      inspect("cr_cassette", "Cassette and transcript", "cassette", { x: 86, y: 59, w: 9, h: 9 }, "The cassette", "A plain cassette in a clear case beside a portable player, with Nora's typed transcript folded around it.", { evidence: "E08" }),
+      inspect("cr_phone", "Nora's telephone", "phone", { x: 1, y: 53, w: 17, h: 16 }, "Nora's telephone", "Her direct line. A pad beside it is covered in shorthand and three times written in a column: 3:15, 3:50, 4:20."),
+      inspect("cr_presses", "Window to the press room", "window", { x: 71, y: 1, w: 29, h: 43 }, "The press room", "Through the glass, the presses are quiet. Tonight's edition goes at eleven."),
     ],
   },
   {
