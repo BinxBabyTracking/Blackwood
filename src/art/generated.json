@@ -390,6 +390,12 @@
       "model": "hand-imported",
       "generatedAt": "2026-10-26T13:13:04.506Z"
     },
+    "c002_figure_laura": {
+      "url": "/art/c002_figure_laura.webp",
+      "kind": "figure",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T14:18:37.815Z"
+    },
     "c002_figure_tom": {
       "url": "/art/c002_figure_tom.webp",
       "kind": "figure",
@@ -449,6 +455,12 @@
       "kind": "background",
       "model": "hand-imported",
       "generatedAt": "2026-10-26T13:46:28.558Z"
+    },
+    "c002_portrait_laura": {
+      "url": "/art/c002_portrait_laura.webp",
+      "kind": "portrait",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T14:18:38.302Z"
     },
     "c002_portrait_tom": {
       "url": "/art/c002_portrait_tom.webp",
