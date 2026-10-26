@@ -396,6 +396,12 @@
       "model": "hand-imported",
       "generatedAt": "2026-10-26T14:18:37.815Z"
     },
+    "c002_figure_ruth": {
+      "url": "/art/c002_figure_ruth.webp",
+      "kind": "figure",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T14:27:47.070Z"
+    },
     "c002_figure_tom": {
       "url": "/art/c002_figure_tom.webp",
       "kind": "figure",
@@ -461,6 +467,12 @@
       "kind": "portrait",
       "model": "hand-imported",
       "generatedAt": "2026-10-26T14:18:38.302Z"
+    },
+    "c002_portrait_ruth": {
+      "url": "/art/c002_portrait_ruth.webp",
+      "kind": "portrait",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T14:27:47.571Z"
     },
     "c002_portrait_tom": {
       "url": "/art/c002_portrait_tom.webp",
