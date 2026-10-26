@@ -11,6 +11,7 @@ import { bestMatch } from "../src/game/engine/matcher";
 import { credits, questionsLeft } from "../src/game/engine/questions";
 import { CASES as MATCH_CASES } from "./match-eval";
 import { checkC002 } from "./check-case-C002";
+import { checkC003 } from "./check-case-C003";
 import type { CaseDefinition, GameAction, InvestigationState } from "../src/game/engine/types";
 
 const id = process.argv[2] ?? "C001";
@@ -68,6 +69,7 @@ if (!def.statements.length) problems.push("no police statements");
 const REVEALS: Record<string, RegExp> = {
   C001: /\b(murderer|killed her|he killed|mercer killed|daniel killed)\b/i,
   C002: /\b(i took her|i kidnapped|pell took her|gordon took her|pell kidnapped|gordon kidnapped|pell did it|gordon did it|i did it)\b/i,
+  C003: /\b(i killed|i shot|we shot|bell killed|bell shot|shaw shot|voss ordered|i did it|we did it|i paid them to)\b/i,
 };
 const spoken = [
   ...def.questions.flatMap((q) => [q.prompt, ...q.reply, ...(q.variants ?? []).flatMap((v) => v.reply)]),
@@ -730,6 +732,8 @@ if (id === "C001") {
   console.log(`playthrough: status=${s.status} attempts=${s.attempts} events=${s.events.join(",")} active=${s.activeSeconds}s`);
 } else if (id === "C002") {
   checkC002(def, problems);
+} else if (id === "C003") {
+  checkC003(def, problems);
 }
 randomWalks();
 
@@ -767,9 +771,14 @@ if (def.boardHint) {
   const base = reduce(def, newState(def), { type: "dismissIntro" }, 1).state;
   const away = { ...base, location: "diner", evidence: def.evidence.slice(0, h.evidenceCount).map((e) => e.id) };
   const a1 = reduce(def, away, { type: "saveNotes", text: "x" }, 2).state;
-  if (a1.pendingCalls.includes(h.callId)) problems.push("board hint rang away from the office");
-  if (!a1.messages.some((m) => /Bennett/.test(m))) problems.push("board hint gave no notice in the field");
-  const home = reduce(def, { ...a1, location: def.startLocation, messages: [] }, { type: "saveNotes", text: "y" }, 3).state;
+  if (def.phone === "mobile") {
+    // With a mobile phone the call reaches the investigator wherever they are.
+    if (!a1.pendingCalls.includes(h.callId)) problems.push("board hint did not ring on the mobile phone");
+  } else {
+    if (a1.pendingCalls.includes(h.callId)) problems.push("board hint rang away from the office");
+    if (!a1.messages.some((m) => /Bennett/.test(m))) problems.push("board hint gave no notice in the field");
+  }
+  const home = def.phone === "mobile" ? a1 : reduce(def, { ...a1, location: def.startLocation, messages: [] }, { type: "saveNotes", text: "y" }, 3).state;
   if (!home.pendingCalls.includes(h.callId)) problems.push("board hint did not ring in the office");
   const answered = reduce(def, home, { type: "answerCall", callId: h.callId }, 4).state;
   const again = reduce(def, answered, { type: "saveNotes", text: "z" }, 5).state;

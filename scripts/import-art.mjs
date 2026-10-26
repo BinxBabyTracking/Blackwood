@@ -71,8 +71,14 @@ async function cutOut(input) {
       queue[tail++] = p;
     }
   };
-  for (let x = 0; x < w; x++) push(x), push((h - 1) * w + x);
-  for (let y = 0; y < h; y++) push(y * w), push(y * w + w - 1);
+  for (let x = 0; x < w; x++) {
+    push(x);
+    push((h - 1) * w + x);
+  }
+  for (let y = 0; y < h; y++) {
+    push(y * w);
+    push(y * w + w - 1);
+  }
   while (head < tail) {
     const p = queue[head++];
     const d = dist(p);

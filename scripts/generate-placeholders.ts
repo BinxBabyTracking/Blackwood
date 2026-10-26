@@ -99,7 +99,7 @@ function backdrop(l: LocationDef, state: string) {
 // Objects by hotspot kind (drawn inside the hotspot rectangle)
 // ---------------------------------------------------------------------------
 
-function obj(h: HotspotDef, l: LocationDef, state: string): string {
+function obj(h: HotspotDef, l: LocationDef): string {
   const x = (h.rect.x / 100) * W;
   const y = (h.rect.y / 100) * H;
   const w = (h.rect.w / 100) * W;
@@ -255,7 +255,7 @@ function scene(l: LocationDef, state: string) {
   });
   // Draw people last so they stand in front of furniture.
   const sorted = [...hs].sort((a, b) => (a.kind === "person" ? 1 : 0) - (b.kind === "person" ? 1 : 0));
-  for (const h of sorted) body += obj(h, l, state);
+  for (const h of sorted) body += obj(h, l);
   body += `<rect width="${W}" height="${H}" fill="url(#pool)"/><rect width="${W}" height="${H}" fill="url(#vig)"/><rect width="${W}" height="${H}" filter="url(#grain)"/>`;
   body += `<text x="${W - 24}" y="${H - 20}" text-anchor="end" font-family="Courier New, monospace" font-size="16" fill="#fff" opacity="0.35">PLACEHOLDER ART ${esc(def.id)}</text>`;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${body}</svg>`;
@@ -291,20 +291,6 @@ function portrait(id: string, name: string) {
   <text x="300" y="715" text-anchor="middle" font-family="Georgia, serif" font-size="34" fill="#f3ede3">${esc(name)}</text>
   <text x="590" y="24" text-anchor="end" font-family="Courier New, monospace" font-size="14" fill="#fff" opacity="0.4">PLACEHOLDER</text>
   </svg>`;
-}
-
-function wrapLines(text: string, max: number) {
-  const words = text.split(/\s+/);
-  const lines: string[] = [];
-  let line = "";
-  for (const w of words) {
-    if ((line + " " + w).trim().length > max) {
-      lines.push(line.trim());
-      line = w;
-    } else line += " " + w;
-  }
-  if (line.trim()) lines.push(line.trim());
-  return lines;
 }
 
 const DOCS = new Set(["E03", "E04", "E09", "E11", "E12", "E13", "E15"]);
@@ -388,6 +374,8 @@ const OBJECTS: Record<string, string> = {
   envelope_open: `<rect x="10" y="40" width="180" height="110" rx="3" fill="#cdb27a" transform="rotate(-5 100 95)"/><path d="M10 40 L100 4 L190 40" fill="#bfa36a" transform="rotate(-5 100 95)"/><rect x="40" y="20" width="110" height="70" fill="#efe7d4" transform="rotate(-9 95 55)"/><rect x="52" y="34" width="70" height="4" fill="#666" transform="rotate(-9 95 55)"/><rect x="52" y="46" width="85" height="4" fill="#666" transform="rotate(-9 95 55)"/>`,
   evidence_bag: `<path d="M30 30 L170 30 L162 190 L38 190 Z" fill="#9b7b52"/><rect x="30" y="22" width="140" height="18" fill="#8b6c45"/><rect x="30" y="26" width="140" height="8" fill="#a5281f"/><rect x="62" y="80" width="76" height="52" fill="#efe7d4"/><rect x="70" y="92" width="58" height="5" fill="#333"/><rect x="70" y="104" width="44" height="5" fill="#333"/><text x="100" y="124" text-anchor="middle" font-family="Courier New, monospace" font-size="11" fill="#a5281f">LAPD</text>`,
   evidence_bag_open: `<path d="M30 40 L170 40 L162 190 L38 190 Z" fill="#9b7b52"/><path d="M30 40 L60 18 L150 14 L170 40 Z" fill="#7d6040"/><rect x="62" y="80" width="76" height="52" fill="#efe7d4"/><rect x="70" y="92" width="58" height="5" fill="#333"/><rect x="70" y="104" width="44" height="5" fill="#333"/><rect x="40" y="44" width="120" height="30" fill="#b39a6c" opacity="0.9"/>`,
+  labfolder: `<rect x="18" y="40" width="164" height="118" rx="3" fill="#5f7a8a" transform="rotate(-3 100 100)"/><rect x="24" y="32" width="58" height="14" rx="2" fill="#5f7a8a" transform="rotate(-3 100 100)"/><rect x="40" y="72" width="120" height="26" fill="#eef2f2" transform="rotate(-3 100 100)"/><text x="100" y="90" text-anchor="middle" font-family="Courier New, monospace" font-size="13" font-weight="bold" fill="#1d2a30" transform="rotate(-3 100 100)">LAB REPORT</text>`,
+  unit4: `<rect x="14" y="70" width="172" height="70" rx="12" fill="#4a4f55"/><path d="M40 70 L62 36 L142 36 L166 70 Z" fill="#3c4147"/><rect x="66" y="42" width="34" height="24" fill="#9fb1bd" opacity="0.6"/><rect x="104" y="42" width="34" height="24" fill="#9fb1bd" opacity="0.6"/><rect x="58" y="30" width="88" height="6" fill="#1c1f22"/><circle cx="52" cy="142" r="18" fill="#16181a"/><circle cx="150" cy="142" r="18" fill="#16181a"/><path d="M134 128 a18 18 0 0 1 32 0" stroke="#111" stroke-width="6" fill="none"/><circle cx="74" cy="54" r="3" fill="#f0a030"/><text x="100" y="108" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#d8dde0">UNIT 4</text>`,
 };
 for (const [k, body] of Object.entries(OBJECTS)) {
   const key = `obj.${k}`;
