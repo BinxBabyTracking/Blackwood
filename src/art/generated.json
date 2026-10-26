@@ -390,6 +390,12 @@
       "model": "hand-imported",
       "generatedAt": "2026-10-26T13:13:04.506Z"
     },
+    "c002_loc_hale_bedroom": {
+      "url": "/art/c002_loc_hale_bedroom.webp",
+      "kind": "background",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T13:15:22.299Z"
+    },
     "site_hero": {
       "url": "/art/site_hero.webp",
       "kind": "site",
