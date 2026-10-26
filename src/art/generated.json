@@ -720,6 +720,12 @@
       "model": "hand-imported",
       "generatedAt": "2026-10-26T14:05:57.306Z"
     },
+    "c003_cover": {
+      "url": "/art/c003_cover.webp",
+      "kind": "site",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T18:48:18.612Z"
+    },
     "site_hero": {
       "url": "/art/site_hero.webp",
       "kind": "site",
