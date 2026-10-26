@@ -66,7 +66,8 @@ export const assets: AssetManifest = {
   images: {
     ...placeholders.images,
     ...Object.fromEntries(Object.entries(PAINTED).flatMap(([key, id]) => (art(id) ? [[key, art(id)!]] : []))),
-    ...Object.fromEntries(OFFICE_OVERLAYS.flatMap((k) => (art(`c001_${k}`) ? [[`art.${k}`, art(`c001_${k}`)!]] : []))),
+    // C002's own version of an office object (Laura's case file) replaces C001's once painted.
+    ...Object.fromEntries(OFFICE_OVERLAYS.flatMap((k) => { const u = art(`c002_${k}`) ?? art(`c001_${k}`); return u ? [[`art.${k}`, u]] : []; })),
     ...Object.fromEntries(OVERLAYS.flatMap((k) => (art(`c002_${k}`) ? [[`art.${k}`, art(`c002_${k}`)!]] : []))),
   },
   audio: placeholders.audio,

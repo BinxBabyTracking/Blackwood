@@ -634,6 +634,12 @@
       "reference": "c002_portrait_gordon"
     },
     {
+      "id": "c002_obj_casefile",
+      "kind": "sprite",
+      "style": "c002",
+      "subject": "An open manila police case folder lying flat on a desk, seen from a standing person's height. Clipped to the inside left cover with a paper clip, a black and white photograph of Laura Kessler, a 29-year-old woman with shoulder-length brown hair. On the right, typed police pages; the top one reads exactly, in clean typed capitals: MARIPOSA BAY POLICE DEPARTMENT, FILE 88-10-0412, KESSLER, LAURA. A few loose photographs and notes tucked in. Transparent background."
+    },
+    {
       "id": "c002_obj_glasses",
       "kind": "sprite",
       "style": "c002",
