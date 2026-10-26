@@ -402,6 +402,18 @@
       "model": "hand-imported",
       "generatedAt": "2026-10-26T14:35:10.050Z"
     },
+    "c002_figure_gordon": {
+      "url": "/art/c002_figure_gordon.webp",
+      "kind": "figure",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T14:50:56.896Z"
+    },
+    "c002_figure_gordon_custody": {
+      "url": "/art/c002_figure_gordon_custody.webp",
+      "kind": "figure",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T14:50:58.015Z"
+    },
     "c002_figure_howard": {
       "url": "/art/c002_figure_howard.webp",
       "kind": "figure",
@@ -497,6 +509,12 @@
       "kind": "portrait",
       "model": "hand-imported",
       "generatedAt": "2026-10-26T14:35:10.487Z"
+    },
+    "c002_portrait_gordon": {
+      "url": "/art/c002_portrait_gordon.webp",
+      "kind": "portrait",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T14:50:58.416Z"
     },
     "c002_portrait_howard": {
       "url": "/art/c002_portrait_howard.webp",
