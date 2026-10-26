@@ -304,6 +304,8 @@ export interface LocationDef {
   mapPin?: { x: number; y: number };
   /** A label always shown above the pin on the map, e.g. "CRIME SCENE", to draw players there. */
   mapTag?: string;
+  /** Kept off the map (and out of the browser) until it can be visited, so its name doesn't give the story away. */
+  secret?: boolean;
   /** Neighborhood. Travel within one area is on foot; between areas, by car. */
   area?: string;
   hotspots: HotspotDef[];
@@ -455,7 +457,8 @@ export interface ChoiceSet {
   section: string;
   title: string;
   question: string;
-  options: { id: string; label: string }[];
+  /** `requires` keeps an option off the form until it holds (a suspect the player has not found yet). */
+  options: { id: string; label: string; requires?: Condition }[];
 }
 
 /**
@@ -587,6 +590,10 @@ export interface CaseDefinition {
   boardHint?: { evidenceCount: number; callId: string };
   /** Tests the player can have the police lab run. */
   labs?: LabDef[];
+  /** Title of the travel map, e.g. "Street map of Los Angeles". */
+  mapTitle?: string;
+  /** Lines under the final report's heading after the case number and title, e.g. Classification, Location, Victim. */
+  reportHeader?: { label: string; value: string }[];
   /** Evidence and developments that earn extra questions with a particular person. */
   reinterviews?: ReinterviewDef[];
 }
@@ -912,7 +919,11 @@ export interface ClientView {
   messages: string[];
   narration: boolean;
   voices: boolean;
+  /** Title of the travel map. */
+  mapTitle: string;
   conclusion: {
+    /** Lines under the report's heading after the case number and title. */
+    header: { label: string; value: string }[];
     available: boolean;
     choices: ChoiceSet[];
     minItems: number;

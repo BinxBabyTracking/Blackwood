@@ -121,11 +121,9 @@ export function FinalReport({
           <h2 className="mt-8 text-center font-mono text-lg font-bold tracking-[0.22em]">FINAL INVESTIGATIVE REPORT</h2>
           <dl className="mx-auto mt-6 grid max-w-xl grid-cols-[9.5rem_1fr] gap-x-4 gap-y-1 font-mono text-[0.9rem]">
             {[
-              ["Case No.", "C001"],
+              ["Case No.", view.caseId],
               ["Case", view.title.toUpperCase()],
-              ["Classification", "Homicide"],
-              ["Location", "Los Angeles, California"],
-              ["Victim", "Eleanor Whitmore"],
+              ...c.header.map((h) => [h.label, h.value]),
               ["Investigator", name],
             ].map(([k, v]) => (
               <div key={k} className="contents">

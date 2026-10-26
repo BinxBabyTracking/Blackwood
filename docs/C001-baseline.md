@@ -233,12 +233,25 @@ These are built once and work for any new case with no extra work.
 
 A case is not done until the automated checks pass and someone has played it start to finish on the live site.
 
-1. **Case checker:** `npm run check:case -- CXXX`. It plays a full reference run to a closed case and verifies, among other things: every evidence item has exactly one way to be found, events resolve in any order with the same facts, nothing secret reaches the browser, question limits hold, and accepted and returned reports behave.
+1. **Case checker:** `npm run check:case -- CXXX`. The general rules (references, assets, voices, house style, random play orders, photos, the board hint) run for every case. Each case also has its own reference playthrough: C001's is in `scripts/check-case.ts`, C002's in `scripts/check-case-C002.ts`; a new case adds its own file. Together they verify, among other things: every evidence item has exactly one way to be found, events resolve in the right order with the same facts, nothing secret reaches the browser, question limits hold, and accepted and returned reports behave.
 2. **Question matching:** `npx tsx --conditions=react-server scripts/match-eval.ts` (C001: 51 of 51 phrasings matched).
 3. **Browser checks** against a stand-in for Supabase, Claude and ElevenLabs, at desktop and phone sizes, with screenshots.
 4. **Deploy:** push to `main` on GitHub; Vercel builds and publishes blackwoodinvestigation.com automatically. Ian's local folder is kept in step after each push.
 5. **Database changes** are SQL migrations in `supabase/migrations/`, applied to Supabase before the code that needs them.
 6. **Play it live,** ideally with someone new. C001's real players found the unreadable documents, the stuck windows, the strict report and the unused board.
+
+## Optional case settings
+
+Added for C002. Each is off unless a case uses it, so older cases behave exactly as before.
+
+| Setting | Where | What it does |
+| --- | --- | --- |
+| `known` | a person | When they appear in the case file, people list and board (default: once the case file is read). Keeps a culprit found mid-case, or a later victim, unnamed until then. |
+| `moves` | a person | Later places they can be interviewed (a suspect taken into custody). |
+| `secret` | a location | Keeps it off the map, and out of the browser, until it can be visited. |
+| `requires` | a report option | Keeps a choice off the report form until it holds (a suspect not found yet). |
+| `mapTitle` | the case | Title of the travel map. |
+| `reportHeader` | the case | The lines under the report heading (Classification, Location, Victim or Subject). |
 
 ## Lessons from C001, and parked ideas
 

@@ -1,9 +1,15 @@
 import "server-only";
 import { C001 } from "@/cases/C001";
+import { C002 } from "@/cases/C002";
 import type { CaseDefinition } from "./engine/types";
 
 /** Every playable case, keyed by stable case id. Add new cases here. */
-const CASES: Record<string, CaseDefinition> = { C001 };
+const CASES: Record<string, CaseDefinition> = { C001, C002 };
+
+/** Every registered case id, in order. */
+export function caseIds() {
+  return Object.keys(CASES);
+}
 
 export function loadCase(caseId: string): CaseDefinition | null {
   return CASES[caseId.toUpperCase()] ?? null;

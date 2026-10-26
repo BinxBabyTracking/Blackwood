@@ -1020,7 +1020,7 @@ export function project(def: CaseDefinition, s: InvestigationState, now = Date.n
       })),
     },
     map: def.locations
-      .filter((x) => x.onMap)
+      .filter((x) => x.onMap && (!x.secret || locationAvailable(def, s, x) || s.visited.includes(x.id)))
       .map((x) => ({
         id: x.id,
         name: x.name,
@@ -1093,9 +1093,11 @@ export function project(def: CaseDefinition, s: InvestigationState, now = Date.n
     }),
     travelAudio: { drive: def.assets.audio["sfx.travel_drive"] ?? null, walk: def.assets.audio["sfx.travel_walk"] ?? null },
     questionsAsked: Object.values(s.conversations).reduce((n, lines) => n + lines.filter((l) => l.speaker === "you" && l.kind === "question").length, 0),
+    mapTitle: def.mapTitle ?? "Street map",
     conclusion: {
+      header: def.reportHeader ?? [],
       available: check(def.reportAvailable, s),
-      choices: def.conclusionChoices,
+      choices: def.conclusionChoices.map((c) => ({ ...c, options: c.options.filter((o) => check(o.requires, s)).map((o) => ({ id: o.id, label: o.label })) })),
       minItems: def.solution.standard.minItems,
       maxItems: def.solution.standard.maxItems,
       attempts: s.attempts,

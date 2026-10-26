@@ -363,6 +363,8 @@ function physical(id: string) {
 // ---------------------------------------------------------------------------
 
 function write(rel: string, svg: string) {
+  // Painted art lives elsewhere (e.g. /art/...); only this case's own placeholder paths are written.
+  if (rel.startsWith("/")) return;
   const p = join(out, rel);
   mkdirSync(join(p, ".."), { recursive: true });
   writeFileSync(p, svg);
@@ -380,6 +382,7 @@ for (const l of def.locations) {
 for (const c of def.characters) write(def.assets.images[c.portrait].replace(`/cases/${caseId}/`, ""), portrait(c.id, c.name));
 // Event objects, drawn over the scene when their condition holds.
 const OBJECTS: Record<string, string> = {
+  newspaper: `<rect x="16" y="40" width="168" height="120" fill="#e4dccb" transform="rotate(-4 100 100)"/><rect x="28" y="52" width="144" height="16" fill="#2a241c" transform="rotate(-4 100 100)"/><rect x="28" y="76" width="66" height="70" fill="#9d9483" transform="rotate(-4 100 100)"/><g fill="#6d6555" transform="rotate(-4 100 100)"><rect x="102" y="78" width="70" height="4"/><rect x="102" y="88" width="70" height="4"/><rect x="102" y="98" width="70" height="4"/><rect x="102" y="108" width="70" height="4"/><rect x="102" y="118" width="56" height="4"/></g><ellipse cx="98" cy="60" rx="70" ry="14" fill="none" stroke="#a3332b" stroke-width="3" transform="rotate(-4 100 100)"/>`,
   report_folder: `<rect x="14" y="44" width="172" height="112" rx="3" fill="#a88a55" transform="rotate(3 100 100)"/><rect x="20" y="36" width="64" height="14" rx="2" fill="#a88a55" transform="rotate(3 100 100)"/><rect x="40" y="78" width="120" height="30" fill="#efe7d4" transform="rotate(3 100 100)"/><text x="100" y="98" text-anchor="middle" font-family="Courier New, monospace" font-size="13" font-weight="bold" fill="#2a241c" transform="rotate(3 100 100)">FINAL REPORT</text>`,
   envelope_sealed: `<rect x="10" y="22" width="180" height="120" rx="3" fill="#cdb27a" transform="rotate(-5 100 82)"/><path d="M14 26 L100 92 L186 26" stroke="#9c834f" stroke-width="4" fill="none" transform="rotate(-5 100 82)"/><circle cx="100" cy="92" r="11" fill="#8a2f28" transform="rotate(-5 100 82)"/><rect x="34" y="106" width="80" height="6" fill="#3b3326" opacity="0.6" transform="rotate(-5 100 82)"/>`,
   envelope_open: `<rect x="10" y="40" width="180" height="110" rx="3" fill="#cdb27a" transform="rotate(-5 100 95)"/><path d="M10 40 L100 4 L190 40" fill="#bfa36a" transform="rotate(-5 100 95)"/><rect x="40" y="20" width="110" height="70" fill="#efe7d4" transform="rotate(-9 95 55)"/><rect x="52" y="34" width="70" height="4" fill="#666" transform="rotate(-9 95 55)"/><rect x="52" y="46" width="85" height="4" fill="#666" transform="rotate(-9 95 55)"/>`,

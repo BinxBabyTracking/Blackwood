@@ -9,7 +9,7 @@ import { formatDate } from "@/lib/format";
 import { requireInvestigator } from "@/lib/investigator";
 import { hasAdminAccess } from "@/lib/admin-gate";
 import { getSpending, type Money } from "@/lib/spending";
-import { loadCase } from "@/game/registry";
+import { caseIds, loadCase } from "@/game/registry";
 import { soundtrackStatus } from "@/lib/soundtrack";
 import { SoundtrackPanel } from "@/components/portal/soundtrack-panel";
 import { InterviewAICheck } from "@/components/portal/interview-ai-check";
@@ -232,13 +232,25 @@ function breakdown(m: Money) {
 
 /** Music and room sound for each case, made with ElevenLabs. */
 async function Soundtracks() {
-  const def = loadCase("C001");
-  if (!def?.soundtrack?.length) return null;
+  const defs = caseIds().flatMap((id) => {
+    const d = loadCase(id);
+    return d?.soundtrack?.length ? [d] : [];
+  });
+  if (!defs.length) return null;
+  return (
+    <>
+      {await Promise.all(defs.map((d) => CaseSoundtrack({ def: d, many: defs.length > 1 })))}
+    </>
+  );
+}
+
+async function CaseSoundtrack({ def, many }: { def: NonNullable<ReturnType<typeof loadCase>>; many: boolean }) {
+  if (!def.soundtrack?.length) return null;
   const made = await soundtrackStatus(def.id).catch(() => ({}) as Record<string, string>);
   return (
-    <section aria-labelledby="sound" className="max-w-3xl">
-      <h2 id="sound" className="font-serif text-xl text-smoke">
-        Music and room sound
+    <section key={def.id} aria-labelledby={`sound-${def.id}`} className="max-w-3xl">
+      <h2 id={`sound-${def.id}`} className="font-serif text-xl text-smoke">
+        Music and room sound{many ? `: ${def.id} ${def.title}` : ""}
       </h2>
       <p className="mt-2 text-sm text-smoke">
         Made once with ElevenLabs and stored; players never trigger a charge. Music needs a paid ElevenLabs plan and the key&apos;s Music

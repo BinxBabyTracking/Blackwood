@@ -40,4 +40,10 @@ export const C001: CaseDefinition = {
   soundtrack: SOUNDTRACK,
   boardHint: { evidenceCount: 4, callId: "call_bennett_board" },
   labs,
+  mapTitle: "Street map of Los Angeles",
+  reportHeader: [
+    { label: "Classification", value: "Homicide" },
+    { label: "Location", value: "Los Angeles, California" },
+    { label: "Victim", value: "Eleanor Whitmore" },
+  ],
 };

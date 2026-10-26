@@ -28,7 +28,7 @@ export function TravelMap({
   const painting = paintedArt(`${view.caseId.toLowerCase()}_map`);
 
   return (
-    <Overlay title="Street map of Los Angeles" onClose={onClose} wide closeLabel="Close map">
+    <Overlay title={view.mapTitle} onClose={onClose} wide closeLabel="Close map">
       <div className="grid lg:grid-cols-[1.4fr_1fr]">
         <div className="relative aspect-[4/3] overflow-hidden bg-[#d9cfb2]">
           {painting ? (
