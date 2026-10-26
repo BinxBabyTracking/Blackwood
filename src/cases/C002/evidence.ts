@@ -413,7 +413,7 @@ export const evidence: EvidenceDef[] = [
     inspection: P(
       "HARBOR FEDERAL SAVINGS, Mariposa Bay branch. Withdrawal, customer copy.",
       "Account: checking, HALE T J. Date: 10/10/88. Time: 11:15 AM. Amount: $2,000.00, cash, in twenties. Balance after: $14.62. Teller: 4.",
-      "On the back, in Tom's handwriting: \"1 PM call. $6000 by Tues noon. Ask Ruth? Ask Dad?\"",
+      "With it, a scrap of paper in Tom's handwriting: \"1 PM call. $6000 by Tues noon. Ask Ruth? Ask Dad?\"",
     ),
     discovery: "Inspect the hall table at 418 Elm Street.",
     characters: ["tom"],
