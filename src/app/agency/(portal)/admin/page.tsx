@@ -18,6 +18,7 @@ import { getFeedback } from "@/lib/feedback";
 import { allEntries } from "@/lib/leaderboard";
 import { adminRemoveEntry } from "@/app/actions/leaderboard";
 import { NameCheck } from "@/components/portal/name-check";
+import { AdminSection } from "@/components/portal/admin-section";
 
 export const metadata: Metadata = { title: "Admin", robots: { index: false, follow: false } };
 
@@ -64,10 +65,7 @@ async function Spending() {
 
   return (
     <div className="space-y-14">
-      <section aria-labelledby="totals">
-        <h2 id="totals" className="mb-5 font-serif text-xl text-smoke">
-          Totals
-        </h2>
+      <AdminSection id="totals" title="Totals" defaultOpen>
         <Ledger
           items={[
             { label: "Today", value: usd(s.today.total) },
@@ -76,12 +74,9 @@ async function Spending() {
             { label: "Saved by reuse", value: usd(s.all.saved), note: "Answers and recordings reused instead of paid for again." },
           ]}
         />
-      </section>
+      </AdminSection>
 
-      <section aria-labelledby="cases">
-        <h2 id="cases" className="font-serif text-xl text-smoke">
-          By case
-        </h2>
+      <AdminSection id="cases" title="By case">
         <p className="mt-2 max-w-[70ch] text-sm text-smoke">
           Cost per completed playthrough is what one player costs you to take a case from start to solved. The suggested price keeps a{" "}
           {Math.round(rates.target_margin * 100)}% margin over that (or over the average playthrough until one is completed), before hosting,
@@ -124,12 +119,9 @@ async function Spending() {
         ) : (
           <p className="mt-4 text-smoke">Nothing recorded yet. Costs appear here as soon as someone asks a question or hears a voice.</p>
         )}
-      </section>
+      </AdminSection>
 
-      <section aria-labelledby="plays">
-        <h2 id="plays" className="font-serif text-xl text-smoke">
-          Playthroughs
-        </h2>
+      <AdminSection id="plays" title="Playthroughs">
         <p className="mt-2 text-sm text-smoke">The latest {s.playthroughs.length}, newest first.</p>
         {s.playthroughs.length ? (
           <div className="mt-5 overflow-x-auto">
@@ -167,7 +159,7 @@ async function Spending() {
             </table>
           </div>
         ) : null}
-      </section>
+      </AdminSection>
 
       <Feedback />
 
@@ -185,10 +177,7 @@ async function Spending() {
         </button>
       </form>
 
-      <section aria-labelledby="rates" className="max-w-2xl">
-        <h2 id="rates" className="font-serif text-xl text-smoke">
-          Rates
-        </h2>
+      <AdminSection id="rates" title="Rates" className="max-w-2xl">
         <p className="mt-2 text-sm text-smoke">
           In US dollars. Change these to match your plans; every figure on this page is re-priced with them.
         </p>
@@ -204,7 +193,7 @@ async function Spending() {
             </button>
           </div>
         </form>
-      </section>
+      </AdminSection>
     </div>
   );
 }
@@ -248,10 +237,7 @@ async function CaseSoundtrack({ def, many }: { def: NonNullable<ReturnType<typeo
   if (!def.soundtrack?.length) return null;
   const made = await soundtrackStatus(def.id).catch(() => ({}) as Record<string, string>);
   return (
-    <section key={def.id} aria-labelledby={`sound-${def.id}`} className="max-w-3xl">
-      <h2 id={`sound-${def.id}`} className="font-serif text-xl text-smoke">
-        Music and room sound{many ? `: ${def.id} ${def.title}` : ""}
-      </h2>
+    <AdminSection key={def.id} id={`sound-${def.id}`} title={`Music and room sound${many ? `: ${def.id} ${def.title}` : ""}`} className="max-w-3xl">
       <p className="mt-2 text-sm text-smoke">
         Made once with ElevenLabs and stored; players never trigger a charge. Music needs a paid ElevenLabs plan and the key&apos;s Music
         permission; room sound needs the Sound Effects permission. Making a track again replaces it.
@@ -260,7 +246,7 @@ async function CaseSoundtrack({ def, many }: { def: NonNullable<ReturnType<typeo
         caseId={def.id}
         tracks={def.soundtrack.map((t) => ({ key: t.key, label: t.label, kind: t.kind, seconds: t.seconds, made: made[t.key] ?? null }))}
       />
-    </section>
+    </AdminSection>
   );
 }
 
@@ -269,15 +255,12 @@ async function InterviewAI() {
   const db = createAdminClient();
   const { data } = db ? await db.from("site_settings").select("value").eq("key", "interview_ai_last_error").maybeSingle() : { data: null };
   return (
-    <section aria-labelledby="ai" className="max-w-3xl">
-      <h2 id="ai" className="font-serif text-xl text-smoke">
-        Interview AI
-      </h2>
+    <AdminSection id="ai" title="Interview AI" className="max-w-3xl">
       <p className="mt-2 text-sm text-smoke">
         Questions without a scripted answer are answered by Claude. If it can&apos;t be reached, people fall back to &quot;I don&apos;t know&quot;.
       </p>
       <InterviewAICheck lastError={(data?.value as { at: string; message: string } | null) ?? null} />
-    </section>
+    </AdminSection>
   );
 }
 
@@ -296,10 +279,7 @@ async function CaseAlertList() {
     .filter(Boolean);
   const unique = [...new Set(list)].sort();
   return (
-    <section aria-labelledby="alerts" className="max-w-3xl">
-      <h2 id="alerts" className="font-serif text-xl text-smoke">
-        New-case email list
-      </h2>
+    <AdminSection id="alerts" title="New-case email list" className="max-w-3xl">
       <p className="mt-2 text-sm text-smoke">
         {unique.length} {unique.length === 1 ? "investigator wants" : "investigators want"} an email when a new case opens (set on their Personnel File).
         Copy the addresses into the Bcc line of your announcement.
@@ -307,7 +287,7 @@ async function CaseAlertList() {
       {unique.length ? (
         <textarea readOnly className="field mt-4 h-28 font-mono text-xs" value={unique.join(", ")} aria-label="Email addresses" />
       ) : null}
-    </section>
+    </AdminSection>
   );
 }
 
@@ -318,10 +298,7 @@ async function Feedback() {
   const fb = await getFeedback().catch(() => null);
   if (!fb) return null;
   return (
-    <section aria-labelledby="feedback" className="max-w-4xl">
-      <h2 id="feedback" className="font-serif text-xl text-smoke">
-        Player feedback
-      </h2>
+    <AdminSection id="feedback" title="Player feedback" className="max-w-4xl">
       <p className="mt-2 text-sm text-smoke">Case reviews from the end of a case, and reports sent from the in-game menu. Never shown publicly.</p>
       {fb.cases.length === 0 ? (
         <p className="mt-4 border-y border-rule py-5 text-sm text-smoke">No feedback yet.</p>
@@ -388,7 +365,7 @@ async function Feedback() {
           </ul>
         </>
       )}
-    </section>
+    </AdminSection>
   );
 }
 
@@ -420,10 +397,7 @@ async function LeaderboardAdmin() {
   if (!rows) return null;
   const t = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
   return (
-    <section aria-labelledby="lb" className="max-w-4xl">
-      <h2 id="lb" className="font-serif text-xl text-smoke">
-        Leaderboard entries
-      </h2>
+    <AdminSection id="lb" title="Leaderboard entries" className="max-w-4xl">
       <p className="mt-2 text-sm text-smoke">
         Names players put on the case leaderboards. Every name other players can see (display names, guest names, group names, leaderboard names) is screened when it is entered:
         a word check that sees through misspellings and look-alike letters, then a quick Claude check for names that only sound rude out loud. Remove anything that still slips
@@ -472,6 +446,6 @@ async function LeaderboardAdmin() {
           </table>
         </div>
       )}
-    </section>
+    </AdminSection>
   );
 }
