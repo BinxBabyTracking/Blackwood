@@ -396,6 +396,12 @@
       "model": "hand-imported",
       "generatedAt": "2026-10-26T13:15:22.299Z"
     },
+    "c002_loc_hale_kitchen": {
+      "url": "/art/c002_loc_hale_kitchen.webp",
+      "kind": "background",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T13:20:47.307Z"
+    },
     "site_hero": {
       "url": "/art/site_hero.webp",
       "kind": "site",
