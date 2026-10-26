@@ -642,6 +642,12 @@
       "model": "hand-imported",
       "generatedAt": "2026-10-26T17:23:40.647Z"
     },
+    "c002_obj_casefile": {
+      "url": "/art/c002_obj_casefile.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T17:24:59.632Z"
+    },
     "c002_obj_glasses": {
       "url": "/art/c002_obj_glasses.webp",
       "kind": "sprite",
