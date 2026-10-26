@@ -185,11 +185,11 @@ export const locations: LocationDef[] = [
     available: briefed,
     onMap: false,
     hotspots: [
-      person("es_howard", "Howard Lisk, on his porch across the street", "howard", { x: 62, y: 26, w: 11, h: 48 }),
-      inspect("es_curb", "The curb in front of 418", "curb", { x: 18, y: 72, w: 30, h: 14 }, "The curb", "In front of Tom's house, a fresh dark oil spot on the asphalt, the size of a dinner plate. Something big was parked here long enough to drip."),
-      inspect("es_corner", "Corner of Elm and 3rd", "streetlight", { x: 86, y: 10, w: 10, h: 60 }, "Elm and 3rd", "A streetlight on the corner. From Howard Lisk's porch it is the first place a car leaving Elm Street would pass under a light."),
-      inspect("es_house", "418 Elm Street", "house", { x: 2, y: 10, w: 30, h: 56 }, "418 Elm Street", "A small stucco house with a one-car garage. A side door from the garage opens onto a narrow path along the fence, out of sight of the street."),
-      door("es_to_house", "Back into the house", "hale_kitchen", { x: 34, y: 30, w: 8, h: 34 }),
+      person("es_howard", "Howard Lisk, on his porch across the street", "howard", { x: 77, y: 31, w: 6, h: 21 }),
+      inspect("es_curb", "The curb in front of 418", "curb", { x: 28, y: 77, w: 22, h: 15 }, "The curb", "In front of Tom's house, a fresh dark oil spot on the asphalt, the size of a dinner plate. Something big was parked here long enough to drip."),
+      inspect("es_corner", "Corner of Elm and 3rd", "streetlight", { x: 91, y: 8, w: 8, h: 52 }, "Elm and 3rd", "A streetlight on the corner. From Howard Lisk's porch it is the first place a car leaving Elm Street would pass under a light."),
+      inspect("es_house", "418 Elm Street", "house", { x: 15, y: 22, w: 37, h: 40 }, "418 Elm Street", "A small stucco house with a one-car garage. A side door from the garage opens onto a narrow path along the fence, out of sight of the street."),
+      door("es_to_house", "Front door of 418", "hale_kitchen", { x: 10, y: 36, w: 5, h: 19 }),
     ],
   },
   {
