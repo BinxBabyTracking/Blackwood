@@ -277,11 +277,11 @@ export const locations: LocationDef[] = [
     available: { any: [{ hasEvidence: "E14" }, { hasEvidence: "E15" }, arrested] },
     onMap: true,
     hotspots: [
-      person("cb_gordon", "The man at the door of Cabin 14", "gordon", { x: 40, y: 24, w: 12, h: 58 }, { not: arrested }),
-      inspect("cb_van", "Something under a tarp", "van", { x: 62, y: 44, w: 32, h: 36 }, "Under the tarp", "A full-size van under a brown tarp, pulled tight and weighted with firewood. One back corner has slipped: dark blue paint, and a California plate, 2KXL418.", { textAfter: [{ requires: arrested, text: "Sheriff's tape around the place where the van stood. It has been towed to the county yard." }] }),
-      inspect("cb_window", "Back window", "window", { x: 14, y: 22, w: 12, h: 22 }, "The back window", "On the side of the cabin, one window is covered from the inside with a sheet of plywood. The others have curtains."),
-      inspect("cb_antenna", "Antenna on the roof", "antenna", { x: 30, y: 2, w: 16, h: 22 }, "The roof", "An oversized television antenna and a CB whip, guyed with wire. Through the open door, a workbench with a soldering iron and the gutted chassis of a console television."),
-      inspect("cb_woodpile", "Woodpile", "woodpile", { x: 0, y: 56, w: 18, h: 30 }, "Woodpile", "Split pine, stacked neatly. Smoke from the chimney smells of it."),
+      person("cb_gordon", "The man at the door of Cabin 14", "gordon", { x: 36, y: 32, w: 8, h: 34 }, { not: arrested }),
+      inspect("cb_van", "Something under a tarp", "van", { x: 62, y: 42, w: 26, h: 31 }, "Under the tarp", "A full-size van under a brown tarp, pulled tight and weighted with firewood. One back corner has slipped: dark blue paint, and a California plate, 2KXL418.", { textAfter: [{ requires: arrested, text: "Sheriff's tape around the place where the van stood. It has been towed to the county yard." }] }),
+      inspect("cb_window", "Back window", "window", { x: 12, y: 34, w: 7.5, h: 19 }, "The back window", "On the side of the cabin, one window is covered from the inside with a sheet of plywood. The others have curtains."),
+      inspect("cb_antenna", "Antenna on the roof", "antenna", { x: 35, y: 2, w: 23, h: 28 }, "The roof", "An oversized television antenna and a CB whip, guyed with wire. Through the open door, a workbench with a soldering iron and the gutted chassis of a console television."),
+      inspect("cb_woodpile", "Woodpile", "woodpile", { x: 5, y: 52, w: 13, h: 21 }, "Woodpile", "Split pine, stacked neatly. Smoke from the chimney smells of it."),
     ],
   },
   {
