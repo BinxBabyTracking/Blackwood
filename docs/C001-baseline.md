@@ -218,7 +218,7 @@ All sound comes from ElevenLabs through the server; the key never reaches the br
 
 These are built once and work for any new case with no extra work.
 
-- **Joint investigations.** The signed-in host opens a lobby and shows a QR code; up to 5 others scan it, type a name (no account) and wait. Start takes everyone into the host's game on their own device, and every screen picks up the others' progress within seconds. Question limits are shared. Everyone can edit the report; only the host files it. Built for the same room, so no voice chat.
+- **Joint investigations.** The signed-in host opens a lobby and shows a QR code; up to 5 others scan it, type a name (no account) and wait. Start takes everyone into the host's game on their own device, and every screen picks up the others' progress within seconds. Question limits are shared. Everyone can edit the report; only the host files it. Built for the same room, so no voice chat. Every case is listed for 1 to 6 investigators (`min_investigators` 1, `max_investigators` 6 on its `cases` row). A strictly multiplayer case, when one is built, will be 4 to 10, which also means raising `MAX_PARTY` in `src/lib/party.ts`.
 - **Spending ledger.** Every paid call (Claude tokens, voice characters, transcription seconds) is recorded against the case, playthrough and person, including what reuse saved. Admin shows totals, cost per playthrough, cost per completed case, and a suggested price at a 70% margin. Rates are editable.
 - **Admin page.** The Admin link sits at the bottom of the navigation (desktop and phone menu), behind a password stored only as a hash, open for 12 hours per device.
 - **Accounts.** Sign-up is open to everyone. Each player has a service record, rank and awards.
