@@ -390,6 +390,12 @@
       "model": "hand-imported",
       "generatedAt": "2026-10-26T13:13:04.506Z"
     },
+    "c002_figure_diane": {
+      "url": "/art/c002_figure_diane.webp",
+      "kind": "figure",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T14:46:18.823Z"
+    },
     "c002_figure_ferris": {
       "url": "/art/c002_figure_ferris.webp",
       "kind": "figure",
@@ -479,6 +485,12 @@
       "kind": "background",
       "model": "hand-imported",
       "generatedAt": "2026-10-26T13:46:28.558Z"
+    },
+    "c002_portrait_diane": {
+      "url": "/art/c002_portrait_diane.webp",
+      "kind": "portrait",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T14:46:19.215Z"
     },
     "c002_portrait_ferris": {
       "url": "/art/c002_portrait_ferris.webp",
