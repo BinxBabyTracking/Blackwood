@@ -396,6 +396,12 @@
       "model": "hand-imported",
       "generatedAt": "2026-10-26T14:35:10.050Z"
     },
+    "c002_figure_howard": {
+      "url": "/art/c002_figure_howard.webp",
+      "kind": "figure",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T14:40:43.393Z"
+    },
     "c002_figure_laura": {
       "url": "/art/c002_figure_laura.webp",
       "kind": "figure",
@@ -479,6 +485,12 @@
       "kind": "portrait",
       "model": "hand-imported",
       "generatedAt": "2026-10-26T14:35:10.487Z"
+    },
+    "c002_portrait_howard": {
+      "url": "/art/c002_portrait_howard.webp",
+      "kind": "portrait",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T14:40:43.875Z"
     },
     "c002_portrait_laura": {
       "url": "/art/c002_portrait_laura.webp",
