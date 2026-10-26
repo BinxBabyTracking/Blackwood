@@ -258,11 +258,11 @@ export const locations: LocationDef[] = [
     available: { hasEvidence: "E09" },
     onMap: true,
     hotspots: [
-      inspect("ts_board", "Notice board", "corkboard", { x: 6, y: 16, w: 20, h: 34 }, "Community notice board", "Firewood for sale, a lost beagle, a church supper, and a few business cards.", { evidence: "E14" }),
-      inspect("ts_ledger", "Charge ledger on the counter", "ledger", { x: 48, y: 58, w: 14, h: 10 }, "House charge ledger", "A green clothbound ledger beside the register, open to October. Locals sign for what they take and pay at the end of the month.", { evidence: "E15" }),
-      inspect("ts_payphone", "Payphone outside", "payphone", { x: 82, y: 18, w: 9, h: 40 }, "The payphone", "Through the front window, a payphone on a post by the gas pumps. The number on its card is (714) 555-0391. The gravel around it is rutted by trucks."),
-      inspect("ts_papers", "Newspaper rack", "rack", { x: 30, y: 54, w: 10, h: 20 }, "Newspaper rack", "The Los Angeles Daily Star and the San Bernardino Sun. No Mariposa Bay Courier; nobody up here takes it."),
-      inspect("ts_window", "Window toward the lake", "window", { x: 62, y: 10, w: 18, h: 34 }, "The lake", "Pines down to the water, a lumber mill's stack across the lake, and a dirt road climbing the far shore past a row of numbered cabins."),
+      inspect("ts_board", "Notice board", "corkboard", { x: 0, y: 2, w: 14.5, h: 44 }, "Community notice board", "Firewood for sale, a lost beagle, a church supper, and a few business cards.", { evidence: "E14" }),
+      inspect("ts_ledger", "Charge ledger on the counter", "ledger", { x: 22, y: 41, w: 13, h: 7 }, "House charge ledger", "A green clothbound ledger beside the register, open to October. Locals sign for what they take and pay at the end of the month.", { evidence: "E15" }),
+      inspect("ts_payphone", "Payphone outside", "payphone", { x: 93, y: 26, w: 6, h: 18 }, "The payphone", "Through the open door, a payphone on a post by the gas pumps. The number on its card is (714) 555-0391. The gravel around it is rutted by trucks."),
+      inspect("ts_papers", "Newspaper rack", "rack", { x: 0, y: 52, w: 17, h: 44 }, "Newspaper rack", "The Los Angeles Daily Star and the San Bernardino Sun. No Mariposa Bay Courier; nobody up here takes it."),
+      inspect("ts_window", "Window toward the lake", "window", { x: 32.5, y: 12, w: 19.5, h: 23 }, "The lake", "Pines down to the water, a lumber mill's stack across the lake, and a dirt road climbing the far shore past a row of numbered cabins."),
     ],
   },
   {
