@@ -178,7 +178,7 @@ When accepted, the case-solved sequence plays: the agency's acceptance, a recons
 
 ## Art pipeline and scene hotspots
 
-All art is painted noir: gouache and oil, 1980s paperback-cover feel, warm lamplight on blue-black shadow, and no legible text anywhere. The shared style line and every subject live in `art/manifest.json`; each prompt is style + kind + subject.
+All art is painted noir: gouache and oil, 1980s paperback-cover feel, warm lamplight on blue-black shadow. When text matters to the picture (a headline, a sign, a label, a name on a door), the prompt spells out the exact words, quoted and line by line, and says they must be printed exactly as written; the generator gets short text right, and a retry fixes the odd misspelling. Everything else (body copy, ledgers, letters) stays soft and unreadable, and the real words live in the evidence text. The shared style line and every subject live in `art/manifest.json`; each prompt is style + kind + subject.
 
 | Kind | Size | Background | C001 examples |
 | --- | --- | --- | --- |

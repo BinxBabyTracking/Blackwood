@@ -1,6 +1,6 @@
 {
   "about": "Every generated image in Blackwood Investigations. Run: node scripts/generate-art.mjs (see art/README.md). Prompts are built as style + kind + subject. Characters reuse the same description everywhere so they look like the same person.",
-  "style": "Painted noir illustration in the manner of a 1980s paperback mystery cover and classic hand-painted point-and-click adventure game backgrounds. Gouache and oil textures with visible brushwork, warm tungsten lamplight against deep blue-black shadows, a muted palette of ochre, oxblood, bottle green, slate and nicotine cream, subtle film grain. Los Angeles, August 1985. Period-accurate details. Absolutely no text, lettering, numbers, logos, brand names, watermarks or signatures anywhere; any paperwork shows only illegible scribbles or blurred typing.",
+  "style": "Painted noir illustration in the manner of a 1980s paperback mystery cover and classic hand-painted point-and-click adventure game backgrounds. Gouache and oil textures with visible brushwork, warm tungsten lamplight against deep blue-black shadows, a muted palette of ochre, oxblood, bottle green, slate and nicotine cream, subtle film grain. Los Angeles, August 1985. Period-accurate details. The only readable words are the ones the subject spells out, printed exactly as written and correctly spelled; all other paperwork shows soft, unreadable typing or handwriting. No logos, brand names, watermarks or signatures.",
   "kinds": {
     "background": {
       "size": "1536x1024",
@@ -655,7 +655,7 @@
       "id": "c002_obj_newspaper",
       "kind": "sprite",
       "style": "c002",
-      "subject": "A folded small-town newspaper with a large front-page headline circled in red pencil, all text illegible."
+      "subject": "A folded small-town broadsheet newspaper, slightly yellowed newsprint with a soft crease. Printed exactly as written, sharp and easy to read: the masthead in an old-fashioned blackletter typeface, MARIPOSA BAY COURIER; a small line under it, THURSDAY, OCTOBER 13, 1988; and the main headline in very large heavy black condensed capitals on two lines, POLICE: KIDNAPPING CLAIM / APPEARS STAGED. The headline is circled by hand in red grease pencil. Below it, a black and white news photo of a small stucco house with a sedan out front and a smaller portrait photo of a woman in her late twenties with dark shoulder-length hair. The body columns are small and unreadable."
     },
     {
       "id": "c002_ev_e01",
@@ -721,7 +721,7 @@
       "id": "c002_ev_e11",
       "kind": "evidence",
       "style": "c002",
-      "subject": "A folded small-town newspaper with a large front-page headline circled in red pencil, all text illegible."
+      "subject": "A folded small-town broadsheet newspaper, slightly yellowed newsprint with a soft crease. Printed exactly as written, sharp and easy to read: the masthead in an old-fashioned blackletter typeface, MARIPOSA BAY COURIER; a small line under it, THURSDAY, OCTOBER 13, 1988; and the main headline in very large heavy black condensed capitals on two lines, POLICE: KIDNAPPING CLAIM / APPEARS STAGED. The headline is circled by hand in red grease pencil. Below it, a black and white news photo of a small stucco house with a sedan out front and a smaller portrait photo of a woman in her late twenties with dark shoulder-length hair. The body columns are small and unreadable."
     },
     {
       "id": "c002_ev_e12",
@@ -803,6 +803,6 @@
     }
   ],
   "styles": {
-    "c002": "Painted noir illustration in the manner of a 1980s paperback mystery cover and classic hand-painted point-and-click adventure game backgrounds. Gouache and oil textures with visible brushwork, warm tungsten lamplight against deep blue-black shadows, a muted palette of ochre, oxblood, bottle green, slate and nicotine cream, subtle film grain. Southern California, October 1988: a foggy coastal town, Los Angeles, and the pine-covered San Bernardino Mountains. Period-accurate details. Absolutely no text, lettering, numbers, logos, brand names, watermarks or signatures anywhere; any paperwork shows only illegible scribbles or blurred typing."
+    "c002": "Painted noir illustration in the manner of a 1980s paperback mystery cover and classic hand-painted point-and-click adventure game backgrounds. Gouache and oil textures with visible brushwork, warm tungsten lamplight against deep blue-black shadows, a muted palette of ochre, oxblood, bottle green, slate and nicotine cream, subtle film grain. Southern California, October 1988: a foggy coastal town, Los Angeles, and the pine-covered San Bernardino Mountains. Period-accurate details. The only readable words are the ones the subject spells out, printed exactly as written and correctly spelled; all other paperwork shows soft, unreadable typing or handwriting. No logos, brand names, watermarks or signatures."
   }
 }
