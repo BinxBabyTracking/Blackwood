@@ -274,8 +274,9 @@ export const evidence: EvidenceDef[] = [
     image: "ev.e14",
     inspection: P(
       "A hand-lettered index card pinned among notices for firewood, a lost dog and a church supper:",
-      "TV - RADIO - STEREO REPAIR. Fair prices, house calls on the mountain. G. PELL, Cabin 14, Tamarack Lake. Leave word at the store.",
-      "Pinned next to it, a printed card from the Pine Ridge Lumber Co.: \"Neighbors: the mill whistle sounds at 12 noon, Monday to Friday. Thank you for your patience.\"",
+      "TV - RADIO - STEREO REPAIR\nFAIR PRICES. HOUSE CALLS.\nG. PELL, CABIN 14\nLEAVE WORD AT THE STORE",
+      "Pinned next to it, a printed card with a border of pine trees:",
+      "PINE RIDGE LUMBER CO.\nTHE MILL WHISTLE SOUNDS AT 12 NOON\nMONDAY TO FRIDAY",
     ),
     discovery: "Inspect the notice board inside the Tamarack Lake General Store.",
     characters: ["gordon"],
