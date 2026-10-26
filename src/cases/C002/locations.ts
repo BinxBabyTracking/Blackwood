@@ -147,7 +147,7 @@ export const locations: LocationDef[] = [
     onMap: true,
     hotspots: [
       inspect("hb_underbed", "Under the bed", "floor", { x: 36, y: 58, w: 28, h: 12 }, "Under the bed frame", "Something black and plastic has been kicked into the dust under the frame.", { evidence: "E01" }),
-      inspect("hb_glasses", "Nightstand", "glass", { x: 69.5, y: 34.5, w: 4.5, h: 6.5 }, "The nightstand", "A clock radio, a paperback with a bus ticket for a bookmark, and two kitchen glasses that do not belong in a bedroom.", { evidence: "E02" }),
+      inspect("hb_glasses", "Nightstand", "glass", { x: 70, y: 35.9, w: 3.5, h: 5.3 }, "The nightstand", "A clock radio, a paperback with a bus ticket for a bookmark, and two kitchen glasses that do not belong in a bedroom.", { evidence: "E02" }),
       inspect("hb_bed", "The bed", "bed", { x: 33, y: 28, w: 30, h: 29 }, "The bed", "The sheets have been pulled off and left in a heap on the floor. A strip of gray duct tape is stuck to the headboard on Laura's side, as if someone tore a length off and set it there to hand."),
       inspect("hb_clock", "Clock radio", "clock", { x: 64.5, y: 37.5, w: 4.5, h: 4 }, "Clock radio", "A General Electric clock radio. The alarm is still set for 6:30 AM. The switch is on; it rang into an empty room on Monday morning and nobody turned it off."),
       inspect("hb_photo", "Photograph on the dresser", "photo", { x: 94, y: 31, w: 5.5, h: 9.5 }, "Photograph", "Laura and Tom at the end of a pier, squinting into the sun. She has a music folder under her arm. Written on the back: 'Ventura, June 1987.'"),

@@ -498,6 +498,12 @@
       "model": "hand-imported",
       "generatedAt": "2026-10-26T13:46:28.558Z"
     },
+    "c002_obj_glasses": {
+      "url": "/art/c002_obj_glasses.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T14:53:03.971Z"
+    },
     "c002_portrait_diane": {
       "url": "/art/c002_portrait_diane.webp",
       "kind": "portrait",
