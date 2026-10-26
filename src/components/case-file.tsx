@@ -47,9 +47,6 @@ export function CaseFile({ c, topPadding = true }: { c: CatalogCase; topPadding?
             Case summary
           </h2>
           <p className="mt-4 max-w-[62ch] font-serif text-xl leading-[1.7] text-paper/90">{c.summary}</p>
-          <p className="mt-8 max-w-[62ch] text-sm text-smoke">
-            The file contains no solution. Suspects, evidence and findings are revealed only inside the investigation.
-          </p>
         </section>
 
         <aside className="lg:sticky lg:top-8 lg:self-start">
