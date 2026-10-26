@@ -203,10 +203,10 @@ export const locations: LocationDef[] = [
     available: briefed,
     onMap: true,
     hotspots: [
-      person("ps_ferris", "Sgt. Walter Ferris", "ferris", { x: 36, y: 24, w: 13, h: 58 }),
-      person("ps_gordon", "Gordon Pell, in an interview room", "gordon", { x: 70, y: 26, w: 12, h: 54 }, arrested),
-      inspect("ps_board", "Squad room board", "corkboard", { x: 4, y: 14, w: 22, h: 34 }, "Squad room board", "A duty roster, a wanted flyer for a bank robber in Oxnard, and a typed memo from the chief: 'Overtime on 88-10-0412 to end Wednesday.'"),
-      inspect("ps_desk", "Ferris's desk", "desk", { x: 52, y: 58, w: 22, h: 16 }, "Ferris's desk", "A thick folder marked 88-10-0412, a cold cup of coffee, and a legal pad with one word written and underlined twice: 'TIMING.'"),
+      person("ps_ferris", "Sgt. Walter Ferris", "ferris", { x: 43, y: 24, w: 13, h: 62 }),
+      person("ps_gordon", "Gordon Pell, in an interview room", "gordon", { x: 77, y: 13, w: 7, h: 31 }, arrested),
+      inspect("ps_board", "Squad room board", "corkboard", { x: 0, y: 3, w: 22, h: 42 }, "Squad room board", "A duty roster, a wanted flyer for a bank robber in Oxnard, and a typed memo from the chief: 'Overtime on 88-10-0412 to end Wednesday.'"),
+      inspect("ps_desk", "Ferris's desk", "desk", { x: 66, y: 50, w: 34, h: 22 }, "Ferris's desk", "A thick folder marked 88-10-0412, a cold cup of coffee, and a legal pad with one word written and underlined twice: 'TIMING.'"),
     ],
   },
   {

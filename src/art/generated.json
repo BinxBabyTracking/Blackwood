@@ -408,6 +408,12 @@
       "model": "hand-imported",
       "generatedAt": "2026-10-26T13:20:47.307Z"
     },
+    "c002_loc_police_station": {
+      "url": "/art/c002_loc_police_station.webp",
+      "kind": "background",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T13:26:44.115Z"
+    },
     "site_hero": {
       "url": "/art/site_hero.webp",
       "kind": "site",
