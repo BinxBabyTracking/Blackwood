@@ -239,11 +239,11 @@ export const locations: LocationDef[] = [
     available: briefed,
     onMap: true,
     hotspots: [
-      person("ra_ruth", "Ruth Kessler", "ruth", { x: 24, y: 24, w: 13, h: 58 }),
-      person("ra_laura", "Laura Kessler", "laura", { x: 52, y: 30, w: 13, h: 54 }, { flag: "laura_home" }),
-      inspect("ra_typewriter", "Ruth's typewriter", "typewriter", { x: 74, y: 56, w: 12, h: 12 }, "Ruth's typewriter", "An IBM Selectric on the dining table, a stack of the shipyard's invoices beside it. Its type is clean and even, nothing like the letters."),
-      inspect("ra_photo", "Photograph of the sisters", "photo", { x: 6, y: 24, w: 7, h: 10 }, "Photograph", "Two girls on a dock at a lake, about eight and thirteen, the younger one holding up a very small fish."),
-      inspect("ra_window", "Window over the park", "window", { x: 84, y: 8, w: 15, h: 40 }, "The window", "Across the street, through the jacarandas, the benches of Alamitos Park.", { textAfter: [{ requires: { flag: "laura_home" }, text: "Across the street, through the jacarandas, the benches of Alamitos Park. Laura was left on one of them, two blocks from this window." }] }),
+      person("ra_ruth", "Ruth Kessler", "ruth", { x: 25, y: 24, w: 12, h: 62 }),
+      person("ra_laura", "Laura Kessler", "laura", { x: 49, y: 26, w: 12, h: 60 }, { flag: "laura_home" }),
+      inspect("ra_typewriter", "Ruth's typewriter", "typewriter", { x: 69, y: 39, w: 12, h: 9 }, "Ruth's typewriter", "A typewriter on the dining table, a stack of the shipyard's invoices beside it. Ruth typed Laura's statement on it. Its type is clean and even, nothing like the letters."),
+      inspect("ra_photo", "Photograph of the sisters", "photo", { x: 57, y: 18, w: 3.5, h: 10 }, "Photograph", "Two girls on a dock at a lake, about eight and thirteen, the younger one holding up a very small fish."),
+      inspect("ra_window", "Window over the park", "window", { x: 82, y: 0, w: 18, h: 40 }, "The window", "Across the street, through the jacarandas, the benches of Alamitos Park.", { textAfter: [{ requires: { flag: "laura_home" }, text: "Across the street, through the jacarandas, the benches of Alamitos Park. Laura was left on one of them, two blocks from this window." }] }),
     ],
   },
   {
