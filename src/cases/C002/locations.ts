@@ -296,11 +296,11 @@ export const locations: LocationDef[] = [
     available: { flag: "oak_terrace" },
     onMap: true,
     hotspots: [
-      person("mh_diane", "Diane Moss", "diane", { x: 40, y: 24, w: 13, h: 58 }),
-      inspect("mh_lamp", "Broken lamp", "lamp", { x: 64, y: 56, w: 10, h: 14 }, "The lamp", "The base of a ceramic bedside lamp, cracked through. A dark smear on one edge of it."),
-      inspect("mh_gate", "Back gate", "gate", { x: 82, y: 16, w: 14, h: 56 }, "The back gate", "A wooden gate to the alley, its latch hanging. Beyond it, tire tracks in the dirt where a vehicle sat with its engine running."),
-      inspect("mh_garage", "Garage side door", "door", { x: 4, y: 14, w: 12, h: 56 }, "Garage side door", "A side door from the garage to the yard, thumb lock inside, no marks on it. Diane says she sometimes forgets it after taking out the trash."),
-      inspect("mh_yard", "Side yard", "yard", { x: 18, y: 66, w: 24, h: 22 }, "The side yard", "A chalk circle on the path by the gate, where the police picked up the pager."),
+      person("mh_diane", "Diane Moss", "diane", { x: 30, y: 26, w: 12, h: 60 }),
+      inspect("mh_lamp", "Broken lamp", "lamp", { x: 72, y: 38, w: 9, h: 30 }, "The lamp", "The base of a ceramic bedside lamp, cracked through. A dark smear on one edge of it."),
+      inspect("mh_gate", "Back gate", "gate", { x: 92, y: 16, w: 7, h: 24 }, "The back gate", "A wooden gate to the alley, its latch hanging. Beyond it, tire tracks in the dirt where a vehicle sat with its engine running."),
+      inspect("mh_garage", "Door to the garage", "door", { x: 1, y: 4, w: 19, h: 60 }, "The garage", "The door through to the garage. Beyond it, the garage's side door to the yard: a thumb lock inside, no marks on it. Diane says she sometimes forgets to lock it after taking out the trash."),
+      inspect("mh_yard", "Side yard", "yard", { x: 86, y: 41, w: 13, h: 18 }, "The side yard", "A wet concrete path by the gate. The police circled the spot where they picked up the pager in chalk; the rain has nearly washed it away."),
     ],
   },
 ];
