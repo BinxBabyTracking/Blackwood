@@ -522,6 +522,12 @@
       "model": "hand-imported",
       "generatedAt": "2026-10-26T14:55:37.576Z"
     },
+    "c002_obj_newspaper": {
+      "url": "/art/c002_obj_newspaper.webp",
+      "kind": "sprite",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T15:20:35.273Z"
+    },
     "c002_obj_slip": {
       "url": "/art/c002_obj_slip.webp",
       "kind": "sprite",

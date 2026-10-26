@@ -124,7 +124,7 @@ export const locations: LocationDef[] = [
       panel("office_mail", "Opened mail", "tray", { x: 76, y: 68, w: 11, h: 10 }, "delivery", anyDeliveryOpened),
       // Deliveries: they appear on the desk when they arrive and stay until their evidence is collected.
       deskItem("office_trace", "Pacific Bell envelope", "trace", "E09", { x: 48, y: 72, w: 22.6, h: 26 }, "obj.envelope_sealed", "obj.envelope_open"),
-      deskItem("office_paper", "Thursday's Courier", "paper", "E11", { x: 36, y: 62, w: 16, h: 14 }, "obj.newspaper", "obj.newspaper"),
+      deskItem("office_paper", "Thursday's Courier", "paper", "E11", { x: 48, y: 66, w: 19, h: 13 }, "obj.newspaper", "obj.newspaper"),
       deskItem("office_oak", "Envelope from Oak Terrace Police", "oak_report", "E16", { x: 48, y: 72, w: 22.6, h: 26 }, "obj.envelope_sealed", "obj.envelope_open"),
       deskItem("office_search", "Sheriff's sealed envelope", "search", "E18", { x: 66, y: 62, w: 11.3, h: 30 }, "obj.evidence_bag", "obj.evidence_bag_open"),
       panel("office_typewriter", "Typewriter: final report", "typewriter", { x: 76, y: 46, w: 9.5, h: 10 }, "conclusion", reportAvailable),
