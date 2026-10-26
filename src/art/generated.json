@@ -402,6 +402,12 @@
       "model": "hand-imported",
       "generatedAt": "2026-10-26T14:18:37.815Z"
     },
+    "c002_figure_nora": {
+      "url": "/art/c002_figure_nora.webp",
+      "kind": "figure",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T14:37:56.375Z"
+    },
     "c002_figure_ruth": {
       "url": "/art/c002_figure_ruth.webp",
       "kind": "figure",
@@ -479,6 +485,12 @@
       "kind": "portrait",
       "model": "hand-imported",
       "generatedAt": "2026-10-26T14:18:38.302Z"
+    },
+    "c002_portrait_nora": {
+      "url": "/art/c002_portrait_nora.webp",
+      "kind": "portrait",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-26T14:37:56.733Z"
     },
     "c002_portrait_ruth": {
       "url": "/art/c002_portrait_ruth.webp",
