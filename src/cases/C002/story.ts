@@ -398,8 +398,8 @@ export const events: ReactiveEventDef[] = [
     caseId: "C002",
     title: "Oak Terrace",
     characterId: "diane",
-    // The hoax story is out, and the investigator has worked out where she was held or that it was one man.
-    requires: { all: [{ hasEvidence: "E11" }, { any: [{ deduction: "D5" }, { deduction: "D6" }] }] },
+    // The hoax story is out, and the investigator has followed the trail to the mountains or worked out that it was one man.
+    requires: { all: [{ hasEvidence: "E11" }, { any: [{ deduction: "D5" }, { deduction: "D6" }, { hasEvidence: "E14" }, { hasEvidence: "E15" }] }] },
     activate: { at: "office" },
     onActivate: [{ incomingCall: "call_bennett_oak" }, { message: "Three and a half weeks pass. Friday, November 4, 1988. Agency telephone ringing." }],
     complete: { hasEvidence: "E16" },
