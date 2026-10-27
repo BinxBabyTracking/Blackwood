@@ -1,6 +1,6 @@
 import { recordUsage } from "@/lib/usage";
 import type { NextRequest } from "next/server";
-import { canNarrate, normalizeState } from "@/game/engine/engine";
+import { canNarrate, heldNow, normalizeState } from "@/game/engine/engine";
 import { findInvestigation } from "@/game/persistence";
 import { loadCase } from "@/game/registry";
 import { castVoice, narrate, NarrationError } from "@/lib/narration/elevenlabs";
@@ -59,7 +59,11 @@ export async function GET(request: NextRequest) {
 
   try {
     const loaded = await findInvestigation(user.id, def.id);
-    if (!loaded || !canNarrate(def, normalizeState(def, loaded.state), ev.id)) return fail("You have not found that evidence yet.", 403);
+    const state = loaded ? normalizeState(def, loaded.state) : null;
+    if (!loaded || !state || !canNarrate(def, state, ev.id)) return fail("You have not found that evidence yet.", 403);
+    // While someone is held, what they find is theirs alone until it is over.
+    const held = heldNow(state);
+    if (held && held.seat !== (acting.guest?.id ?? "host") && def.captivity?.privateEvidence.includes(ev.id)) return fail("You have not found that evidence yet.", 403);
     // Most items are one narrated read; a few (a voice on a tape) are read part by part in each speaker's own voice.
     const parts = ev.readAloud?.length ? ev.readAloud : [{ text: ev.inspection }];
     // Long documents are voiced in pieces at the same time, then joined: one long request runs past the voice service's time limit.

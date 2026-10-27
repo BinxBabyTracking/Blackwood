@@ -71,6 +71,8 @@ export interface NotebookEntryInput {
   characterId?: string;
   /** Marks a statement worth highlighting in the interview notebook. */
   important?: boolean;
+  /** Written by a captive investigator: shown only on the captive's screen until the captivity ends. */
+  private?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -296,7 +298,11 @@ export interface HotspotDef {
     | { type: "panel"; panel: PanelId }
     | { type: "talk"; characterId: string }
     | { type: "travel"; locationId: string }
-    | { type: "delivery"; deliveryId: string };
+    | { type: "delivery"; deliveryId: string }
+    /** Plays a conversation the investigator overhears (a CallDef with `overheard`), voiced line by line. */
+    | { type: "overhear"; callId: string }
+    /** Answers the case's invitation: whoever takes it goes to the meeting and is held (see CaptivityDef). */
+    | { type: "meeting" };
   /** Painted artwork for this object or person (asset key), drawn over a painted scene once it exists. */
   art?: string;
   /** Draws a sprite in the scene at this rectangle; the first entry whose condition holds is shown. */
@@ -358,6 +364,10 @@ export interface CallDef {
   title: string;
   lines: string[];
   effects?: Effect[];
+  /** Who speaks each line, by character id, when it is not `from` (an overheard exchange between two people). */
+  speakers?: (string | null)[];
+  /** Overheard rather than a telephone call: played from a scene, never listed in the phone's log. */
+  overheard?: boolean;
 }
 
 export interface OutgoingCallDef {
@@ -606,6 +616,45 @@ export interface LabDef {
   onReady: Effect[];
 }
 
+/**
+ * The investigator is lured somewhere and held (C004). Optional and reusable.
+ *
+ * Whoever takes up the invitation (a `meeting` hotspot) becomes the captive;
+ * it is never chosen at random. With nobody else at the table it is a solo
+ * escape. In a joint investigation with other screens active it is a rescue:
+ * the captive plays the captive scenes on their own screen while everyone else
+ * plays the rest of the case, and nothing the captive finds reaches the others
+ * except through the scenes themselves (a flag the case sets, such as a signal
+ * seen from outside), until the captivity ends.
+ *
+ * The engine sets the flag `held` while it lasts and `captivity_over` after,
+ * and the environment `captivity` to "solo" or "rescue" for scene conditions.
+ */
+export interface CaptivityDef {
+  /** While this holds and nobody has gone yet, the meeting hotspot can be taken. */
+  invitation: Condition;
+  /** Where the captive comes to. */
+  start: string;
+  /** Scenes only the captive can be in. */
+  captiveScenes: string[];
+  /** Evidence the captive finds, kept from the other screens until the captivity ends. */
+  privateEvidence: string[];
+  /** Ends the captivity: an escape, or a rescue. */
+  end: Condition;
+  /** Where everyone is afterwards. */
+  returnTo: string;
+  /** Shown to the captive as they are taken. */
+  capture: { title: string; text: string };
+  effectsOnCapture?: Effect[];
+  /** Shown on the other screens when someone goes, with {name} for who went. */
+  leftMessage: string;
+  /** Shown to everyone when it ends, per mode. */
+  endMessage: { solo: string; rescue: string };
+  effectsOnEnd?: Effect[];
+  /** Shown to the captive when they choose to go it alone. */
+  aloneMessage: string;
+}
+
 export interface CaseDefinition {
   id: string;
   title: string;
@@ -678,6 +727,8 @@ export interface CaseDefinition {
   sequences?: SequenceDef[];
   /** Documents the player compares, side by side, to find what differs. */
   comparisons?: ComparisonDef[];
+  /** The investigator is lured somewhere and held; see CaptivityDef. */
+  captivity?: CaptivityDef;
 }
 
 /** Words the interface uses. Every case gets the defaults in `src/game/words.ts` unless it supplies its own. */
@@ -888,7 +939,7 @@ export interface InvestigationState {
   /** Whether characters speak aloud during interviews. */
   voices: boolean;
   notebook: (NotebookEntryInput & { at: number })[];
-  timeline: { time: string; text: string; source: string }[];
+  timeline: { time: string; text: string; source: string; private?: boolean }[];
   playerNotes: string;
   board: { items: { id: string; x: number; y: number }[]; connections: [string, string][] };
   deductions: string[];
@@ -915,6 +966,33 @@ export interface InvestigationState {
   activeSeconds: number;
   lastActionAt: number;
   closedAt: number | null;
+  /** The investigator held by the case's captivity, once someone has gone. */
+  captivity?: CaptivityState;
+}
+
+/** Who is held, how, and where they are. Their location is theirs alone; `location` stays the table's. */
+export interface CaptivityState {
+  /** "host", or the guest's id in a joint investigation. */
+  seat: string;
+  /** The name shown to the others. */
+  name: string;
+  mode: "solo" | "rescue";
+  location: string;
+  startedAt: number;
+  endedAt: number | null;
+  /** Notices for the captive's screen only. */
+  messages: string[];
+}
+
+/**
+ * Which screen an action comes from, for the captivity rules. Without it the
+ * action is the host's and nobody else is present, which is every solo game.
+ */
+export interface SeatContext {
+  seat?: string;
+  name?: string;
+  /** Screens seen in the last couple of minutes, this one included. Null when presence is not known. */
+  active?: string[] | null;
 }
 
 export interface ConversationLine {
@@ -1001,6 +1079,10 @@ export type GameAction =
   | { type: "setNarration"; enabled: boolean }
   | { type: "setVoices"; enabled: boolean }
   | { type: "dismissMessages" }
+  /** A rescuer takes the place of a captive whose screen has gone quiet, keeping every step they made. */
+  | { type: "takeCaptiveRole" }
+  /** The captive, with nobody left at the table, finishes alone. */
+  | { type: "goAlone" }
   | { type: "saveReport"; draft: ReportDraft }
   /** Puts a timeline card in a space (`pos` orders cards within it), or takes it off (`space: null`). */
   | { type: "sequencePlace"; sequenceId: string; cardId: string; space: string | null; pos: number }
@@ -1227,6 +1309,17 @@ export interface ClientView {
     review: { at: number; note: string; attempt: number; evidence: string[] } | null;
     final: FinalReport | null;
   };
+  /** While someone is held: this screen's part in it. */
+  captivity: {
+    role: "captive" | "rescuer";
+    mode: "solo" | "rescue";
+    /** Who went. */
+    who: string;
+    /** The captive's screen has gone quiet (rescuers), or every rescuer has (captive). */
+    quiet: boolean;
+    canTakeOver: boolean;
+    canGoAlone: boolean;
+  } | null;
   /** Only present once the case is closed. */
   closure: (SolutionDef["resolution"] & { final: FinalReport | null; closedAt: number | null }) | null;
 }
@@ -1266,7 +1359,7 @@ export type ActionOutcome =
       pages: DocumentDef["pages"];
       evidence: { id: string; title: string; collected: boolean }[];
     }
-  | { kind: "call"; id: string; title: string; from: string; fromId: string; lines: string[]; voiced: boolean }
+  | { kind: "call"; id: string; title: string; from: string; fromId: string; lines: string[]; voiced: boolean; speakers?: string[]; overheard?: boolean }
   | {
       kind: "delivery";
       id: string;

@@ -257,11 +257,14 @@ export function CallPanel({ caseId, data, onClose, voices, volume, closeLabel = 
   return (
     <Overlay title={data.title} onClose={onClose} closeLabel={closeLabel}>
       <div className="space-y-4 p-6">
-        <p className="font-mono text-xs uppercase tracking-[0.14em] text-smoke">{data.from}</p>
+        {data.speakers ? null : <p className="font-mono text-xs uppercase tracking-[0.14em] text-smoke">{data.from}</p>}
         {data.lines.map((l, i) => (
-          <p key={i} className={`font-serif text-lg leading-relaxed transition-opacity ${player.current === null || player.current === i ? "text-paper/90" : "text-paper/45"}`}>
-            {l}
-          </p>
+          <div key={i}>
+            {data.speakers ? <p className="font-mono text-xs uppercase tracking-[0.14em] text-smoke">{data.speakers[i]}</p> : null}
+            <p className={`font-serif text-lg leading-relaxed transition-opacity ${player.current === null || player.current === i ? "text-paper/90" : "text-paper/45"}`}>
+              {l}
+            </p>
+          </div>
         ))}
         {voiced ? (
           <div className="flex items-center gap-2 pt-2">

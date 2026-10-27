@@ -1,6 +1,6 @@
 import { recordUsage } from "@/lib/usage";
 import type { NextRequest } from "next/server";
-import { normalizeState, spokenLine } from "@/game/engine/engine";
+import { heldNow, normalizeState, spokenLine } from "@/game/engine/engine";
 import { findInvestigation } from "@/game/persistence";
 import { loadCase } from "@/game/registry";
 import { castVoice, narrate, NarrationError } from "@/lib/narration/elevenlabs";
@@ -49,8 +49,12 @@ export async function GET(request: NextRequest) {
   try {
     const loaded = await findInvestigation(user.id, def.id);
     if (!loaded) return fail("Accept the assignment first.", 403);
-    const line = spokenLine(def, normalizeState(def, loaded.state), { kind: kind as "conversation", id, n });
+    const state = normalizeState(def, loaded.state);
+    const line = spokenLine(def, state, { kind: kind as "conversation", id, n });
     if (!line) return fail("That line is not available.", 403);
+    // Something only the held investigator heard stays theirs until it is over.
+    const held = heldNow(state);
+    if (held && held.seat !== (acting.guest?.id ?? "host") && kind === "call" && def.calls.find((c) => c.id === id)?.overheard) return fail("That line is not available.", 403);
     let result;
     if (line.speakerId === "narrator") {
       // Written notes use the existing evidence narrator voice.

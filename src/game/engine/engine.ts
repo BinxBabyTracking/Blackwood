@@ -29,12 +29,15 @@ import type {
   QuestionFund,
   ActionOutcome,
   ActionResponse,
+  CallDef,
+  CaptivityState,
   CaseDefinition,
   ClientView,
   GameAction,
   HotspotDef,
   InvestigationState,
   LocationDef,
+  SeatContext,
   Theory,
 } from "./types";
 
@@ -507,15 +510,103 @@ function fail(message: string): never {
   throw new GameError(message);
 }
 
+// ---------------------------------------------------------------------------
+// Captivity: one investigator held while the rest of the table plays on
+// ---------------------------------------------------------------------------
+
+/** The captivity in progress, if someone is being held right now. */
+export function heldNow(s: InvestigationState): CaptivityState | null {
+  return s.captivity && s.captivity.endedAt === null ? s.captivity : null;
+}
+
+/** What a captive can do: look around, move between the captive scenes, and keep their own notes. */
+const CAPTIVE_ACTIONS = new Set<GameAction["type"]>([
+  "dismissIntro", "travel", "hotspot", "collect", "checkLabs", "saveNotes", "saveEvidenceNote", "setNarration", "setVoices", "dismissMessages",
+]);
+
+/** Ends the captivity once its end condition holds: everyone back together, the captive's finds in the shared file. */
+function endCaptivity(def: CaseDefinition, s: InvestigationState, now: number) {
+  const cd = def.captivity;
+  const cap = heldNow(s);
+  if (!cd || !cap || !check(cd.end, s)) return;
+  cap.endedAt = now;
+  cap.messages = [];
+  s.flags = s.flags.filter((f) => f !== "held");
+  if (!s.flags.includes("captivity_over")) s.flags.push("captivity_over");
+  s.location = cd.returnTo;
+  if (!s.visited.includes(cd.returnTo)) s.visited.push(cd.returnTo);
+  for (const n of s.notebook) delete n.private;
+  for (const t of s.timeline) delete t.private;
+  if (!s.messages.includes(cd.endMessage[cap.mode])) s.messages.push(cd.endMessage[cap.mode]);
+  apply(cd.effectsOnEnd, s, def);
+  finish(s, def);
+}
+
+/** Who is still at the table, when the server knows. */
+const othersActive = (ctx: SeatContext, seat: string) => (ctx.active ?? []).filter((x) => x !== seat);
+
 /**
  * Applies one player action. Pure apart from the clock: returns the new state
  * and the outcome to show. Throws GameError for actions the rules do not allow.
+ * `ctx` says which screen acted, for a case with a captivity; solo play leaves it out.
  */
 export function reduce(
   def: CaseDefinition,
   prev: InvestigationState,
   action: GameAction,
   now = Date.now(),
+  ctx: SeatContext = {},
+): { state: InvestigationState; outcome: ActionOutcome } {
+  const seat = ctx.seat ?? "host";
+  const cap = heldNow(prev);
+  if (action.type === "takeCaptiveRole" || action.type === "goAlone") {
+    const s: InvestigationState = structuredClone(prev);
+    const c = heldNow(s) ?? fail("Nobody is being held.");
+    const known = Array.isArray(ctx.active);
+    if (c.mode !== "rescue") fail("There is nobody else to wait for.");
+    if (action.type === "takeCaptiveRole") {
+      if (c.seat === seat) fail("You are the one being held.");
+      if (!known || ctx.active!.includes(c.seat)) fail(`${c.name} is still there.`);
+      c.seat = seat;
+      c.name = ctx.name?.trim() || c.name;
+    } else {
+      if (c.seat !== seat) fail("You are not the one being held.");
+      if (!known || othersActive(ctx, seat).length) fail("The others are still out there.");
+      c.mode = "solo";
+      s.env.captivity = "solo";
+      if (def.captivity && !c.messages.includes(def.captivity.aloneMessage)) c.messages.push(def.captivity.aloneMessage);
+    }
+    s.lastActionAt = now;
+    return { state: s, outcome: { kind: "none" } };
+  }
+  if (cap && cap.seat === seat) {
+    // The captive plays their own scenes: their location and notices stand in for the table's while the action runs.
+    if (!CAPTIVE_ACTIONS.has(action.type)) fail("You can't do that from here.");
+    const r = step(def, { ...prev, location: cap.location, messages: cap.messages }, action, now, ctx);
+    const st = r.state;
+    const c = st.captivity!;
+    c.location = st.location;
+    c.messages = st.messages;
+    st.location = prev.location;
+    st.messages = [...prev.messages];
+    // Whatever the captive wrote down stays on their screen until it is over.
+    for (let i = prev.notebook.length; i < st.notebook.length; i++) st.notebook[i].private = true;
+    for (let i = prev.timeline.length; i < st.timeline.length; i++) st.timeline[i].private = true;
+    endCaptivity(def, st, now);
+    return r;
+  }
+  if (cap && action.type === "boardAdd" && def.captivity?.privateEvidence.includes(action.itemId)) fail("You cannot pin that to the board.");
+  const r = step(def, prev, action, now, ctx);
+  endCaptivity(def, r.state, now);
+  return r;
+}
+
+function step(
+  def: CaseDefinition,
+  prev: InvestigationState,
+  action: GameAction,
+  now: number,
+  ctx: SeatContext,
 ): { state: InvestigationState; outcome: ActionOutcome } {
   const s: InvestigationState = structuredClone(prev);
   const idle = now - s.lastActionAt;
@@ -537,6 +628,10 @@ export function reduce(
     case "travel": {
       const l = loc(def, action.locationId) ?? fail("Unknown location.");
       if (!locationAvailable(def, s, l)) fail("That location is not available yet.");
+      const held = heldNow(s);
+      const scenes = def.captivity?.captiveScenes ?? [];
+      if (held && held.seat === (ctx.seat ?? "host") && !scenes.includes(l.id)) fail("There's no way out of here yet.");
+      if ((!held || held.seat !== (ctx.seat ?? "host")) && scenes.includes(l.id)) fail("That location is not available yet.");
       s.location = l.id;
       if (!s.visited.includes(l.id)) s.visited.push(l.id);
       apply(l.effectsOnEnter, s, def);
@@ -548,10 +643,38 @@ export function reduce(
       const h = visibleHotspots(def, s, l).find((x) => x.id === action.hotspotId) ?? fail("There is nothing like that here.");
       const it = h.interaction;
       if (it.type === "travel") {
-        return reduce(def, s, { type: "travel", locationId: it.locationId }, now);
+        return step(def, s, { type: "travel", locationId: it.locationId }, now, ctx);
       }
       if (it.type === "talk") {
-        return reduce(def, s, { type: "talk", characterId: it.characterId }, now);
+        return step(def, s, { type: "talk", characterId: it.characterId }, now, ctx);
+      }
+      if (it.type === "overhear") {
+        const call = def.calls.find((x) => x.id === it.callId) ?? fail("Nothing to hear.");
+        if (!s.inspected.includes(h.id)) s.inspected.push(h.id);
+        if (!s.answeredCalls.includes(call.id)) {
+          s.answeredCalls.push(call.id);
+          apply([{ note: { id: `call:${call.id}`, kind: "call", title: call.title, text: callText(def, call) } }], s, def);
+          apply(call.effects, s, def);
+        }
+        outcome = callOutcome(def, call);
+        break;
+      }
+      if (it.type === "meeting") {
+        const cd = def.captivity ?? fail("Nothing comes of that.");
+        if (s.captivity) fail(`${s.captivity.name} has already gone.`);
+        if (!check(cd.invitation, s)) fail("There is no meeting to go to.");
+        const seat = ctx.seat ?? "host";
+        const mode = othersActive(ctx, seat).length ? "rescue" : "solo";
+        const name = ctx.name?.trim() || "Your partner";
+        s.captivity = { seat, name, mode, location: cd.start, startedAt: now, endedAt: null, messages: [] };
+        if (!s.flags.includes("held")) s.flags.push("held");
+        s.env.captivity = mode;
+        if (!s.visited.includes(cd.start)) s.visited.push(cd.start);
+        if (!s.inspected.includes(h.id)) s.inspected.push(h.id);
+        apply(cd.effectsOnCapture, s, def);
+        if (mode === "rescue") s.messages.push(cd.leftMessage.replaceAll("{name}", name));
+        outcome = { kind: "inspect", title: cd.capture.title, text: cd.capture.text, image: null, evidence: null, photo: null };
+        break;
       }
       if (it.type === "delivery") {
         const d = def.deliveries.find((x) => x.id === it.deliveryId) ?? fail("Nothing has arrived.");
@@ -748,7 +871,7 @@ export function reduce(
 
     case "answerCall": {
       if (!phoneInReach(def, s)) fail("The telephone is at the office.");
-      if (!s.pendingCalls.includes(action.callId)) fail("No one is on the line.");
+      if (!s.pendingCalls.includes(action.callId) || def.calls.find((x) => x.id === action.callId)?.overheard) fail("No one is on the line.");
       const call = def.calls.find((x) => x.id === action.callId)!;
       s.pendingCalls = s.pendingCalls.filter((x) => x !== call.id);
       s.answeredCalls.push(call.id);
@@ -758,7 +881,7 @@ export function reduce(
       log.push({ speaker: "cue", text: inOffice ? `${call.title}, at your office.` : `${call.title}, on your phone.`, kind: "cue", q: call.id });
       for (const l of call.lines) log.push({ speaker: call.from, text: l, kind: "call", q: call.id });
       apply(call.effects, s, def);
-      outcome = { kind: "call", id: call.id, title: call.title, from: char(def, call.from)?.name ?? "Caller", fromId: call.from, lines: call.lines, voiced: voiced(char(def, call.from)) };
+      outcome = callOutcome(def, call);
       break;
     }
 
@@ -1114,8 +1237,46 @@ export function progressOf(def: CaseDefinition, s: InvestigationState) {
 // Projection: the only thing the browser sees
 // ---------------------------------------------------------------------------
 
-/** `now` sets how long lab countdowns have left; the real clock unless a test passes its own. */
-export function project(def: CaseDefinition, s: InvestigationState, now = Date.now()): ClientView {
+/**
+ * `now` sets how long lab countdowns have left; the real clock unless a test passes its own.
+ * `ctx` says whose screen this is: while someone is held, the captive sees their own
+ * scenes and finds, and nobody else sees those until it is over.
+ */
+export function project(def: CaseDefinition, state: InvestigationState, now = Date.now(), ctx: SeatContext = {}): ClientView {
+  const seat = ctx.seat ?? "host";
+  const cap = heldNow(state);
+  if (!cap) return projectState(def, state, now, null);
+  const captive = cap.seat === seat;
+  const known = Array.isArray(ctx.active);
+  const others = othersActive(ctx, seat);
+  const role = {
+    role: captive ? ("captive" as const) : ("rescuer" as const),
+    mode: cap.mode,
+    who: cap.name,
+    quiet: cap.mode === "rescue" && known && (captive ? others.length === 0 : !ctx.active!.includes(cap.seat)),
+    canTakeOver: false,
+    canGoAlone: false,
+  };
+  role.canTakeOver = !captive && role.quiet;
+  role.canGoAlone = captive && role.quiet;
+  if (captive) {
+    const v = projectState(def, { ...state, location: cap.location, messages: cap.messages }, now, role);
+    // Nothing to travel to and no telephone in reach: the way out is in the scenes.
+    return { ...v, map: [], phone: { ...v.phone, ringing: null, outgoing: [], contacts: [] } };
+  }
+  const hidden = new Set(def.captivity?.privateEvidence ?? []);
+  const shared: InvestigationState = {
+    ...state,
+    evidence: state.evidence.filter((e) => !hidden.has(e)),
+    notebook: state.notebook.filter((n) => !n.private),
+    timeline: state.timeline.filter((t) => !t.private),
+    answeredCalls: state.answeredCalls.filter((id) => !def.calls.find((c) => c.id === id)?.overheard),
+    report: { ...state.report, draft: { ...state.report.draft, evidence: state.report.draft.evidence.filter((e) => !hidden.has(e)) } },
+  };
+  return projectState(def, shared, now, role);
+}
+
+function projectState(def: CaseDefinition, s: InvestigationState, now: number, captivity: ClientView["captivity"]): ClientView {
   const img = (key: string) => def.assets.images[key] ?? "";
   const l = loc(def, s.location)!;
   const bg = sceneBackground(def, s, l);
@@ -1190,7 +1351,7 @@ export function project(def: CaseDefinition, s: InvestigationState, now = Date.n
       outgoing: def.outgoingCalls
         .filter((c) => check(c.available, s) && !check(c.done, s))
         .map((c) => ({ id: c.id, to: char(def, c.to)?.name ?? "", label: c.label })),
-      log: s.answeredCalls.map((id) => ({
+      log: s.answeredCalls.filter((id) => !def.calls.find((c) => c.id === id)?.overheard).map((id) => ({
         id,
         title: def.calls.find((c) => c.id === id)?.title ?? def.outgoingCalls.find((c) => c.id === id)?.label ?? id,
       })),
@@ -1298,13 +1459,14 @@ export function project(def: CaseDefinition, s: InvestigationState, now = Date.n
       })(),
       final: s.report.final,
     },
+    captivity,
     // The solution, the reconstruction and Bennett's response exist in the view only once the case is closed.
     closure: s.status === "closed" ? { ...def.solution.resolution, final: s.report.final, closedAt: s.closedAt } : null,
   };
 }
 
-export function respond(def: CaseDefinition, s: InvestigationState, outcome: ActionOutcome = { kind: "none" }): ActionResponse {
-  return { view: project(def, s), outcome };
+export function respond(def: CaseDefinition, s: InvestigationState, outcome: ActionOutcome = { kind: "none" }, ctx: SeatContext = {}): ActionResponse {
+  return { view: project(def, s, Date.now(), ctx), outcome };
 }
 
 /** Recomputes a conversation for reopening an interview panel without a state change. */
@@ -1396,7 +1558,7 @@ export function spokenLine(
   if (!s.answeredCalls.includes(ref.id)) return null;
   const call = def.calls.find((c) => c.id === ref.id);
   const text = call?.lines[ref.n];
-  return call && text ? { speakerId: call.from, text } : null;
+  return call && text ? { speakerId: callSpeaker(call, ref.n), text } : null;
 }
 
 function deliveryOutcome(def: CaseDefinition, s: InvestigationState, id: string, sealed: boolean): ActionOutcome {
@@ -1410,6 +1572,31 @@ function deliveryOutcome(def: CaseDefinition, s: InvestigationState, id: string,
     // The contents stay on the server until the player opens it.
     text: sealed ? "" : d.text,
     evidence: sealed ? [] : d.evidence.map((e) => ({ id: e, title: def.evidence.find((x) => x.id === e)!.title, collected: s.evidence.includes(e) })),
+  };
+}
+
+/** Each line of a call or an overheard exchange, with who says it. */
+function callSpeaker(call: CallDef, n: number) {
+  return call.speakers?.[n] ?? call.from;
+}
+
+function callText(def: CaseDefinition, call: CallDef) {
+  if (!call.speakers) return call.lines.join(" ");
+  return call.lines.map((l, n) => `${char(def, callSpeaker(call, n))?.name ?? "A voice"}: ${l}`).join(" ");
+}
+
+function callOutcome(def: CaseDefinition, call: CallDef): ActionOutcome {
+  const ids = call.lines.map((_, n) => callSpeaker(call, n));
+  return {
+    kind: "call",
+    id: call.id,
+    title: call.title,
+    from: char(def, call.from)?.name ?? "Caller",
+    fromId: call.from,
+    lines: call.lines,
+    voiced: ids.every((id) => voiced(char(def, id))),
+    ...(call.speakers ? { speakers: ids.map((id) => char(def, id)?.name ?? "") } : {}),
+    ...(call.overheard ? { overheard: true } : {}),
   };
 }
 

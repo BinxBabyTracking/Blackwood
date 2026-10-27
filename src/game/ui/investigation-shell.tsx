@@ -7,6 +7,7 @@ import { saveGameVolumes } from "@/app/actions/settings";
 import { paintedArt } from "@/lib/art";
 import type { ActionOutcome, ActionResponse, ClientEvidence, ClientView, GameAction, PanelId } from "../engine/types";
 import { MurderBoard } from "./board";
+import { GameButton } from "./overlay";
 import { DetectiveNotebook } from "./detective-notebook";
 import { EvidenceInspection } from "./evidence-inspection";
 import { EvidenceInventory } from "./evidence-inventory";
@@ -644,7 +645,10 @@ export function InvestigationShell({
         {/* In the office the map and notebook are in the room itself; only the evidence stays in the corner. */}
         {atHome ? null : (
           <>
-            <HudObject label={words.map} image={hudArt(caseId, "map", view.theme)} fallback="map" onClick={() => setLayer({ k: "panel", panel: "map" })} />
+            {/* Someone being held has no map to follow: the way out is in the scenes. */}
+            {view.captivity?.role === "captive" ? null : (
+              <HudObject label={words.map} image={hudArt(caseId, "map", view.theme)} fallback="map" onClick={() => setLayer({ k: "panel", panel: "map" })} />
+            )}
             <HudObject label={words.notebook} image={hudArt(caseId, "obj_notebook", view.theme)} fallback="notebook" onClick={() => setLayer({ k: "panel", panel: "notebook" })} />
           </>
         )}
@@ -668,6 +672,40 @@ export function InvestigationShell({
           />
         ) : null}
       </nav>
+
+      {/* Someone is being held: each screen's part in it, and a way forward if a screen goes quiet */}
+      {view.captivity && view.introSeen ? (
+        <div className="pointer-events-none fixed bottom-24 left-1/2 z-20 w-[min(34rem,calc(100%-2rem))] -translate-x-1/2 sm:bottom-6" role="status">
+          <div className="pointer-events-auto border border-fault/60 bg-[#1c1412]/95 px-4 py-3 text-sm shadow-lg">
+            <p>
+              {view.captivity.role === "captive"
+                ? view.captivity.mode === "rescue"
+                  ? "You are being held. The others are out there looking for you. Find a way to tell them where you are."
+                  : "You are being held. Nobody knows where you are. Find a way out."
+                : `${view.captivity.who} went to the meeting and has not come back.`}
+            </p>
+            {view.captivity.quiet ? (
+              <p className="mt-1 text-smoke">
+                {view.captivity.role === "captive" ? "The others have gone quiet." : `${view.captivity.who}'s screen has gone quiet.`}
+              </p>
+            ) : null}
+            {view.captivity.canTakeOver ? (
+              <div className="mt-2">
+                <GameButton variant="ghost" disabled={pending} onClick={() => dispatch({ type: "takeCaptiveRole" })}>
+                  Take their place
+                </GameButton>
+              </div>
+            ) : null}
+            {view.captivity.canGoAlone ? (
+              <div className="mt-2">
+                <GameButton variant="ghost" disabled={pending} onClick={() => dispatch({ type: "goAlone" })}>
+                  Go it alone
+                </GameButton>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
 
       {/* Agency messages: shown for a few seconds, never in the way of the scene */}
       {view.messages.length ? (
@@ -780,7 +818,17 @@ export function InvestigationShell({
         <InterviewScreen key={`interview-${layer.data.characterId}`} caseId={caseId} data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} volume={dialogueVolume} />
       ) : null}
       {layer?.k === "document" ? <DocumentPanel caseId={caseId} data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} volume={dialogueVolume} /> : null}
-      {layer?.k === "call" ? <CallPanel caseId={caseId} data={layer.data} voices={view.voices} volume={dialogueVolume} closeLabel={words.callClose} replayLabel={view.theme === "medieval" ? "Hear it again" : "Replay call"} onClose={() => setLayer({ k: "panel", panel: "phone" })} /> : null}
+      {layer?.k === "call" ? (
+        <CallPanel
+          caseId={caseId}
+          data={layer.data}
+          voices={view.voices}
+          volume={dialogueVolume}
+          closeLabel={layer.data.overheard ? "Step back" : words.callClose}
+          replayLabel={layer.data.overheard ? "Listen again" : view.theme === "medieval" ? "Hear it again" : "Replay call"}
+          onClose={() => (layer.data.overheard ? setLayer(null) : setLayer({ k: "panel", panel: "phone" }))}
+        />
+      ) : null}
       {layer?.k === "delivery" ? (
         <DeliveryPanel caseId={caseId} data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} volume={dialogueVolume} />
       ) : null}

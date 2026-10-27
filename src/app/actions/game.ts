@@ -3,11 +3,11 @@
 import { redirect } from "next/navigation";
 import { GameError, normalizeState, reduce, respond } from "@/game/engine/engine";
 import { questionsLeft } from "@/game/engine/questions";
-import type { ActionResponse, GameAction } from "@/game/engine/types";
+import type { ActionResponse, CaseDefinition, GameAction, SeatContext } from "@/game/engine/types";
 import { findInvestigation, investigatorName, PersistenceError, recordClosedCase, restartInvestigation, saveState, startInvestigation } from "@/game/persistence";
 import { loadCase } from "@/game/registry";
 import { interpretQuestion } from "@/lib/interview/understand";
-import { actingUser } from "@/lib/party";
+import { actingUser, hostParty, lobbyGuests, tablePresence, touchSeat } from "@/lib/party";
 import { createClient } from "@/lib/supabase/server";
 
 async function currentUserId() {
@@ -27,6 +27,25 @@ function askedTooFast(userId: string) {
   recent.push(now);
   asks.set(userId, recent);
   return recent.length > ASK_LIMIT;
+}
+
+/**
+ * Which screen at the table an action or sync comes from, and who else is
+ * still there. Only a case with a captivity needs to know; for every other
+ * case this is just the seat, with no extra lookups.
+ */
+async function seatContext(def: CaseDefinition, acting: NonNullable<Awaited<ReturnType<typeof actingUser>>>): Promise<SeatContext> {
+  const seat = acting.guest?.id ?? "host";
+  if (!def.captivity) return { seat };
+  const lobby = acting.lobby ?? (await hostParty(acting.userId, def.id).catch(() => null));
+  const name = acting.guest?.name ?? (await investigatorName(acting.userId).catch(() => "")) ?? "";
+  if (!lobby) return { seat, name, active: [seat] };
+  await touchSeat(lobby, acting.guest?.id ?? null).catch(() => null);
+  const presence = await tablePresence(lobby).catch(() => null);
+  if (presence) return { seat, name, active: [...new Set([...presence.active, seat])] };
+  // Presence unreadable: count everyone seated as present rather than strand anyone.
+  const guests = await lobbyGuests(lobby.id).catch(() => []);
+  return { seat, name, active: ["host", ...guests.map((g) => g.id)] };
 }
 
 export async function acceptAssignment(fd: FormData) {
@@ -61,7 +80,7 @@ const ACTIONS = new Set<GameAction["type"]>([
   // Interviews are asked in the player's own words ("askFree"); authored question ids are never accepted from the browser.
   "dismissIntro", "travel", "hotspot", "collect", "photograph", "checkLabs", "readDocument", "talk", "askFree", "present", "extendInterview", "answerCall", "placeCall",
   "openDelivery", "boardAdd", "boardMove", "boardRemove", "connect", "disconnect", "saveNotes", "saveEvidenceNote", "setNarration", "setVoices",
-  "dismissMessages", "saveReport", "submitConclusion",
+  "dismissMessages", "saveReport", "submitConclusion", "takeCaptiveRole", "goAlone",
 ]);
 
 /** `saved: false` means progress may not have been written; a rule refusal changes nothing and keeps `saved: true`. */
@@ -83,6 +102,7 @@ export async function playAction(caseId: string, action: GameAction, asGuest = f
   if (acting.guest && action.type === "submitConclusion") return { error: "Only the host can file the report.", saved: true };
 
   try {
+    const ctx = await seatContext(def, acting);
     // The investigator's name on a filed report comes from their profile, never from the browser.
     const act: GameAction = action.type === "submitConclusion" ? { ...action, investigator: await investigatorName(userId) } : action;
     // Several people may act on one save at once in a joint investigation, so retry a few times.
@@ -104,7 +124,7 @@ export async function playAction(caseId: string, action: GameAction, asGuest = f
         const r = await interpretQuestion(def, current, String(act.characterId ?? ""), text, { userId, sessionId: loaded.sessionId });
         step = { type: "askFree", characterId: String(act.characterId ?? ""), text, match: r.match, composed: r.composed, facts: r.facts };
       }
-      const { state, outcome } = reduce(def, current, step);
+      const { state, outcome } = reduce(def, current, step, Date.now(), ctx);
       const saved = await saveState(def, loaded, state);
       if (!saved) continue; // another tab or partner saved first; reload and apply again
       if (outcome.kind === "verdict" && outcome.correct) {
@@ -116,7 +136,7 @@ export async function playAction(caseId: string, action: GameAction, asGuest = f
         });
         if (record) outcome.record = { first: record.first, awarded: record.awarded, rank: record.rank };
       }
-      return respond(def, state, outcome);
+      return respond(def, state, outcome, ctx);
     }
     return { error: "Your investigation was updated in another window. Reload to continue.", saved: false };
   } catch (e) {
@@ -141,6 +161,9 @@ export async function syncView(caseId: string, since: string, asGuest = false): 
   if (!acting) return { error: "The joint investigation has ended." };
   const loaded = await findInvestigation(acting.userId, def.id).catch(() => null);
   if (!loaded) return { error: "The investigation could not be found." };
-  if (loaded.updatedAt === since) return { changed: false };
-  return { changed: true, stamp: loaded.updatedAt, response: respond(def, normalizeState(def, loaded.state)) };
+  // While someone is held, presence itself changes what a screen is offered, so send the view every time.
+  const ctx = await seatContext(def, acting);
+  const state = normalizeState(def, loaded.state);
+  if (loaded.updatedAt === since && !(def.captivity && state.captivity && state.captivity.endedAt === null)) return { changed: false };
+  return { changed: true, stamp: loaded.updatedAt, response: respond(def, state, { kind: "none" }, ctx) };
 }
