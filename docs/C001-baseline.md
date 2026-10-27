@@ -17,10 +17,10 @@ C001 is the Introductory tier and free: about 1 hour solo, about 20 minutes with
 | Tier | Length | Price | Cases set up so far |
 | --- | --- | --- | --- |
 | Introductory | about 1 hour solo, 20 minutes with friends | Free | C001 |
-| Tier 1 | about 1 hour | $2.99 | C002 |
-| Tier 2 | 2 to 3 hours | $4.99 | C003 |
-| Tier 3 | 4 to 6 hours | $8.99 | C004 |
-| Tier 4 | 8 to 12 hours | $12.99 | C005 |
+| Tier 1 | about 1 hour | $2.99 | none yet |
+| Tier 2 | 2 to 3 hours | $4.99 | C002, C003, C004, C005 |
+| Tier 3 | 4 to 6 hours | $8.99 | none yet |
+| Tier 4 | 8 to 12 hours | $12.99 | none yet |
 | Tier 5 | 20 to 30 hours | $17.99 | none yet |
 | Tier 6 | 40 to 60 hours | $25.00 | none yet |
 
@@ -265,6 +265,11 @@ Added for C002. Each is off unless a case uses it, so older cases behave exactly
 | `boardSections` | the case | Labeled sections of the murder board, opened by a condition. Cards and string can cross them. |
 | `multi` on a report question, `solution.answers` | the case | Any number of report questions, keyed by id; a question can take several answers. Older cases keep culprit, motive, weapon and location. |
 | `reportDate`, `resolution.caller`, `standard.linkNote` | the case | The date by the report signature, who makes the closing call, and the reviewer's note when nothing ties the suspect in. |
+| `theme: "medieval"`, `words` | the case | Added for C005. The case's look (an illuminated manuscript: oak, vellum, gold, Gothic headings) and its words for things: Journal, Deduction table, Sketch instead of Photo, letters and messengers instead of the telephone, who reviews the report. Defaults live in `src/game/words.ts`. |
+| `speech` | the case | The interview AI's setting and speech rules (for C005: 1327, no modern words, no clock times). |
+| `sequences` | the case | A timeline the player lays cards on (C005's bell timeline). Testing shows only contradictions among correctly placed cards (findings), never where a card belongs; findings can carry effects. |
+| `comparisons` | the case | Two documents side by side (C005's lectern). The player picks a passage and says what differs; true finds go in the journal; completing it can give evidence or deductions. |
+| the `deduce` effect | anywhere effects go | Establishes a deduction, with its journal entry and effects, from a timeline finding, a comparison or an event. |
 
 ## Lessons from C001, and parked ideas
 
