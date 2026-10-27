@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
       return fail(res.status === 401 ? "The speech service rejected the API key." : "The speech service is unavailable. Type your question instead.", 502);
     }
     const body = (await res.json()) as { text?: string };
-    if (/^C\d{3,}$/.test(caseId)) {
+    if (/^(C\d{3,}|S\d{3}C\d{2})$/.test(caseId)) {
       const loaded = await findInvestigation(user.id, caseId).catch(() => null);
       recordUsage({ userId: user.id, sessionId: loaded?.sessionId ?? null, caseId, characterId: characterId || null, service: "stt", purpose: "transcribe", model: MODEL, audioSeconds: seconds });
     }
