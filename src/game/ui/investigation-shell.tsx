@@ -290,6 +290,14 @@ export function InvestigationShell({
   );
 
   const close = useCallback(() => setLayer(null), []);
+  const chapterOneOnClose = useRef(false);
+  const closeDocument = useCallback(() => {
+    setLayer(null);
+    if (chapterOneOnClose.current && view.chapter) {
+      chapterOneOnClose.current = false;
+      setOpening({ number: view.chapter.number, title: view.chapter.title, intro: view.chapter.intro });
+    }
+  }, [view.chapter]);
 
   // The evidence bag glows while it holds things the player has not looked through yet.
   // The first time ever, it also says so, to teach where the full details live.
@@ -760,7 +768,11 @@ export function InvestigationShell({
           pending={pending}
           onDone={async () => {
             const r = await dispatch({ type: "dismissIntro" });
-            if (r) dispatch({ type: "readDocument", documentId: "casefile" });
+            if (r) {
+              // In a case told in chapters, putting the case file down opens Chapter 1.
+              if (view.chapter) chapterOneOnClose.current = true;
+              dispatch({ type: "readDocument", documentId: "casefile" });
+            }
           }}
         />
       ) : null}
@@ -864,7 +876,7 @@ export function InvestigationShell({
       {layer?.k === "conversation" ? (
         <InterviewScreen key={`interview-${layer.data.characterId}`} caseId={caseId} data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} volume={dialogueVolume} />
       ) : null}
-      {layer?.k === "document" ? <DocumentPanel caseId={caseId} data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} volume={dialogueVolume} /> : null}
+      {layer?.k === "document" ? <DocumentPanel caseId={caseId} data={layer.data} view={view} dispatch={dispatch} onClose={closeDocument} pending={pending} volume={dialogueVolume} /> : null}
       {layer?.k === "call" ? (
         <CallPanel
           caseId={caseId}
