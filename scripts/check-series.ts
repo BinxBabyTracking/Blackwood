@@ -115,6 +115,40 @@ step({ type: "disconnect", a: "S001-C01-E029", b: "S001-P-holt" });
   ok(go({ type: "connect", a: "S001-C04-E018", b: "S001-C04-E038" }) === "S001-D004", "S001-D004 not made with C02-E033 pinned");
 }
 
+// --- End to end: every series deduction can be made from evidence the built cases hold ---
+{
+  const all = new Set<string>();
+  for (const caseId of def.cases) {
+    const c = loadCase(caseId);
+    if (!c) continue;
+    for (const ev of c.evidence) all.add(ev.canonical ?? canonicalEvidence(caseId, ev.id));
+  }
+  let q: SeriesProgress = empty;
+  const pinned = new Set<string>();
+  const pin = (id: string) => {
+    if (pinned.has(id)) return;
+    q = reduceSeries(def, q, all, { type: "boardAdd", itemId: id, x: 5 + (pinned.size % 18) * 10, y: 5 + Math.floor(pinned.size / 18) * 10 }).progress;
+    pinned.add(id);
+  };
+  let made = 0;
+  for (const d of def.deductions) {
+    const items = [...d.connections.flat(), ...(d.pinned ?? []), ...(d.pinnedAny ?? []).map((g) => g[0])];
+    const fromCases = items.filter((i) => /^S\d{3}-C\d{2}-E\d{3}$/.test(i));
+    if (fromCases.some((i) => !loadCase(`${i.slice(0, 4)}${i.slice(5, 8)}`))) continue; // a case not built yet
+    for (const i of fromCases) ok(all.has(i), `${d.id}: ${i} is not evidence any built case holds`);
+    if (fromCases.some((i) => !all.has(i))) continue;
+    // A deduction that builds on one skipped above waits for that case too.
+    if (items.some((i) => !fromCases.includes(i) && !q.deductions.includes(i))) continue;
+    for (const i of items) pin(i);
+    const [a, b] = d.connections[0];
+    const r = reduceSeries(def, q, all, { type: "connect", a, b });
+    q = r.progress;
+    ok(q.deductions.includes(d.id), `${d.id} could not be made end to end with everything it needs pinned`);
+    if (q.deductions.includes(d.id)) made++;
+  }
+  console.log(`Series ${def.id}: ${made} of ${def.deductions.length} series deductions made end to end with the cases built so far.`);
+}
+
 if (problems.length) {
   console.error(`Series checks: ${problems.length} problem(s)`);
   for (const p of problems) console.error(" -", p);
