@@ -43,7 +43,9 @@ const price = (kind: string) => ({ sprite: 0.042, evidence: 0.042, portrait: 0.2
 export function ArtStudio({ rows: initial, keyNote }: { rows: StudioRow[]; keyNote: string | null }) {
   const [rows, setRows] = useState(initial);
   const [status, setStatus] = useState<Record<string, Status>>({});
-  const [running, setRunning] = useState<null | { done: number; total: number }>(null);
+  const [running, setRunning] = useState<null | { done: number; total: number; current: string }>(null);
+  const [stopNote, setStopNote] = useState<string | null>(null);
+  const stopNow = useRef<(() => void) | null>(null);
   const [filter, setFilter] = useState<"all" | "missing" | "review">("all");
   const [autoLive, setAutoLive] = useState(true);
   const stop = useRef(false);
@@ -74,13 +76,25 @@ export function ArtStudio({ rows: initial, keyNote }: { rows: StudioRow[]; keyNo
 
   const makeMany = async (list: StudioRow[], liveIfEmpty: boolean) => {
     stop.current = false;
-    setRunning({ done: 0, total: list.length });
+    setStopNote(null);
+    // Stop ends the run at once: nothing new is started, and the page stops waiting on the image in progress.
+    const stopped = new Promise<"stop">((resolve) => (stopNow.current = () => resolve("stop")));
+    let done = 0;
     for (let i = 0; i < list.length; i++) {
       if (stop.current) break;
-      await make(list[i], liveIfEmpty && !list[i].current);
-      setRunning({ done: i + 1, total: list.length });
+      setRunning({ done, total: list.length, current: list[i].id });
+      const r = await Promise.race([make(list[i], liveIfEmpty && !list[i].current), stopped]);
+      if (r === "stop") break;
+      done = i + 1;
     }
+    stopNow.current = null;
     setRunning(null);
+    if (stop.current)
+      setStopNote(`Stopped after ${done} of ${list.length}. The image that was being painted still finishes on the server and shows up here when it's done.`);
+  };
+  const halt = () => {
+    stop.current = true;
+    stopNow.current?.();
   };
 
   const choose = async (r: StudioRow, version: number | null) => {
@@ -94,6 +108,25 @@ export function ArtStudio({ rows: initial, keyNote }: { rows: StudioRow[]; keyNo
   return (
     <div className="mt-4">
       {keyNote ? <p className="mb-3 text-sm text-[#e2a7a2]">{keyNote}</p> : null}
+      {stopNote ? (
+        <p role="status" className="mb-3 text-sm text-paper">
+          {stopNote}
+        </p>
+      ) : null}
+      {running ? (
+        // Always on screen while a run is going, wherever you've scrolled.
+        <div role="status" className="fixed inset-x-3 bottom-3 z-50 mx-auto flex max-w-xl flex-wrap items-center gap-3 rounded-[2px] border border-brass/60 bg-[#14171a] px-4 py-3 shadow-2xl sm:inset-x-auto sm:right-4">
+          <div className="min-w-0 flex-1 text-sm">
+            <p className="text-paper">
+              Generating {running.done + 1} of {running.total}
+            </p>
+            <p className="truncate font-mono text-xs text-smoke">{running.current}</p>
+          </div>
+          <button type="button" onClick={halt} className="rounded-[2px] bg-[#e2a7a2] px-4 py-2 text-sm font-semibold text-ink hover:bg-[#f0c0bb]">
+            Stop
+          </button>
+        </div>
+      ) : null}
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
@@ -116,12 +149,9 @@ export function ArtStudio({ rows: initial, keyNote }: { rows: StudioRow[]; keyNo
           Generate all again
         </button>
         {running ? (
-          <span className="font-mono text-xs text-smoke" role="status">
-            {running.done} of {running.total} done.{" "}
-            <button type="button" className="text-brass underline-offset-4 hover:underline" onClick={() => (stop.current = true)}>
-              Stop after this one
-            </button>
-          </span>
+          <button type="button" onClick={halt} className="rounded-[2px] border border-[#e2a7a2] px-4 py-2 text-sm font-semibold text-[#e2a7a2] hover:bg-[#e2a7a2] hover:text-ink">
+            Stop generating
+          </button>
         ) : null}
         <label className="flex items-center gap-2 text-xs text-smoke">
           <input type="checkbox" checked={autoLive} onChange={(e) => setAutoLive(e.target.checked)} />
