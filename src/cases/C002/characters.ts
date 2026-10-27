@@ -588,7 +588,13 @@ export const questions: DialogueQuestion[] = [
   q("nora", "Later", "nora_letter2", "You said a second letter came.", [
     "Thursday morning. Postmarked San Bernardino again, Wednesday. It says they let her go, and it says how they did it: the shock, the tape, the orange juice.",
     "Somebody who wanted to make it up would have to know all that. Here. It's yours.",
-  ], { requires: { flag: "letter2_waiting" }, reveals: "Nora has given you the second letter from 'the crew'.", effects: [{ giveEvidence: "E10" }] }),
+  ], {
+    requires: { flag: "letter2_waiting" },
+    // She called you over for it, so she hands it over at once, whatever you ask first.
+    volunteer: { after: 0, reply: ["There you are. Here, the second letter. Postmarked San Bernardino again, Wednesday. It says they let her go, and it says how they did it: the shock, the tape, the orange juice.", "Somebody who wanted to make it up would have to know all that. It's yours."] },
+    reveals: "Nora has given you the second letter from 'the crew'.",
+    effects: [{ giveEvidence: "E10" }],
+  }),
   q("nora", "Later", "nora_hoax", "Your paper ran the hoax story.", [
     "My paper ran Ferris's press conference. On the front page, with my name under the other story on page four.",
     "I'd like to write the one that comes after it. Find me something.",
@@ -932,7 +938,7 @@ const KEYWORDS: Record<string, string> = {
   nora_crew: "do you believe there is a crew is it a gang professionals one man",
   nora_ferris: "what did the police say about the package ferris",
   nora_printed: "did you print the story did the paper run it article",
-  nora_letter2: "the second letter you said another letter came can I see the second letter",
+  nora_letter2: "the second letter you said another letter came can I see the second letter hand me the new letter they let her go released something else for me",
   nora_hoax: "your paper ran the hoax story front page staged",
   nora_oak: "oak terrace break in tape player crew same",
   howard_night: "did you see anything that night what did you see sunday night monday morning anything unusual",

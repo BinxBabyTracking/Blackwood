@@ -152,7 +152,7 @@ export async function interpretQuestion(
     const res = await fetch(`${API_BASE}/v1/messages`, {
       method: "POST",
       headers: headers(),
-      body: JSON.stringify({ model: MODEL, max_tokens: 220, temperature: 0.3, system, messages: [{ role: "user", content: user }] }),
+      body: JSON.stringify({ model: MODEL, max_tokens: 220, system, messages: [{ role: "user", content: user }] }),
       signal: AbortSignal.timeout(9000),
     });
     if (!res.ok) {

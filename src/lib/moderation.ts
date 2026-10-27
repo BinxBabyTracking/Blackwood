@@ -172,7 +172,7 @@ async function claudeSaysBlock(name: string): Promise<boolean | null> {
         "content-type": "application/json",
         ...(WORKSPACE ? { "anthropic-workspace-id": WORKSPACE } : {}),
       },
-      body: JSON.stringify({ model: MODEL, max_tokens: 5, temperature: 0, system: SYSTEM, messages: [{ role: "user", content: `Name: <<<${name}>>>` }] }),
+      body: JSON.stringify({ model: MODEL, max_tokens: 5, system: SYSTEM, messages: [{ role: "user", content: `Name: <<<${name}>>>` }] }),
       signal: AbortSignal.timeout(6000),
     });
     if (!res.ok) throw new Error(`Anthropic returned ${res.status}`);
