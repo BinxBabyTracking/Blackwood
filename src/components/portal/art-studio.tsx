@@ -21,7 +21,6 @@ type Status = { state: "idle" | "busy" | "done" | "error"; note?: string };
 const KIND: Record<string, string> = {
   background: "Scene",
   portrait: "Portrait",
-  face: "Talking frame",
   figure: "Figure",
   sprite: "Object",
   evidence: "Evidence",
