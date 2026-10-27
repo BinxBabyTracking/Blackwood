@@ -10,7 +10,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * OpenAI's image model (or uploaded), reviewed, and made live. A live version
  * replaces the committed painting in public/art for every player; the
  * committed one stays as the fallback. Files are kept in the private
- * "narration" bucket under art/ and served by /art/gen/<id>-<version>.webp.
+ * "art" bucket (art/<id>-<version>.webp) and served by /art/gen/<id>-<version>.webp.
  */
 
 type Kind = { size: string; quality: "low" | "medium" | "high"; background: "opaque" | "transparent"; suffix: string };
@@ -18,7 +18,7 @@ type ImageDef = { id: string; kind: string; subject: string; style?: string; suf
 const manifest = manifestJson as unknown as { style: string; styles?: Record<string, string>; kinds: Record<string, Kind>; people: Record<string, string>; images: ImageDef[] };
 const committed = (generated as { images: Record<string, { url: string }> }).images;
 
-const BUCKET = "narration";
+const BUCKET = "art";
 const API_BASE = (process.env.OPENAI_API_BASE ?? "https://api.openai.com").replace(/\/$/, "");
 const MODELS = process.env.OPENAI_IMAGE_MODEL ? [process.env.OPENAI_IMAGE_MODEL] : ["gpt-image-1.5", "gpt-image-1"];
 let modelIndex = 0;
