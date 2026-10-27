@@ -143,9 +143,37 @@ export const solution: CaseDefinition["solution"] = {
   weapon: "night_entry",
   location: "cabin14",
   standard: {
+    // One key item for every 5 or 6 pieces of evidence: 23 items, 4 key, up to 8 attached (Final Report Standard).
     minItems: 4,
-    maxItems: 6,
+    maxItems: 8,
     minKey: 4,
+    // What the report must show, as the player sees it. Neutral wording: none of it hints at the answer.
+    claims: [
+      {
+        id: "tie",
+        label: "Ties the person you name to the crime",
+        anyOf: ["E17", "E18", "E19", "E20"],
+        hint: "The case broke weeks later, somewhere else. Whatever was left behind there leads to a name.",
+      },
+      {
+        id: "why",
+        label: "Shows why it was done",
+        anyOf: ["E04", "E07", "E10"],
+        hint: "Read again what the letters themselves asked for.",
+      },
+      {
+        id: "how",
+        label: "Shows how it was done",
+        anyOf: ["E01", "E02", "E03", "E05", "E06", "E13", "E16", "E20", "E23"],
+        hint: "The bedroom on Elm Street, and what Tom and Laura were made to drink, still have more to say.",
+      },
+      {
+        id: "where",
+        label: "Shows where she was held",
+        anyOf: ["E08", "E09", "E12", "E13", "E14", "E15", "E18"],
+        hint: "Listen to what Laura heard while she was held, and follow the calls to where they came from.",
+      },
+    ],
     lines: [
       { id: "night", label: "The night at Elm Street", anyOf: ["E01", "E02", "E03", "E05", "E06", "E22", "E23"] },
       { id: "communications", label: "The letters, tapes and calls", anyOf: ["E04", "E07", "E08", "E09", "E10", "E19", "E20"] },

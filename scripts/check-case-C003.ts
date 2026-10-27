@@ -11,6 +11,7 @@
 import { newState, normalizeState, project, reduce, interviewCandidates, characterLocation } from "../src/game/engine/engine";
 import { bestMatch } from "../src/game/engine/matcher";
 import { questionsLeft } from "../src/game/engine/questions";
+import { fileUnder, reportStandardProblems } from "./report-helpers";
 import type { CaseDefinition, GameAction, InvestigationState, Theory } from "../src/game/engine/types";
 
 /** Everyday phrasings and the authored answer each should reach. */
@@ -332,9 +333,9 @@ export function checkC003(def: CaseDefinition, problems: string[]) {
   const report = project(def, s).conclusion;
   expect(report.available && report.choices.length === 6 && report.choices.find((c) => c.id === "attackers")?.multi, "report form wrong");
   expect(report.date === "October 2018", "report date");
-  const key = ["E05", "E26", "E13", "E30", "E28", "E04", "E22"];
+  const key = ["E05", "E26", "E13", "E30", "E28", "E04", "E22", "E11", "E18"];
   const T = (over: Partial<Theory>, evidence = key): Theory => ({
-    organizer: "voss", attackers: ["bell", "shaw"], motive: "documents", second_killer: "bell", second_motive: "witness", connection: "cover", evidence, ...over,
+    organizer: "voss", attackers: ["bell", "shaw"], motive: "documents", second_killer: "bell", second_motive: "witness", connection: "cover", evidence, ...fileUnder(def, evidence), ...over,
   } as Theory);
   const verdict = (th: Theory) => run({ type: "submitConclusion", theory: th });
   const shawToo = verdict(T({ second_killer: "bell_shaw" }));
@@ -343,11 +344,12 @@ export function checkC003(def: CaseDefinition, problems: string[]) {
   expect(vossOrdered.kind === "verdict" && !vossOrdered.correct, "a report saying Voss ordered the Marshes' deaths was accepted");
   const bellAlone = verdict(T({ attackers: ["bell"] }));
   expect(bellAlone.kind === "verdict" && !bellAlone.correct, "a report leaving Shaw out of Alder Street was accepted");
-  const noLink = verdict(T({}, ["E05", "E26", "E13", "E30", "E28", "E04"]));
+  const noLink = verdict(T({}, ["E05", "E26", "E13", "E30", "E28", "E04", "E11", "E18", "E25"]));
   expect(noLink.kind === "verdict" && !noLink.correct && noLink.note.includes("409 Alder Street"), `report without a tie to October 29 accepted or wrong note: ${noLink.kind === "verdict" ? noLink.note : ""}`);
   const twoLines = verdict(T({}, ["E05", "E26", "E13", "E30", "E14", "E02", "E06"]));
   expect(twoLines.kind === "verdict" && !twoLines.correct, "a report on two lines was accepted");
   expect(s.status === "active", "a returned report closed the case");
+  problems.push(...reportStandardProblems(def, s, { organizer: "voss", attackers: ["bell", "shaw"], motive: "documents", second_killer: "bell", second_motive: "witness", connection: "cover" }, key));
   const good = run({ type: "submitConclusion", theory: T({ attackers: ["shaw", "bell"] }), investigator: "Sam Calloway" });
   expect(good.kind === "verdict" && good.correct, `correct report returned: ${good.kind === "verdict" ? good.note : good.kind}`);
   expect(s.status === "closed", "case not closed");

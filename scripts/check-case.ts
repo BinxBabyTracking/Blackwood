@@ -11,6 +11,7 @@ import { bestMatch } from "../src/game/engine/matcher";
 import { credits, questionsLeft } from "../src/game/engine/questions";
 import { CASES as MATCH_CASES } from "./match-eval";
 import { checkC002 } from "./check-case-C002";
+import { fileUnder, reportStandardProblems } from "./report-helpers";
 import { checkC003 } from "./check-case-C003";
 import type { CaseDefinition, GameAction, InvestigationState, Theory } from "../src/game/engine/types";
 
@@ -349,28 +350,8 @@ if (id === "C001") {
 
   // ---- Step 8: final report and evaluation ----
   {
-    // Files each item under a point it proves (spreading them out), then fills any empty point with a spare item, as a player would.
-    const fileUnder = (evidence: string[]) => {
-      const claims = def.solution.standard.claims ?? [];
-      const out: Record<string, string[]> = Object.fromEntries(claims.map((c) => [`claim:${c.id}`, [] as string[]]));
-      const spare: string[] = [];
-      for (const id of evidence) {
-        const fits = claims.filter((c) => c.anyOf.includes(id)).sort((a, b) => out[`claim:${a.id}`].length - out[`claim:${b.id}`].length);
-        if (fits.length) out[`claim:${fits[0].id}`].push(id);
-        else spare.push(id);
-      }
-      for (const c of claims) {
-        if (out[`claim:${c.id}`].length) continue;
-        if (spare.length) out[`claim:${c.id}`].push(spare.shift()!);
-        else {
-          // Borrow from the fullest point, as a player short of proof would.
-          const donor = Object.values(out).sort((x, y) => y.length - x.length)[0];
-          if (donor && donor.length > 1) out[`claim:${c.id}`].push(donor.pop()!);
-        }
-      }
-      return out;
-    };
-    const T = (culprit: string, motive: string, weapon: string, location: string, evidence: string[]): Theory => ({ culprit, motive, weapon, location, evidence, ...fileUnder(evidence) });
+    const fileUnderC001 = (evidence: string[]) => fileUnder(def, evidence);
+    const T = (culprit: string, motive: string, weapon: string, location: string, evidence: string[]): Theory => ({ culprit, motive, weapon, location, evidence, ...fileUnderC001(evidence) });
     const submit = (st: InvestigationState, t: Theory) => reduce(def, st, { type: "submitConclusion", theory: t, investigator: "Sam Calloway" }, 2);
     const right = (ev: string[]) => T("daniel", "financial", "knife", "living_room", ev);
     const rejects = (st: InvestigationState, t: Theory, why: string) => {
@@ -442,6 +423,7 @@ if (id === "C001") {
     if (solutionText.some((x) => openView.includes(x)) || openView.includes("linkToSuspect")) problems.push("open view leaks the resolution or the standard");
   }
 
+  problems.push(...reportStandardProblems(def, s, { culprit: "daniel", motive: "financial", weapon: "knife", location: "living_room" }, ["E11", "E14", "E03", "E13", "E01"]));
   // conclusion
   const good = run({ type: "submitConclusion", theory: { culprit: "daniel", motive: "financial", weapon: "knife", location: "living_room", evidence: ["E11", "E14", "E03", "E13", "E01"], "claim:tie": ["E11", "E14"], "claim:why": ["E03"], "claim:how": ["E01"], "claim:story": ["E13"] }, investigator: "Sam Calloway" });
   if (good.kind !== "verdict" || !good.correct) problems.push("correct theory rejected");

@@ -10,6 +10,7 @@ import { newState, normalizeState, project, reduce, interviewCandidates, charact
 import { check } from "../src/game/engine/rules";
 import { bestMatch } from "../src/game/engine/matcher";
 import { questionsLeft } from "../src/game/engine/questions";
+import { fileUnder, reportStandardProblems } from "./report-helpers";
 import type { CaseDefinition, GameAction, InvestigationState } from "../src/game/engine/types";
 
 /** Everyday phrasings and the authored answer each should reach. */
@@ -284,11 +285,12 @@ export function checkC002(def: CaseDefinition, problems: string[]) {
   expect(check(def.reportAvailable, s), "report not available");
   const blank = reduce(def, newState(def), { type: "dismissIntro" }, 1).state;
   expect(!check(def.reportAvailable, blank), "report available at the start");
-  const tomTheory = run({ type: "submitConclusion", theory: { culprit: "tom", motive: "quarrel", weapon: "tom_drove", location: "garage", evidence: ["E05", "E22", "E21", "E04"] } });
+  const tomTheory = run({ type: "submitConclusion", theory: { culprit: "tom", motive: "quarrel", weapon: "tom_drove", location: "garage", evidence: ["E05", "E22", "E21", "E04"], ...fileUnder(def, ["E05", "E22", "E21", "E04"]) } });
   expect(tomTheory.kind === "verdict" && !tomTheory.correct, "the hoax theory was accepted");
-  const noLink = run({ type: "submitConclusion", theory: { culprit: "gordon", motive: "ransom", weapon: "night_entry", location: "cabin14", evidence: ["E03", "E23", "E12", "E14"] } });
+  const noLink = run({ type: "submitConclusion", theory: { culprit: "gordon", motive: "ransom", weapon: "night_entry", location: "cabin14", evidence: ["E03", "E23", "E12", "E04"], ...fileUnder(def, ["E03", "E23", "E12", "E04"]) } });
   expect(noLink.kind === "verdict" && !noLink.correct, "a report with nothing tying Gordon to the crime was accepted");
-  const good = run({ type: "submitConclusion", theory: { culprit: "gordon", motive: "ransom", weapon: "night_entry", location: "cabin14", evidence: ["E23", "E03", "E12", "E17", "E19", "E18"] }, investigator: "Sam Calloway" });
+  problems.push(...reportStandardProblems(def, s, { culprit: "gordon", motive: "ransom", weapon: "night_entry", location: "cabin14" }, ["E23", "E03", "E12", "E17", "E19", "E04"]));
+  const good = run({ type: "submitConclusion", theory: { culprit: "gordon", motive: "ransom", weapon: "night_entry", location: "cabin14", evidence: ["E23", "E03", "E12", "E17", "E19", "E04"], ...fileUnder(def, ["E23", "E03", "E12", "E17", "E19", "E04"]) }, investigator: "Sam Calloway" });
   expect(good.kind === "verdict" && good.correct, `correct report rejected: ${good.kind === "verdict" ? good.note : good.kind}`);
   expect(s.status === "closed", "case not closed");
   const closed = project(def, s);

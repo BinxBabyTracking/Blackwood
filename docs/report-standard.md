@@ -77,9 +77,16 @@ Each returned report costs 50 points on the leaderboard.
 
 ## Testing
 
-`npm run check:case -- CXXX` must cover: a fully supported report accepted; an empty point refused; proof filed under the wrong point pointed out; proof not yet found reported as still out there, with the hint on the second return. C001's checks in `scripts/check-case.ts` show the pattern (`fileUnder` files evidence as a player would).
+`npm run check:case -- CXXX` must cover: a fully supported report accepted; an empty point refused; proof filed under the wrong point pointed out; proof not yet found reported as still out there, with the hint on the second return. All of that is one call: `reportStandardProblems(def, state, rightAnswers, goodEvidence)` in `scripts/report-helpers.ts`, run on every point of the case. `fileUnder(def, evidence)` from the same file files evidence as a player would, for any other report a case's checks submit.
 
 ## Status
 
-- **C001:** converted (four points, 4 key, up to 6).
-- **C002 and C003:** to convert in their own chats: add `claims` with hints, and set `minKey` and `maxItems` from the table above.
+All three cases are converted (Oct 27, 2026):
+
+| Case | Points | Key | Attach up to |
+| --- | --- | --- | --- |
+| C001 | Ties them to that night; why; how it was done or covered up; tests their story | 4 | 6 |
+| C002 | Ties the person to the crime; why; how it was done; where she was held | 4 | 8 |
+| C003 | Places the people at the first shooting; why the first victims; who was behind it; ties the person to the second deaths; why the second victims; tests their story | 6 | 10 |
+
+A new case adds its `claims` (with hints) from the start and calls `reportStandardProblems` in its checks.

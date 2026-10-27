@@ -183,9 +183,49 @@ export const solution: CaseDefinition["solution"] = {
     connection: "cover",
   },
   standard: {
-    minItems: 5,
-    maxItems: 7,
-    minKey: 5,
+    // One key item for every 5 or 6 pieces of evidence: 32 items, 6 key, up to 10 attached (Final Report Standard).
+    minItems: 6,
+    maxItems: 10,
+    minKey: 6,
+    // What the report must show, as the player sees it. Neutral wording: none of it hints at the answer.
+    claims: [
+      {
+        id: "tie",
+        label: "Places the people you name at the first shooting, or ties them to that night",
+        anyOf: ["E04", "E05", "E25", "E26", "E27", "E28", "E29"],
+        hint: "Go back to Hart's, and to the ground under the tree on Alder Street.",
+      },
+      {
+        id: "why",
+        label: "Shows why the first victims were attacked",
+        anyOf: ["E08", "E09", "E10", "E11", "E12", "E15", "E16"],
+        hint: "Follow what Ethan was carrying, and where the original paperwork is kept.",
+      },
+      {
+        id: "behind",
+        label: "Shows who was behind the first attack",
+        anyOf: ["E13", "E14", "E30"],
+        hint: "Follow the money between the developer and the security company.",
+      },
+      {
+        id: "second",
+        label: "Ties the person you name to the second deaths",
+        anyOf: ["E21", "E22", "E25", "E31", "E32"],
+        hint: "Find where that vehicle went on the night of October 29, and what was thrown away afterward.",
+      },
+      {
+        id: "second_why",
+        label: "Shows why the second victims were killed",
+        anyOf: ["E07", "E17", "E18", "E24"],
+        hint: "Vivian wrote things down. Look at what she left at home.",
+      },
+      {
+        id: "story",
+        label: "Tests the story they told: an alibi, a timeline or a statement",
+        anyOf: ["E04", "E25", "E26", "E28", "E29"],
+        hint: "Check what each man says he was doing against the records of where he actually was.",
+      },
+    ],
     lines: [
       { id: "physical", label: "Physical and forensic", anyOf: ["E01", "E02", "E05", "E06", "E19", "E20", "E21", "E27", "E32"] },
       { id: "documents", label: "Documents and money", anyOf: ["E08", "E09", "E10", "E11", "E12", "E13", "E14", "E15", "E16", "E25", "E26", "E30"] },
