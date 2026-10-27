@@ -39,6 +39,20 @@ for (const def of Object.values(SERIES_DEFS)) {
     for (const [a, b] of d.connections) ok(a !== b, `${d.id}: a connection ties an item to itself`);
   });
   for (const c of Object.keys(def.notebook)) ok(def.cases.includes(c), `${def.id}: notebook entry for ${c}, not in the series`);
+  // Every built case closes with its own notebook entry, word for word, and points at this series.
+  for (const caseId of def.cases) {
+    const c = loadCase(caseId);
+    if (!c) continue;
+    const s = c.solution.resolution.series;
+    ok(s?.seriesId === def.id, `${caseId}: resolution.series missing or not ${def.id}`);
+    const entry = def.notebook[caseId];
+    ok(entry, `${caseId}: no notebook entry in defs.ts`);
+    if (s && entry) ok(s.title === entry.title && s.text === entry.text, `${caseId}: closing notebook text differs from defs.ts`);
+    ok(caseId === def.cases[def.cases.length - 1] ? s?.finale === true : !s?.finale, `${caseId}: only the last case is the finale`);
+    // The rolling board stands in the office from the second case on.
+    const office = c.locations.find((l) => l.id === "office");
+    if (caseId !== def.cases[0]) ok(office?.hotspots.some((h) => h.interaction.type === "panel" && h.interaction.panel === "rolling"), `${caseId}: no rolling board in the office`);
+  }
 }
 ok(canonicalEvidence("S001C01", "E011") === "S001-C01-E011", "canonicalEvidence");
 

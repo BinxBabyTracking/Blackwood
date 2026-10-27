@@ -51,6 +51,18 @@ export const SERIES_DEFS: Record<string, SeriesDef> = {
         title: "The Judas Principle",
         text: "The Keller investigation is closed, but the financial records point beyond Carroway. Meridian Advisory Group appears again and again in transactions nobody has explained.\n\nThe murder has been solved. The larger investigation has not.",
       },
+      S001C02: {
+        title: "The Judas Principle",
+        text: "The money trail from Carroway has led to something more troubling.\n\nMeridian Advisory Group is not simply moving funds. Someone is collecting secrets.\n\nAnd someone above the people we've identified is giving instructions.",
+      },
+      S001C03: {
+        title: "The Judas Principle",
+        text: "Three investigations. Three different crimes. Stolen money in Carroway. Blackmail and a kidnapping in Washington. A dead checker on the Baltimore docks.\n\nThe names change. The businesses change. But the same connections keep appearing: the same consulting firm, the same Pittsburgh suite, the same files on the same kind of people.\n\nThe men we have put away gave the orders we could see. Each of them answered to a channel, and the channel answered to someone none of them was allowed to name.\n\nFor the first time, we have a word for whoever is directing them. The Architect.",
+      },
+      S001C05: {
+        title: "The Judas Principle",
+        text: "We followed the money. We found the people collecting secrets. We found the people willing to kill to protect the operation. Then we found out that someone had been feeding us the evidence.\n\nNow we know who stood to benefit. Dr. Evelyn Lockhart. The woman who sent us our first lead. The woman who stood beside us while we exposed everyone around her.\n\nWe can see the structure. We can see her hand on it. But influence isn't proof of murder, and a name in a lawyer's index isn't an order.\n\nIf we're going to bring her down, we need more than a theory.",
+      },
     },
     deductions: [
       {
