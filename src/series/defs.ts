@@ -67,6 +67,10 @@ export const SERIES_DEFS: Record<string, SeriesDef> = {
         title: "The Judas Principle",
         text: "We followed the money. We found the people collecting secrets. We found the people willing to kill to protect the operation. Then we found out that someone had been feeding us the evidence.\n\nNow we know who stood to benefit. Dr. Evelyn Lockhart. The woman who sent us our first lead. The woman who stood beside us while we exposed everyone around her.\n\nWe can see the structure. We can see her hand on it. But influence isn't proof of murder, and a name in a lawyer's index isn't an order.\n\nIf we're going to bring her down, we need more than a theory.",
       },
+      S001C06: {
+        title: "The Judas Principle",
+        text: "Six investigations. Six cases that began in different places: an accountant killed over a ledger in Carroway, a contractor taken from a hotel room in Washington, a dockworker killed for asking questions in Baltimore, an informant who found she was being used, a financial adviser killed for following the money, and a records keeper who held the original orders.\n\nWe followed the evidence every time, and every time it was true. We were right about who did each thing. What we did not see was that someone had chosen where each trail began.\n\nEvelyn Lockhart built the network and ran it from the top of a paper system only she could sign. When three of her own people became a danger to her, she did not silence them. She handed us the truth about them, in the order that suited her, and let us do the rest. Then she tried to burn the one record that pointed up, and to take back the man who kept a copy.\n\nThe record survived, because he kept it honestly, and because we found him first. It proves what she commanded and what she concealed. It does not prove she ordered the killings, and we have not said she did. The men who killed are the men who killed.\n\nShe gave us the truth because it served her. She believed it would never reach her. It did.\n\nSeries S001 is closed.",
+      },
     },
     deductions: [
       {
