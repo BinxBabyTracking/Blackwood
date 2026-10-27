@@ -30,6 +30,8 @@ export function check(c: Condition | undefined, s: InvestigationState): boolean 
   if ("deliveryOpened" in c) return s.openedDeliveries.includes(c.deliveryOpened);
   if ("labStarted" in c) return Boolean(s.labs?.[c.labStarted]);
   if ("labReady" in c) return Boolean(s.labs?.[c.labReady]?.done);
+  if ("chapter" in c) return (s.chapters?.current ?? 1) >= c.chapter;
+  if ("chapterDone" in c) return Boolean(s.chapters?.completed.some((r) => r.number === c.chapterDone));
   if ("always" in c) return true;
   return false;
 }

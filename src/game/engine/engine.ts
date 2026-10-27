@@ -44,6 +44,8 @@ import type {
   Theory,
 } from "./types";
 
+import { acknowledgeChapter, chapterView, newChapters, objectiveChapter, runChapters } from "./chapters";
+
 const IDLE_CAP_MS = 5 * 60 * 1000;
 const MAX_NOTES = 20000;
 
@@ -94,6 +96,7 @@ export function newState(def: CaseDefinition, now = Date.now()): InvestigationSt
     activeSeconds: 0,
     lastActionAt: now,
     closedAt: null,
+    chapters: newChapters(def, { evidence: [], deductions: [], unlocked: [] }),
   };
 }
 
@@ -539,7 +542,7 @@ export function heldNow(s: InvestigationState): CaptivityState | null {
 
 /** What a captive can do: look around, move between the captive scenes, and keep their own notes. */
 const CAPTIVE_ACTIONS = new Set<GameAction["type"]>([
-  "dismissIntro", "travel", "hotspot", "collect", "checkLabs", "saveNotes", "saveEvidenceNote", "setNarration", "setVoices", "dismissMessages",
+  "dismissIntro", "travel", "hotspot", "collect", "checkLabs", "saveNotes", "saveEvidenceNote", "setNarration", "setVoices", "dismissMessages", "chapterContinue",
 ]);
 
 /** Ends the captivity once its end condition holds: everyone back together, the captive's finds in the shared file. */
@@ -1008,6 +1011,11 @@ function step(
       s.messages = [];
       break;
 
+    case "chapterContinue":
+      // The checkpoint was saved when the chapter ended; this only moves one screen on.
+      acknowledgeChapter(s, ctx.seat ?? "host", now);
+      break;
+
     case "saveReport": {
       if (!check(def.reportAvailable, s)) fail("You are not ready to write the final report yet.");
       const d = action.draft ?? { evidence: [] };
@@ -1111,6 +1119,13 @@ function finish(s: InvestigationState, def: CaseDefinition) {
   runBoardHint(s, def);
   // New discoveries can give a reason to question someone again.
   for (const note of runReinterviews(def, s)) s.messages.push(note);
+  // A chapter that this action completed is closed in the same save; its effects can move the story on.
+  if (runChapters(s, def)) {
+    runEvents(s, def);
+    runContradictions(s, def);
+    runDemeanor(s, def);
+    for (const note of runReinterviews(def, s)) s.messages.push(note);
+  }
 }
 
 /** Lab results come back once their time is up, checked on every action. */
@@ -1268,6 +1283,13 @@ export function progressOf(def: CaseDefinition, s: InvestigationState) {
  * scenes and finds, and nobody else sees those until it is over.
  */
 export function project(def: CaseDefinition, state: InvestigationState, now = Date.now(), ctx: SeatContext = {}): ClientView {
+  const v = projectSeat(def, state, now, ctx);
+  // Each screen sees its own checkpoint screen; everything else about chapters is shared.
+  v.chapter = chapterView(def, state, ctx.seat ?? "host", now);
+  return v;
+}
+
+function projectSeat(def: CaseDefinition, state: InvestigationState, now: number, ctx: SeatContext): ClientView {
   const seat = ctx.seat ?? "host";
   const cap = heldNow(state);
   if (!cap) return projectState(def, state, now, null);
@@ -1366,7 +1388,11 @@ function projectState(def: CaseDefinition, s: InvestigationState, now: number, c
       const d = def.deductions.find((x) => x.id === id)!;
       return { id: d.id, title: d.title, text: d.text };
     }),
-    objectives: def.objectives.filter((o) => check(o.visible, s)).map((o) => ({ id: o.id, text: o.text, done: check(o.done, s) })),
+    objectives: def.objectives
+      .map((o) => ({ o, ch: objectiveChapter(def, o.id) }))
+      // In a case with chapters, a later chapter's objectives stay hidden until it opens.
+      .filter(({ o, ch }) => check(o.visible, s) && (!ch || ch.chapter <= (s.chapters?.current ?? 1)))
+      .map(({ o, ch }) => ({ id: o.id, text: o.text, done: check(o.done, s), ...(ch ? { chapter: ch.chapter, optional: ch.optional } : {}) })),
     board: s.board,
     phone: {
       mobile: mobile(def),
@@ -1491,6 +1517,7 @@ function projectState(def: CaseDefinition, s: InvestigationState, now: number, c
     },
     captivity,
     // The solution, the reconstruction and Bennett's response exist in the view only once the case is closed.
+    chapter: null,
     closure: s.status === "closed" ? { ...def.solution.resolution, final: s.report.final, closedAt: s.closedAt } : null,
   };
 }

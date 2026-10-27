@@ -5,7 +5,8 @@
  * them behaves as before. Run: npx tsx --conditions=react-server scripts/check-engine.ts
  */
 import { C002 } from "../src/cases/C002";
-import { newState, project, reduce, GameError } from "../src/game/engine/engine";
+import { newState, normalizeState, project, reduce, GameError } from "../src/game/engine/engine";
+import { check } from "../src/game/engine/rules";
 import { evaluateReport, reportProblem } from "../src/game/engine/evaluation";
 import { fileUnder } from "./report-helpers";
 import type { CaseDefinition, GameAction, InvestigationState } from "../src/game/engine/types";
@@ -234,6 +235,76 @@ def.solution = { ...right, answers: { culprit: [right.culprit!, "tom"], motive: 
   const photoDef: CaseDefinition = { ...def };
   const pv = project(photoDef, { ...s, photos: [{ id: "PH_x", hotspotId: "x", locationId: s.location, title: "Desk", text: "A desk.", image: "", at: 1 }] }, 10);
   expect(pv.evidence.some((e) => e.label === "S1" && e.title === "Sketch: Desk"), "a sketch is still called a photo");
+}
+
+// --- Chapters (added for C006) ---------------------------------------------------------------
+{
+  expect(project(C002, started(C002), 10).chapter === null, "a case without chapters shows chapters");
+  const def: CaseDefinition = structuredClone(C002);
+  def.objectives = [
+    ...def.objectives,
+    { id: "ch1_main", text: "Finish the first part.", visible: { always: true }, done: { flag: "part_a" } },
+    { id: "ch1_side", text: "A side lead.", visible: { always: true }, done: { flag: "side" } },
+    { id: "ch2_main", text: "Finish the second part.", visible: { always: true }, done: { flag: "part_b" } },
+  ];
+  def.chapters = [
+    { number: 1, title: "Alpha Title", intro: "First.", objectives: ["ch1_main"], optional: ["ch1_side"], conclusion: "Alpha ends.", summary: "Alpha done.", onComplete: [{ setFlag: "alpha_closed" }] },
+    { number: 2, title: "Beta Title", intro: "Second.", objectives: ["ch2_main"], conclusion: "Beta ends.", summary: "Beta done." },
+    { number: 3, title: "Gamma Secret Title", intro: "Third.", objectives: [], conclusion: "Gamma ends.", summary: "Gamma done." },
+  ];
+  const step = (s: InvestigationState, a: GameAction, at: number, seat?: string) => reduce(def, s, a, at, seat ? { seat } : {}).state;
+  let s = started(def);
+  let v = project(def, s, 10);
+  expect(v.chapter?.number === 1 && v.chapter.title === "Alpha Title" && v.chapter.checkpoint === null, "chapter 1 is not open at the start");
+  expect(!JSON.stringify(v).includes("Beta Title") && !JSON.stringify(v).includes("Gamma Secret Title"), "a later chapter's title reached the browser");
+  expect(!v.objectives.some((o) => o.id === "ch2_main"), "a later chapter's objective is shown");
+  expect(v.objectives.find((o) => o.id === "ch1_side")?.optional === true, "an optional objective is not marked");
+
+  s.flags.push("side");
+  s = step(s, { type: "dismissMessages" }, 20);
+  expect(s.chapters!.completed.length === 0, "an optional objective completed the chapter");
+
+  s.evidence.push(def.evidence[0].id);
+  s.flags.push("part_a");
+  const before = s;
+  s = step(s, { type: "dismissMessages" }, 30);
+  expect(s.chapters!.current === 2 && s.chapters!.completed.length === 1, "finishing the objectives did not complete chapter 1");
+  expect(s.chapters!.completed[0].evidence.includes(def.evidence[0].id), "the checkpoint did not count the chapter's evidence");
+  expect(s.flags.includes("alpha_closed"), "the chapter's completion effects did not apply");
+  expect(s.notebook.some((n) => n.id === "chapter:1"), "the chapter is not in the notebook");
+  // Two screens finishing it at once: the second is applied to the first's save, and completes nothing more.
+  const again = step(s, { type: "dismissMessages" }, 31);
+  expect(again.chapters!.completed.length === 1, "chapter 1 was completed twice");
+  const raced = step(step(before, { type: "dismissMessages" }, 30), { type: "dismissMessages" }, 32);
+  expect(raced.chapters!.completed.length === 1, "a retried save completed the chapter twice");
+
+  v = project(def, s, 40);
+  expect(v.chapter?.checkpoint?.number === 1 && v.chapter.checkpoint.next?.title === "Beta Title", "the checkpoint screen is missing or has no next chapter");
+  expect(!JSON.stringify(v).includes("Gamma Secret Title"), "the chapter after next reached the browser");
+  expect(v.objectives.some((o) => o.id === "ch2_main"), "chapter 2's objective is not shown once it opens");
+  expect(check({ chapter: 2 }, s) && !check({ chapter: 3 }, s) && check({ chapterDone: 1 }, s), "chapter conditions are wrong");
+  expect(project(def, s, 40, { seat: "guest1" }).chapter?.checkpoint?.number === 1, "a guest at the table did not get the checkpoint");
+  expect(project(def, s, 40 + 60 * 60 * 1000, { seat: "late" }).chapter?.checkpoint === null, "a guest who sat down later was shown an old checkpoint");
+
+  s = step(s, { type: "chapterContinue" }, 50);
+  expect(project(def, s, 60).chapter?.checkpoint === null, "Continue did not move the host on");
+  expect(project(def, s, 60, { seat: "guest1" }).chapter?.checkpoint?.number === 1, "one screen's Continue moved another screen on");
+  s = step(s, { type: "chapterContinue" }, 70, "guest1");
+  expect(project(def, s, 80, { seat: "guest1" }).chapter?.checkpoint === null, "a guest's Continue did not move them on");
+
+  s.flags.push("part_b");
+  s = step(s, { type: "dismissMessages" }, 90);
+  expect(s.chapters!.current === 3 && s.chapters!.completed.length === 2, "chapter 2 did not complete");
+  s = step(s, { type: "chapterContinue" }, 95);
+  s = step(s, { type: "dismissMessages" }, 100);
+  expect(s.chapters!.completed.length === 2, "the last chapter completed without the report");
+  s.status = "closed";
+  s = step(s, { type: "dismissMessages" }, 110);
+  expect(s.chapters!.completed.length === 3 && project(def, s, 120).chapter?.checkpoint === null, "the last chapter is not recorded quietly when the case closes");
+
+  const old = { ...started(def) } as InvestigationState;
+  delete old.chapters;
+  expect(normalizeState(def, old).chapters?.current === 1, "an older save did not get chapter 1");
 }
 
 if (problems.length) {

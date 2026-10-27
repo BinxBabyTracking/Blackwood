@@ -39,6 +39,10 @@ export type Condition =
   | { labStarted: string }
   /** A lab test's results are back. */
   | { labReady: string }
+  /** The investigation has reached this chapter, or a later one. */
+  | { chapter: number }
+  /** This chapter has been completed. */
+  | { chapterDone: number }
   | { always: true };
 
 /** Reactive event lifecycle. An event with no recorded state is "locked". */
@@ -656,6 +660,31 @@ export interface CaptivityDef {
   aloneMessage: string;
 }
 
+/**
+ * One chapter of a long case (C006 onward). Chapters are milestones in one
+ * continuous investigation: nothing is reset between them, every place stays
+ * open unless a story event closes it, and the board and interviews carry on.
+ * Content for a later chapter is gated with the `chapter` condition.
+ */
+export interface ChapterDef {
+  /** 1, 2, 3... in order. */
+  number: number;
+  title: string;
+  /** Shown as the chapter opens. Spoiler-safe. */
+  intro: string;
+  /** The chapter's primary objectives (ObjectiveDef ids), listed under it in the notebook. */
+  objectives: string[];
+  /** Optional lines of inquiry (ObjectiveDef ids), shown but not needed to finish the chapter. */
+  optional?: string[];
+  /** When the chapter is complete. Defaults to every primary objective done. The last chapter ends with the accepted report. */
+  complete?: Condition;
+  /** The closing line on the checkpoint screen, e.g. "But one question remains...". Spoiler-safe. */
+  conclusion: string;
+  /** One or two spoiler-safe sentences for the checkpoint screen and the notebook. */
+  summary: string;
+  onComplete?: Effect[];
+}
+
 export interface CaseDefinition {
   id: string;
   title: string;
@@ -730,6 +759,8 @@ export interface CaseDefinition {
   comparisons?: ComparisonDef[];
   /** The investigator is lured somewhere and held; see CaptivityDef. */
   captivity?: CaptivityDef;
+  /** A long case told in chapters, each ending in a checkpoint; see ChapterDef. */
+  chapters?: ChapterDef[];
 }
 
 /** Words the interface uses. Every case gets the defaults in `src/game/words.ts` unless it supplies its own. */
@@ -969,6 +1000,30 @@ export interface InvestigationState {
   closedAt: number | null;
   /** The investigator held by the case's captivity, once someone has gone. */
   captivity?: CaptivityState;
+  /** Chapter progress, in a case with chapters. */
+  chapters?: ChapterState;
+}
+
+/** A completed chapter: when, and what it added. */
+export interface ChapterRecord {
+  number: number;
+  at: number;
+  /** Total investigation time when it was completed. */
+  activeSeconds: number;
+  /** Evidence, deductions and places gained during the chapter. */
+  evidence: string[];
+  deductions: string[];
+  unlocked: string[];
+}
+
+export interface ChapterState {
+  /** The chapter now open. */
+  current: number;
+  completed: ChapterRecord[];
+  /** The latest checkpoint screen each seat ("host" or a guest id) has moved on from. */
+  seen: Record<string, number>;
+  /** What was in hand when the open chapter began, to count what it added. */
+  start: { evidence: string[]; deductions: string[]; unlocked: string[] };
 }
 
 /** Who is held, how, and where they are. Their location is theirs alone; `location` stays the table's. */
@@ -1080,6 +1135,8 @@ export type GameAction =
   | { type: "setNarration"; enabled: boolean }
   | { type: "setVoices"; enabled: boolean }
   | { type: "dismissMessages" }
+  /** Moves this screen on from a chapter's checkpoint screen. The checkpoint itself is already saved. */
+  | { type: "chapterContinue" }
   /** A rescuer takes the place of a captive whose screen has gone quiet, keeping every step they made. */
   | { type: "takeCaptiveRole" }
   /** The captive, with nobody left at the table, finishes alone. */
@@ -1190,6 +1247,32 @@ export interface ClientDevelopment {
   note: { title: string; text: string } | null;
 }
 
+/** What the browser knows about the case's chapters. Later chapters are never named, except the next one on a checkpoint screen. */
+export interface ClientChapter {
+  number: number;
+  title: string;
+  intro: string;
+  total: number;
+  /** The open chapter is the last and the case is closed. */
+  done: boolean;
+  /** Total investigation time so far. */
+  activeSeconds: number;
+  past: { number: number; title: string; summary: string }[];
+  /** A completed chapter whose checkpoint screen this screen has yet to see. */
+  checkpoint: {
+    number: number;
+    title: string;
+    conclusion: string;
+    summary: string;
+    activeSeconds: number;
+    evidence: number;
+    deductions: number;
+    /** Names of the places opened during the chapter. */
+    locations: string[];
+    next: { number: number; title: string; intro: string } | null;
+  } | null;
+}
+
 export interface ClientView {
   caseId: string;
   title: string;
@@ -1222,7 +1305,8 @@ export interface ClientView {
   timeline: InvestigationState["timeline"];
   playerNotes: string;
   deductions: { id: string; title: string; text: string }[];
-  objectives: { id: string; text: string; done: boolean }[];
+  /** In a case with chapters, `chapter` says which chapter an objective belongs to and `optional` marks a side line of inquiry. */
+  objectives: { id: string; text: string; done: boolean; chapter?: number; optional?: boolean }[];
   board: InvestigationState["board"];
   phone: {
     /** The investigator carries a phone: it rings anywhere, and contacts can be called from anywhere. */
@@ -1323,6 +1407,8 @@ export interface ClientView {
     canTakeOver: boolean;
     canGoAlone: boolean;
   } | null;
+  /** Chapters, in a case told in chapters; null otherwise. */
+  chapter: ClientChapter | null;
   /** Only present once the case is closed. */
   closure: (SolutionDef["resolution"] & { final: FinalReport | null; closedAt: number | null }) | null;
 }

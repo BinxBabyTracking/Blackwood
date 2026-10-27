@@ -86,6 +86,7 @@ async function Desk({ params }: { params: Promise<{ caseId: string }> }) {
         initial={respond(def, state).view}
         investigator={me.profile.display_name ?? "Investigator"}
         reviewed={reviewed}
+        lastPlayed={loaded.updatedAt}
         party={party ? { label: `${party.group_name || "Joint investigation"} · ${seated} at the table`, guest: false, stamp: loaded.updatedAt } : undefined}
         prefs={{
           reducedMotion: settings?.reduced_motion ?? false,

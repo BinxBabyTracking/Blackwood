@@ -13,6 +13,7 @@ import { EvidenceInspection } from "./evidence-inspection";
 import { EvidenceInventory } from "./evidence-inventory";
 import { ExplorationScene } from "./exploration-scene";
 import { CaseResolution } from "./case-resolution";
+import { ChapterOpening, CheckpointScreen, ResumeScreen } from "./chapter-screens";
 import { ReportDialog } from "./feedback-forms";
 import { FinalReport } from "./final-report";
 import {
@@ -79,7 +80,10 @@ export function InvestigationShell({
   investigator,
   party,
   reviewed = false,
+  lastPlayed = null,
 }: {
+  /** When the save last changed, for the resume screen of a case told in chapters. */
+  lastPlayed?: string | null;
   /** This investigator already sent a review of the case. */
   reviewed?: boolean;
   caseId: string;
@@ -117,6 +121,10 @@ export function InvestigationShell({
     }, 600);
   };
   const [view, setViewState] = useState(initial);
+  /** Coming back to a case told in chapters: where things stand, before carrying on. */
+  const [resuming, setResuming] = useState(() => Boolean(initial.chapter && initial.introSeen && initial.status === "active" && !initial.chapter.checkpoint));
+  /** The chapter that has just opened, shown as a title card. */
+  const [opening, setOpening] = useState<{ number: number; title: string; intro: string } | null>(null);
   /** When each lab test's results are due, by this browser's clock. */
   const [labDue, setLabDue] = useState<Record<string, number>>(() => Object.fromEntries(initial.labs.map((l) => [l.id, Date.now() + l.remainingMs])));
   /** Evidence collected since the page loaded, waiting to be shown with the COLLECTED stamp. */
@@ -482,6 +490,7 @@ export function InvestigationShell({
       <div className="flex shrink-0 items-center justify-between gap-3 bg-[#0d1013] px-3 py-1.5 text-xs">
         <p className="truncate font-mono text-paper/70">
           <span className="text-brass">{view.caseId}</span> {view.title}
+          {view.chapter ? <span className="hidden text-paper/70 lg:inline"> · Chapter {view.chapter.number}: {view.chapter.title}</span> : null}
           {view.caseStatus ? <span className="hidden text-fault md:inline"> · {view.caseStatus}</span> : null}
           <span className="hidden sm:inline">
             {" "}
@@ -747,6 +756,37 @@ export function InvestigationShell({
             const r = await dispatch({ type: "dismissIntro" });
             if (r) dispatch({ type: "readDocument", documentId: "casefile" });
           }}
+        />
+      ) : null}
+
+      {view.chapter?.checkpoint && view.introSeen && view.status === "active" ? (
+        <CheckpointScreen
+          chapter={view.chapter}
+          pending={pending}
+          onContinue={async () => {
+            const next = view.chapter?.checkpoint?.next ?? null;
+            const r = await dispatch({ type: "chapterContinue" });
+            if (r && next) setOpening(next);
+          }}
+          onExit={async () => {
+            // The checkpoint is already saved; this only marks the screen as seen before leaving.
+            await dispatch({ type: "chapterContinue" });
+            window.location.href = guest ? "/party/leave" : "/agency/cases";
+          }}
+        />
+      ) : null}
+      {opening && !view.chapter?.checkpoint ? <ChapterOpening chapter={opening} onBegin={() => setOpening(null)} /> : null}
+      {resuming && view.chapter && !view.chapter.checkpoint && !opening ? (
+        <ResumeScreen
+          chapter={view.chapter}
+          location={view.location.name}
+          lastPlayed={lastPlayed}
+          onResume={() => setResuming(false)}
+          onNotebook={() => {
+            setResuming(false);
+            setLayer({ k: "panel", panel: "notebook" });
+          }}
+          exitHref={guest ? "/party/leave" : "/agency/cases"}
         />
       ) : null}
 
