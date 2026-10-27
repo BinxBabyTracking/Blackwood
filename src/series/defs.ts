@@ -59,6 +59,10 @@ export const SERIES_DEFS: Record<string, SeriesDef> = {
         title: "The Judas Principle",
         text: "Three investigations. Three different crimes. Stolen money in Carroway. Blackmail and a kidnapping in Washington. A dead checker on the Baltimore docks.\n\nThe names change. The businesses change. But the same connections keep appearing: the same consulting firm, the same Pittsburgh suite, the same files on the same kind of people.\n\nThe men we have put away gave the orders we could see. Each of them answered to a channel, and the channel answered to someone none of them was allowed to name.\n\nFor the first time, we have a word for whoever is directing them. The Architect.",
       },
+      S001C04: {
+        title: "The Judas Principle",
+        text: "We thought we were following the evidence.\n\nThe evidence was real. The crimes were real.\n\nBut someone chose which truths we would see.\n\nSomeone wanted Adrian Holt exposed. Someone wanted Julian Rourke exposed. Someone wanted Gideon Kane exposed.\n\nAnd we helped them.\n\nThe question is no longer just who runs Meridian. It's why they wanted us to find everyone else.",
+      },
       S001C05: {
         title: "The Judas Principle",
         text: "We followed the money. We found the people collecting secrets. We found the people willing to kill to protect the operation. Then we found out that someone had been feeding us the evidence.\n\nNow we know who stood to benefit. Dr. Evelyn Lockhart. The woman who sent us our first lead. The woman who stood beside us while we exposed everyone around her.\n\nWe can see the structure. We can see her hand on it. But influence isn't proof of murder, and a name in a lawyer's index isn't an order.\n\nIf we're going to bring her down, we need more than a theory.",
