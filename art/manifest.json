@@ -5344,6 +5344,48 @@
       "kind": "evidence",
       "style": "c006",
       "subject": "A short typed expert opinion letter on medical examiner letterhead beside a plaster cast of a straight metal edge."
+    },
+    {
+      "id": "s001_cover",
+      "kind": "site",
+      "style": "s001",
+      "subject": "A private investigator's office at night, lit by one green-shaded desk lamp. In the middle-right of the frame stands a large cork board on a wheeled black metal frame with casters, covered in pinned documents, photographs, receipts and index cards, joined by red string into six separate clusters that all run toward one empty spot in the center of the board where a single pushpin holds nothing. On the desk in front of it, a small scattered pile of old tarnished silver coins catches the lamplight. Rain streaks a tall window behind, with the faint lights of a city. The left third of the image is quiet dark office wall and shadow. No readable text. Keep the main subject between the center and the right side of the frame so it still reads when cropped to a square."
+    },
+    {
+      "id": "s001_c01_cover",
+      "kind": "site",
+      "style": "s001",
+      "subject": "A small-town Pennsylvania nonprofit's office on a rainy November night, seen through a second-floor window of an old brick building. Inside, one desk lamp is still on. The desk is in disarray: a drawer pulled out and forced, papers scattered on the floor, a filing cabinet hanging open, and a clean empty rectangle in the dust on the desk where a heavy ornament used to sit. On a bookshelf behind, one thick old accounting reference book sits slightly out of line with the others. Below the window, in the wet rear parking lot, a service door stands ajar and a plain white contractor's van idles with its lights off. The left third of the image is quiet dark brick and rain. No people. No readable text. Keep the main subject between the center and the right side of the frame so it still reads when cropped to a square."
+    },
+    {
+      "id": "s001_c02_cover",
+      "kind": "site",
+      "style": "s001",
+      "subject": "The sixth-floor corridor of an upscale Washington, D.C. hotel late at night, patterned carpet and brass wall sconces. In the middle-right, a guest room door stands open a few inches, warm light spilling out; through the gap you can see a suitcase still zipped on a luggage rack and a smartphone glowing face-up on a bedside table. The brass room number on the door reads exactly \"614\", printed exactly as written. At the far end of the corridor, a plain gray service door is propped open with a rubber wedge, a dim service elevator beyond. The left third of the image is quiet dark corridor wall and shadow. No people. The only readable text is \"614\". Keep the main subject between the center and the right side of the frame so it still reads when cropped to a square."
+    },
+    {
+      "id": "s001_c03_cover",
+      "kind": "site",
+      "style": "s001",
+      "subject": "A Baltimore shipping container terminal at night in harbor fog. Towering gantry cranes fade into the mist above stacks of rust-red, blue and gray containers lit by sodium-orange floodlights. In the middle-right, in a narrow lane between two container stacks, a yellow hard hat lies upturned on the wet asphalt beside a tipped-over clipboard, and a heavy steel cargo bar leans against a container wall. One container door at the end of the lane stands slightly open, a sliver of light inside. The left third of the image is quiet fog, dark water and distant crane lights. No people. No readable text. Keep the main subject between the center and the right side of the frame so it still reads when cropped to a square."
+    },
+    {
+      "id": "s001_c04_cover",
+      "kind": "site",
+      "style": "s001",
+      "subject": "A quiet cafe in Old Town Alexandria, Virginia, on a gray December morning. In the middle-right, a small window table set for two: one coffee cup half drunk, the other full and untouched, gone cold. Tucked under the sugar dispenser is a folded scrap of paper with one line handwritten in blue ink: \"You're looking at the wrong people.\" printed exactly as written. Through the rain-streaked window, a cobbled brick street, and far down it a woman in a dark coat walks away carrying a small travel bag, too distant to make out. The left third of the image is quiet window, rain and brick. The only readable text is the handwritten note. Keep the main subject between the center and the right side of the frame so it still reads when cropped to a square."
+    },
+    {
+      "id": "s001_c05_cover",
+      "kind": "site",
+      "style": "s001",
+      "subject": "A private conference room off the ballroom of a grand Manhattan hotel during a charity gala in December. In the middle-right, a polished table with one chair knocked over, a glass of whiskey still standing, papers spilled across the carpet, and a bare spot on the table where a heavy marble desk piece used to sit. Through a half-open double door behind, the ballroom glows gold: crystal chandeliers, round tables in white linen, guests in evening dress as soft silhouettes, a distant podium. Snow falls past a tall window onto Manhattan lights. The left third of the image is quiet dark paneled wall. No identifiable faces. No readable text. Keep the main subject between the center and the right side of the frame so it still reads when cropped to a square."
+    },
+    {
+      "id": "s001_c06_cover",
+      "kind": "site",
+      "style": "s001",
+      "subject": "The inside of a corporate records archive the morning after a fire, late December. Long rows of metal shelving blackened by smoke, cardboard file boxes charred and collapsed, ash on the concrete floor, pale winter sunlight cutting through haze from a broken high window with snow on the sill. In the middle-right, one shelf stands untouched by the fire, and on it a single clean gap where one box was taken away before the flames, its dust outline still visible. The left third of the image is quiet smoke and shadow. No people. No readable text. Keep the main subject between the center and the right side of the frame so it still reads when cropped to a square."
     }
   ],
   "styles": {
@@ -5351,6 +5393,7 @@
     "c003": "Contemporary painted crime-drama illustration, gouache and oil with visible brushwork and light film grain, western Pennsylvania, October 2018. Muted industrial palette of rust, slate gray and sodium-orange streetlight; cold, rain-wet exteriors; warm lamp-lit interiors; brick row houses, a steel-town riverfront, chain-link and gravel. Realistic 2018 cars, smartphones, laptops and screens. No 1980s styling. The only readable words are the ones the subject spells out, printed exactly as written and correctly spelled; all other paperwork and screens show soft, unreadable text. No logos, brand names, watermarks or signatures.",
     "c004": "Painted noir illustration in the manner of a classic paperback mystery cover and hand-painted point-and-click adventure game backgrounds. Gouache and oil textures with visible brushwork, warm tungsten lamplight against deep blue-black shadows, a palette of amber, brass, oxblood, bottle green and soot black, subtle film grain. Chicago, October 1927: Art Deco towers and interiors, rain-wet streets, the elevated train, Packard and Ford Model T traffic, candlestick telephones, radio studios with carbon microphones, velvet curtains and glass control room windows, speakeasy lamplight, river warehouses. No modern objects. Period-accurate details. The only readable words are the ones the subject spells out, printed exactly as written and correctly spelled; all other paperwork shows soft, unreadable typing or handwriting. No logos, brand names, watermarks or signatures.",
     "c005": "In the style of an English illuminated manuscript of the 1320s, like the Luttrell Psalter and East Anglian books of hours. Egg tempera on parchment: ultramarine blue, vermilion, verdigris green, ochre and lead white, with burnished gold leaf. Crisp dark ink outlines, flat areas of color with soft modeling in the folds, patterned or gold backgrounds, shallow medieval perspective. Elegant, slightly elongated Gothic figures with expressive faces and long falling drapery; black Benedictine habits. Fine cracks and wear in the paint, the warm cream of old vellum at the edges. Northern England, 1327. Nothing modern, no fantasy creatures, no supernatural, no photographic realism. The only readable words are the ones the subject spells out, printed exactly as written; all other writing is soft, unreadable Latin script. No logos, watermarks or signatures.",
-    "c006": "Contemporary painted crime-drama illustration, gouache and oil with visible brushwork and light film grain, a small former steel town on the Monongahela River in western Pennsylvania, late October 2018. Rusted industrial architecture, abandoned steel mill buildings, aging brick row houses, rain-wet streets, autumn leaves. Cold blue-gray exteriors; warm amber lamplight in interiors. Realistic 2018 cars, smartphones, laptops and screens; anything from 1996 (papers, photographs, a pager, cassette tapes, a 1987 compact car) looks exactly of 1996. No 1980s styling for the present day. The only readable words are the ones the subject spells out, printed exactly as written and correctly spelled; all other paperwork and screens show soft, unreadable text. No logos, brand names, watermarks or signatures."
+    "c006": "Contemporary painted crime-drama illustration, gouache and oil with visible brushwork and light film grain, a small former steel town on the Monongahela River in western Pennsylvania, late October 2018. Rusted industrial architecture, abandoned steel mill buildings, aging brick row houses, rain-wet streets, autumn leaves. Cold blue-gray exteriors; warm amber lamplight in interiors. Realistic 2018 cars, smartphones, laptops and screens; anything from 1996 (papers, photographs, a pager, cassette tapes, a 1987 compact car) looks exactly of 1996. No 1980s styling for the present day. The only readable words are the ones the subject spells out, printed exactly as written and correctly spelled; all other paperwork and screens show soft, unreadable text. No logos, brand names, watermarks or signatures.",
+    "s001": "Contemporary painted crime-drama illustration, gouache and oil with visible brushwork and light film grain, the American mid-Atlantic in November and December 2018. Muted palette of charcoal, slate, rust and amber; cold rain-wet exteriors, warm lamp-lit interiors. Realistic 2018 cars, smartphones, laptops and screens. No 1980s styling. The only readable words are the ones the subject spells out, printed exactly as written and correctly spelled; all other paperwork and screens show soft, unreadable text. No logos, brand names, watermarks or signatures."
   }
 }

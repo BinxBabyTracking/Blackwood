@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SERIES } from "@/series";
 import { Suspense } from "react";
 import { lockAdmin } from "@/app/actions/admin";
 import { updateRates } from "@/app/actions/spending";
@@ -494,7 +495,7 @@ async function Artwork() {
     <>
       {groups.map((g) => {
         const list = rows.filter((r) => r.group === g);
-        const title = g === "Shared" ? "Site and travel pictures" : `${g} ${loadCase(g)?.title ?? ""}`.trim();
+        const title = g === "Shared" ? "Site and travel pictures" : `${g} ${loadCase(g)?.title ?? SERIES.find((s) => s.id === g)?.title ?? ""}`.trim();
         const missing = list.filter((r) => !r.current).length;
         return (
           <AdminSection key={g} id={`art-${g}`} title={`Artwork: ${title}${missing ? ` (${missing} missing)` : ""}`} className="max-w-4xl">

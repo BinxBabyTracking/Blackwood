@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { CatalogBrowser } from "@/components/catalog-browser";
 import { CatalogSkeleton } from "@/components/catalog-skeleton";
+import { SeriesShelf } from "@/components/series-shelf";
 import { PortalHeading } from "@/components/portal/heading";
 import { SetupNotice } from "@/components/setup-notice";
 import { getCatalog } from "@/lib/catalog";
@@ -14,6 +15,7 @@ export default function AssignmentsPage() {
       <PortalHeading title="Available Assignments">
         Files cleared for assignment, plus sealed previews of cases still being prepared by the archive.
       </PortalHeading>
+      <SeriesShelf />
       <Suspense fallback={<CatalogSkeleton />}>
         <Catalog />
       </Suspense>

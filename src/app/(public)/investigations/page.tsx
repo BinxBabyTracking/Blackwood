@@ -4,6 +4,7 @@ import { CatalogBrowser } from "@/components/catalog-browser";
 import { PageIntro } from "@/components/page-intro";
 import { SetupNotice } from "@/components/setup-notice";
 import { CatalogSkeleton } from "@/components/catalog-skeleton";
+import { SeriesShelf } from "@/components/series-shelf";
 import { getCatalog } from "@/lib/catalog";
 
 export const metadata: Metadata = { title: "Available Investigations" };
@@ -16,6 +17,7 @@ export default function InvestigationsPage() {
         accepted yet.
       </PageIntro>
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-8">
+        <SeriesShelf />
         <Suspense fallback={<CatalogSkeleton />}>
           <Catalog />
         </Suspense>
