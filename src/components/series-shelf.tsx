@@ -5,7 +5,7 @@ import { Tag } from "./ui";
 export function SeriesShelf() {
   if (!SERIES.length) return null;
   return (
-    <div className="mb-14 space-y-12">
+    <div className="mt-14 space-y-12">
       {SERIES.map((s) => (
         <SeriesBlock key={s.id} s={s} />
       ))}

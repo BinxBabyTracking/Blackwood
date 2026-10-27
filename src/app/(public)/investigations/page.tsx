@@ -17,10 +17,10 @@ export default function InvestigationsPage() {
         accepted yet.
       </PageIntro>
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-8">
-        <SeriesShelf />
         <Suspense fallback={<CatalogSkeleton />}>
           <Catalog />
         </Suspense>
+        <SeriesShelf />
       </section>
     </>
   );

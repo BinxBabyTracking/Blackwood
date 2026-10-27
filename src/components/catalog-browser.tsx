@@ -89,7 +89,11 @@ export function CatalogBrowser({ cases, hrefBase, leaderboards = false }: { case
   const [sort, setSort] = useState<Sort>("newest");
   const set = <K extends keyof Filters>(k: K) => (v: Filters[K]) => setFilters((f) => ({ ...f, [k]: v }));
 
-  const visible = useMemo(() => cases.filter((c) => matches(c, filters)).sort(sorters[sort]), [cases, filters, sort]);
+  // The introductory case (The Whitmore File) always leads the list, whatever the sort.
+  const visible = useMemo(
+    () => cases.filter((c) => matches(c, filters)).sort((a, b) => Number(b.is_introductory) - Number(a.is_introductory) || sorters[sort](a, b)),
+    [cases, filters, sort],
+  );
   const filtered = JSON.stringify(filters) !== JSON.stringify(initial);
 
   return (

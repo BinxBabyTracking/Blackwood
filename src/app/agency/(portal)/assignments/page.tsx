@@ -15,10 +15,10 @@ export default function AssignmentsPage() {
       <PortalHeading title="Available Assignments">
         Files cleared for assignment, plus sealed previews of cases still being prepared by the archive.
       </PortalHeading>
-      <SeriesShelf />
       <Suspense fallback={<CatalogSkeleton />}>
         <Catalog />
       </Suspense>
+      <SeriesShelf />
     </>
   );
 }
