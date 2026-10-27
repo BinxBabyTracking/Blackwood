@@ -18,7 +18,6 @@ export default function AssignmentsPage() {
       <Suspense fallback={<CatalogSkeleton />}>
         <Catalog />
       </Suspense>
-      <SeriesShelf />
     </>
   );
 }
@@ -26,5 +25,12 @@ export default function AssignmentsPage() {
 async function Catalog() {
   const catalog = await getCatalog();
   if (!catalog.ok) return <SetupNotice reason={catalog.reason} message={catalog.message} />;
-  return <CatalogBrowser cases={catalog.data} hrefBase="/agency/assignments" leaderboards />;
+  // Series cases are shown in their series, in order, rather than as loose cards.
+  const series = catalog.data.filter((c) => c.series_id);
+  return (
+    <>
+      <CatalogBrowser cases={catalog.data.filter((c) => !c.series_id)} hrefBase="/agency/assignments" leaderboards />
+      <SeriesShelf catalog={series} hrefBase="/agency/assignments" boardLink />
+    </>
+  );
 }

@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import type { ClientView, GameAction } from "../engine/types";
 
 type Dispatch = (a: GameAction) => Promise<unknown>;
+
+/** What the board needs to draw: a case's view, or the rolling board's (a series' second board), which supplies the same fields. */
+export type BoardView = Pick<ClientView, "board" | "evidence" | "characters" | "deductions" | "boardSections" | "caseId" | "status" | "words" | "theme">;
 
 /**
  * The board is drawn at a fixed size and scaled to the zoom. Positions are kept
@@ -35,11 +38,22 @@ export function MurderBoard({
   dispatch,
   onClose,
   onLocalBoard,
+  title,
+  rolling = false,
+  emptyText = "The board is empty. Pin evidence and the people involved from the tray.",
+  headerExtra,
 }: {
-  view: ClientView;
+  view: BoardView;
   dispatch: Dispatch;
   onClose: () => void;
   onLocalBoard: (board: ClientView["board"]) => void;
+  /** The heading, when it isn't the case's own board. */
+  title?: string;
+  /** The rolling board: a steel frame on wheels instead of the wooden wall board. */
+  rolling?: boolean;
+  emptyText?: string;
+  /** Extra controls in the header (the series notebook). */
+  headerExtra?: ReactNode;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [linkFrom, setLinkFrom] = useState<string | null>(null);
@@ -212,9 +226,9 @@ export function MurderBoard({
   };
 
   return (
-    <div className="fixed inset-0 z-40 flex flex-col bg-[#2b2118] game-fade" role="dialog" aria-modal="true" aria-label={view.words.board}>
+    <div className={`fixed inset-0 z-40 flex flex-col game-fade ${rolling ? "board-rolling bg-[#1b1e21]" : "bg-[#2b2118]"}`} role="dialog" aria-modal="true" aria-label={title ?? view.words.board}>
       <div className="flex items-center justify-between gap-3 border-b border-black/40 bg-[#1d1610] px-4 py-2 text-sm text-paper">
-        <p className="font-serif text-lg">{view.theme === "medieval" ? view.words.board : "Murder Board"}</p>
+        <p className="font-serif text-lg">{title ?? (view.theme === "medieval" ? view.words.board : "Murder Board")}</p>
         <p className="hidden text-xs text-smoke md:block" aria-live="polite">
           {readOnly
             ? "This case is closed. The board is kept as you left it."
@@ -223,6 +237,7 @@ export function MurderBoard({
               : "Drag to arrange, drag the cork to move around, and zoom out for more room. Click one item, then another, to tie them with string."}
         </p>
         <div className="hidden items-center gap-3 md:flex">
+          {headerExtra}
           {!readOnly ? (
             <button type="button" onClick={() => setTrayOpen((o) => !o)} className="text-smoke hover:text-paper">
               {trayOpen ? "Hide tray" : `Pin items (${tray.length})`}
@@ -510,7 +525,7 @@ export function MurderBoard({
 
           {items.length === 0 ? (
             <p className="pointer-events-none absolute inset-0 m-auto h-fit max-w-sm bg-[#1d1610]/80 px-4 py-3 text-center font-serif text-lg text-paper">
-              The board is empty. Pin evidence and the people involved from the tray.
+              {emptyText}
             </p>
           ) : null}
 
@@ -639,6 +654,7 @@ export function MurderBoard({
         <button type="button" onClick={onClose} className="rounded-[2px] border border-white/15 px-3 py-1.5 hover:bg-white/5">
           Back
         </button>
+        {headerExtra}
         {!readOnly ? (
           <button type="button" onClick={() => setTrayOpen((o) => !o)} className="px-2 py-1.5 text-smoke hover:text-paper">
             {trayOpen ? "Hide tray" : `Pin items (${tray.length})`}

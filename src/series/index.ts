@@ -6,8 +6,10 @@
 // never be copied here: nothing below may hint at a later case's solution.
 
 export interface SeriesCase {
-  /** Internal id, e.g. "S001-C01". */
+  /** Series id, e.g. "S001-C01". */
   id: string;
+  /** The case's id in the catalog and the game, e.g. "S001C01". */
+  caseId: string;
   /** Player-facing label, e.g. "S01 C01". */
   label: string;
   title: string;
@@ -39,6 +41,7 @@ export const SERIES: Series[] = [
     cases: [
       {
         id: "S001-C01",
+        caseId: "S001C01",
         label: "S01 C01",
         title: "The Ledger",
         teaser: "A Pennsylvania accountant is murdered after finding payments at a charitable foundation that don't add up.",
@@ -46,6 +49,7 @@ export const SERIES: Series[] = [
       },
       {
         id: "S001-C02",
+        caseId: "S001C02",
         label: "S01 C02",
         title: "Room 614",
         teaser: "A government contractor vanishes from a Washington hotel the night before he is due to testify.",
@@ -53,6 +57,7 @@ export const SERIES: Series[] = [
       },
       {
         id: "S001-C03",
+        caseId: "S001C03",
         label: "S01 C03",
         title: "Dead Freight",
         teaser: "A Baltimore dockworker is killed after flagging cargo that doesn't match its paperwork.",
@@ -60,6 +65,7 @@ export const SERIES: Series[] = [
       },
       {
         id: "S001-C04",
+        caseId: "S001C04",
         label: "S01 C04",
         title: "The Informant",
         teaser: "A former insider offers to explain everything. She never arrives.",
@@ -67,6 +73,7 @@ export const SERIES: Series[] = [
       },
       {
         id: "S001-C05",
+        caseId: "S001C05",
         label: "S01 C05",
         title: "The Benefactor",
         teaser: "A financial adviser is found dead during an exclusive New York charity gala.",
@@ -74,6 +81,7 @@ export const SERIES: Series[] = [
       },
       {
         id: "S001-C06",
+        caseId: "S001C06",
         label: "S01 C06",
         title: "The Architect",
         teaser: "Witnesses are disappearing and the last records are burning. Prove who built it.",

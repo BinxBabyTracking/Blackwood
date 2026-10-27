@@ -569,6 +569,8 @@ export interface SolutionDef {
     bennett: string[];
     /** Who makes the closing call, when it is not Det. Bennett of the LAPD. */
     caller?: { characterId: string; name: string; tag: string };
+    /** A case in a series: the series notebook entry written as it closes, and where the rolling board is. */
+    series?: { seriesId: string; title: string; text: string };
   };
 }
 

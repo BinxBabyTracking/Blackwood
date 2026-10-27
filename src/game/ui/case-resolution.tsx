@@ -163,7 +163,7 @@ export function CaseResolution({
       ) : (
         <div key="closed" className="w-full max-w-xl text-center game-closure">
           <div className="relative mx-auto border border-white/15 bg-[#14171a] px-8 py-12">
-            <p className="font-mono text-sm tracking-[0.3em] text-smoke">CASE {view.caseId}</p>
+            <p className="font-mono text-sm tracking-[0.3em] text-smoke">{/^S\d{3}C\d{2}$/.test(view.caseId) ? view.caseId.replace(/^S\d(\d\d)C(\d\d)$/, "S$1 C$2") : `CASE ${view.caseId}`}</p>
             <p className="mt-3 font-display text-4xl text-paper sm:text-5xl">{view.title.toUpperCase()}</p>
             <p className="mt-6 font-mono text-sm tracking-[0.24em] text-paper/90">STATUS: CLOSED</p>
             <p className="mt-2 font-mono text-xs tracking-[0.16em] text-smoke">
@@ -184,6 +184,25 @@ export function CaseResolution({
               </div>
             ) : null}
           </div>
+          {closure.series ? (
+            <div className="mt-8 border border-white/15 bg-[#14171a] px-6 py-6 text-left">
+              <p className="font-mono text-xs tracking-[0.2em] text-brass">SERIES NOTEBOOK</p>
+              <p className="mt-2 font-display text-2xl text-paper">{closure.series.title.toUpperCase()}</p>
+              {closure.series.text.split("\n\n").map((para, i) => (
+                <p key={i} className="mt-3 font-serif italic leading-relaxed text-paper/90">
+                  {para}
+                </p>
+              ))}
+              <p className="mt-4 text-sm text-smoke">
+                A second cork board, on wheels, has been brought into the office. Nothing is on it yet: it carries whatever you choose to keep from this case into the next.
+              </p>
+              {asGuest ? null : (
+                <Link href={`/agency/series/${closure.series.seriesId}`} className="mt-4 inline-block rounded-[2px] bg-brass px-4 py-2 text-sm font-semibold text-ink hover:bg-[#d4b585]">
+                  Go to the rolling board
+                </Link>
+              )}
+            </div>
+          ) : null}
           {asGuest ? null : <LeaderboardResult caseId={caseId} title={view.title} />}
           {review === "ask" ? (
             <div className="mt-8 border border-brass/40 bg-[#14171a] px-6 py-6 text-left">

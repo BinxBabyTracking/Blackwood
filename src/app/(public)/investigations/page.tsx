@@ -20,7 +20,6 @@ export default function InvestigationsPage() {
         <Suspense fallback={<CatalogSkeleton />}>
           <Catalog />
         </Suspense>
-        <SeriesShelf />
       </section>
     </>
   );
@@ -29,5 +28,12 @@ export default function InvestigationsPage() {
 async function Catalog() {
   const catalog = await getCatalog();
   if (!catalog.ok) return <SetupNotice reason={catalog.reason} message={catalog.message} />;
-  return <CatalogBrowser cases={catalog.data} hrefBase="/investigations" leaderboards />;
+  // Series cases are shown in their series, in order, rather than as loose cards.
+  const series = catalog.data.filter((c) => c.series_id);
+  return (
+    <>
+      <CatalogBrowser cases={catalog.data.filter((c) => !c.series_id)} hrefBase="/investigations" leaderboards />
+      <SeriesShelf catalog={series} hrefBase="/investigations" />
+    </>
+  );
 }

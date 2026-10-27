@@ -62,6 +62,8 @@ export function locationYear(c: Pick<CatalogCase, "location" | "year">) {
 }
 
 export function caseLabel(c: Pick<CatalogCase, "case_number">) {
+  // Series cases are numbered "S01-C01": shown as "S01 C01".
+  if (/^S\d/.test(c.case_number)) return c.case_number.replace("-", " ");
   return `Case ${c.case_number}`;
 }
 

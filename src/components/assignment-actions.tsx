@@ -7,6 +7,7 @@ import { resolveAssignmentAction } from "@/lib/assignment";
 import { formatPrice } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
 import type { CatalogCase } from "@/lib/types";
+import { seriesUnlocked } from "@/series/server";
 import { buttonClass } from "./ui";
 
 /** Reads the visitor's session, so render inside <Suspense>. */
@@ -17,6 +18,7 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
   let earlyAccess = false;
   let session: "active" | "closed" | null = null;
   let teamOpen = false;
+  let seriesLockedBy: string | null = null;
 
   if (supabase) {
     const { data } = await supabase.auth.getUser();
@@ -38,10 +40,12 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
       earlyAccess = (ent as { source?: string } | null)?.source === "grant";
       const statuses = ((rows ?? []) as unknown as { session: { status: string } }[]).map((r) => r.session.status);
       session = statuses.includes("active") ? "active" : statuses.includes("closed") ? "closed" : null;
+      const unlock = await seriesUnlocked(data.user.id, c.id).catch(() => ({ ok: true as const }));
+      if (!unlock.ok) seriesLockedBy = unlock.previous;
     }
   }
 
-  const action = resolveAssignmentAction(c, { signedIn, entitled, playable: isPlayable(c.id), session, earlyAccess });
+  const action = resolveAssignmentAction(c, { signedIn, entitled, playable: isPlayable(c.id), session, earlyAccess, seriesLockedBy });
 
   switch (action.kind) {
     case "in_preparation":
@@ -117,6 +121,12 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
             Accepting opens the investigation. Your progress is saved as you go. To investigate as a team, you host and show a code; up to five friends join from their phones, no accounts needed.
           </p>
         </div>
+      );
+    case "series_locked":
+      return (
+        <Notice title="Played in order">
+          This case opens once you have solved {action.previous}. Each case in the series picks up where the last one left off.
+        </Notice>
       );
     case "purchase":
       return (

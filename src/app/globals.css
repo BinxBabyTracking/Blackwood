@@ -323,3 +323,19 @@ html[data-vision="tritanopia"] {
   box-shadow: inset 0 0 0 2px rgba(255, 220, 170, 0.12), 0 10px 40px rgba(0, 0, 0, 0.6);
 }
 .board-scroll { scrollbar-width: thin; scrollbar-color: rgba(239, 232, 214, 0.35) transparent; }
+
+/* The rolling board (a series' second board): the same cork, a shade paler and cooler, in a black steel frame with bolted corners. */
+.board-rolling .board-cork {
+  background-color: #b38e62;
+  filter: saturate(0.78) brightness(1.05);
+  box-shadow: inset 0 0 140px rgba(20, 16, 10, 0.5), inset 0 0 0 2px rgba(0, 0, 0, 0.45);
+}
+.board-rolling .board-frame {
+  background:
+    radial-gradient(circle at 13px 13px, #8d9399 0 4px, transparent 5px),
+    radial-gradient(circle at calc(100% - 13px) 13px, #8d9399 0 4px, transparent 5px),
+    radial-gradient(circle at 13px calc(100% - 13px), #8d9399 0 4px, transparent 5px),
+    radial-gradient(circle at calc(100% - 13px) calc(100% - 13px), #8d9399 0 4px, transparent 5px),
+    linear-gradient(135deg, #3a3f44, #1d2124 40%, #33383d 60%, #15181a 85%, #2c3135);
+  box-shadow: inset 0 0 0 2px rgba(200, 210, 220, 0.14), 0 10px 40px rgba(0, 0, 0, 0.6);
+}

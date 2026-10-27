@@ -82,7 +82,7 @@ export function pricesFor(id: string): Record<Tier, number> {
 }
 
 /** Which case an image belongs to, from its id: c002_ev_e11 is C002; site and travel art is shared. */
-export const groupOf = (id: string) => (/^[cs]\d{3}_/.test(id) ? id.slice(0, 4).toUpperCase() : "Shared");
+export const groupOf = (id: string) => /^([cs]\d{3}(?:c\d{2})?)_/.exec(id)?.[1].toUpperCase() ?? "Shared";
 
 function promptFor(img: ImageDef, subject: string) {
   const k = manifest.kinds[img.kind];

@@ -8,6 +8,8 @@ export type AssignmentAction =
   | { kind: "resume" }
   | { kind: "review_closed" }
   | { kind: "accept" }
+  /** A series case whose previous case the player has not solved yet. */
+  | { kind: "series_locked"; previous: string }
   | { kind: "purchase" };
 
 /**
@@ -17,7 +19,7 @@ export type AssignmentAction =
  */
 export function resolveAssignmentAction(
   c: Pick<CatalogCase, "status" | "is_preview" | "tier">,
-  viewer: { signedIn: boolean; entitled: boolean; playable: boolean; session: "active" | "closed" | null; earlyAccess?: boolean },
+  viewer: { signedIn: boolean; entitled: boolean; playable: boolean; session: "active" | "closed" | null; earlyAccess?: boolean; seriesLockedBy?: string | null },
 ): AssignmentAction {
   if (c.is_preview || c.status === "in_development") return { kind: "in_preparation" };
   // Testers with an early-access grant can play a case that everyone else sees as Coming Soon.
@@ -27,6 +29,8 @@ export function resolveAssignmentAction(
   if (!viewer.signedIn) return { kind: "sign_in" };
   if (viewer.session === "active") return { kind: "resume" };
   if (viewer.session === "closed") return { kind: "review_closed" };
+  // Series cases are played in order, however they were bought.
+  if (viewer.seriesLockedBy) return { kind: "series_locked", previous: viewer.seriesLockedBy };
   if (viewer.entitled || c.tier.price_cents === 0) return { kind: "accept" };
   return { kind: "purchase" };
 }

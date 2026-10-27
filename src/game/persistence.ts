@@ -1,5 +1,6 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { seriesUnlocked } from "@/series/server";
 import { newState, progressOf } from "./engine/engine";
 import type { CaseDefinition, InvestigationState } from "./engine/types";
 
@@ -73,6 +74,10 @@ export async function startInvestigation(userId: string, def: CaseDefinition): P
   const existing = await findInvestigation(userId, def.id);
   if (existing && existing.sessionStatus === "active") return existing;
 
+  // A series case opens only once the case before it is solved.
+  const unlock = await seriesUnlocked(userId, def.id);
+  if (!unlock.ok) throw new PersistenceError(`This case opens once you have solved ${unlock.previous}.`);
+
   const price = (c.tier as unknown as { price_cents: number } | null)?.price_cents ?? 0;
   if (!ent) {
     if (price > 0) throw new PersistenceError("You need to purchase this case before accepting it.");
@@ -118,6 +123,8 @@ export async function restartInvestigation(userId: string, def: CaseDefinition):
   }
   const { data: ent } = await db.from("case_entitlements").select("id").eq("user_id", userId).eq("case_id", def.id).maybeSingle();
   if (!ent) throw new PersistenceError("Accept the assignment first.");
+  const unlock = await seriesUnlocked(userId, def.id);
+  if (!unlock.ok) throw new PersistenceError(`This case opens once you have solved ${unlock.previous}.`);
   return createSession(db, userId, def);
 }
 
