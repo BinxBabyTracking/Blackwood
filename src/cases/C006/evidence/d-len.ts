@@ -113,7 +113,7 @@ export const groupD: EvidenceDef[] = [
       "A letter on the dining room table at the Greer house, opened.",
       "HARTWELL AND PRATT, Attorneys at Law, Pittsburgh. Saturday, October 27, 2018 (hand delivered). To Mr. Leonard J. Greer, 6 Hilltop Road.",
       "\"We represent Stroud Riverfront Development LLC. Given recent events at the Riverside Works, our client asks us to remind you of your continuing obligations under the private agreement of September 9, 1996, including confidentiality. Our client trusts there will be no misunderstanding. Should anyone contact you about that period, please refer them to this office.\"",
-      "Written across the bottom in Len's hand, in pencil: \"Box 2214. MVS. Key in the coffee can. If anything happens to me.\"",
+      "Written across the bottom in Len's hand, in pencil: \"Box 2214. Key in the coffee can. If anything happens to me.\"",
       "There is a coffee can on the kitchen shelf. It is empty.",
     ),
     discovery: "On the dining room table at the Greer house.",
@@ -203,7 +203,7 @@ export const groupD: EvidenceDef[] = [
     sourceLocationId: "laurel_road",
     image: "ev.e071",
     inspection: P(
-      "Observed at the gate where Laurel Hollow Road enters the parcel, Monday night, October 29, 2018.",
+      "Observed at the gate where Laurel Hollow Road enters the parcel, before dawn on Tuesday, October 30, 2018.",
       "A pipe gate, rust red, hung on two posts. The chain around it is old and rusted. The padlock on it is new: bright brass, a price sticker still on the back, \"Sheetz $14.99.\"",
       "Tire tracks: two sets in the mud, in and out, crossing the ruts left by the rain that ended Sunday afternoon. Wide, aggressive all-terrain tread, the size of a full-size pickup's (about 11 inches wide). They were made after the rain.",
       "Beyond the gate, the road climbs into the trees. A faint smell of wood smoke.",
@@ -241,7 +241,7 @@ export const groupD: EvidenceDef[] = [
     image: "ev.e073",
     inspection: P(
       "Observed in the cabin's main room, on the shelf above the wood stove, in a coffee can with the lid on. Bagged by police; shown to the investigator before they were taken.",
-      "Wallet: black leather, Leonard J. Greer's driver's license, Medicare card, Mon Valley Savings debit card, $35.",
+      "Wallet: black leather, Leonard J. Greer's driver's license, Medicare card, a pharmacy card, $35.",
       "Watch: Timex, steel band, still running.",
       "Also in the can: a key, small, brass, stamped only \"2214.\" It looks like a safe deposit box key, with nothing on it to say which bank.",
       "So whoever took Len had found his key, and had not yet used it.",

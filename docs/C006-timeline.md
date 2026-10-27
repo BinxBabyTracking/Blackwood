@@ -92,7 +92,7 @@ The "Learned from" column names the evidence by subject; exact ids are fixed in 
 | 1991 | East Mill closed and fenced. West End keeps running | Newspaper archive, Earl |
 | January 1996 | Hollow Creek Steel agrees in principle to sell the 42-acre East Mill riverfront parcel to Mon Valley Land Partners, closing planned for fall. Stroud's bonus is tied to the closing | Property sale documents, Karen, Evelyn |
 | Monday, March 11 | Ron Lasko, union safety steward, files a written complaint: Gallery B monitors alarm falsely or not at all; EF-3 grinds and stops. Earl forwards it as Grievance 96-031 | Union complaint file, Earl, Ray |
-| Tuesday, April 2 | Work order WO-96-0412 opened: three CO monitor heads failing calibration, EF-3 bearing failing | Maintenance work orders, Glenn's storage unit |
+| Tuesday, April 2 | Work order WO-96-0412 opened: three CO monitor heads failing calibration, EF-3 bearing failing (head 2 replaced May 2; heads 1 and 3 never are) | Maintenance work orders, Glenn's storage unit |
 | April 15 | Earl mails a copy of the complaint to the Borough of Hollow Creek code office, asking it to refer the hazard to OSHA and the county fire marshal. Len Greer stamps it received | Borough files (Karen), Len |
 | Monday, May 20 | Glenn's memo to Stroud: repair estimate $186,000; "recommend immediate repair, gallery should not be entered without portable monitors." | Evelyn's photocopy; Emily's photographs |
 | Wednesday, May 22 | Stroud's handwritten reply on the memo: "Defer to Q3 outage. No capital outside the sale schedule. RS" | Evelyn's photocopy; Emily's photographs |
@@ -172,7 +172,7 @@ Events fire from what the player has done, never from the clock. The dates are t
 | Thu Oct 25, 9:05 PM | 3 | Michael enters with the management override code, which Creekside issued to its security contractor, Trent Protective Services. He kills Glenn in Unit 14 with a pry bar, takes his wallet and watch, ransacks the unit and takes a file box. He misses the original log page, hidden under the false floor of a tackle box. Leaves 9:31 PM | Closing report only (the attack). Gate log, scene, autopsy |
 | Fri Oct 26, 7:30 AM | 3 | The facility manager finds Glenn. Mitchell calls Blackwood | RE06 |
 | Fri Oct 26 | 3 | Police seal Glenn's house | RE07 |
-| Fri Oct 26 | 3 | Stroud Riverfront Development pays Trent Protective Services $15,000, "site security, special services" | Payment evidence |
+| Fri Oct 26 | 3 | Stroud Riverfront Development pays Trent Protective Services $12,500, "site security, special services" | Payment evidence |
 | Sat Oct 27 | 3 | A threatening call to the field office: "Leave the mill alone." A dark pickup with a roof light bar idles outside | RE08, RE09 |
 | Sun Oct 28, afternoon | 4 | Len Greer calls: he has papers, wants to meet Monday at 10 AM at the field office | RE10 |
 | Sun Oct 28, about 9:40 PM | 4 | Michael takes Len from his house. Len's car stays in the driveway; his glasses are on the hall floor and his heart pills on the counter | Closing report only (the taking). Residence scene, neighbor |

@@ -124,7 +124,25 @@
     "c003_owen": "Owen Price, a 56-year-old white man, a retired city records clerk, thinning gray hair neatly combed, round wire-rimmed glasses, a pale, careful face, wearing a brown corduroy jacket over a beige sweater vest, a pale blue shirt and a knitted brown tie, anxious and decent, a worried, hesitant look",
     "c003_bennett": "Frank Bennett, a white retired LAPD detective in his late sixties, a gray moustache, heavy-lidded tired eyes, deep lines in his face, thinning white hair, wearing a brown tweed sport coat over a gray cardigan and an open-collared white shirt, calm, dry and kind underneath",
     "c003_jenna": "Jenna Kowalski, a 34-year-old white woman, a veterinary technician, dark blonde hair in a ponytail, freckles, a wide, easy smile, wearing teal clinic scrubs with a small paw-print pin",
-    "c003_ethan": "Ethan Cole, a 38-year-old white man, a commercial electrician, short brown hair, a short beard, kind brown eyes, a slight smile, wearing a gray Kessel Electric work T-shirt under an open plaid flannel shirt"
+    "c003_ethan": "Ethan Cole, a 38-year-old white man, a commercial electrician, short brown hair, a short beard, kind brown eyes, a slight smile, wearing a gray Kessel Electric work T-shirt under an open plaid flannel shirt",
+    "c006_emily": "Emily Lasko, a 19-year-old white woman in 1996, 5 ft 3, shoulder-length dark brown hair, brown eyes, a direct, amused look, a faded denim jacket over a plain T-shirt",
+    "c006_sarah": "Sarah Lasko, a 38-year-old white woman, dark brown hair pulled back, brown eyes like her sister's, a gray cardigan over a school lanyard, tired but resolute",
+    "c006_wade": "Wade Reeves, a 42-year-old white man, 6 ft 2, broad, short sandy hair going thin, a day's stubble, navy work shirt with a name patch reading exactly: WADE, grease on his knuckles",
+    "c006_stroud": "Richard Stroud, a 67-year-old white man, silver hair neatly combed, tanned, a navy suit and open-collar white shirt, a gracious politician's smile that stops at the eyes",
+    "c006_trent": "Michael Trent, a 48-year-old white man, 6 ft 1, heavy shoulders, close-cropped gray-brown hair, a black security company jacket, flat pale eyes",
+    "c006_glenn": "Glenn Sutter, a 69-year-old white man, thinning white hair, heavy glasses, a flannel shirt buttoned to the collar, deep lines of worry",
+    "c006_len": "Len Greer, a 64-year-old white man, gray hair, wire glasses, a tan windbreaker over a golf shirt, careful and anxious",
+    "c006_evelyn": "Evelyn Dorsey, a 62-year-old Black woman, short gray natural hair, reading glasses on a beaded chain, a lavender cardigan, kind and frightened",
+    "c006_ray": "Ray Dalton, a 58-year-old white man, heavy, gray beard, a Steelworkers union jacket, a small oxygen cannula tube resting by his collar, hard tired eyes",
+    "c006_earl": "Earl Hayes, a 71-year-old Black man, white mustache, a tweed flat cap, a union pin on his cardigan, sharp and talkative",
+    "c006_rebecca": "Rebecca Sloan, a 41-year-old white woman, blond hair in a ponytail, light blue dental scrubs, nervous hands",
+    "c006_andrew": "Andrew Pierce, a 41-year-old white man, round friendly face, short brown hair, an HVAC company polo shirt and a ball cap pushed back",
+    "c006_mitchell": "Det. Dana Mitchell, a 46-year-old Latina woman, dark hair in a low bun, a navy blazer over a white shirt, a detective's badge on her belt, dry and tired",
+    "c006_brooks": "Dr. Nathan Brooks, a 51-year-old Black man, close-cropped graying hair, rimless glasses, a white lab coat over a sweater vest, precise",
+    "c006_jessica": "Jessica Kemp, a 39-year-old white woman, short auburn hair, a rain jacket and a reporter's notebook, quick and skeptical",
+    "c006_karen": "Karen Novak, a 53-year-old white woman, curly dyed red hair, cat-eye glasses, a county ID badge on a lanyard, brisk and friendly",
+    "c006_granger": "Det. Sgt. Philip Granger in 1996, a 55-year-old white man, a gray crewcut, a short-sleeved white shirt and a wide tie, a bored patient face",
+    "c006_caller": "A dark, empty silhouette of a man's head and shoulders against rain-streaked glass, no face visible"
   },
   "images": [
     {
@@ -4384,12 +4402,955 @@
       "kind": "pov",
       "style": "c004",
       "subject": "Walking along a riverside street of warehouses in Chicago at night in October 1927, looking ahead: brick warehouses with loading doors, wet cobbles and rail tracks, fog off the river, the lit iron bascule bridge at the end of the street, a single lamp over a night gate."
+    },
+    {
+      "id": "c006_cover",
+      "kind": "site",
+      "style": "c006",
+      "subject": "The abandoned East Mill of a steel works on a river at dusk in the rain, a chain-link gate with police tape in the foreground, one brick maintenance building inside with a single work light glowing in a ground-floor window. A young woman's faded 1996 senior portrait is taped to the gate. The left third of the image is quiet gray sky and river mist."
+    },
+    {
+      "id": "c006_map",
+      "kind": "map",
+      "style": "c006",
+      "subject": "Hollow Creek, a small fictional steel town on the Monongahela River in western Pennsylvania, in 2018. A broad brown river runs across the lower right; along its near bank the long rusted sheds of a closed steel works, its West End near the center bottom and its East Mill toward the right. The town's small downtown grid sits just left of center, with brick row-house streets around it and a hillside of houses above. A county highway in ochre runs from the upper left; a dirt road climbs into wooded ridges at the bottom left. Painted as a hand-drawn local map with no readable labels."
+    },
+    {
+      "id": "c006_portrait_emily",
+      "kind": "portrait",
+      "style": "c006",
+      "person": "c006_emily",
+      "subject": "A direct, amused look, as in a 1995 senior portrait.",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "c006_portrait_sarah",
+      "kind": "portrait",
+      "style": "c006",
+      "person": "c006_sarah",
+      "subject": "A steady, grieving, determined look.",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "c006_portrait_wade",
+      "kind": "portrait",
+      "style": "c006",
+      "person": "c006_wade",
+      "subject": "A guarded, easygoing look that is starting to wear thin.",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "c006_portrait_stroud",
+      "kind": "portrait",
+      "style": "c006",
+      "person": "c006_stroud",
+      "subject": "A gracious, confident look.",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "c006_portrait_trent",
+      "kind": "portrait",
+      "style": "c006",
+      "person": "c006_trent",
+      "subject": "A flat, unreadable look.",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "c006_portrait_glenn",
+      "kind": "portrait",
+      "style": "c006",
+      "person": "c006_glenn",
+      "subject": "A tired, ashamed look.",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "c006_portrait_len",
+      "kind": "portrait",
+      "style": "c006",
+      "person": "c006_len",
+      "subject": "A careful, frightened look.",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "c006_portrait_evelyn",
+      "kind": "portrait",
+      "style": "c006",
+      "person": "c006_evelyn",
+      "subject": "A warm, anxious look.",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "c006_portrait_ray",
+      "kind": "portrait",
+      "style": "c006",
+      "person": "c006_ray",
+      "subject": "A blunt, bitter look.",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "c006_portrait_earl",
+      "kind": "portrait",
+      "style": "c006",
+      "person": "c006_earl",
+      "subject": "A shrewd, talkative look.",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "c006_portrait_rebecca",
+      "kind": "portrait",
+      "style": "c006",
+      "person": "c006_rebecca",
+      "subject": "A nervous, guarded look.",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "c006_portrait_andrew",
+      "kind": "portrait",
+      "style": "c006",
+      "person": "c006_andrew",
+      "subject": "An eager, friendly look.",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "c006_portrait_mitchell",
+      "kind": "portrait",
+      "style": "c006",
+      "person": "c006_mitchell",
+      "subject": "A level, dry, tired look.",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "c006_portrait_brooks",
+      "kind": "portrait",
+      "style": "c006",
+      "person": "c006_brooks",
+      "subject": "A precise, patient look.",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "c006_portrait_jessica",
+      "kind": "portrait",
+      "style": "c006",
+      "person": "c006_jessica",
+      "subject": "A quick, skeptical look.",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "c006_portrait_karen",
+      "kind": "portrait",
+      "style": "c006",
+      "person": "c006_karen",
+      "subject": "A brisk, friendly look.",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "c006_portrait_granger",
+      "kind": "portrait",
+      "style": "c006",
+      "person": "c006_granger",
+      "subject": "A bored, patient look, as on a 1996 police ID photo.",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "c006_portrait_caller",
+      "kind": "portrait",
+      "style": "c006",
+      "person": "c006_caller",
+      "subject": "Only darkness where a face would be.",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "c006_obj_labfolder",
+      "kind": "sprite",
+      "style": "c006",
+      "subject": "A slate blue state police laboratory folder, closed, with a white label on the front reading exactly: LAB REPORT."
+    },
+    {
+      "id": "c006_loc_office",
+      "kind": "background",
+      "style": "c006",
+      "subject": "A two-room private investigator's field office above a small-town hardware store: tall rain-streaked window over a main street on the upper middle, a large cork case board on the left wall, a second wall space beside it with two long strips of paper pinned up for timelines, a wooden desk across the lower middle with a laptop and a desk lamp, a light table on the right, a mail slot and wire in-tray by the door on the far right. Desk surface left clear."
+    },
+    {
+      "id": "c006_loc_mill_gate",
+      "kind": "background",
+      "style": "c006",
+      "subject": "The East Gate of a closed steel mill on a rural road in the rain: a chained double chain-link gate on rusted posts with police tape woven through it, a gravel shoulder on the lower left, inside the fence a dark two-story brick maintenance building, a break in the chain-link to the right. A road runs back left toward a distant small store sign over the trees."
+    },
+    {
+      "id": "c006_loc_shop_floor",
+      "kind": "background",
+      "style": "c006",
+      "subject": "The ground floor of an abandoned brick maintenance building in a steel mill: a heavy steel workbench with an angle-iron edge and a vise against the left brick wall with drifts of copper wire shavings beneath it, a fixed steel ladder to a loft on the far left, a steel mesh cage wall with a steel door in the middle right, an open doorway to the outside on the right. Gray daylight through broken high windows."
+    },
+    {
+      "id": "c006_loc_tool_crib",
+      "kind": "background",
+      "style": "c006",
+      "subject": "Inside a small windowless tool room in an abandoned mill: steel mesh walls on three sides, a brick wall at the back with empty steel shelving, a bare concrete floor swept clean, police scene photographs pinned to the mesh on the left, harsh flashlight and work-light glare."
+    },
+    {
+      "id": "c006_loc_admin_building",
+      "kind": "background",
+      "style": "c006",
+      "subject": "The abandoned second-floor general manager's office of a steel mill administration building: water-stained ceiling tiles, a big window looking out over rusted furnace sheds, a row of soft damp cardboard records cartons along the floor in the lower half, an empty executive desk."
+    },
+    {
+      "id": "c006_loc_maint_office",
+      "kind": "background",
+      "style": "c006",
+      "subject": "An abandoned steel mill maintenance office: a shelf of green bound ledgers on the left, a cluttered steel desk in the center with a three-ring binder on it, a framed crew photograph on the right wall, pipes along the ceiling, dust and gray light."
+    },
+    {
+      "id": "c006_loc_loading_yard",
+      "kind": "background",
+      "style": "c006",
+      "subject": "A rusted steel mill loading yard in the rain behind a furnace shed: rail tracks, puddles, a square steel hatch in the concrete in the middle with a ladder going down into darkness, faded plastic flowers wired to the hatch rail."
+    },
+    {
+      "id": "c006_loc_lasko_home",
+      "kind": "background",
+      "style": "c006",
+      "subject": "The upstairs bedroom of a modest steel-town house kept as it was in 1996: a single bed with a cardboard box of keepsakes on it, a 1996 wall calendar on the left wall, framed family photographs on the right wall, posters of 1990s bands, a desk, rain at the window. A woman's figure will stand in the middle; the middle floor left clear."
+    },
+    {
+      "id": "c006_loc_reeves_auto",
+      "kind": "background",
+      "style": "c006",
+      "subject": "A small-town auto repair shop interior: a lift with a car on it in the back, a counter and register on the right with a metal work order rack beside it, a framed old photograph behind the register, stairs up to a loft on the left with bound books on shelves, an old red portable welder on a back shelf. The middle floor left clear for a figure."
+    },
+    {
+      "id": "c006_loc_police",
+      "kind": "background",
+      "style": "c006",
+      "subject": "A small-town police detectives' room: two cluttered desks, a corkboard on the right wall, a long table by the window on the lower left with old manila case folders laid out on it, an interview room door with a window on the right. The middle floor left clear for a figure."
+    },
+    {
+      "id": "c006_loc_forensic",
+      "kind": "background",
+      "style": "c006",
+      "subject": "A county medical examiner's anthropology lab: a glowing light box on the left wall with x-ray films, a steel exam table under a white sheet on the right, cabinets, clean cold light. The middle left clear for a figure."
+    },
+    {
+      "id": "c006_loc_newspaper",
+      "kind": "background",
+      "style": "c006",
+      "subject": "A small-town newspaper newsroom: a few desks with computers, stacks of papers, a reference shelf of fat old telephone directories on the left by a window, bound volumes of old newspapers on the right. The middle left clear for a figure."
+    },
+    {
+      "id": "c006_loc_borough",
+      "kind": "background",
+      "style": "c006",
+      "subject": "A municipal building basement records room: gray steel filing cabinets, a long table under a hanging fluorescent light with a thin file folder laid open on it, an index card box."
+    },
+    {
+      "id": "c006_loc_regulatory",
+      "kind": "background",
+      "style": "c006",
+      "subject": "A county archive room: rows of gray document boxes on steel shelving, a worktable with an open binder and a folder of photographs, fluorescent light."
+    },
+    {
+      "id": "c006_loc_union_hall",
+      "kind": "background",
+      "style": "c006",
+      "subject": "An old union hall: wood paneling, a bar at the back, card tables, a tall steel grievance file cabinet on the left, a wall of framed memorial photographs on the right, a television on a bracket. The middle floor left clear for two figures."
+    },
+    {
+      "id": "c006_loc_sutter_home",
+      "kind": "background",
+      "style": "c006",
+      "subject": "A retired man's small brick house, seen from inside the front room: a den with mounted bass on the wall and a recliner, a desk with a blotter on the lower left, a kitchen beyond with a calendar on the refrigerator on the right, a bedroom doorway with a nightstand on the far right. The middle left clear."
+    },
+    {
+      "id": "c006_loc_storage",
+      "kind": "background",
+      "style": "c006",
+      "subject": "A self storage facility row on a gray morning: a roll-up unit door half raised with metal shelving and spilled file boxes inside, a police photo board on an easel by the door, evidence markers on the concrete; to the right a small office with a terminal and a filing cabinet visible through its window."
+    },
+    {
+      "id": "c006_loc_stroud_office",
+      "kind": "background",
+      "style": "c006",
+      "subject": "The reception area of a developer's office in a restored old bank building: marble floor, a framed letter on the left wall, a large framed watercolor rendering of riverfront apartments on the right wall, leather chairs, warm lamplight. The middle left clear for a figure."
+    },
+    {
+      "id": "c006_loc_trent_office",
+      "kind": "background",
+      "style": "c006",
+      "subject": "A small security company office in a cinderblock building by railroad tracks: a framed license and roster on the left wall, a metal desk with a green ledger on it, radios charging, a window onto a gravel lot. The middle left clear for a figure."
+    },
+    {
+      "id": "c006_loc_greer_home",
+      "kind": "background",
+      "style": "c006",
+      "subject": "Inside the front hall and through to the kitchen of a tidy brick ranch house: a coat rack with a coat and cap, a hall runner rug, a dining table with papers on it in the middle, a kitchen counter with a coffee maker on the left, a neighbor's front door visible through a window on the right."
+    },
+    {
+      "id": "c006_loc_laurel_road",
+      "kind": "background",
+      "style": "c006",
+      "subject": "A muddy dirt road in wooded ridges before dawn: a rusted pipe gate across the road with a chain, police cruisers with lights off behind, flashlight beams, bare trees, the road climbing into darkness."
+    },
+    {
+      "id": "c006_loc_camp",
+      "kind": "background",
+      "style": "c006",
+      "subject": "The main room of a rough two-room hunting cabin: paneled walls, a cold wood stove with a shelf above it, a table with a lantern, antlers over the door, an open trap door in the floor in the lower middle."
+    },
+    {
+      "id": "c006_loc_medical_station",
+      "kind": "background",
+      "style": "c006",
+      "subject": "An abandoned steel mill first-aid room: a stretcher, a glass-fronted oxygen cabinet on the right, a shelf of bound logbooks on the left, peeling paint, gray light."
+    },
+    {
+      "id": "c006_loc_corso_photo",
+      "kind": "background",
+      "style": "c006",
+      "subject": "An old small-town photo and frame shop: frame samples on the walls, a counter, a back-room filing cabinet visible on the left, a narrow darkroom door with a red light above it on the right."
+    },
+    {
+      "id": "c006_loc_sloan_home",
+      "kind": "background",
+      "style": "c006",
+      "subject": "A modest kitchen in a small-town house: a refrigerator covered in photos and a child's soccer schedule, a kitchen table, rain at the window. The middle left clear for a figure."
+    },
+    {
+      "id": "c006_loc_pierce_home",
+      "kind": "background",
+      "style": "c006",
+      "subject": "A small-town basement rec room: wood paneling, a sofa, a table, shelves of shoeboxes, a furnace in the corner. The middle left clear for a figure."
+    },
+    {
+      "id": "c006_loc_river_gate",
+      "kind": "background",
+      "style": "c006",
+      "subject": "The old main gate of a steel works by a wide brown river in the rain: a small concrete guardhouse, a white construction site trailer to the left, a concrete boat ramp running down into the river on the right."
+    },
+    {
+      "id": "c006_loc_courthouse",
+      "kind": "background",
+      "style": "c006",
+      "subject": "A county recorder of deeds office: ceiling-high shelves of red deed books on the left, a long wooden counter, brass lamps, a tall window. The middle left clear for a figure."
+    },
+    {
+      "id": "c006_loc_rail_building",
+      "kind": "background",
+      "style": "c006",
+      "subject": "An abandoned rail service building used as a scrap yard weigh office: a big platform scale on the floor, a weigh office counter with oversized ledgers on it, a window with an old scale beam, hand-painted signs on the wall, gray light through broken panes."
+    },
+    {
+      "id": "c006_loc_mill_reconstruction",
+      "kind": "background",
+      "style": "c006",
+      "subject": "The same abandoned mill maintenance building ground floor lit up by police work lights on tripods: the steel workbench ringed with yellow tape, yellow tape running along the floor to a steel mesh cage door, the loft ladder cleared with a police officer's flashlight shining up into the loft."
+    },
+    {
+      "id": "c006_ev_e001",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A yellowed 1996 police missing person form on a desk, typed in a typewriter font, a school photo of a young dark-haired woman clipped to the corner, under a desk lamp."
+    },
+    {
+      "id": "c006_ev_e002",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A 1996 drugstore color snapshot, slightly faded: a smiling young woman with dark hair in the driver's seat of a blue 1987 Chevrolet Cavalier, seat pulled close to the wheel, door open, summer evening."
+    },
+    {
+      "id": "c006_ev_e003",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A spiral notebook with a worn cardboard cover lying open on a bedspread, blue ballpoint handwriting, one page torn out at the binding."
+    },
+    {
+      "id": "c006_ev_e004",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A 1996 bank wall calendar turned to August, river photograph above the grid, handwriting in some squares, one square written in hard pressed ink."
+    },
+    {
+      "id": "c006_ev_e005",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A punched paper time card and a small spiral darkroom log on a darkroom counter under a red safelight, trays and a copy stand behind."
+    },
+    {
+      "id": "c006_ev_e006",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "Two black and white 8x10 photographic prints of a typed office memo, with a handwritten note at the bottom, half out of an orange photo studio envelope."
+    },
+    {
+      "id": "c006_ev_e007",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "Photocopied yellow legal pad pages of a detective's slanting handwritten notes, clipped together in a manila folder."
+    },
+    {
+      "id": "c006_ev_e008",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A 1996 police tow and inventory form with a parking ticket stapled behind it, on a clipboard, a blue compact car in a tow lot blurred in the background."
+    },
+    {
+      "id": "c006_ev_e009",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A typed 1996 witness statement form with a signature at the bottom, coffee ring on the corner."
+    },
+    {
+      "id": "c006_ev_e010",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A typed 1996 witness statement form with a handwritten note in the margin."
+    },
+    {
+      "id": "c006_ev_e011",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A typed 1996 witness statement form, a small hand-drawn sketch of a road and gate in the margin."
+    },
+    {
+      "id": "c006_ev_e012",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A modern printed police incident report on a desk beside a laptop, a photo of a rusted industrial building paper-clipped to it."
+    },
+    {
+      "id": "c006_ev_e013",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "Police scene photographs and a measured sketch of a small caged tool room pinned to steel mesh, evidence markers, work-light glare."
+    },
+    {
+      "id": "c006_ev_e014",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A rusted steel door hasp with a broken short weld bead, a heavy chain through the handle held by an old brass padlock rusted shut, wooden pallets leaning nearby, police evidence tags."
+    },
+    {
+      "id": "c006_ev_e015",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A worn women's denim jacket laid on a steel exam table beside a gold high school class ring with a red stone, a brass key on a paper tag, folded newspaper clipping and a few dollar bills, evidence bags."
+    },
+    {
+      "id": "c006_ev_e016",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A forensic anthropology report on a clipboard beside a gloved hand and calipers, a lab light box glowing behind, no remains visible."
+    },
+    {
+      "id": "c006_ev_e017",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "Two dental x-ray films side by side on a light box with a report form beneath."
+    },
+    {
+      "id": "c006_ev_e018",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A grease-stained 1996 taxi driver's daily trip sheet, handwritten rows of fares, in a cardboard archive box."
+    },
+    {
+      "id": "c006_ev_e019",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "Two pages of handwritten lined paper on a kitchen table beside a mug of coffee, signed at the bottom."
+    },
+    {
+      "id": "c006_ev_e020",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A black 1990s pager rubber-banded to a 3x5 index card with neat handwriting, on top of a cardboard box of keepsakes."
+    },
+    {
+      "id": "c006_ev_e021",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A 1996 corporate incident report with a press release clipped to it, in a dusty records carton, abandoned office."
+    },
+    {
+      "id": "c006_ev_e022",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A 1996 union grievance form with handwritten complaint text and an initial stamp, in a green file folder on a union hall table."
+    },
+    {
+      "id": "c006_ev_e023",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A bound green ledger lying open to a page of neat handwritten dated entries, one entry in darker ink, an OSHA copy tab on the page edge."
+    },
+    {
+      "id": "c006_ev_e024",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A carbon work order form with a priority crossed out and rewritten, a red tag stub stapled to it, in a three-ring binder."
+    },
+    {
+      "id": "c006_ev_e025",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A typed shift roster with a tool room sign-out sheet clipped behind it."
+    },
+    {
+      "id": "c006_ev_e026",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A manila envelope with three office papers sliding out: a photocopied memo with a handwritten note, a carbon copy memo, a carbon letter, a short handwritten note on the envelope."
+    },
+    {
+      "id": "c006_ev_e027",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A government inspection summary with a federal seal header on a gray archive table under fluorescent light."
+    },
+    {
+      "id": "c006_ev_e028",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "Handwritten statements on union letterhead, a pencil and an old cassette recorder beside them."
+    },
+    {
+      "id": "c006_ev_e029",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A photographic contact sheet and enlargements of a dim industrial gas valve room: a large fan motor with a red danger tag wired to it, a wall monitor panel with a dark display."
+    },
+    {
+      "id": "c006_ev_e030",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A narrow underground valve gallery under a steel furnace, rusted valves in a row, three wall sensor heads, a seized fan with a scrap of red tag, a brass memorial plate on the rail, flashlight beam."
+    },
+    {
+      "id": "c006_ev_e031",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "Typed 1996 meeting minutes on letterhead, initialed, in a manila folder labeled for the general manager's office."
+    },
+    {
+      "id": "c006_ev_e032",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A single folded ledger page with handwritten entries and a small handwritten slip clipped to it, lying in the hidden compartment of a green metal tackle box."
+    },
+    {
+      "id": "c006_ev_e033",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A banded stack of identical printed safety bulletins in an open steel desk drawer, a faded sticky note on top."
+    },
+    {
+      "id": "c006_ev_e034",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A confidential executive bonus schedule page with a payroll PAID stamp, in an HR file folder."
+    },
+    {
+      "id": "c006_ev_e035",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A thick recorded real estate agreement in a deed book binder, a clause flagged with a paper strip."
+    },
+    {
+      "id": "c006_ev_e036",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "Two letters in a borough file folder: a union letterhead letter with a RECEIVED stamp and a short typed borough reply."
+    },
+    {
+      "id": "c006_ev_e037",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A typed question and answer interview summary in a government binder."
+    },
+    {
+      "id": "c006_ev_e038",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A short typed borough memorandum on letterhead, signed, in the same file folder."
+    },
+    {
+      "id": "c006_ev_e039",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A bound medical treatment logbook open to handwritten entries, an oxygen mask and an old stretcher in a dim first aid room."
+    },
+    {
+      "id": "c006_ev_e040",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A labeled audio cassette and a portable cassette player on a newsroom desk piled with clippings."
+    },
+    {
+      "id": "c006_ev_e041",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A 2018 desk answering machine with a blinking message light on a cluttered office desk."
+    },
+    {
+      "id": "c006_ev_e042",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A hardware store wall calendar on a refrigerator door, handwritten notes in several squares, magnets."
+    },
+    {
+      "id": "c006_ev_e043",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A police photo board of a storage unit scene: shelving, dumped file boxes, an overturned green tackle box, evidence markers; no visible body."
+    },
+    {
+      "id": "c006_ev_e044",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "An autopsy summary report on a clipboard on a steel counter, gloves and a pen."
+    },
+    {
+      "id": "c006_ev_e045",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A dot-matrix style printout of a gate access log with time-stamped rows, on a storage facility office counter."
+    },
+    {
+      "id": "c006_ev_e046",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A two-page security services contract with a signature, in an open filing cabinet drawer."
+    },
+    {
+      "id": "c006_ev_e047",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A stack of printed phone call detail records with a few lines highlighted in yellow."
+    },
+    {
+      "id": "c006_ev_e048",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A typed police witness statement with a signature, on a detective's desk."
+    },
+    {
+      "id": "c006_ev_e049",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A police property inventory form with two columns, MISSING and LEFT BEHIND, a pen beside it."
+    },
+    {
+      "id": "c006_ev_e050",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A partial lug-soled boot print pressed into spilled motor oil on a concrete floor, a yellow evidence marker numbered 6 and a casting frame."
+    },
+    {
+      "id": "c006_ev_e051",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A handwritten letter on lined paper and a stamped, addressed, unsealed envelope on a wooden desk in a den."
+    },
+    {
+      "id": "c006_ev_e052",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A clipboard with a handwritten security patrol log sheet, hanging on a nail in a construction site trailer, a radio charger below."
+    },
+    {
+      "id": "c006_ev_e053",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A framed company vehicle and equipment roster beside a state security license certificate on a paneled office wall."
+    },
+    {
+      "id": "c006_ev_e054",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A typed police interview summary on a desk, a detective's notes in the margin."
+    },
+    {
+      "id": "c006_ev_e055",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A garage work order slip on a metal rack in an auto repair shop, PAID CASH stamp."
+    },
+    {
+      "id": "c006_ev_e056",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A green clothbound ledger lying open on an office desk, handwritten rows of invoices."
+    },
+    {
+      "id": "c006_ev_e057",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "Printed mobile phone call records with three lines highlighted, a court order cover sheet."
+    },
+    {
+      "id": "c006_ev_e058",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A bank wire transfer confirmation printout with a bank logo header."
+    },
+    {
+      "id": "c006_ev_e059",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A modern police incident report on a desk under a lamp."
+    },
+    {
+      "id": "c006_ev_e060",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A state police lab report beside a plaster cast of a boot print and a black tactical boot in an evidence bag."
+    },
+    {
+      "id": "c006_ev_e061",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "The same desk answering machine, message light blinking, a rainy window behind."
+    },
+    {
+      "id": "c006_ev_e062",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A modern missing person report with a driver's license photo of a gray-haired man in glasses."
+    },
+    {
+      "id": "c006_ev_e063",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A suburban front hall: eyeglasses on the floor with one lens out, a rumpled runner rug, a coat and cap on a rack; a cold untouched dinner plate visible in the kitchen beyond."
+    },
+    {
+      "id": "c006_ev_e064",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A plastic weekly pill organizer with AM and PM rows, two compartments still full, three orange prescription bottles beside it on a kitchen counter."
+    },
+    {
+      "id": "c006_ev_e065",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "Four black and white night-vision video stills printed on paper: a large pickup truck with a roof light bar in a driveway, dark figures, a partly readable license plate."
+    },
+    {
+      "id": "c006_ev_e066",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A law firm letter on heavy paper with a penciled note across the bottom, on a dining table, an empty coffee can on the shelf behind."
+    },
+    {
+      "id": "c006_ev_e067",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "Printed home phone call records with a few lines highlighted."
+    },
+    {
+      "id": "c006_ev_e068",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A printout of license plate reader hits with small grainy camera images of a black pickup on a rural highway at night."
+    },
+    {
+      "id": "c006_ev_e069",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "Printed state corporation records for an LLC on a courthouse counter, a stamp and a pen."
+    },
+    {
+      "id": "c006_ev_e070",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A county tax parcel record and a tax map with a dirt road highlighted, on a records counter."
+    },
+    {
+      "id": "c006_ev_e071",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A rusted pipe gate on a muddy forest road at night, an old chain with a bright new brass padlock, fresh tire tracks through puddles, flashlight beam."
+    },
+    {
+      "id": "c006_ev_e072",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A stone-walled cellar under a cabin: a folding cot with a sleeping bag, cut black zip ties on the dirt floor, a bucket, water bottles, an eye bolt in the wall, scratched letters on a beam, a white handkerchief."
+    },
+    {
+      "id": "c006_ev_e073",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "An open coffee can on a shelf above a wood stove holding a black leather wallet, a steel wristwatch and a small brass key."
+    },
+    {
+      "id": "c006_ev_e074",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A court search warrant return form listing seized items, beside a Sheetz receipt in an evidence bag."
+    },
+    {
+      "id": "c006_ev_e075",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A typed police supplementary report on a desk, morning light."
+    },
+    {
+      "id": "c006_ev_e076",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A hospital physician's summary on letterhead on a clipboard at the foot of a hospital bed."
+    },
+    {
+      "id": "c006_ev_e077",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A multi-page signed police statement on a hospital tray table beside a water cup."
+    },
+    {
+      "id": "c006_ev_e078",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A photocopied union letter with a small handwritten borough routing slip stapled to it, on a bank safe deposit box tray."
+    },
+    {
+      "id": "c006_ev_e079",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A typed custodial interview summary with a rights waiver form beside it."
+    },
+    {
+      "id": "c006_ev_e080",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A cheap gray prepaid flip phone in an evidence bag on top of a printed call log report."
+    },
+    {
+      "id": "c006_ev_e081",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "Printed scans of three handwritten letters signed W., under a printed email, on the field office desk."
+    },
+    {
+      "id": "c006_ev_e082",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A large bound purchase ledger open on a dusty weigh office counter in an abandoned rail building, a big platform scale behind."
+    },
+    {
+      "id": "c006_ev_e083",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A 1996 punched time card on top of a shoebox of old pay envelopes in a basement."
+    },
+    {
+      "id": "c006_ev_e084",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A garage invoice book open to a 1995 page with a snapshot pinned to it of a dark blue small pickup with a black ladder rack."
+    },
+    {
+      "id": "c006_ev_e085",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A thick 1996 telephone directory open to the business listings, a finger marking one line."
+    },
+    {
+      "id": "c006_ev_e086",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "Two handwritten pages signed at the bottom, on a kitchen counter, a tissue box beside them."
+    },
+    {
+      "id": "c006_ev_e087",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A typed police interview summary with a detective's handwritten note at the bottom."
+    },
+    {
+      "id": "c006_ev_e088",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A bound security gate log open to a page of hourly handwritten entries with supervisor signatures, in a small concrete guardhouse."
+    },
+    {
+      "id": "c006_ev_e089",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A carbon expense report and a hotel folio photocopy with a handwritten note clipped on."
+    },
+    {
+      "id": "c006_ev_e090",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A framed state grant award letter on a reception wall beside an architect's rendering of riverfront apartments."
+    },
+    {
+      "id": "c006_ev_e091",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A detective's typed financial summary table with bank statements fanned beneath it."
+    },
+    {
+      "id": "c006_ev_e092",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A sealed envelope marked in handwriting tucked in an open family Bible on a bedside table, reading lamp."
+    },
+    {
+      "id": "c006_ev_e093",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A recorded deed page in a large deed book, a one dollar consideration line flagged."
+    },
+    {
+      "id": "c006_ev_e094",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A small bank savings passbook open to a deposit line with a check stub stapled in."
+    },
+    {
+      "id": "c006_ev_e095",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A bound garage parts ledger open to a handwritten August 1996 page with a margin note, a coil of chain and an old portable welder in the dim loft behind."
+    },
+    {
+      "id": "c006_ev_e096",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A heavy steel workbench with an angle-iron front edge under harsh police work lights, a vise, copper strippings in the dust beneath, an evidence swab tag."
+    },
+    {
+      "id": "c006_ev_e097",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "Bundles of stripped copper wire tied with wire and hung with paper parts tags, stacked behind plywood in a dusty industrial loft, rusted wire strippers beside them."
+    },
+    {
+      "id": "c006_ev_e098",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A small folded sheet of 1990s company letterhead with a short fountain pen note, on a bank box tray."
+    },
+    {
+      "id": "c006_ev_e099",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A questioned documents lab report beside handwriting samples under a magnifier."
+    },
+    {
+      "id": "c006_ev_e100",
+      "kind": "evidence",
+      "style": "c006",
+      "subject": "A short typed expert opinion letter on medical examiner letterhead beside a plaster cast of a straight metal edge."
     }
   ],
   "styles": {
     "c002": "Painted noir illustration in the manner of a 1980s paperback mystery cover and classic hand-painted point-and-click adventure game backgrounds. Gouache and oil textures with visible brushwork, warm tungsten lamplight against deep blue-black shadows, a muted palette of ochre, oxblood, bottle green, slate and nicotine cream, subtle film grain. Southern California, October 1988: a foggy coastal town, Los Angeles, and the pine-covered San Bernardino Mountains. Period-accurate details. The only readable words are the ones the subject spells out, printed exactly as written and correctly spelled; all other paperwork shows soft, unreadable typing or handwriting. No logos, brand names, watermarks or signatures.",
     "c003": "Contemporary painted crime-drama illustration, gouache and oil with visible brushwork and light film grain, western Pennsylvania, October 2018. Muted industrial palette of rust, slate gray and sodium-orange streetlight; cold, rain-wet exteriors; warm lamp-lit interiors; brick row houses, a steel-town riverfront, chain-link and gravel. Realistic 2018 cars, smartphones, laptops and screens. No 1980s styling. The only readable words are the ones the subject spells out, printed exactly as written and correctly spelled; all other paperwork and screens show soft, unreadable text. No logos, brand names, watermarks or signatures.",
     "c004": "Painted noir illustration in the manner of a classic paperback mystery cover and hand-painted point-and-click adventure game backgrounds. Gouache and oil textures with visible brushwork, warm tungsten lamplight against deep blue-black shadows, a palette of amber, brass, oxblood, bottle green and soot black, subtle film grain. Chicago, October 1927: Art Deco towers and interiors, rain-wet streets, the elevated train, Packard and Ford Model T traffic, candlestick telephones, radio studios with carbon microphones, velvet curtains and glass control room windows, speakeasy lamplight, river warehouses. No modern objects. Period-accurate details. The only readable words are the ones the subject spells out, printed exactly as written and correctly spelled; all other paperwork shows soft, unreadable typing or handwriting. No logos, brand names, watermarks or signatures.",
-    "c005": "In the style of an English illuminated manuscript of the 1320s, like the Luttrell Psalter and East Anglian books of hours. Egg tempera on parchment: ultramarine blue, vermilion, verdigris green, ochre and lead white, with burnished gold leaf. Crisp dark ink outlines, flat areas of color with soft modeling in the folds, patterned or gold backgrounds, shallow medieval perspective. Elegant, slightly elongated Gothic figures with expressive faces and long falling drapery; black Benedictine habits. Fine cracks and wear in the paint, the warm cream of old vellum at the edges. Northern England, 1327. Nothing modern, no fantasy creatures, no supernatural, no photographic realism. The only readable words are the ones the subject spells out, printed exactly as written; all other writing is soft, unreadable Latin script. No logos, watermarks or signatures."
+    "c005": "In the style of an English illuminated manuscript of the 1320s, like the Luttrell Psalter and East Anglian books of hours. Egg tempera on parchment: ultramarine blue, vermilion, verdigris green, ochre and lead white, with burnished gold leaf. Crisp dark ink outlines, flat areas of color with soft modeling in the folds, patterned or gold backgrounds, shallow medieval perspective. Elegant, slightly elongated Gothic figures with expressive faces and long falling drapery; black Benedictine habits. Fine cracks and wear in the paint, the warm cream of old vellum at the edges. Northern England, 1327. Nothing modern, no fantasy creatures, no supernatural, no photographic realism. The only readable words are the ones the subject spells out, printed exactly as written; all other writing is soft, unreadable Latin script. No logos, watermarks or signatures.",
+    "c006": "Contemporary painted crime-drama illustration, gouache and oil with visible brushwork and light film grain, a small former steel town on the Monongahela River in western Pennsylvania, late October 2018. Rusted industrial architecture, abandoned steel mill buildings, aging brick row houses, rain-wet streets, autumn leaves. Cold blue-gray exteriors; warm amber lamplight in interiors. Realistic 2018 cars, smartphones, laptops and screens; anything from 1996 (papers, photographs, a pager, cassette tapes, a 1987 compact car) looks exactly of 1996. No 1980s styling for the present day. The only readable words are the ones the subject spells out, printed exactly as written and correctly spelled; all other paperwork and screens show soft, unreadable text. No logos, brand names, watermarks or signatures."
   }
 }

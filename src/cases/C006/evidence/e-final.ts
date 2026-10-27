@@ -209,7 +209,7 @@ export const groupE: EvidenceDef[] = [
       "1998. Trent leaves the plant and forms Trent Protective Services. First client: Hollow Creek Steel, Riverside Works.",
       "Mar 12, 2017. Stroud Riverfront Development to Trent Protective, \"special,\" $3,000.",
       "Sep 4, 2017. Same, \"special,\" $2,500.",
-      "Oct 26, 2018. Same, \"special services Q4,\" $15,000 (wire).",
+      "Oct 26, 2018. Same, \"special services Q4,\" $12,500 (wire).",
       "Regular site security: $8,400 a month since June 2016.",
       "Mitchell's note: \"Ray Dalton says a young plant security man visited him in fall 1996 and told him to take the company's settlement and stop talking to reporters. Ray settled Dec 2, 1996.\"",
     ),
@@ -338,7 +338,7 @@ export const groupE: EvidenceDef[] = [
     image: "ev.e098",
     inspection: P(
       "From safe deposit box 2214, Mon Valley Savings, opened October 31, 2018. A small sheet of Hollow Creek Steel Company letterhead, \"Office of the General Manager,\" folded twice. Fountain pen.",
-      "\"9/13/96. Len, Thank you for your help with the Gallery B matter this summer. Lot 7 is yours, as discussed; the deed is recorded. This stays between us. R.\"",
+      "\"9/12/96. Len, Thank you for your help with the Gallery B matter this summer. Lot 7 is yours, as discussed; the deed is recorded. This stays between us. R.\"",
       "The handwriting resembles the \"Defer to Q3 outage\" note on the May 20 memo.",
     ),
     discovery: "In the safe deposit box, delivered to the field office with the other contents (RE18).",
@@ -354,7 +354,7 @@ export const groupE: EvidenceDef[] = [
     image: "ev.e099",
     inspection: P(
       "PENNSYLVANIA STATE POLICE, Questioned Documents Unit. Report QD-18-1180. Requested by HCPD, Det. D. Mitchell.",
-      "Questioned: Q1, handwritten note on the May 20, 1996 memo, \"Defer to Q3 outage. No capital outside the sale schedule. RS 5/22\" (Evelyn Dorsey's photocopy). Q2, initials \"RS\" on the June 16, 1996 memo (carbon). Q3, handwritten note to \"Len\" dated 9/10/96 (original).",
+      "Questioned: Q1, handwritten note on the May 20, 1996 memo, \"Defer to Q3 outage. No capital outside the sale schedule. RS 5/22\" (Evelyn Dorsey's photocopy). Q2, initials \"RS\" on the June 16, 1996 memo (carbon). Q3, handwritten note to \"Len\" dated 9/12/96 (original).",
       "Known: K1 to K6, Richard A. Stroud's signatures and handwriting on county filings, 1996 to 2018, and the 1996 deed of Lot 7.",
       "Findings: Q1 and Q3 share letter forms, slant, connecting strokes and the distinctive \"R\" with an open bowl found throughout K1 to K6. No significant differences. Q2 (initials only, carbon) is limited but consistent.",
       "Conclusions: Q3: highly probable that Richard A. Stroud wrote it. Q1: highly probable (photocopy limits the examination of pen pressure). Q2: consistent with, but too limited for a stronger opinion.",

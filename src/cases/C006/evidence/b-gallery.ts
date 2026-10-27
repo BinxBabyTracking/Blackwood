@@ -74,6 +74,7 @@ export const groupB: EvidenceDef[] = [
       "HOLLOW CREEK STEEL, MAINTENANCE DEPT. Work Order WO-96-0412. Opened Tuesday, April 2, 1996, by J. Petrak, foreman.",
       "Location: Gallery B, No. 2 Reheat.",
       "Work: (1) CO monitor heads 1, 2, 3 failing calibration. Replace sensor heads and controller. (2) Exhaust fan EF-3, bearing noise and intermittent stall. Replace bearing, inspect motor.",
+      "Status note, handwritten: \"5/2/96 head 2 replaced. Heads 1, 3 and controller back-ordered. EF-3 deferred.\"",
       "Priority: originally written \"1 - URGENT\"; crossed out, \"3\" written beside it, initialed \"GS 5/23.\"",
       "Parts: requisition 96-1180 (monitor system), \"on hold per GM.\"",
       "Status: OPEN. Never closed.",

@@ -300,7 +300,7 @@ export const groupC: EvidenceDef[] = [
   ev({
     id: "E056",
     title: "Trent Protective Invoice Book",
-    description: "Trent's own invoice ledger: \"SRD, special services, $15,000\" dated October 26, with no invoice number.",
+    description: "Trent's own invoice ledger: \"SRD, special services, $12,500\" dated October 26, with no invoice number.",
     sourceLocationId: "trent_office",
     image: "ev.e056",
     inspection: P(
@@ -309,7 +309,7 @@ export const groupC: EvidenceDef[] = [
       "Three lines carry no invoice number:",
       "\"3/12/17, SRD, special, $3,000. Paid.\"",
       "\"9/4/17, SRD, special, $2,500. Paid.\"",
-      "\"10/26/18, SRD, special services, $15,000. Rec'd wire.\"",
+      "\"10/26/18, SRD, special services, $12,500. Rec'd wire.\"",
       "SRD is Stroud Riverfront Development.",
     ),
     discovery: "On the desk in the Trent Protective office.",
@@ -342,7 +342,7 @@ export const groupC: EvidenceDef[] = [
   ev({
     id: "E058",
     title: "Wire Transfer, October 26, 2018",
-    description: "The morning after Glenn's murder, Stroud Riverfront Development wired $15,000 to Trent Protective Services.",
+    description: "The morning after Glenn's murder, Stroud Riverfront Development wired $12,500 to Trent Protective Services.",
     sourceLocationId: "police",
     image: "ev.e058",
     inspection: P(
@@ -350,7 +350,7 @@ export const groupC: EvidenceDef[] = [
       "Date: Friday, October 26, 2018, 9:11 AM.",
       "Originator: Stroud Riverfront Development LLC, operating account ending 4407. Authorized by: Richard A. Stroud (phone request 8:02 AM, confirmed by callback).",
       "Beneficiary: Trent Protective Services, Inc., account ending 2268.",
-      "Amount: $15,000.00.",
+      "Amount: $12,500.00.",
       "Memo: \"Special services Q4.\"",
       "Bank note: No invoice on file for this payment. Regular monthly site security payments to the same beneficiary are $8,400 by check.",
     ),

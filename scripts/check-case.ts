@@ -15,6 +15,7 @@ import { fileUnder, reportStandardProblems } from "./report-helpers";
 import { checkC003 } from "./check-case-C003";
 import { checkC004 } from "./check-case-C004";
 import { checkC005 } from "./check-case-C005";
+import { checkC006 } from "./check-case-C006";
 import { wordsFor } from "../src/game/words";
 import type { CaseDefinition, GameAction, InvestigationState, Theory } from "../src/game/engine/types";
 
@@ -77,6 +78,7 @@ const REVEALS: Record<string, RegExp> = {
   C003: /\b(i killed|i shot|we shot|bell killed|bell shot|shaw shot|voss ordered|i did it|we did it|i paid them to)\b/i,
   C004: /\b(i killed|i hit him|i struck|harlan killed|victor killed|harlan struck|i did it|harlan did it)\b/i,
   C005: /\b(i killed|i struck him|i struck edmund|matthias killed|matthias struck|the cellarer killed|the cellarer struck|i forged|we forged|i did it)\b/i,
+  C006: /\b(i killed|i hit her|i pushed her|i struck|wade killed|wade struck|trent killed|i ordered|stroud ordered|i did it|i beat him|i took him)\b/i,
 };
 const spoken = [
   ...def.questions.flatMap((q) => [q.prompt, ...q.reply, ...(q.variants ?? []).flatMap((v) => v.reply)]),
@@ -766,6 +768,8 @@ if (id === "C001") {
   checkC004(def, problems);
 } else if (id === "C005") {
   checkC005(def, problems);
+} else if (id === "C006") {
+  checkC006(def, problems);
 }
 randomWalks();
 

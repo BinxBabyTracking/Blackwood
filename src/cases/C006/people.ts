@@ -14,10 +14,40 @@ import type { CharacterDef, Condition } from "@/game/engine/types";
 const briefed: Condition = { flag: "casefile_read" };
 const never: Condition = { not: { always: true } };
 const glennDead: Condition = { event: "RE06" };
-const lenGone: Condition = { all: [{ event: "RE11" }, { not: { event: "RE15" } }] };
+/* From his call on Sunday until police find him, Len cannot be reached. */
+const lenGone: Condition = { all: [{ event: "RE10" }, { not: { event: "RE15" } }] };
 const trentArrested: Condition = { flag: "trent_arrested" };
 
 export const people: CharacterDef[] = [
+  {
+    id: "granger",
+    name: "Det. Sgt. Philip Granger",
+    role: "Led the 1996 missing person case (died 2015)",
+    portrait: "char.granger",
+    bio: [{ text: "Hollow Creek police detective from 1974 to 2004. Closed Emily's case in September 1996 as a probable runaway. Died in 2015." }],
+    available: never,
+    deceased: { always: true },
+    known: { hasEvidence: "E007" },
+    locationId: null,
+    onBoard: false,
+    defaultEvidenceReply: "",
+    idleLine: "",
+    voice: { voiceId: "cjVigY5qzO86Huf0OWal", direction: "Man in his fifties on a 1996 interview tape: a small-town police sergeant, patient, plain, a little bored. American, western Pennsylvania. Slightly hissy cassette sound." },
+  },
+  {
+    id: "caller",
+    name: "Unknown caller",
+    role: "Blocked number",
+    portrait: "char.caller",
+    bio: [{ text: "A man's voice from a blocked number." }],
+    available: never,
+    known: { flag: "threatened" },
+    locationId: null,
+    onBoard: false,
+    defaultEvidenceReply: "",
+    idleLine: "",
+    voice: { voiceId: "N2lVS1w4EtoT3dr4eOWO", direction: "A man's voice on a phone, low, flat, unhurried, deliberately even. American." },
+  },
   {
     id: "emily",
     name: "Emily Lasko",
@@ -134,7 +164,7 @@ export const people: CharacterDef[] = [
     known: { any: [{ hasEvidence: "E036" }, { hasEvidence: "E038" }, { deduction: "D17" }] },
     bio: [
       { text: "Sixty-four. Retired from the Borough of Hollow Creek, where he was code enforcement and safety officer for twenty-six years. Lives alone at 6 Hilltop Road." },
-      { text: "Missing from his home since Sunday night, October 28, 2018.", requires: lenGone },
+      { text: "Missing from his home since Sunday night, October 28, 2018.", requires: { all: [{ event: "RE11" }, { not: { event: "RE15" } }] } },
       { text: "Found alive on October 30, 2018, held in a cellar on Laurel Hollow Road. In Mon Valley Hospital.", requires: { event: "RE15" } },
     ],
     available: { not: lenGone },
@@ -196,7 +226,7 @@ export const people: CharacterDef[] = [
     onBoard: true,
     defaultEvidenceReply: "Let me get my glasses. No, I don't know it.",
     idleLine: "I've said my piece. Come back when you've got something.",
-    voice: { voiceId: "pqHfZKP75CvOlQylNhV4", direction: "Man of seventy, a retired union leader: chatty, gravelly, precise about dates, a grudge he has earned. Western Pennsylvania American." },
+    voice: { voiceId: "CYw3kZ02Hs0563khs1Fj", direction: "Man of seventy, a retired union leader: chatty, gravelly, precise about dates, a grudge he has earned. Western Pennsylvania American." },
   },
   {
     id: "rebecca",
@@ -262,6 +292,8 @@ export const people: CharacterDef[] = [
     ],
     available: { always: true },
     locationId: "forensic",
+    phone: { talkedTo: "brooks" },
+    contact: "County Medical Examiner.",
     onBoard: false,
     defaultEvidenceReply: "That's outside what I can speak to. I work with what's on the table.",
     idleLine: "I have another case on the table. Come back when there's something new.",

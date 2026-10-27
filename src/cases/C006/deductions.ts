@@ -84,7 +84,7 @@ export const DEDUCTIONS = [
     { chain: "C", chapter: 2, required: true, unlocks: "The log comparison (original and altered page 41) once E032 is found" },
   ),
   d(
-    { id: "D15", code: "D15", title: "Blaming the Crew", text: "The company told the public the men bypassed a lockout. The lockout was on, by the fire marshal's own photograph and two witnesses. The \"employee error\" story was false.", connections: [["E021", "E028"], ["E021", "E029"]] },
+    { id: "D15", code: "D15", title: "Blaming the Crew", text: "The company told the public the men bypassed a lockout. The lockout was on, by the fire marshal's own photograph and a furnace operator who saw it. The \"employee error\" story was false.", connections: [["E021", "E028"], ["E021", "E029"]] },
     { chain: "C", chapter: 2, required: false, unlocks: "Supporting; strengthens the report's cover-up point" },
   ),
   // Chain D: the financial and regulatory conspiracy
@@ -126,7 +126,7 @@ export const DEDUCTIONS = [
     { chain: "E", chapter: 3, required: true, unlocks: "Stroud's Chapter 4 questions about Trent" },
   ),
   d(
-    { id: "D25", code: "D25", title: "The Hand and the Order", text: "Twenty-one minutes after Glenn hung up from telling Stroud he would talk, Stroud called a prepaid phone that was later found in Trent's truck. That phone was on the tower serving the storage facility's road during the killing, called Stroud minutes after, and $15,000 went out the next morning.", connections: [["E080", "E057"], ["E058", "E047"]], requires: { all: [{ deduction: "D23" }, { deduction: "D24" }] } },
+    { id: "D25", code: "D25", title: "The Hand and the Order", text: "Twenty-one minutes after Glenn hung up from telling Stroud he would talk, Stroud called a prepaid phone that was later found in Trent's truck. That phone was on the tower serving the storage facility's road during the killing, called Stroud minutes after, and $12,500 went out the next morning.", connections: [["E080", "E057"], ["E058", "E047"]], requires: { all: [{ deduction: "D23" }, { deduction: "D24" }] } },
     { chain: "E", chapter: 5, required: true, unlocks: "Report option for who ordered Glenn's murder" },
   ),
   // Chain F: Len's abduction
