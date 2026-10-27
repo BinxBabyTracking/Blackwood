@@ -321,9 +321,11 @@ function availableQuestions(def: CaseDefinition, s: InvestigationState, characte
   );
 }
 
+const TITLES = new Set(["Master", "Brother", "Sister", "Lord", "Lady", "Abbot", "Novice", "Father", "Mother"]);
+
 function shortName(c: CharacterDef) {
   const parts = c.name.split(" ");
-  return parts[0].endsWith(".") ? `${parts[0]} ${parts[parts.length - 1]}` : parts[0];
+  return parts[0].endsWith(".") || TITLES.has(parts[0]) ? `${parts[0]} ${parts[parts.length - 1]}` : parts[0];
 }
 
 function whereOf(def: CaseDefinition, s: InvestigationState, c: CharacterDef) {
@@ -855,8 +857,9 @@ function step(
       if (!s.presented.includes(key)) s.presented.push(key);
       if (!s.talkedTo.includes(c.id)) s.talkedTo.push(c.id);
       const lines = d?.refuses ? [d.refuses] : r ? r.reply : [c.defaultEvidenceReply];
+      const byLetter = reachOf(def, s, c) === "telephone" && def.theme === "medieval";
       const verb = reachOf(def, s, c) === "telephone" ? "read" : "show";
-      const said = say(s, c.id, `You ${verb} ${shortName(c)} ${ev.id}, the ${ev.title.toLowerCase()}.`, lines, { you: "present", them: d?.refuses ? "refusal" : "reaction" }, ev.id);
+      const said = say(s, c.id, byLetter ? `You describe ${ev.id}, the ${ev.title.toLowerCase()}, to ${shortName(c)} in a letter.` : `You ${verb} ${shortName(c)} ${ev.id}, the ${ev.title.toLowerCase()}.`, lines, { you: "present", them: d?.refuses ? "refusal" : "reaction" }, ev.id);
       markFund(s, c.id, fund);
       const latest = [...said, ...patienceLines(def, s, c, fund)];
       if (r) {

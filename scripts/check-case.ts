@@ -14,6 +14,8 @@ import { checkC002 } from "./check-case-C002";
 import { fileUnder, reportStandardProblems } from "./report-helpers";
 import { checkC003 } from "./check-case-C003";
 import { checkC004 } from "./check-case-C004";
+import { checkC005 } from "./check-case-C005";
+import { wordsFor } from "../src/game/words";
 import type { CaseDefinition, GameAction, InvestigationState, Theory } from "../src/game/engine/types";
 
 const id = process.argv[2] ?? "C001";
@@ -66,13 +68,15 @@ if (new Set(voiceIds).size !== voiceIds.length) problems.push("two characters sh
 for (const st of def.statements) for (const l of st.transcript) if (!def.characters.find((c) => c.id === l.speakerId)?.voice) problems.push(`statement ${st.characterId} speaker ${l.speakerId} has no voice`);
 for (const st of def.statements) if (!st.officer || !st.tape || !st.recordedAt) problems.push(`statement ${st.characterId} missing metadata`);
 if (id === "C001" && def.statements.length !== 4) problems.push("expected four police statements");
-if (!def.statements.length) problems.push("no police statements");
+// A medieval case has no recorded statements: what was said is in the journal.
+if (!def.statements.length && def.theme !== "medieval") problems.push("no police statements");
 // house style and no premature solution in anything a character says
 const REVEALS: Record<string, RegExp> = {
   C001: /\b(murderer|killed her|he killed|mercer killed|daniel killed)\b/i,
   C002: /\b(i took her|i kidnapped|pell took her|gordon took her|pell kidnapped|gordon kidnapped|pell did it|gordon did it|i did it)\b/i,
   C003: /\b(i killed|i shot|we shot|bell killed|bell shot|shaw shot|voss ordered|i did it|we did it|i paid them to)\b/i,
   C004: /\b(i killed|i hit him|i struck|harlan killed|victor killed|harlan struck|i did it|harlan did it)\b/i,
+  C005: /\b(i killed|i struck him|i struck edmund|matthias killed|matthias struck|the cellarer killed|the cellarer struck|i forged|we forged|i did it)\b/i,
 };
 const spoken = [
   ...def.questions.flatMap((q) => [q.prompt, ...q.reply, ...(q.variants ?? []).flatMap((v) => v.reply)]),
@@ -760,6 +764,8 @@ if (id === "C001") {
   checkC003(def, problems);
 } else if (id === "C004") {
   checkC004(def, problems);
+} else if (id === "C005") {
+  checkC005(def, problems);
 }
 randomWalks();
 
@@ -779,7 +785,7 @@ randomWalks();
     st = reduce(def, look.state, { type: "photograph", hotspotId: spot.id }, 3).state;
     const v = project(def, st);
     const ph = v.evidence.find((e) => e.photo);
-    if (st.photos.length !== 1 || !ph || !ph.image.startsWith("/api/photo?") || ph.label !== "P1") problems.push(`photo: not filed with the evidence (${JSON.stringify(ph)})`);
+    if (st.photos.length !== 1 || !ph || !ph.image.startsWith("/api/photo?") || ph.label !== `${wordsFor(def).photoPrefix}1`) problems.push(`photo: not filed with the evidence (${JSON.stringify(ph)})`);
     try { reduce(def, st, { type: "photograph", hotspotId: spot.id }, 4); problems.push("photo: same thing photographed twice"); } catch {}
     try { reduce(def, st, { type: "photograph", hotspotId: "nope" }, 4); problems.push("photo: photographed something not here"); } catch {}
     const pinned = reduce(def, st, { type: "boardAdd", itemId: st.photos[0].id, x: 10, y: 10 }, 5).state;
@@ -802,7 +808,7 @@ if (def.boardHint) {
     if (!a1.pendingCalls.includes(h.callId)) problems.push("board hint did not ring on the mobile phone");
   } else {
     if (a1.pendingCalls.includes(h.callId)) problems.push("board hint rang away from the office");
-    if (!a1.messages.some((m) => /Bennett/.test(m))) problems.push("board hint gave no notice in the field");
+    if (!a1.messages.includes(wordsFor(def).boardHintWaiting)) problems.push("board hint gave no notice in the field");
   }
   const home = def.phone === "mobile" ? a1 : reduce(def, { ...a1, location: def.startLocation, messages: [] }, { type: "saveNotes", text: "y" }, 3).state;
   if (!home.pendingCalls.includes(h.callId)) problems.push("board hint did not ring in the office");

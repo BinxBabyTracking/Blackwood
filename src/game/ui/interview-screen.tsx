@@ -40,7 +40,9 @@ export function InterviewScreen({
   const player = useLinePlayer(volume);
   const voiced = data.voiced && view.voices;
   const closed = view.status === "closed";
-  const first = data.name.split(" ")[0].endsWith(".") ? data.name.split(" ").slice(-1)[0] : data.name.split(" ")[0];
+  // "Det. Cross" is Cross; "Brother Matthias" stays Brother Matthias, as anyone in 1327 would say it.
+  const parts = data.name.split(" ");
+  const first = parts[0].endsWith(".") ? parts.slice(-1)[0] : /^(Brother|Sister|Abbot|Novice|Master|Lord|Lady|Father|Mother)$/.test(parts[0]) ? `${parts[0]} ${parts.slice(-1)[0]}` : parts[0];
 
   const srcs = useMemo(
     () => data.history.map((l) => (l.kind === "question" || l.kind === "present" || l.kind === "cue" ? null : voiceSrc(caseId, "conversation", data.characterId, l.n))),
@@ -133,7 +135,7 @@ export function InterviewScreen({
               <p className="font-display text-2xl leading-tight text-paper sm:text-3xl md:text-4xl">{data.name}</p>
               <p className="mt-1 font-mono text-xs text-paper/70">{data.role}</p>
               <p className="mt-3 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-smoke">
-                {data.medium === "telephone" ? "On the line" : "Location"}
+                {data.medium === "telephone" ? (view.theme === "medieval" ? "By letter" : "On the line") : "Location"}
                 <span className="ml-2 normal-case tracking-normal text-paper/80">{data.where}</span>
               </p>
               <div className="mt-3 flex flex-wrap items-center gap-3">
@@ -153,7 +155,11 @@ export function InterviewScreen({
               <Transcript lines={data.history} current={player.current} voiced={voiced} onReplay={(n) => play(n, srcs, n + 1)} />
             ) : stage.length === 0 ? (
               <p className="font-serif text-xl italic text-paper/60">
-                {data.medium === "telephone" ? `${data.name} is on the line. Ask what you need to know.` : `${first} waits for your first question.`}
+                {data.medium === "telephone"
+                  ? view.theme === "medieval"
+                    ? `Write to ${data.name}. A messenger brings his answer by return.`
+                    : `${data.name} is on the line. Ask what you need to know.`
+                  : `${first} waits for your first question.`}
               </p>
             ) : (
               <div className="max-w-3xl space-y-5">
@@ -205,7 +211,7 @@ export function InterviewScreen({
             {mode === "evidence" ? (
               <EvidenceTray
                 view={view}
-                who={data.medium === "telephone" ? `Read ${data.name.startsWith("Det.") ? `Det. ${data.name.split(" ").slice(-1)[0]}` : first} a piece of evidence` : `Show ${first} a piece of evidence`}
+                who={data.medium === "telephone" && view.theme === "medieval" ? `Describe a piece of evidence to ${data.name}` : data.medium === "telephone" ? `Read ${data.name.startsWith("Det.") ? `Det. ${data.name.split(" ").slice(-1)[0]}` : first} a piece of evidence` : `Show ${first} a piece of evidence`}
                 disabled={pending || closed || !data.available}
                 onPick={(id) => ask({ type: "present", characterId: data.characterId, evidenceId: id })}
                 onBack={() => setMode("questions")}
@@ -232,7 +238,9 @@ export function InterviewScreen({
                     <p className="mt-2 text-xs leading-snug text-smoke">
                       {data.characterId === "bennett"
                         ? "Det. Bennett only knows what is in the police file."
-                        : "Witnesses only know what they saw, heard and did around the case."}{" "}
+                        : view.theme === "medieval"
+                          ? "People only know what they saw, heard and did themselves, in their own time."
+                          : "Witnesses only know what they saw, heard and did around the case."}{" "}
                       Ask about the people, the night and the evidence. Questions about anything else get short answers.
                     </p>
                     {data.questions.limited && data.available && !closed ? (
