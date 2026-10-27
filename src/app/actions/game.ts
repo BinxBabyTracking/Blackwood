@@ -5,7 +5,7 @@ import { GameError, normalizeState, reduce, respond } from "@/game/engine/engine
 import { questionsLeft } from "@/game/engine/questions";
 import type { ActionResponse, GameAction } from "@/game/engine/types";
 import { findInvestigation, investigatorName, PersistenceError, recordClosedCase, restartInvestigation, saveState, startInvestigation } from "@/game/persistence";
-import { loadCase } from "@/game/registry";
+import { loadCase, refreshArt } from "@/game/registry";
 import { interpretQuestion } from "@/lib/interview/understand";
 import { actingUser } from "@/lib/party";
 import { createClient } from "@/lib/supabase/server";
@@ -31,6 +31,7 @@ function askedTooFast(userId: string) {
 
 export async function acceptAssignment(fd: FormData) {
   const caseId = String(fd.get("caseId") ?? "");
+  await refreshArt();
   const def = loadCase(caseId);
   const userId = await currentUserId();
   if (!userId) redirect(`/login?next=/agency/assignments/${caseId}`);
@@ -46,6 +47,7 @@ export async function acceptAssignment(fd: FormData) {
 }
 
 export async function restartCase(caseId: string): Promise<ActionResponse | { error: string }> {
+  await refreshArt();
   const def = loadCase(caseId);
   const userId = await currentUserId();
   if (!def || !userId) return { error: "Sign in again to continue." };
@@ -74,6 +76,7 @@ export type PlayResult = ActionResponse | { error: string; saved: boolean };
  */
 export async function playAction(caseId: string, action: GameAction, asGuest = false): Promise<PlayResult> {
   if (!action || typeof action !== "object" || !ACTIONS.has(action.type)) return { error: "Unknown action.", saved: true };
+  await refreshArt();
   const def = loadCase(caseId);
   if (!def) return { error: "This case is not playable.", saved: true };
   // In a joint investigation, a guest's actions are applied to the host's investigation.
@@ -135,6 +138,7 @@ export type SyncResult = { changed: false } | { changed: true; stamp: string; re
  * gets the fresh view.
  */
 export async function syncView(caseId: string, since: string, asGuest = false): Promise<SyncResult> {
+  await refreshArt();
   const def = loadCase(caseId);
   if (!def) return { error: "This case is not playable." };
   const acting = await actingUser(def.id, asGuest);

@@ -6,7 +6,7 @@ import { buttonClass } from "@/components/ui";
 import { Seal } from "@/components/wordmark";
 import { normalizeState, respond } from "@/game/engine/engine";
 import { findInvestigation, recordClosedCase } from "@/game/persistence";
-import { loadCase } from "@/game/registry";
+import { loadCase, refreshArt } from "@/game/registry";
 import { InvestigationShell } from "@/game/ui/investigation-shell";
 import { hasReviewed } from "@/lib/feedback";
 import { getSettings, requireInvestigator } from "@/lib/investigator";
@@ -54,6 +54,7 @@ function Notice({ title, children, action }: { title: string; children: React.Re
 async function Desk({ params }: { params: Promise<{ caseId: string }> }) {
   const me = await requireInvestigator();
   const { caseId } = await params;
+  await refreshArt();
   const def = loadCase(caseId);
   if (!def) notFound();
 

@@ -1,4 +1,4 @@
-import generated from "@/art/generated.json";
+import { painted } from "@/art/painted";
 import type { AssetManifest } from "@/game/engine/types";
 import { SOUNDTRACK } from "./soundtrack";
 
@@ -17,7 +17,6 @@ const objects = ["envelope_sealed", "envelope_open", "evidence_bag", "evidence_b
 const evidence = Array.from({ length: 23 }, (_, i) => `e${String(i + 1).padStart(2, "0")}`);
 
 /** Painted artwork written by scripts/import-art.mjs. Anything not painted yet keeps its placeholder. */
-const painted = (generated as { images: Record<string, { url: string }> }).images;
 const art = (id: string) => painted[id]?.url ?? null;
 
 const placeholders: AssetManifest = {
@@ -62,7 +61,8 @@ const OVERLAYS = [
   "obj_glasses", "obj_letter", "obj_slip",
 ];
 
-export const assets: AssetManifest = {
+/** Built again when Admin makes a new painting live (see refreshArt in the registry). */
+export const buildAssets = (): AssetManifest => ({
   images: {
     ...placeholders.images,
     ...Object.fromEntries(Object.entries(PAINTED).flatMap(([key, id]) => (art(id) ? [[key, art(id)!]] : []))),
@@ -71,4 +71,6 @@ export const assets: AssetManifest = {
     ...Object.fromEntries(OVERLAYS.flatMap((k) => (art(`c002_${k}`) ? [[`art.${k}`, art(`c002_${k}`)!]] : []))),
   },
   audio: placeholders.audio,
-};
+});
+
+export const assets = buildAssets();

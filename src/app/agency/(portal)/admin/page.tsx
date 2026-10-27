@@ -19,6 +19,8 @@ import { allEntries } from "@/lib/leaderboard";
 import { adminRemoveEntry } from "@/app/actions/leaderboard";
 import { NameCheck } from "@/components/portal/name-check";
 import { AdminSection } from "@/components/portal/admin-section";
+import { ArtStudio } from "@/components/portal/art-studio";
+import { artKeyStatus, artRows, fullPrompt } from "@/lib/art-studio";
 
 export const metadata: Metadata = { title: "Admin", robots: { index: false, follow: false } };
 
@@ -175,6 +177,8 @@ async function Spending() {
       <InterviewAI />
 
       <Soundtracks />
+
+      <Artwork />
 
       <form action={lockAdmin}>
         <button type="submit" className="text-sm text-smoke underline-offset-4 hover:text-paper hover:underline">
@@ -474,4 +478,34 @@ function PlayStatus({ p }: { p: { status: string; completedAt: string | null; la
     );
   if (p.status === "archived" || p.status === "abandoned") return <span className="text-smoke">Restarted</span>;
   return <span className="text-smoke">Reset (deleted)</span>;
+}
+
+/** Artwork made with OpenAI's image model, one section per case plus the site's own pictures. */
+async function Artwork() {
+  const [rows, key] = await Promise.all([artRows().catch(() => null), artKeyStatus()]);
+  if (!rows) return null;
+  const groups = [...new Set(rows.map((r) => r.group))].sort((a, b) => (a === "Shared" ? 1 : b === "Shared" ? -1 : a.localeCompare(b)));
+  const keyNote = !key.configured
+    ? "No OpenAI key is set. Add OPENAI_API_KEY in Vercel's environment variables, then redeploy."
+    : key.from === "site settings"
+      ? "Using the temporary OpenAI key saved in site settings. Move it to OPENAI_API_KEY in Vercel when you can."
+      : null;
+  return (
+    <>
+      {groups.map((g) => {
+        const list = rows.filter((r) => r.group === g);
+        const title = g === "Shared" ? "Site and travel pictures" : `${g} ${loadCase(g)?.title ?? ""}`.trim();
+        const missing = list.filter((r) => !r.current).length;
+        return (
+          <AdminSection key={g} id={`art-${g}`} title={`Artwork: ${title}${missing ? ` (${missing} missing)` : ""}`} className="max-w-4xl">
+            <p className="mt-2 text-sm text-smoke">
+              Every picture in this case, made with OpenAI ({key.model}). A new version waits for you to choose it; players only see the version marked live.
+              {g === "Shared" ? " The site and travel pictures change after the next site update, not straight away." : ""}
+            </p>
+            <ArtStudio keyNote={keyNote} rows={list.map((r) => ({ ...r, prompt: fullPrompt(r.id, r.subject) }))} />
+          </AdminSection>
+        );
+      })}
+    </>
+  );
 }

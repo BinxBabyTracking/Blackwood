@@ -7,8 +7,8 @@ const nextConfig: NextConfig = {
   partialPrefetching: true,
   experimental: {
     serverActions: {
-      // Avatars are capped at 2 MB; leave room for multipart overhead.
-      bodySizeLimit: "3mb",
+      // Avatars are capped at 2 MB; artwork uploads on Admin at 15 MB. Leave room for multipart overhead.
+      bodySizeLimit: "16mb",
     },
   },
   turbopack: {

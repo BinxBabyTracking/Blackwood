@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { normalizeState, respond } from "@/game/engine/engine";
 import { findInvestigation, investigatorName } from "@/game/persistence";
-import { loadCase } from "@/game/registry";
+import { loadCase, refreshArt } from "@/game/registry";
 import { InvestigationShell } from "@/game/ui/investigation-shell";
 import { currentGuest, lobbyGuests } from "@/lib/party";
 import { PartyFrame } from "../party-ui";
@@ -23,6 +23,7 @@ async function GuestDesk() {
   const seat = await currentGuest().catch(() => null);
   if (!seat) redirect("/party/ended");
   if (seat.lobby.status !== "started") redirect(`/party/${seat.lobby.code}`);
+  await refreshArt();
   const def = loadCase(seat.lobby.case_id);
   const loaded = def ? await findInvestigation(seat.lobby.host_user_id, def.id).catch(() => null) : null;
   if (!def || !loaded) return <PartyFrame title="The case file could not be opened.">Ask the host to reopen the joint investigation.</PartyFrame>;
