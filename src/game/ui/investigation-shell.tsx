@@ -175,7 +175,7 @@ export function InvestigationShell({
   /** A call the player chose to let ring. It stays pending and rings again on the next visit to the office. */
   const [deferredCall, setDeferredCall] = useState<string | null>(null);
   /** The journey being shown, if any. */
-  const [trip, setTrip] = useState<{ mode: TravelMode; to: string; subtitle: string } | null>(null);
+  const [trip, setTrip] = useState<{ mode: TravelMode; to: string; subtitle: string; area: string | null } | null>(null);
   const skipTrip = useRef<(() => void) | null>(null);
   const travelScenes = useTravelScenes();
   const busy = useRef(false);
@@ -401,7 +401,7 @@ export function InvestigationShell({
       const mode: TravelMode = dest.area && dest.area === view.location.area ? "walk" : "drive";
       const seconds = prefs.reducedMotion ? 1.4 : mode === "drive" ? 4.2 : 3.2;
       setLayer(null);
-      setTrip({ mode, to: dest.name, subtitle: dest.subtitle });
+      setTrip({ mode, to: dest.name, subtitle: dest.subtitle, area: dest.area });
       const stop = playTravelSound(mode, seconds, (prefs.masterVolume / 100) * (prefs.sfxVolume / 100), view.travelAudio[mode]);
       const minimum = new Promise<void>((resolve) => {
         const t = setTimeout(resolve, seconds * 1000);
@@ -840,7 +840,7 @@ export function InvestigationShell({
         <EvidenceInventory items={view.evidence} onOpen={(id) => setLayer({ k: "evidence", id, back: "inventory" })} onClose={close} />
       ) : null}
       {panel === "map" ? <TravelMap view={view} onTravel={(id) => travelTo(id)} onClose={close} pending={pending} /> : null}
-      {trip ? <TravelScene caseId={caseId} theme={view.theme} walkArt={view.caseArt.travel_walk ?? null} driveArt={{ far: view.caseArt.travel_drive_far, near: view.caseArt.travel_drive_near, car: view.caseArt.travel_drive_car }} mode={trip.mode} to={trip.to} subtitle={trip.subtitle} reducedMotion={prefs.reducedMotion} onSkip={() => skipTrip.current?.()} /> : null}
+      {trip ? <TravelScene caseId={caseId} theme={view.theme} art={view.caseArt} area={trip.area} mode={trip.mode} to={trip.to} subtitle={trip.subtitle} reducedMotion={prefs.reducedMotion} onSkip={() => skipTrip.current?.()} /> : null}
       {stamps.length && !trip ? (
         <EvidenceStamp key={`stamp-${stamps[0].id}`} item={stamps[0]} words={words} volume={(prefs.masterVolume / 100) * (prefs.sfxVolume / 100)} reducedMotion={prefs.reducedMotion} onDone={nextStamp} />
       ) : null}

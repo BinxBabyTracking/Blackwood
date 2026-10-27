@@ -209,12 +209,12 @@ function WalkScene({ still }: { still: boolean }) {
 }
 
 
-/** The agency's own travel paintings (Los Angeles, 1985), used by any case without its own. */
+/** Painted travel art, when it has been made. */
 const ART = {
-  far: paintedArt("travel_drive_far"),
-  near: paintedArt("travel_drive_near"),
-  car: paintedArt("travel_drive_car"),
-  walk: paintedArt("travel_walk"),
+  travel_drive_far: paintedArt("travel_drive_far"),
+  travel_drive_near: paintedArt("travel_drive_near"),
+  travel_drive_car: paintedArt("travel_drive_car"),
+  travel_walk: paintedArt("travel_walk"),
 };
 
 /**
@@ -256,7 +256,7 @@ function PaintedDrive({ still, art }: { still: boolean; art: DriveArt }) {
   );
 }
 
-function PaintedWalk({ still, src = ART.walk! }: { still: boolean; src?: string }) {
+function PaintedWalk({ still, src }: { still: boolean; src: string }) {
   return (
     <div className="relative h-full w-full overflow-hidden bg-black">
       {/* Seen through the investigator's eyes: a slow push forward with a walker's sway. */}
@@ -338,8 +338,8 @@ function MedievalWalk({ still }: { still: boolean }) {
 export function TravelScene({
   caseId,
   theme = "noir",
-  walkArt = null,
-  driveArt = {},
+  art = {},
+  area = null,
   mode,
   to,
   subtitle,
@@ -348,10 +348,10 @@ export function TravelScene({
 }: {
   caseId?: string;
   theme?: "noir" | "medieval";
-  /** The case's own walk painting, live versions included. */
-  walkArt?: string | null;
-  /** The case's own drive paintings (far, near, car), live versions included. A case uses its own set only when all three exist. */
-  driveArt?: { far?: string; near?: string; car?: string };
+  /** The case's own travel paintings (travel_drive_far, travel_walk_<area>, ...), live versions included. */
+  art?: Record<string, string>;
+  /** The destination's area: a painting made for that area is used before the case's general one. */
+  area?: string | null;
   mode: TravelMode;
   to: string;
   subtitle: string;
@@ -367,15 +367,19 @@ export function TravelScene({
   }, [onSkip]);
 
   const medieval = theme === "medieval";
-  // A medieval case walks everywhere, on its own painting when there is one, never the agency's city.
-  const own = (name: string) => (caseId ? paintedArt(`${caseId.toLowerCase()}_${name}`) : null);
-  const caseWalk = walkArt ?? own("travel_walk");
-  const ownWalk = medieval ? caseWalk : null;
-  // Another era or place has its own street and car once they are painted; otherwise the agency's Los Angeles.
-  const caseDrive = { far: driveArt.far ?? own("travel_drive_far"), near: driveArt.near ?? own("travel_drive_near"), car: driveArt.car ?? own("travel_drive_car") };
-  const drive: DriveArt | null = caseDrive.far && caseDrive.near && caseDrive.car ? (caseDrive as DriveArt) : ART.far && ART.near && ART.car ? { far: ART.far, near: ART.near, car: ART.car } : null;
-  const walk = caseWalk ?? ART.walk;
-  const paintedReady = medieval ? Boolean(ownWalk) : mode === "drive" ? Boolean(drive) : Boolean(walk);
+  /*
+   * Each picture is the one made for the destination's area, else the case's
+   * own, else the agency's Los Angeles one. A medieval case never borrows the city.
+   */
+  const pick = (name: keyof typeof ART) =>
+    (area ? art[`${name}_${area}`] : undefined) ??
+    art[name] ??
+    (caseId ? paintedArt(`${caseId.toLowerCase()}_${name}${area ? `_${area}` : ""}`) ?? paintedArt(`${caseId.toLowerCase()}_${name}`) : null) ??
+    (medieval ? null : ART[name]);
+  const walk = medieval || mode === "walk" ? pick("travel_walk") : null;
+  const drive = !medieval && mode === "drive" ? { far: pick("travel_drive_far"), near: pick("travel_drive_near"), car: pick("travel_drive_car") } : null;
+  const driveReady = drive && drive.far && drive.near && drive.car ? (drive as DriveArt) : null;
+  const paintedReady = medieval || mode === "walk" ? Boolean(walk) : Boolean(driveReady);
   return (
     <div
       className="fixed inset-0 z-[60] flex items-center justify-center bg-black travel-fade"
@@ -387,7 +391,7 @@ export function TravelScene({
     >
       {paintedReady ? (
         <div className="aspect-video max-h-full w-full max-w-[calc(100dvh*16/9)]" aria-hidden>
-          {medieval ? <PaintedWalk still={reducedMotion} src={ownWalk!} /> : mode === "drive" ? <PaintedDrive still={reducedMotion} art={drive!} /> : <PaintedWalk still={reducedMotion} src={walk!} />}
+          {driveReady ? <PaintedDrive still={reducedMotion} art={driveReady} /> : <PaintedWalk still={reducedMotion} src={walk!} />}
         </div>
       ) : (
         <svg viewBox={`0 0 ${W} ${H}`} className="aspect-video max-h-full w-full max-w-[calc(100dvh*16/9)]" preserveAspectRatio="xMidYMid slice" aria-hidden>

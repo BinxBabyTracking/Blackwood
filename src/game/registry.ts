@@ -25,7 +25,24 @@ export function loadCase(caseId: string): CaseDefinition | null {
   return CASES[caseId.toUpperCase()] ?? null;
 }
 
-const BUILD: Record<string, () => CaseDefinition["assets"]> = { C001: C001Assets, C002: C002Assets, C003: C003Assets, C004: C004Assets, C005: C005Assets };
+/**
+ * A case's own travel paintings (<case>_travel_*, e.g. c002_travel_drive_far_tamarack),
+ * live Admin versions included, handed to the travel scene as ui.travel_*. Any
+ * case gets them by adding the images to art/manifest.json; nothing else to wire.
+ */
+function withTravel(caseId: string, build: () => CaseDefinition["assets"]) {
+  return () => {
+    const assets = build();
+    const prefix = `${caseId.toLowerCase()}_travel_`;
+    for (const [id, v] of Object.entries(painted)) if (id.startsWith(prefix)) assets.images[`ui.${id.slice(prefix.length - "travel_".length)}`] = v.url;
+    return assets;
+  };
+}
+
+const BUILD: Record<string, () => CaseDefinition["assets"]> = Object.fromEntries(
+  Object.entries({ C001: C001Assets, C002: C002Assets, C003: C003Assets, C004: C004Assets, C005: C005Assets }).map(([id, b]) => [id, withTravel(id, b)]),
+);
+for (const [id, build] of Object.entries(BUILD)) CASES[id].assets = build();
 const committed = { ...painted };
 let artCheckedAt = 0;
 let artSignature = "";

@@ -35,7 +35,15 @@ Generated and uploaded pictures are finished the same way as `import-art.mjs`: f
 
 ## A case's own travel scenes
 
-The drive and the walk between places use the agency's Los Angeles paintings (`travel_drive_far`, `travel_drive_near`, `travel_drive_car`, `travel_walk`) unless the case has its own: `<case>_travel_drive_far` (panorama), `<case>_travel_drive_near` and `<case>_travel_drive_car` (strips) and `<case>_travel_walk` (pov). The case's `assets.ts` passes them as `ui.travel_*`, so live versions from the studio show at once. A case's own drive is used only once all three of its drive layers exist. C003 (Pennsylvania, 2018) has its own set.
+The drive and the walk between places are picked by the destination's area (`area` on the location). Each layer is chosen on its own, first match wins:
+
+1. `<case>_travel_<layer>_<area>`, e.g. `c002_travel_drive_far_tamarack` or `c004_travel_walk_wcrb`;
+2. `<case>_travel_<layer>`, the case's general one;
+3. the agency's Los Angeles painting (`travel_<layer>`), never for a medieval case.
+
+The layers are `drive_far` (panorama), `drive_near` and `drive_car` (strips) and `walk` (pov). A walk happens between two places in the same area, so a walk picture is named for that area. Adding the manifest entry is all the wiring needed: the registry hands every `<case>_travel_*` painting to the case as `ui.travel_*`, live versions included.
+
+Made so far as prompts: C002 (the coast town, Long Beach, the mountains, Oak Terrace, Wilshire; mountain pines; walks in Mariposa Bay and at the lake; it keeps the agency's car), C003 (Bellwether, Pittsburgh, downtown, Route 51, the river, the county; walks on Alder Street and downtown), C004 (1927 Chicago, the river, Hyde Park, Halsted; a Packard; walks in the WCRB corridor, the Loop, North Clark Street and the river), C005 (the moor walk).
 
 ## Talking portraits (kind "face")
 

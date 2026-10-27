@@ -4222,6 +4222,168 @@
       "kind": "evidence",
       "style": "c003",
       "subject": "A pair of worn leather work gloves and a cracked smartphone in a blue case, each in a clear evidence bag with a red seal, beside a DNA profile printout on a lab bench."
+    },
+    {
+      "id": "c002_travel_drive_far",
+      "kind": "panorama",
+      "style": "c002",
+      "subject": "Southern California at dusk in October 1988, seen side-on from a freeway: low brown hills with scattered house lights, a long line of tract houses and low commercial buildings in near-silhouette with warm lit windows, a few oil pumpjacks on a ridge, a deep violet to amber sky with long thin clouds. No people, no cars, no signs with lettering."
+    },
+    {
+      "id": "c002_travel_drive_far_wilshire",
+      "kind": "panorama",
+      "style": "c002",
+      "subject": "Los Angeles at dusk in October 1988, seen side-on from Wilshire Boulevard: a row of 1960s and 1980s office towers with lit windows, the downtown towers on the far horizon, palm silhouettes, a deep violet to amber sky. No people, no cars, no signs with lettering."
+    },
+    {
+      "id": "c002_travel_drive_far_mariposa",
+      "kind": "panorama",
+      "style": "c002",
+      "subject": "A small foggy California beach town at dusk in October 1988, seen side-on from the coast road: the ocean and a long wooden pier on the horizon, low fog drifting in, rows of small 1950s stucco houses with warm lit windows, palms, a lifeguard tower on the sand. No people, no cars, no signs with lettering."
+    },
+    {
+      "id": "c002_travel_drive_far_long_beach",
+      "kind": "panorama",
+      "style": "c002",
+      "subject": "Long Beach at dusk in October 1988, seen side-on from the harbor freeway: the port with tall container cranes, an old ocean liner moored in the distance, palm-lined apartment blocks with lit windows, the bay and a deep violet to amber sky. No people, no cars, no signs with lettering."
+    },
+    {
+      "id": "c002_travel_drive_far_tamarack",
+      "kind": "panorama",
+      "style": "c002",
+      "subject": "The San Bernardino Mountains in late afternoon in October 1988, seen side-on from a winding mountain highway: steep slopes of tall dark pines, granite outcrops, a glimpse of a blue lake far below with a few cabin lights, golden light low across the ridges and a cool pale sky. No people, no cars, no signs with lettering."
+    },
+    {
+      "id": "c002_travel_drive_far_oak_terrace",
+      "kind": "panorama",
+      "style": "c002",
+      "subject": "A quiet San Gabriel Valley suburb at night in November 1988, seen side-on from a boulevard: rows of ranch houses with porch lights, sycamores and oaks, a strip of shops with dim lights, and the dark San Gabriel Mountains on the horizon under a cool moonlit sky. No people, no cars, no signs with lettering."
+    },
+    {
+      "id": "c002_travel_drive_near",
+      "kind": "strip",
+      "style": "c002",
+      "subject": "A long row of roadside silhouettes beside a Southern California road in 1988: tall palm trees of different heights, two tall 1980s cobra-head streetlights with warm glowing lamps, a low cinderblock wall, oleander shrubs. Everything stands on one level baseline along the very bottom edge of the image, evenly spaced across the full width so the row can repeat. No sky, no road, no buildings."
+    },
+    {
+      "id": "c002_travel_drive_near_tamarack",
+      "kind": "strip",
+      "style": "c002",
+      "subject": "A long row of roadside silhouettes beside a mountain highway: tall dark ponderosa pines of different heights, a low wooden guardrail with weathered posts, a granite boulder and a few manzanita shrubs. Everything stands on one level baseline along the very bottom edge of the image, evenly spaced across the full width so the row can repeat. No sky, no road, no buildings."
+    },
+    {
+      "id": "c002_travel_walk_mariposa",
+      "kind": "pov",
+      "style": "c002",
+      "subject": "Walking along a quiet residential street in a small California beach town at night in October 1988, looking down the sidewalk: small 1950s stucco houses with one-car garages and warm lit windows, palms and a jacaranda, low fog drifting under an amber streetlight, a few 1980s sedans and a pickup parked along the curb, the glow of the harbor boulevard at the end of the street."
+    },
+    {
+      "id": "c002_travel_walk_tamarack",
+      "kind": "pov",
+      "style": "c002",
+      "subject": "Walking along a narrow lakeshore road at dusk in the San Bernardino Mountains in October 1988, looking ahead: tall pines on both sides, small wooden cabins with lit windows among the trees, the dark lake glimpsed through the trunks on the right, pine needles on the cracked asphalt, the warm light of a small general store far ahead."
+    },
+    {
+      "id": "c003_travel_drive_far_pittsburgh",
+      "kind": "panorama",
+      "style": "c003",
+      "subject": "Pittsburgh at dusk on a rainy evening in October 2018, seen side-on from a riverside parkway: the river with yellow steel bridges, the downtown skyline lit up, the steep wooded bluff of Mount Washington, low rain clouds glowing orange. No people, no cars, no signs with lettering."
+    },
+    {
+      "id": "c003_travel_drive_far_downtown",
+      "kind": "panorama",
+      "style": "c003",
+      "subject": "The small downtown of a western Pennsylvania steel town on a rainy October evening in 2018, seen side-on: three- and four-story brick commercial blocks with lit shop windows, a stone courthouse with a clock tower, wet sodium-orange streetlights, the river bridge beyond. No people, no cars, no signs with lettering."
+    },
+    {
+      "id": "c003_travel_drive_far_route51",
+      "kind": "panorama",
+      "style": "c003",
+      "subject": "A commercial strip highway outside a western Pennsylvania town on a rainy October evening in 2018, seen side-on: a tow yard behind chain-link, a gas station canopy glowing, used car lots, fast-food pole signs with no lettering, wooded hills behind under low clouds. No people, no cars, no signs with lettering."
+    },
+    {
+      "id": "c003_travel_drive_far_river",
+      "kind": "panorama",
+      "style": "c003",
+      "subject": "A riverfront in a western Pennsylvania steel town on a rainy October evening in 2018, seen side-on: a rail spur and rusting freight cars, a coal barge on the wide gray river, the steel truss bridge, a gravel access road and the dark shapes of the old mill. No people, no cars, no signs with lettering."
+    },
+    {
+      "id": "c003_travel_drive_far_county",
+      "kind": "panorama",
+      "style": "c003",
+      "subject": "Rolling wooded hills of western Pennsylvania on a rainy October evening in 2018, seen side-on from a county highway: autumn trees in rust and gold, a farm with a red barn, a low modern government building with lit windows on a hilltop, low rain clouds. No people, no cars, no signs with lettering."
+    },
+    {
+      "id": "c003_travel_walk_alder",
+      "kind": "pov",
+      "style": "c003",
+      "subject": "Walking along a street of brick row houses in a western Pennsylvania steel town on a rainy October night in 2018, looking down the sidewalk: porch lights, steep front steps, wet cars from the 2010s parked along the curb, a large oak at the curb, a small corner convenience store glowing at the end of the block, sodium-orange streetlights reflecting in the puddles."
+    },
+    {
+      "id": "c003_travel_walk_downtown",
+      "kind": "pov",
+      "style": "c003",
+      "subject": "Walking along the main street of a small western Pennsylvania steel-town downtown on a rainy October evening in 2018, looking ahead: brick commercial blocks with lit shop windows, a stone courthouse with a clock tower at the end of the street, wet sidewalks, parked 2010s cars, sodium-orange streetlights."
+    },
+    {
+      "id": "c004_travel_drive_far",
+      "kind": "panorama",
+      "style": "c004",
+      "subject": "Chicago at dusk on a rainy evening in October 1927, seen side-on from a street: Art Deco and Beaux-Arts towers with lit windows, the elevated train crossing on its steel trestle, the river with a lit bascule bridge, soot and smoke in a deep amber and slate sky. No people, no cars, no signs with lettering."
+    },
+    {
+      "id": "c004_travel_drive_far_river",
+      "kind": "panorama",
+      "style": "c004",
+      "subject": "The Chicago River at night in October 1927, seen side-on from a riverside street: brick warehouses with loading doors on the water, a raised bascule bridge with its lamps lit, a tugboat, fog over the black water and the city towers beyond. No people, no cars, no signs with lettering."
+    },
+    {
+      "id": "c004_travel_drive_far_hyde_park",
+      "kind": "panorama",
+      "style": "c004",
+      "subject": "Hyde Park on Chicago's South Side at dusk in October 1927, seen side-on from a boulevard: stately greystone houses and brick apartment buildings with lit windows, tall elms losing their leaves, the Gothic towers of a university in the distance, a deep amber sky. No people, no cars, no signs with lettering."
+    },
+    {
+      "id": "c004_travel_drive_far_halsted",
+      "kind": "panorama",
+      "style": "c004",
+      "subject": "South Halsted Street in Chicago at night in October 1927, seen side-on: crowded brick tenements with lit windows above small shops, a streetcar line, market awnings, smoke from chimneys and the glow of the stockyards on the horizon. No people, no cars, no signs with lettering."
+    },
+    {
+      "id": "c004_travel_drive_near",
+      "kind": "strip",
+      "style": "c004",
+      "subject": "A long row of street silhouettes beside a Chicago street in 1927: the steel columns and girders of the elevated train, cast-iron lamp posts with glowing globes, a fire hydrant and a newsstand with no lettering. Everything stands on one level baseline along the very bottom edge of the image, evenly spaced across the full width so the row can repeat. No sky, no road, no buildings."
+    },
+    {
+      "id": "c004_travel_drive_car",
+      "kind": "strip",
+      "style": "c004",
+      "subject": "A 1926 black four-door Packard sedan with chrome headlamps, running boards and spoked wheels, the silhouette of a man in a fedora at the wheel. Seen exactly side-on in profile and facing right, headlights on and a warm glow from the dashboard. Whole car in frame with space around it; only a faint contact shadow under the tyres."
+    },
+    {
+      "id": "c004_travel_walk_wcrb",
+      "kind": "pov",
+      "style": "c004",
+      "subject": "Walking down a long Art Deco corridor on the 19th floor of a Chicago radio station in October 1927, looking ahead: polished terrazzo floor, brass wall sconces, studio doors with frosted glass windows, a red lamp lit over the far studio door, velvet curtains, the city lights through a window at the end."
+    },
+    {
+      "id": "c004_travel_walk_loop",
+      "kind": "pov",
+      "style": "c004",
+      "subject": "Walking along a rainy Chicago Loop street at night in October 1927, looking ahead: tall office buildings with lit windows, the elevated train on its trestle overhead, a streetcar and Model T cars on the wet street, glowing lamp posts."
+    },
+    {
+      "id": "c004_travel_walk_near_north",
+      "kind": "pov",
+      "style": "c004",
+      "subject": "Walking along North Clark Street in Chicago at night in October 1927, looking ahead: a cigar store with a warm lit window, brick walk-up apartments, a speakeasy's dim doorway in a side alley, wet cobbles and streetcar tracks, glowing lamp posts, Model T cars parked along the curb."
+    },
+    {
+      "id": "c004_travel_walk_river",
+      "kind": "pov",
+      "style": "c004",
+      "subject": "Walking along a riverside street of warehouses in Chicago at night in October 1927, looking ahead: brick warehouses with loading doors, wet cobbles and rail tracks, fog off the river, the lit iron bascule bridge at the end of the street, a single lamp over a night gate."
     }
   ],
   "styles": {
