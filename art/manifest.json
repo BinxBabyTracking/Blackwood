@@ -163,7 +163,19 @@
     "s001c03_malone": "a 43-year-old white man, an owner-operator truck driver, a round face, short reddish-brown hair under a faded green trucker cap with no logo, a few days of stubble, wearing a brown canvas work jacket over a plaid flannel shirt, wary",
     "s001c03_sullivan": "a 62-year-old Irish-American man, a retired dockworker and union steward, a full head of white hair cut short, bushy white eyebrows, a deeply lined weathered face, big scarred hands, wearing a navy peacoat over a gray union hooded sweatshirt with no readable words, blunt and grieving",
     "s001c03_whitaker": "a 45-year-old Black woman, a big-city homicide detective, close-cropped natural hair with a little gray at the temples, an alert steady face, small stud earrings, wearing a dark gray blazer over a black turtleneck with a gold badge clipped at the belt out of frame, professional and dry",
-    "s001c03_walsh": "a 40-year-old white man, a corporate accounts manager and CPA, neat short brown hair, a soft clean-shaven face, rimless glasses, wearing a light blue button-down shirt with a navy tie and a gray V-neck sweater, nervous"
+    "s001c03_walsh": "a 40-year-old white man, a corporate accounts manager and CPA, neat short brown hair, a soft clean-shaven face, rimless glasses, wearing a light blue button-down shirt with a navy tie and a gray V-neck sweater, nervous",
+    "s001c05_nathaniel": "a 57-year-old white man, an independent investment adviser, neatly combed gray hair, clean-shaven, a long thoughtful face, kind gray eyes behind rimless reading glasses, wearing a dinner jacket and black bow tie, courteous and careful",
+    "s001c05_marchetti": "a 50-year-old white woman, a New York corporate lawyer, sleek dark brown hair cut in a sharp chin-length bob, strong brows, dark eyes, pearl earrings, wearing a tailored black dress with a fitted jacket, poised and controlled",
+    "s001c05_knox": "a 41-year-old white man, a private security contractor and former soldier, tall and broad-shouldered, a shaved head, a square jaw, pale blue eyes, a coiled clear earpiece wire behind one ear, wearing a dark suit, white shirt and dark tie, clipped and watchful",
+    "s001c05_claudia": "a 55-year-old white woman, a museum administrator, silver-blonde hair in a neat low knot, fine lines, blue eyes red-rimmed from crying, small diamond studs, wearing a dark green silk evening dress with a pale gray wrap, composed by effort",
+    "s001c05_wexler": "a 29-year-old Asian American man, a junior financial analyst, short black hair, clean-shaven, round wire-rimmed glasses, a slightly boyish face, wearing a light blue oxford shirt and a navy V-neck sweater, anxious",
+    "s001c05_bellamy": "a 58-year-old Black man, a foundation's chief financial officer, close-cropped gray hair, a neat gray mustache, half-moon reading glasses, wearing a charcoal three-piece suit with a burgundy tie, correct and a little stiff",
+    "s001c05_lane": "a 45-year-old white woman, a charity's director of events, auburn hair pinned up, a headset pushed down around her neck, a lanyard, wearing a black evening suit, shaken but precise",
+    "s001c05_porter": "a 38-year-old Latino man, a hotel security supervisor, short dark hair, a trimmed beard, brown eyes, wearing a navy blazer with a hotel security pin, a white shirt and a radio on his belt, by-the-book",
+    "s001c05_mendes": "a 32-year-old Latina woman, a hotel banquet server, dark hair in a tight bun, large brown eyes, small gold hoops, wearing a white shirt, black vest and a name tag reading exactly: OLIVIA, nervous",
+    "s001c05_abernathy": "a 47-year-old Black man, a trusts and private funds lawyer and law school adjunct, a shaved head, a short salt-and-pepper beard, tortoiseshell glasses, wearing a gray tweed jacket over a white shirt and a knit tie, careful and engaged",
+    "s001c05_caruso": "a 49-year-old white man, a New York homicide detective, thick dark hair graying at the sides, heavy brows, a broken nose, tired brown eyes, a five o'clock shadow, wearing a rumpled gray suit with a gold detective shield on his belt, dry and professional",
+    "s001c05_donovan": "a 34-year-old white woman, a former records analyst, straight light brown hair to the shoulders, a pale, freckled face, gray eyes, no makeup, wearing a navy cardigan over a white blouse, careful and shaken"
   },
   "images": [
     {
@@ -6391,6 +6403,609 @@
       "subject": "Baltimore's harbor seen from above, the broad pale blue Patapsco River running from the inner harbor at the top center out to the right toward the bay. On the north shore, a dense downtown grid at the top center, rowhouse neighborhoods of small blocks to its east, an old waterfront warehouse district along the water, and further east and south along the north shore a large container terminal: long piers, cranes, rows of stacked containers and a fenced staging area. On the south shore, an industrial district of rail yards, a transload yard by the water and fenced lots in a bay further south. In the far upper left corner, a highway in ochre running off the edge of the sheet to the west, toward distant green hills.",
       "suffix": "A hand-painted street map, seen flat from directly above and filling the whole image edge to edge like a sheet laid on a table: no table, no border, no frame. Muted map colors: cream paper, ochre streets, sage green parkland, pale blue water, faint fold creases. Absolutely no words, letters, numbers, street names or symbols anywhere on the map.",
       "style": "s001"
+    },
+    {
+      "id": "s001c05_loc_lobby",
+      "kind": "background",
+      "style": "s001",
+      "subject": "The marble lobby of a grand old Park Avenue hotel in Manhattan late on a December night in 2018, during an interrupted charity gala. On the far left, a brass easel holding a framed gala sign beside tall gilded ballroom doors. Left of center, open marble floor before two columns and a bench. In the center, a long framed seating chart on an easel, and below it the tall double doors to the ballroom, standing open. Right of center, open floor before a door marked EVENT OFFICE. On the right, a plain door to the security office behind the front desk, a revolving door onto the avenue with police lights glowing blue outside, and a long marble front desk under a gilt clock. Christmas garlands, warm chandelier light."
+    },
+    {
+      "id": "s001c05_loc_ballroom",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A grand hotel ballroom during a charity gala that has just been stopped, December 2018. On the left, tall framed photograph panels of charity programs along the wall, and open floor before them. At the top center, a low stage hung with deep blue velvet with a lectern and an auctioneer's stand. In the center and below, round tables with white cloths, candles and flowers, one near the stage with an untouched dessert and a gray wrap over a chair back. Right of center, open floor between tables. On the right, a carpeted staircase rising to a mezzanine behind service screens, and the tall doors back to the lobby. Chandeliers, warm gold light, half-empty champagne glasses."
+    },
+    {
+      "id": "s001c05_loc_ballroom_cleared",
+      "kind": "background",
+      "style": "s001",
+      "subject": "The same grand hotel ballroom the morning after a gala, December 2018, being cleared. On the left, the framed charity photograph panels still along the wall. At the top center, the stage stripped of its velvet, a man on a ladder taking down lights. In the center, round tables stripped to bare wood, chairs stacked on dollies, a neat stack of place cards on one table. On the right, the carpeted staircase to the mezzanine and the tall doors to the lobby. Pale daylight from high windows, work lights, no party left."
+    },
+    {
+      "id": "s001c05_loc_conf_corridor",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A carpeted hotel mezzanine conference corridor at night, December 2018. At the top left, a small black security camera dome on the ceiling above the top of a staircase landing; at the left, the stair landing going down. Left of center, a swinging pantry door with a porthole window. In the center, a row of walnut doors with brass card readers and small engraved letter plates, one door in the middle ajar with light inside. Upper right of center, a second camera dome on the ceiling, turned toward the far end. On the right, a plain staff door at the far end with evidence tape across its upper jamb, and beside it a window bay with two armchairs and a potted palm overlooking a lit avenue."
+    },
+    {
+      "id": "s001c05_loc_suite",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A small private hotel conference suite after a death, a crime scene at night, December 2018. On the left, a long walnut credenza against the wall under a framed engraving of Grand Central, with one green marble bookend at its right end and a row of display books fallen flat. In the center, a walnut conference table for eight with a cocktail tray: a crystal decanter and two tumblers, one standing with whiskey in it. Below the table, open carpet. Right of center, a leather chair lying overturned and a small side table with its drawer pulled out. On the right, the suite door, with a numbered yellow evidence tent on the carpet just inside it. Low lamplight, a crime scene photographer's light stand in a corner."
+    },
+    {
+      "id": "s001c05_loc_security_office",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A cramped hotel security office behind the front desk, night, December 2018. On the left, a wall of sixteen surveillance monitors in a grid showing a lobby, a loading dock and corridors. In the center, open floor before a desk with a keyboard and a radio charger. Right of center, a small credential card printer beside a box of blank cards and a ring binder. On the right, a door back to the lobby. Fluorescent light, a coffee mug, clipboards on hooks."
+    },
+    {
+      "id": "s001c05_loc_service_corridor",
+      "kind": "background",
+      "style": "s001",
+      "subject": "The back of house of a big Manhattan hotel: a concrete service corridor ending at a loading dock, December 2018. On the left, a plain staff door into the corridor. Left of center, open floor before the scuffed steel doors of a service elevator with a card reader. In the center, a steel dock desk with a clipboard and a space heater beside a roll-up door. On the right, the half-open dock door onto a small gated vendor lot with a florist's van and a linen truck and a plate reader camera on the gatepost. Fluorescent tubes, banquet carts, cold gray daylight."
+    },
+    {
+      "id": "s001c05_loc_foundation",
+      "kind": "background",
+      "style": "s001",
+      "subject": "The reception hall of a private foundation in an old Fifth Avenue mansion in Manhattan, a gray December day in 2018. On the left, glass-fronted shelves of matching blue annual reports. Left of center, open parquet floor. In the center, through open double doors at the top, a refined office with a Hudson River painting over a fireplace and an empty desk. Right of center, open floor, and a small side office with binders and two monitors. On the right, a carved wooden door to a stair going down. Persian rugs, flowers, soft lamplight."
+    },
+    {
+      "id": "s001c05_loc_records_archive",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A basement records archive under an old Manhattan building, December 2018. On the left, steel shelving with gray archive boxes, one labeled box on a bottom shelf. Left of center, shelves of black binders. In the center, a tall steel filing cabinet of tax files. Right of center, a row of binders by year on a shelf. On the right, a narrow stair going back up. Fluorescent tubes, a dehumidifier, concrete floor."
+    },
+    {
+      "id": "s001c05_loc_ogden_office",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A small independent investment adviser's office on a high floor of a Sixth Avenue tower in Manhattan, a gray December day in 2018. On the left, a tilting wooden drafting board by a tall window with a sheet of graph paper taped to it. Left of center, open floor. In the center, a plain oak desk with a green-shaded lamp and a fountain pen tray. Above the desk, a framed old university diploma on the wall. On the right, full bookshelves of investment books and bound annual reports, and a photograph of a couple on a sailboat."
+    },
+    {
+      "id": "s001c05_loc_ogden_home",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A prewar apartment on the Upper West Side of Manhattan on a gray winter afternoon in 2018. On the left, a tall window onto brownstone stoops and bare ginkgo trees. Left of center, open floor before a sofa. In the center, through an open door, a small study with a desk and a single sheet of paper squared on the blotter. Right of center, an upright piano with framed photographs. On the right, a hall closet door ajar with an overcoat and umbrella. Books everywhere, a radiator, warm lamps."
+    },
+    {
+      "id": "s001c05_loc_marchetti_office",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A sleek corner law office high in a Lexington Avenue tower in Manhattan, December 2018. On the left, a white marble reception counter with one orchid, and a paralegal's desk behind it. Left of center, open floor. In the center, tall windows with the Chrysler Building close by, and below them a glass desk with a leather-bound book on it. Right of center, a locked walnut credenza behind the desk. On the right, a wall of framed diplomas and photographs. Cool gray daylight, polished and spare."
+    },
+    {
+      "id": "s001c05_loc_knox_office",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A small private security firm's office on the second floor over a tire shop on a Queens boulevard, a rainy December day in 2018. On the left, a door with a clipboard hanging on a hook beside it. Left of center, open floor. In the center, a wall rack of handheld radios in chargers with green lights, and below it a metal desk with a laptop and radio chargers. Right of center, a two-drawer steel file cabinet. On the right, a window onto elevated subway tracks and the Manhattan skyline across the river. Fluorescent light, a framed military photograph, equipment cases."
+    },
+    {
+      "id": "s001c05_loc_halvard_office",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A corporate services office in a Madison Avenue building in Manhattan, December 2018. On the left, a front desk with a phone and a visitor log. In the center at the top, a wall of two hundred small brass mail slots with tiny company nameplates, soft and unreadable. In the center below, a long counter with three binders laid out on it. On the right, a window onto Madison Avenue with buses in the slush. Beige carpet, fluorescent light, impersonal."
+    },
+    {
+      "id": "s001c05_loc_police",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A New York City police detective squad room in 2018. On the left, a whiteboard with a case number, a hotel floor plan and a photograph pinned to it. Left of center, open floor in front of a row of desks. In the center, a detective's desk with case folders, a monitor and a takeout coffee cup. Right of center, a glass-walled interview room with a table and two chairs. On the right, a wire-glass window and a radiator. Fluorescent light, filing cabinets, a bulletin board of notices."
+    },
+    {
+      "id": "s001c05_portrait_nathaniel",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Courteous and a little reserved, at a charity dinner.",
+      "person": "s001c05_nathaniel",
+      "suffix": "A painted head-and-shoulders portrait in the manner of a family snapshot used in a police case file: facing the viewer, warm natural daylight, softly blurred outdoor background. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c05_portrait_marchetti",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Poised and cool, a lawyer's measured half smile.",
+      "person": "s001c05_marchetti",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c05_portrait_knox",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Professional and flat, giving nothing away.",
+      "person": "s001c05_knox",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c05_portrait_claudia",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Grief held in by good manners.",
+      "person": "s001c05_claudia",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c05_portrait_wexler",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Frightened, trying to hold steady.",
+      "person": "s001c05_wexler",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c05_portrait_bellamy",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Correct and a little stiff, quietly uneasy.",
+      "person": "s001c05_bellamy",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c05_portrait_lane",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Shaken, then precise.",
+      "person": "s001c05_lane",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c05_portrait_porter",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "By the book, a little embarrassed.",
+      "person": "s001c05_porter",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c05_portrait_mendes",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Nervous, wanting to do the right thing.",
+      "person": "s001c05_mendes",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c05_portrait_abernathy",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Careful and engaged, a teacher's attention.",
+      "person": "s001c05_abernathy",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c05_portrait_caruso",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Dry and patient, quietly worried.",
+      "person": "s001c05_caruso",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c05_portrait_donovan",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Careful and shaken.",
+      "person": "s001c05_donovan",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c05_figure_lockhart",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing composed at a charity gala, hands lightly clasped in front of her, a fine cashmere wrap over her shoulders.",
+      "person": "s001c01_lockhart",
+      "reference": "s001c01_portrait_lockhart"
+    },
+    {
+      "id": "s001c05_figure_marchetti",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing with a phone held at her side, the other hand on a slim leather portfolio.",
+      "person": "s001c05_marchetti",
+      "reference": "s001c05_portrait_marchetti"
+    },
+    {
+      "id": "s001c05_figure_knox",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing with his hands clasped in front of him at belt level, feet apart, like a man on post.",
+      "person": "s001c05_knox",
+      "reference": "s001c05_portrait_knox"
+    },
+    {
+      "id": "s001c05_figure_claudia",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing with her arms wrapped around herself, a gala clutch in one hand.",
+      "person": "s001c05_claudia",
+      "reference": "s001c05_portrait_claudia"
+    },
+    {
+      "id": "s001c05_figure_wexler",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing holding a manila folder against his chest with both arms.",
+      "person": "s001c05_wexler",
+      "reference": "s001c05_portrait_wexler"
+    },
+    {
+      "id": "s001c05_figure_bellamy",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing holding a printed gala program and his reading glasses.",
+      "person": "s001c05_bellamy",
+      "reference": "s001c05_portrait_bellamy"
+    },
+    {
+      "id": "s001c05_figure_lane",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing holding a clipboard and a walkie-talkie.",
+      "person": "s001c05_lane",
+      "reference": "s001c05_portrait_lane"
+    },
+    {
+      "id": "s001c05_figure_porter",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing with a printed report in one hand, the other on his radio.",
+      "person": "s001c05_porter",
+      "reference": "s001c05_portrait_porter"
+    },
+    {
+      "id": "s001c05_figure_mendes",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing holding an empty round serving tray against her side.",
+      "person": "s001c05_mendes",
+      "reference": "s001c05_portrait_mendes"
+    },
+    {
+      "id": "s001c05_figure_caruso",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing with his overcoat over one arm and a case folder in the other hand.",
+      "person": "s001c05_caruso",
+      "reference": "s001c05_portrait_caruso"
+    },
+    {
+      "id": "s001c05_obj_casefile",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A smartphone lying face up showing a case file document with a police complaint header, beside a manila folder with a printed label on the tab reading exactly: OGDEN, N."
+    },
+    {
+      "id": "s001c05_obj_labfolder",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A slate blue police laboratory folder, closed, with a white label on the front reading exactly: LAB REPORT."
+    },
+    {
+      "id": "s001c05_obj_report_folder",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A plain buff file folder with a typed white label on the front reading exactly: FINAL REPORT."
+    },
+    {
+      "id": "s001c05_obj_envelope_sealed",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A heavy cream envelope, sealed, with a neatly typed address label and a small engraved return address in the corner, all soft and unreadable, lying flat at a slight angle."
+    },
+    {
+      "id": "s001c05_obj_envelope_open",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A heavy cream envelope, opened, with a printed register and a small handwritten card sliding out of it, the writing soft and unreadable."
+    },
+    {
+      "id": "s001c05_obj_police_envelope",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A plain buff police interoffice envelope with a string-and-button closure and a handwritten note on the front, soft and unreadable."
+    },
+    {
+      "id": "s001c05_obj_property_envelope",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A thick brown police property envelope with a printed voucher form on the front and a red evidence seal across the flap, soft and unreadable text."
+    },
+    {
+      "id": "s001c05_ev_e001",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A police complaint report on a clipboard, several typed pages with an NYPD header and soft unreadable text, a folded cream gala note card clipped to the top, a handwritten note in blue ink at the bottom."
+    },
+    {
+      "id": "s001c05_ev_e002",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Four crime scene photographs fanned out on a desk: a hotel conference room, a cocktail tray with a decanter and two tumblers, a walnut credenza with one green marble bookend and fallen books, a wallet open on carpet."
+    },
+    {
+      "id": "s001c05_ev_e003",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A medical examiner's report, typed pages with a city seal header and soft unreadable text, a diagram of a skull with a right-angled mark drawn on it."
+    },
+    {
+      "id": "s001c05_ev_e004",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A single green marble bookend, cut square with sharp edges, standing at the end of a walnut credenza, books fallen flat beside an empty clean rectangle in the dust."
+    },
+    {
+      "id": "s001c05_ev_e005",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A laboratory report beside two crystal tumblers in clear evidence bags and a small decanter, fingerprint powder on one glass."
+    },
+    {
+      "id": "s001c05_ev_e006",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A printed hotel banquet event order with a typed change log and a handwritten note in blue ink along the bottom, beside a small stack of blank cream gala note cards."
+    },
+    {
+      "id": "s001c05_ev_e007",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A printed door access report, a long list of timestamps in columns, soft and unreadable, with a few lines highlighted in yellow."
+    },
+    {
+      "id": "s001c05_ev_e008",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Two printed security camera stills of a hotel corridor, grainy, one showing a tall shaved-headed man in a dark suit from behind, the other a gray-haired man carrying a briefcase, with a typed log beside them."
+    },
+    {
+      "id": "s001c05_ev_e009",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A clipboard on a steel desk with a hotel loading dock form, entries handwritten in block capitals, soft and unreadable, a small note written in the margin."
+    },
+    {
+      "id": "s001c05_ev_e010",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A typed police statement with a photograph clipped to it of a brown leather briefcase with brass corners and a brass nameplate."
+    },
+    {
+      "id": "s001c05_ev_e011",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Three yellow legal pads rubber-banded together, the top one covered in neat slanting handwriting, soft and unreadable."
+    },
+    {
+      "id": "s001c05_ev_e012",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A sheet of graph paper with a hand-drawn chart of boxes and arrows in pencil and ink, some boxes circled twice, soft and unreadable labels."
+    },
+    {
+      "id": "s001c05_ev_e013",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A copy of a bank compliance form with typed sections and a signature, and an ownership chart of boxes stapled behind it, soft unreadable text."
+    },
+    {
+      "id": "s001c05_ev_e014",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A legal subscription agreement in a black binder, open to a signature page with two signatures, soft unreadable text."
+    },
+    {
+      "id": "s001c05_ev_e015",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A bound set of audited financial statements in a blue cover, open to a page of numbers and a note, soft unreadable text."
+    },
+    {
+      "id": "s001c05_ev_e016",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Two printed state corporate registration certificates with official seals, and a yellow sticky note on top in handwriting, soft unreadable text."
+    },
+    {
+      "id": "s001c05_ev_e017",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A spiral-bound annual report open to a numbered schedule of five holdings, soft and unreadable."
+    },
+    {
+      "id": "s001c05_ev_e018",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A red expanding file of letters on law firm letterhead, each signed, soft and unreadable."
+    },
+    {
+      "id": "s001c05_ev_e019",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A single typed personal memorandum in a clear plastic sleeve on a desk blotter, soft and unreadable."
+    },
+    {
+      "id": "s001c05_ev_e020",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A small silver USB drive and an index card with a short handwritten line, taped to the brown backing board of a picture frame."
+    },
+    {
+      "id": "s001c05_ev_e021",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A printed security post assignment sheet with a small footer line in fine print, soft and unreadable."
+    },
+    {
+      "id": "s001c05_ev_e022",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A hotel event credential record with a small photograph of a shaved-headed man and printed access levels, soft unreadable text, beside a plastic event credential card on a lanyard."
+    },
+    {
+      "id": "s001c05_ev_e023",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A sheet of lined paper on a clipboard, written in square block capitals, soft and unreadable."
+    },
+    {
+      "id": "s001c05_ev_e024",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A printed police record of vehicle plate reads and toll records with a photograph of a black SUV at a gate, soft unreadable text."
+    },
+    {
+      "id": "s001c05_ev_e025",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A printed bank wire advice with a yellow sticky note on it in handwriting, under the edge of a radio charger, soft unreadable text."
+    },
+    {
+      "id": "s001c05_ev_e026",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A phone forensics extraction report printed in columns of calls and messages, soft and unreadable, beside a smartphone in an evidence bag."
+    },
+    {
+      "id": "s001c05_ev_e027",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A letter on law firm letterhead with two signatures at the bottom, soft and unreadable."
+    },
+    {
+      "id": "s001c05_ev_e028",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Printed bank records with two lines highlighted, a balance of zero, and a detective's handwritten note, soft unreadable text."
+    },
+    {
+      "id": "s001c05_ev_e029",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A typed witness statement on plain paper, signed, beside a hotel server's name tag reading exactly: OLIVIA."
+    },
+    {
+      "id": "s001c05_ev_e030",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A typed security department report with two printed emails clipped behind it, soft unreadable text."
+    },
+    {
+      "id": "s001c05_ev_e031",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A brown leather briefcase with brass corners and a brass nameplate, open on a police evidence table, a stained white linen napkin wrapped around a green marble bookend inside it."
+    },
+    {
+      "id": "s001c05_ev_e032",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A police laboratory report beside a green marble bookend in a clear evidence bag with a brass tag on its felt base."
+    },
+    {
+      "id": "s001c05_ev_e033",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A printed investment register with a small handwritten card clipped to the first page, soft unreadable text."
+    },
+    {
+      "id": "s001c05_ev_e034",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A copy of a tax form with a typed attached statement and a yellow sticky note, soft unreadable text."
+    },
+    {
+      "id": "s001c05_ev_e035",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A trust instrument on heavy paper in a slim black binder, open to an article with a tab, three signatures at the bottom, soft unreadable text."
+    },
+    {
+      "id": "s001c05_ev_e036",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A bound legal opinion letter on law firm letterhead, twelve pages, soft and unreadable."
+    },
+    {
+      "id": "s001c05_ev_e037",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A typed and signed witness statement on foundation letterhead, soft and unreadable."
+    },
+    {
+      "id": "s001c05_ev_e038",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A typed memo to file on an investment firm's letterhead, soft and unreadable."
+    },
+    {
+      "id": "s001c05_ev_e039",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A thick legal agreement in a gray binder, open to an amendment signature page with small type below a signature line, soft unreadable text."
+    },
+    {
+      "id": "s001c05_ev_e040",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Two photocopied letters on personal stationery engraved with initials, each with a small colored tab, soft unreadable text."
+    },
+    {
+      "id": "s001c05_ev_e041",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A single typed page headed with a lawyer's name, a numbered list, soft and unreadable."
+    },
+    {
+      "id": "s001c05_ev_e042",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Committee minutes on foundation letterhead in a binder, typed, soft and unreadable."
+    },
+    {
+      "id": "s001c05_ev_e043",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A printed spreadsheet table of three rows and five columns with a typed note under it, soft and unreadable."
+    },
+    {
+      "id": "s001c05_ev_e044",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Typed notes printed from an email, a short list of dates, soft and unreadable."
+    },
+    {
+      "id": "s001c05_ev_e045",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A leather-bound telephone message book open to a carbon copy page with a handwritten message, soft and unreadable."
+    },
+    {
+      "id": "s001c05_ev_e046",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A black binder labeled on its spine, open to a typed index page with a list of dated entries, soft and unreadable."
+    },
+    {
+      "id": "s001c05_ev_e047",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A one-page printed document with a short list and a concluding paragraph, soft and unreadable."
+    },
+    {
+      "id": "s001c05_ev_e048",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A typed memo on investment firm letterhead, marked personal and confidential, soft and unreadable."
+    },
+    {
+      "id": "s001c05_map",
+      "kind": "map",
+      "style": "s001",
+      "subject": "Manhattan and western Queens from above. In the center, the long narrow island of Manhattan running from bottom to top, a regular grid of avenues and cross streets, a large green rectangular park in its upper middle with residential blocks on either side, and dense midtown blocks below the park. On the right, across a broad pale blue river, the industrial grid of Long Island City in Queens with an elevated railway line, joined to midtown by a tunnel shown as a dashed line under the river. On the left, a pale blue river and the edge of New Jersey. In the top left corner, a small inset, set apart by a band of plain cream paper, showing a different city where two rivers meet to form a third, with bridges.",
+      "suffix": "A hand-painted street map, seen flat from directly above and filling the whole image edge to edge like a sheet laid on a table: no table, no border, no frame. Muted map colors: cream paper, ochre streets, sage green parkland, pale blue water, faint fold creases. Absolutely no words, letters, numbers, street names or symbols anywhere on the map."
     }
   ],
   "styles": {

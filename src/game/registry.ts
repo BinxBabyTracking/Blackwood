@@ -17,10 +17,12 @@ import { S001C01 } from "@/cases/S001C01";
 import { buildAssets as S001C01Assets } from "@/cases/S001C01/assets";
 import { S001C03 } from "@/cases/S001C03";
 import { buildAssets as S001C03Assets } from "@/cases/S001C03/assets";
+import { S001C05 } from "@/cases/S001C05";
+import { buildAssets as S001C05Assets } from "@/cases/S001C05/assets";
 import type { CaseDefinition } from "./engine/types";
 
 /** Every playable case, keyed by stable case id. Add new cases here. */
-const CASES: Record<string, CaseDefinition> = { C001, C002, C003, C004, C005, C006, S001C01, S001C03 };
+const CASES: Record<string, CaseDefinition> = { C001, C002, C003, C004, C005, C006, S001C01, S001C03, S001C05 };
 
 /** Every registered case id, in order. */
 export function caseIds() {
@@ -46,7 +48,7 @@ function withTravel(caseId: string, build: () => CaseDefinition["assets"]) {
 }
 
 const BUILD: Record<string, () => CaseDefinition["assets"]> = Object.fromEntries(
-  Object.entries({ C001: C001Assets, C002: C002Assets, C003: C003Assets, C004: C004Assets, C005: C005Assets, C006: C006Assets, S001C01: S001C01Assets, S001C03: S001C03Assets }).map(([id, b]) => [id, withTravel(id, b)]),
+  Object.entries({ C001: C001Assets, C002: C002Assets, C003: C003Assets, C004: C004Assets, C005: C005Assets, C006: C006Assets, S001C01: S001C01Assets, S001C03: S001C03Assets, S001C05: S001C05Assets }).map(([id, b]) => [id, withTravel(id, b)]),
 );
 for (const [id, build] of Object.entries(BUILD)) CASES[id].assets = build();
 const committed = { ...painted };
