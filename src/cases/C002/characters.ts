@@ -763,7 +763,13 @@ export const questions: DialogueQuestion[] = [
   q("bennett", "Requests", "bennett_pager", "Can you find out who owns the pager from Oak Terrace?", [
     "Already did. The paging company in San Bernardino read me the account over the phone. I'll send you a copy.",
     "Account holder Vera M. Pell, Cabin 14, Tamarack Lake. The contact number is the payphone outside the general store. And Mrs. Pell has been in a care home in Redlands since spring.",
-  ], { requiresEvidence: ["E16"], reveals: "The Oak Terrace pager is registered to Vera M. Pell, Cabin 14, Tamarack Lake, who lives in a care home.", effects: [{ giveEvidence: "E17" }] }),
+  ], {
+    requiresEvidence: ["E16"],
+    // Once the Oak Terrace report is in, Bennett brings up the pager himself on the next call.
+    volunteer: { near: "pager oak terrace dropped yard trace owner who", after: 0, reply: ["Before you ask: I already ran that pager from Oak Terrace. The paging company in San Bernardino read me the account over the phone. I'll send you a copy.", "Account holder Vera M. Pell, Cabin 14, Tamarack Lake. The contact number is the payphone outside the general store. And Mrs. Pell has been in a care home in Redlands since spring."] },
+    reveals: "The Oak Terrace pager is registered to Vera M. Pell, Cabin 14, Tamarack Lake, who lives in a care home.",
+    effects: [{ giveEvidence: "E17" }],
+  }),
   q("bennett", "Requests", "bennett_vera", "Who is Vera Pell?", [
     "Seventy-four, widowed, in a care home in Redlands since April. One son, Gordon, thirty-eight, lives at the cabin and fixes televisions.",
     "No record on him that I can find. Which means nothing either way.",
