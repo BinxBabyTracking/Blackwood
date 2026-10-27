@@ -152,27 +152,30 @@ Offer more than one pair per deduction, so players reasoning differently still g
 
 ## Final report and the solution standard
 
-A report is accepted when the four answers are right and 4 to 6 attached items meet the evidence standard. The reviewer's note never says which answer is wrong.
+A report is accepted when every answer is right and the attached evidence proves each point the agency needs. The reviewer's note never says which answer is wrong and never names an item. The full rules, and how each case sets its numbers, are in **Final Report Standard** (`docs/report-standard.md`, and the project doc of the same name).
 
-The report form (BI-7) asks who, why, how and where, each with an "Unknown" option, plus the attached evidence. Drafts save as the player goes; in joint play everyone edits the draft and only the host files it.
+The report form (BI-7) asks who, why, how and where, each with an "Unknown" option. Its evidence section opens with **What the agency needs**: the points the report must show, the key evidence required, the most it can carry, and how much of the case's evidence the player has found ("13 of 16"). The player files each piece of evidence under the point they think it proves; a point shows as filled, never as right or wrong. Anything else goes under Supporting. Drafts save as the player goes; in joint play everyone edits the draft and only the host files it.
 
-**The standard, in the order the reviewer checks it:**
+**C001's points** (`claims` in `solution.ts`):
 
-1. No answer left as Unknown.
-2. At least 4 key items: evidence on one of the lines of inquiry below. Up to 2 more may be anything, photos included.
-3. The key items cover at least 2 lines of inquiry.
-4. At least one item ties the suspect to the night (C001: E04, E13, E14, E05 or E16).
-5. Culprit, motive, weapon and location all correct.
-
-| Line of inquiry | C001 evidence |
+| Point the report must show | Evidence that proves it |
 | --- | --- |
-| Physical and blood | E02, E05, E06, E11, E14, E16 |
-| Timeline and movements | E04, E12, E13 |
-| Financial motive | E03, E08, E09, E15 |
-| Staged entry | E01, E10 |
-| Supporting (not key, never held against the report) | E07 |
+| Places the person you name at the scene, or ties them to that night | E02, E05, E11, E14, E16 |
+| Shows why they did it | E03, E08, E09, E15 |
+| Shows how it was done or how it was covered up | E01, E05, E06, E07, E10 |
+| Tests the story they told: an alibi, a timeline or a statement | E04, E12, E13 |
 
-The first version needed 3 to 6 items with nothing off-topic and 3 lines covered. Players with the right answer kept being returned, so it was loosened to the rule above on Oct 22, 2026.
+At least 4 key items, at most 6 attached. At least one item must also tie the suspect to the night (E04, E13, E14, E05 or E16).
+
+**What a returned report says**, in the order the reviewer checks:
+
+1. An answer left as Unknown.
+2. A point with no proof filed under it, in one of three ways: the proof is attached but filed under another point; the proof is among the evidence already collected; or nothing found so far proves it, so key evidence is still out there. From the second return on, that last note adds the point's hint, which says where to look without naming anything.
+3. Too few key items, saying whether enough is already in hand or still to be found.
+4. Too few independent lines of inquiry, too much unrelated evidence, or nothing tying the suspect to the night.
+5. The answers themselves don't hold together.
+
+Each returned report costs 50 points on the leaderboard, so the hints are never free.
 
 When accepted, the case-solved sequence plays: the agency's acceptance, a reconstruction of the night in stages, Bennett's closing call, and the service record (case closed, rank, awards). A replay starts a clean file and keeps the credit.
 

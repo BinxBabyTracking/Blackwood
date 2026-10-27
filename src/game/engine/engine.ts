@@ -1,4 +1,4 @@
-import { cleanAnswer, evaluateReport, reportProblem, REVIEW_FEEDBACK } from "./evaluation";
+import { cleanAnswer, cleanClaims, evaluateReport, reportProblem, REVIEW_FEEDBACK } from "./evaluation";
 import { concepts } from "./matcher";
 import {
   allowance,
@@ -858,7 +858,7 @@ export function reduce(
       const evidence = [...new Set(Array.isArray(d.evidence) ? d.evidence : [])]
         .filter((id) => typeof id === "string" && hasItem(s, id))
         .slice(0, def.solution.standard.maxItems);
-      const draft: InvestigationState["report"]["draft"] = { evidence };
+      const draft: InvestigationState["report"]["draft"] = { evidence, ...cleanClaims(def, evidence, d) };
       for (const c of def.conclusionChoices) draft[c.id] = cleanAnswer(c, d[c.id]);
       s.report.draft = draft;
       break;
@@ -869,11 +869,11 @@ export function reduce(
       const t = action.theory;
       const problem = reportProblem(def, s, t);
       if (problem) fail(problem);
-      const theory: Theory = { evidence: [...t.evidence] };
+      const theory: Theory = { evidence: [...t.evidence], ...cleanClaims(def, t.evidence, t) };
       for (const c of def.conclusionChoices) theory[c.id] = cleanAnswer(c, t[c.id])!;
       s.attempts += 1;
       s.report.draft = { ...theory, evidence: [...theory.evidence] };
-      const review = evaluateReport(def, theory);
+      const review = evaluateReport(def, theory, s, s.report.submissions.filter((x) => !x.accepted).length);
       s.report.submissions.push({ at: now, theory, accepted: review.accepted, note: review.note });
       if (review.accepted) {
         s.status = "closed";
@@ -1141,6 +1141,10 @@ export function project(def: CaseDefinition, s: InvestigationState, now = Date.n
       date: def.reportDate ?? "August 1985",
       minItems: def.solution.standard.minItems,
       maxItems: def.solution.standard.maxItems,
+      minKey: def.solution.standard.minKey ?? def.solution.standard.minItems,
+      claims: (def.solution.standard.claims ?? []).map((c) => ({ id: c.id, label: c.label })),
+      found: s.evidence.length,
+      total: def.evidence.length,
       attempts: s.attempts,
       draft: { ...s.report.draft, evidence: s.report.draft.evidence.filter((id) => hasItem(s, id)) },
       review: (() => {

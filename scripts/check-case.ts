@@ -12,7 +12,7 @@ import { credits, questionsLeft } from "../src/game/engine/questions";
 import { CASES as MATCH_CASES } from "./match-eval";
 import { checkC002 } from "./check-case-C002";
 import { checkC003 } from "./check-case-C003";
-import type { CaseDefinition, GameAction, InvestigationState } from "../src/game/engine/types";
+import type { CaseDefinition, GameAction, InvestigationState, Theory } from "../src/game/engine/types";
 
 const id = process.argv[2] ?? "C001";
 const def = loadCase(id) as CaseDefinition;
@@ -349,10 +349,31 @@ if (id === "C001") {
 
   // ---- Step 8: final report and evaluation ----
   {
-    const T = (culprit: string, motive: string, weapon: string, location: string, evidence: string[]) => ({ culprit, motive, weapon, location, evidence });
-    const submit = (st: InvestigationState, t: ReturnType<typeof T>) => reduce(def, st, { type: "submitConclusion", theory: t, investigator: "Sam Calloway" }, 2);
+    // Files each item under a point it proves (spreading them out), then fills any empty point with a spare item, as a player would.
+    const fileUnder = (evidence: string[]) => {
+      const claims = def.solution.standard.claims ?? [];
+      const out: Record<string, string[]> = Object.fromEntries(claims.map((c) => [`claim:${c.id}`, [] as string[]]));
+      const spare: string[] = [];
+      for (const id of evidence) {
+        const fits = claims.filter((c) => c.anyOf.includes(id)).sort((a, b) => out[`claim:${a.id}`].length - out[`claim:${b.id}`].length);
+        if (fits.length) out[`claim:${fits[0].id}`].push(id);
+        else spare.push(id);
+      }
+      for (const c of claims) {
+        if (out[`claim:${c.id}`].length) continue;
+        if (spare.length) out[`claim:${c.id}`].push(spare.shift()!);
+        else {
+          // Borrow from the fullest point, as a player short of proof would.
+          const donor = Object.values(out).sort((x, y) => y.length - x.length)[0];
+          if (donor && donor.length > 1) out[`claim:${c.id}`].push(donor.pop()!);
+        }
+      }
+      return out;
+    };
+    const T = (culprit: string, motive: string, weapon: string, location: string, evidence: string[]): Theory => ({ culprit, motive, weapon, location, evidence, ...fileUnder(evidence) });
+    const submit = (st: InvestigationState, t: Theory) => reduce(def, st, { type: "submitConclusion", theory: t, investigator: "Sam Calloway" }, 2);
     const right = (ev: string[]) => T("daniel", "financial", "knife", "living_room", ev);
-    const rejects = (st: InvestigationState, t: ReturnType<typeof T>, why: string) => {
+    const rejects = (st: InvestigationState, t: Theory, why: string) => {
       try { submit(st, t); problems.push(`accepted a malformed report: ${why}`); } catch {}
     };
     // Not available before meaningful investigation
@@ -371,7 +392,7 @@ if (id === "C001") {
     if (dr.culprit !== "robert" || dr.motive !== undefined || JSON.stringify(dr.evidence) !== '["E03","E14"]') problems.push(`draft not sanitised or saved: ${JSON.stringify(dr)}`);
     // Wrong, undecided and unsupported reports are returned without revealing the solution
     const solutionText = [def.solution.resolution.accepted, ...def.solution.resolution.reconstruction.map((r) => r.body), ...def.solution.resolution.bennett];
-    const returned = (t: ReturnType<typeof T>, label: string, expectNote: RegExp) => {
+    const returned = (t: Theory, label: string, expectNote: RegExp) => {
       const r = submit(s, t);
       if (r.outcome.kind !== "verdict" || r.outcome.correct || r.state.status === "closed") problems.push(`${label}: accepted`);
       else {
@@ -384,13 +405,31 @@ if (id === "C001") {
     };
     returned(T("robert", "revenge", "blunt", "kitchen", ["E14", "E03", "E13", "E06"]), "wrong theory", /do not hold together/);
     returned(T("daniel", "financial", "knife", "unknown", ["E14", "E03", "E13", "E15"]), "undecided", /open/);
-    returned(right(["E07", "E01", "E10", "E12"]), "correct guess, too little key evidence", /key evidence/);
-    returned(right(["E02", "E03", "E01", "E15"]), "correct guess, nothing linking the suspect", /connects the person/);
-    const afterWrong = returned(T("patricia", "financial", "knife", "living_room", ["E14", "E03", "E13", "E15"]), "wrong suspect", /do not hold together/);
+    returned(right(["E07", "E01", "E10", "E12"]), "correct guess, a point left unproven", /proves it\. The proof is already among the evidence/);
+    returned(right(["E02", "E03", "E01", "E12"]), "correct guess, nothing linking the suspect", /connects the person/);
+    // A point with nothing filed under it can't be submitted; proof filed under the wrong point is pointed out without naming it.
+    rejects(s, { ...right(["E14", "E03", "E01", "E04"]), "claim:story": [] }, "an empty point");
+    {
+      const misfiled = { ...right(["E14", "E03", "E01", "E04"]), "claim:story": ["E01"], "claim:how": ["E04"] };
+      const r = submit(s, misfiled);
+      if (r.outcome.kind !== "verdict" || r.outcome.correct || !/attached elsewhere/.test(r.outcome.note)) problems.push(`misfiled proof not pointed out: ${r.outcome.kind === "verdict" ? r.outcome.note : r.outcome.kind}`);
+    }
+    {
+      // Proof not found yet: the reviewer says it's still out there, and from the second return adds the point's hint.
+      const lacking = { ...s, evidence: s.evidence.filter((e) => !["E04", "E12", "E13"].includes(e)) };
+      const t = right(["E14", "E03", "E01", "E15"]);
+      const r1 = submit(lacking, t);
+      const n1 = r1.outcome.kind === "verdict" ? r1.outcome.note : "";
+      if (!/still out there/.test(n1) || /Someone's account/.test(n1)) problems.push(`first return for undiscovered proof: "${n1}"`);
+      const r2 = submit(r1.state, t);
+      const n2 = r2.outcome.kind === "verdict" ? r2.outcome.note : "";
+      if (!/still out there/.test(n2) || !/Someone's account/.test(n2)) problems.push(`second return lacks the hint: "${n2}"`);
+    }
+    const afterWrong = returned(T("patricia", "financial", "knife", "living_room", ["E14", "E03", "E13", "E01"]), "wrong suspect", /do not hold together/);
     // A returned report can be revised, and several different supported reports are accepted
     // Four key items carry a report; two more may be anything, photographs included.
     const withPhoto: InvestigationState = { ...afterWrong, photos: [{ id: "PH_test", hotspotId: "test", locationId: "office", title: "Test", text: "Test", image: "", at: 1 }] };
-    for (const ev of [["E14", "E03", "E01", "E15"], ["E04", "E15", "E06", "E03"], ["E05", "E13", "E08", "E02"], ["E11", "E14", "E03", "E13", "E01", "E06"], ["E14", "E03", "E13", "E15", "E07", "PH_test"]]) {
+    for (const ev of [["E14", "E03", "E01", "E04"], ["E04", "E15", "E06", "E16"], ["E05", "E13", "E08", "E01"], ["E11", "E14", "E03", "E13", "E01", "E06"], ["E14", "E03", "E13", "E01", "E07", "PH_test"]]) {
       const r = submit(withPhoto, right(ev));
       if (r.outcome.kind !== "verdict" || !r.outcome.correct || r.state.status !== "closed") problems.push(`supported report rejected: ${ev}`);
     }
@@ -404,7 +443,7 @@ if (id === "C001") {
   }
 
   // conclusion
-  const good = run({ type: "submitConclusion", theory: { culprit: "daniel", motive: "financial", weapon: "knife", location: "living_room", evidence: ["E11", "E14", "E03", "E13", "E01"] }, investigator: "Sam Calloway" });
+  const good = run({ type: "submitConclusion", theory: { culprit: "daniel", motive: "financial", weapon: "knife", location: "living_room", evidence: ["E11", "E14", "E03", "E13", "E01"], "claim:tie": ["E11", "E14"], "claim:why": ["E03"], "claim:how": ["E01"], "claim:story": ["E13"] }, investigator: "Sam Calloway" });
   if (good.kind !== "verdict" || !good.correct) problems.push("correct theory rejected");
   if (s.report.final?.investigator !== "Sam Calloway" || s.report.final.attempts !== s.attempts) problems.push("final report not recorded");
   const closedView = project(def, s);

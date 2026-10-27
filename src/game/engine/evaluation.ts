@@ -1,4 +1,4 @@
-import type { CaseDefinition, ChoiceSet, InvestigationState, SolutionDef, Theory } from "./types";
+import { claimKey, type CaseDefinition, type ChoiceSet, type InvestigationState, type SolutionDef, type Theory } from "./types";
 
 /*
  * Case evaluation. Deterministic and server-only in practice: it reads the
@@ -55,7 +55,31 @@ export function reportProblem(def: CaseDefinition, s: InvestigationState, t: The
   if (ev.length !== t.evidence.length) return "Each piece of evidence can be attached once.";
   if (ev.some((id) => typeof id !== "string" || !(s.evidence.includes(id) || (s.photos ?? []).some((p) => p.id === id)))) return "You can only attach evidence collected in this investigation.";
   if (ev.length < std.minItems || ev.length > std.maxItems) return `Attach between ${std.minItems} and ${std.maxItems} pieces of evidence.`;
+  if (std.claims?.length) {
+    const seen = new Set<string>();
+    for (const c of std.claims) {
+      const filed = answerList(t[claimKey(c.id)]);
+      if (!filed.length) return "File at least one piece of evidence under every point the report must show.";
+      for (const id of filed) {
+        if (!ev.includes(id)) return "Evidence filed under a point must be attached to the report.";
+        if (seen.has(id)) return "Each piece of evidence can be filed under one point only.";
+        seen.add(id);
+      }
+    }
+  }
   return null;
+}
+
+/** The items a report filed under each point, cleaned: attached, collected, each under one point only. */
+export function cleanClaims(def: CaseDefinition, evidence: string[], t: Record<string, unknown>) {
+  const out: Record<string, string[]> = {};
+  const seen = new Set<string>();
+  for (const c of def.solution.standard.claims ?? []) {
+    const ids = answerList(t[claimKey(c.id)]).filter((id) => evidence.includes(id) && !seen.has(id));
+    ids.forEach((id) => seen.add(id));
+    out[claimKey(c.id)] = ids;
+  }
+  return out;
 }
 
 /** Whether a given answer matches the solution's: the same option, or for a multi-select the same set of options. */
@@ -65,24 +89,52 @@ function sameAnswer(given: unknown, right: string | string[]) {
   return a.length === b.length && a.every((x, i) => x === b[i]);
 }
 
-export function evaluateReport(def: CaseDefinition, t: Theory): Review {
+/**
+ * Reviews a filed report. With the investigation's state the reviewer can also
+ * say whether missing proof is already in the player's evidence or still out
+ * there to be found, without ever naming an item or an answer.
+ */
+export function evaluateReport(def: CaseDefinition, t: Theory, s?: InvestigationState, returned = 0): Review {
   const sol = def.solution;
   const std = sol.standard;
   const answers = solutionAnswers(sol);
   const covered = std.lines.filter((l) => l.anyOf.some((id) => t.evidence.includes(id))).map((l) => l.id);
   const keyIds = new Set(std.lines.flatMap((l) => l.anyOf));
-  const key = t.evidence.filter((id) => keyIds.has(id)).length;
-  const related = new Set([...keyIds, ...std.supporting]);
+  const related = new Set([...keyIds, ...(std.claims ?? []).flatMap((c) => c.anyOf), ...std.supporting]);
   const unrelated = t.evidence.filter((id) => !related.has(id)).length;
   const linked = std.linkToSuspect.some((id) => t.evidence.includes(id));
   const decided = !def.conclusionChoices.some((c) => answerList(t[c.id]).some((v) => std.undecided.includes(v)));
   const core = Object.entries(answers).every(([k, right]) => sameAnswer(t[k], right));
 
-  // The first reason that applies is the one the reviewer writes down. None depends on the correct answers.
+  // Points of the report: what's filed under each, and whether the proof for an unproven point is misfiled, unattached, or not found yet.
+  const claims = std.claims ?? [];
+  const has = (id: string) => (s ? s.evidence.includes(id) || (s.photos ?? []).some((p) => p.id === id) : false);
+  const unproven = claims
+    .filter((c) => !answerList(t[claimKey(c.id)]).some((id) => c.anyOf.includes(id)))
+    .map((c) => ({
+      c,
+      misfiled: c.anyOf.some((id) => t.evidence.includes(id)),
+      inHand: c.anyOf.some((id) => has(id)),
+    }));
+  const keyIds2 = new Set([...keyIds, ...claims.flatMap((c) => c.anyOf)]);
+  const keyAll = t.evidence.filter((id) => keyIds2.has(id)).length;
+  const keyInHand = s ? [...keyIds2].filter((id) => has(id)).length : Infinity;
+
+  // The first reason that applies is the one the reviewer writes down. None names an answer or an item.
   let note = "";
+  const first = unproven[0];
   if (!decided) note = "The report leaves at least one question open. The agency cannot act on findings that do not commit to a conclusion.";
-  else if (std.minKey && key < std.minKey)
-    note = `Too few of the attached items bear directly on the conclusions. The agency looks for at least ${std.minKey} pieces of key evidence; the rest of a report may be supporting material.`;
+  else if (first && first.misfiled)
+    note = `Nothing filed under "${first.c.label}" proves it, though something you attached elsewhere might. Check where each item is filed.`;
+  else if (first && first.inHand)
+    note = `Nothing filed under "${first.c.label}" proves it. The proof is already among the evidence you've collected: look again at what you have.`;
+  else if (first)
+    note = `Nothing you've found so far proves "${first.c.label}". Key evidence is still out there; keep investigating before you file again.${returned >= 1 && first.c.hint ? ` ${first.c.hint}` : ""}`;
+  else if (std.minKey && keyAll < std.minKey)
+    note =
+      keyInHand >= std.minKey
+        ? `Too few of the attached items bear directly on the conclusions. The agency looks for at least ${std.minKey} pieces of key evidence, and you have enough of it in hand: look again at what you've collected.`
+        : `Too few of the attached items bear directly on the conclusions. The agency looks for at least ${std.minKey} pieces of key evidence, and some of it is still out there to be found.`;
   else if (covered.length < std.minLines) note = "The attached evidence rests on too few independent lines of inquiry. The agency looks for corroboration from more than one direction.";
   else if (unrelated > std.maxUnrelated) note = "Some of the attached evidence has no clear bearing on the conclusions presented.";
   else if (!linked) note = std.linkNote ?? "Nothing attached connects the person named to the events of that night.";

@@ -145,6 +145,33 @@ export const solution: CaseDefinition["solution"] = {
       { id: "staging", label: "Staged entry", anyOf: ["E01", "E10"] },
     ],
     minLines: 2,
+    // What the report must show, as the player sees it. Neutral wording: none of it hints at the answer.
+    claims: [
+      {
+        id: "tie",
+        label: "Places the person you name at the scene, or ties them to that night",
+        anyOf: ["E02", "E05", "E11", "E14", "E16"],
+        hint: "The blood left at the scene can say more about who was there than it has so far.",
+      },
+      {
+        id: "why",
+        label: "Shows why they did it",
+        anyOf: ["E03", "E08", "E09", "E15"],
+        hint: "Eleanor kept careful records. Look again at what she left at her desk, and at who else saw them.",
+      },
+      {
+        id: "how",
+        label: "Shows how it was done or how it was covered up",
+        anyOf: ["E01", "E05", "E06", "E07", "E10"],
+        hint: "Look closely at how the house was supposedly broken into.",
+      },
+      {
+        id: "story",
+        label: "Tests the story they told: an alibi, a timeline or a statement",
+        anyOf: ["E04", "E12", "E13"],
+        hint: "Someone's account of their own evening can be checked against the people who were there with them.",
+      },
+    ],
     linkToSuspect: ["E04", "E13", "E14", "E05", "E16"],
     supporting: ["E07"],
     maxUnrelated: 2,

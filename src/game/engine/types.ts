@@ -511,7 +511,29 @@ export interface EvidenceStandard {
   maxUnrelated: number;
   /** Answers that leave a question open; a report containing one is never accepted. */
   undecided: string[];
+  /**
+   * What the report must show, as a checklist the player sees at the top of the
+   * evidence section. The player files each attached item under the point they
+   * think it proves; a point holds when an item filed under it is in `anyOf`.
+   * Labels are neutral ("Shows why they did it") and never hint at the answer.
+   * Without claims a case uses the older lines-of-inquiry check alone.
+   */
+  claims?: ClaimDef[];
 }
+
+/** One point a report has to prove. */
+export interface ClaimDef {
+  id: string;
+  /** Shown to the player. Neutral: it says what kind of proof is needed, never what it is. */
+  label: string;
+  /** Evidence that proves this point when filed under it. */
+  anyOf: string[];
+  /** Said on a returned report from the second return on, when no proof for this point has been found yet. A hint at where to look, never an item. */
+  hint?: string;
+}
+
+/** The draft or theory key holding the items filed under a point of the report. */
+export const claimKey = (id: string) => `claim:${id}`;
 
 export interface SolutionDef {
   /** The classic four answers. Cases with other report questions use `answers`. */
@@ -993,6 +1015,13 @@ export interface ClientView {
     date: string;
     minItems: number;
     maxItems: number;
+    /** Key evidence the report needs. */
+    minKey: number;
+    /** The points the report must prove, each with the items the player has filed under it (in `draft`). */
+    claims: { id: string; label: string }[];
+    /** Evidence found so far and in the whole case: a quiet sign that there is more to find. */
+    found: number;
+    total: number;
     attempts: number;
     draft: ReportDraft;
     /** The agency's response to the latest returned report. */
