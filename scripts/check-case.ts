@@ -16,6 +16,7 @@ import { checkC003 } from "./check-case-C003";
 import { checkC004 } from "./check-case-C004";
 import { checkC005 } from "./check-case-C005";
 import { checkC006 } from "./check-case-C006";
+import { checkS001C01 } from "./check-case-S001C01";
 import { wordsFor } from "../src/game/words";
 import type { CaseDefinition, GameAction, InvestigationState, Theory } from "../src/game/engine/types";
 
@@ -70,7 +71,8 @@ for (const st of def.statements) for (const l of st.transcript) if (!def.charact
 for (const st of def.statements) if (!st.officer || !st.tape || !st.recordedAt) problems.push(`statement ${st.characterId} missing metadata`);
 if (id === "C001" && def.statements.length !== 4) problems.push("expected four police statements");
 // A medieval case has no recorded statements: what was said is in the journal.
-if (!def.statements.length && def.theme !== "medieval") problems.push("no police statements");
+// A series case may have none either: its witnesses are interviewed in person.
+if (!def.statements.length && def.theme !== "medieval" && !/^S\d{3}C\d{2}$/.test(id)) problems.push("no police statements");
 // house style and no premature solution in anything a character says
 const REVEALS: Record<string, RegExp> = {
   C001: /\b(murderer|killed her|he killed|mercer killed|daniel killed)\b/i,
@@ -78,6 +80,7 @@ const REVEALS: Record<string, RegExp> = {
   C003: /\b(i killed|i shot|we shot|bell killed|bell shot|shaw shot|voss ordered|i did it|we did it|i paid them to)\b/i,
   C004: /\b(i killed|i hit him|i struck|harlan killed|victor killed|harlan struck|i did it|harlan did it)\b/i,
   C005: /\b(i killed|i struck him|i struck edmund|matthias killed|matthias struck|the cellarer killed|the cellarer struck|i forged|we forged|i did it)\b/i,
+  S001C01: /\b(i killed|i hit him|i struck|reddick killed|reddick struck|holt ordered|i did it|i swung (?:it|the eagle)|i told him to kill)\b/i,
   C006: /\b(i killed|i hit her|i pushed her|i struck|wade killed|wade struck|trent killed|i ordered|stroud ordered|i did it|i beat him|i took him)\b/i,
 };
 const spoken = [
@@ -770,6 +773,8 @@ if (id === "C001") {
   checkC005(def, problems);
 } else if (id === "C006") {
   checkC006(def, problems);
+} else if (id === "S001C01") {
+  checkS001C01(def, problems);
 }
 randomWalks();
 

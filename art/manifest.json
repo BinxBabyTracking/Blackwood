@@ -142,7 +142,18 @@
     "c006_jessica": "Jessica Kemp, a 39-year-old white woman, short auburn hair, a rain jacket and a reporter's notebook, quick and skeptical",
     "c006_karen": "Karen Novak, a 53-year-old white woman, curly dyed red hair, cat-eye glasses, a county ID badge on a lanyard, brisk and friendly",
     "c006_granger": "Det. Sgt. Philip Granger in 1996, a 55-year-old white man, a gray crewcut, a short-sleeved white shirt and a wide tie, a bored patient face",
-    "c006_caller": "A dark, empty silhouette of a man's head and shoulders against rain-streaked glass, no face visible"
+    "c006_caller": "A dark, empty silhouette of a man's head and shoulders against rain-streaked glass, no face visible",
+    "s001c01_martin": "a 46-year-old white man, a small-town charity's controller, neat short graying brown hair, clean-shaven, wire-rimmed glasses, a kind, slightly anxious face, wearing a pale blue oxford shirt and a navy tie",
+    "s001c01_hannah": "a 24-year-old white woman, a graduate student, dark brown hair pulled back in a quick ponytail, an oval face, gray-blue eyes red-rimmed from crying, no makeup, wearing a gray Pitt hooded sweatshirt under an open olive canvas jacket and a lanyard around her neck, grieving but determined",
+    "s001c01_whitfield": "a 54-year-old white woman, a nonprofit executive director, a chin-length silver-blonde bob, pearl stud earrings, reading glasses on a beaded chain, wearing a tailored plum blazer over a cream blouse, gracious and practiced, a little brittle",
+    "s001c01_holt": "a 49-year-old white man, a Pittsburgh financial adviser, well-cut dark hair silvering at the temples, a close shave, a faint tan, wearing a charcoal suit, a crisp white shirt and a silver tie, polished and self-assured",
+    "s001c01_reddick": "a 38-year-old white man, a maintenance contractor, a broad build, short sandy hair under a faded navy ball cap with no logo, a few days of stubble, weathered hands, wearing a tan canvas work jacket over a gray thermal shirt, easygoing on the surface",
+    "s001c01_lockhart": "a 52-year-old white woman, a New York philanthropist, dark hair with a single streak of gray swept back in a low chignon, fine features, intelligent gray eyes, small gold earrings, wearing a tailored charcoal wool dress and a fine cashmere wrap, composed and gracious",
+    "s001c01_ames": "a 43-year-old Black man, a forensic accountant, close-cropped hair, a neatly trimmed beard, rectangular tortoiseshell glasses, wearing a light blue shirt with the sleeves rolled once and a loosened knit tie, careful and kind",
+    "s001c01_avery": "a 61-year-old white man, a building security supervisor and retired small-town cop, a gray crew cut, a heavy gray mustache, a lined, ruddy face, wearing a navy security uniform sweater with shoulder patches and no readable words, gruff",
+    "s001c01_morris": "a 35-year-old white woman, an office administrative assistant, curly auburn hair held back with a clip, freckles, a cardigan in dusty rose over a patterned blouse, a lanyard with a key card, nervous and kind",
+    "s001c01_bowman": "a 47-year-old white man, a small-town police detective, short dark hair thinning at the crown, a tired, steady face, a five o'clock shadow, wearing a brown corduroy sport coat over a blue button-down shirt with an open collar and a badge on his belt out of frame, professional and dry",
+    "s001c01_foster": "a 42-year-old white man, a small-town hardware store owner, a reddish-brown beard, a receding hairline, wearing a green fleece vest over a plaid flannel shirt, flushed, embarrassed"
   },
   "images": [
     {
@@ -5386,6 +5397,441 @@
       "kind": "site",
       "style": "s001",
       "subject": "The inside of a corporate records archive the morning after a fire, late December. Long rows of metal shelving blackened by smoke, cardboard file boxes charred and collapsed, ash on the concrete floor, pale winter sunlight cutting through haze from a broken high window with snow on the sill. In the middle-right, one shelf stands untouched by the fire, and on it a single clean gap where one box was taken away before the flames, its dust outline still visible. The left third of the image is quiet smoke and shadow. No people. No readable text. Keep the main subject between the center and the right side of the frame so it still reads when cropped to a square."
+    },
+    {
+      "id": "s001c01_portrait_martin",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Smiling, a little shy, at a community award lunch.",
+      "person": "s001c01_martin",
+      "suffix": "A painted head-and-shoulders portrait in the manner of a family snapshot used in a police case file: facing the viewer, warm natural daylight, softly blurred outdoor background. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c01_portrait_hannah",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Grieving but holding together; a steady, determined look.",
+      "person": "s001c01_hannah",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c01_portrait_whitfield",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "A gracious, practiced smile that doesn't quite reach her eyes.",
+      "person": "s001c01_whitfield",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c01_portrait_holt",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Polished and confident, faintly impatient.",
+      "person": "s001c01_holt",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c01_portrait_reddick",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Easygoing, friendly enough, watchful.",
+      "person": "s001c01_reddick",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c01_portrait_lockhart",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Composed and gracious, a quiet, attentive look.",
+      "person": "s001c01_lockhart",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c01_portrait_ames",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Careful and attentive, kind.",
+      "person": "s001c01_ames",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c01_portrait_avery",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Gruff, blunt, unimpressed.",
+      "person": "s001c01_avery",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c01_portrait_morris",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Nervous, anxious to help.",
+      "person": "s001c01_morris",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c01_portrait_bowman",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Level and patient, a little dry.",
+      "person": "s001c01_bowman",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c01_portrait_foster",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Flustered, embarrassed.",
+      "person": "s001c01_foster",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c01_figure_hannah",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing with her hands pushed into her jacket pockets, a key ring hooked on one finger.",
+      "person": "s001c01_hannah",
+      "reference": "s001c01_portrait_hannah"
+    },
+    {
+      "id": "s001c01_figure_whitfield",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing with a leather portfolio held against her chest, back straight.",
+      "person": "s001c01_whitfield",
+      "reference": "s001c01_portrait_whitfield"
+    },
+    {
+      "id": "s001c01_figure_morris",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing with her arms folded tightly, holding a pen.",
+      "person": "s001c01_morris",
+      "reference": "s001c01_portrait_morris"
+    },
+    {
+      "id": "s001c01_figure_holt",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing with one hand in his trouser pocket, the other holding a phone at his side.",
+      "person": "s001c01_holt",
+      "reference": "s001c01_portrait_holt"
+    },
+    {
+      "id": "s001c01_figure_reddick",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing with his weight on one leg, thumbs hooked in his jacket pockets, work boots.",
+      "person": "s001c01_reddick",
+      "reference": "s001c01_portrait_reddick"
+    },
+    {
+      "id": "s001c01_figure_ames",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing holding a manila folder open in both hands.",
+      "person": "s001c01_ames",
+      "reference": "s001c01_portrait_ames"
+    },
+    {
+      "id": "s001c01_figure_avery",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing with his arms crossed over his chest.",
+      "person": "s001c01_avery",
+      "reference": "s001c01_portrait_avery"
+    },
+    {
+      "id": "s001c01_figure_bowman",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing with a closed case binder under one arm.",
+      "person": "s001c01_bowman",
+      "reference": "s001c01_portrait_bowman"
+    },
+    {
+      "id": "s001c01_loc_foundation",
+      "kind": "background",
+      "style": "s001",
+      "subject": "The reception area of a small community foundation on the second floor of a 1912 brick office building in a small western Pennsylvania county seat, a gray November day in 2018. On the left, a tall window onto a main street of brick storefronts, with a wire tray on the end of the reception counter below it. Left of center, a reception desk with a computer and neat color-coded folders, an empty office chair behind it, and above it on the wall a framed poster of storefront photographs. In the center, a shelf of thick black binders behind the desk. Right of center, an open door into a director's office with a desk and a blue binder. At the far right, a short hallway to a closed corner-office door with cut yellow police tape hanging from its frame. Worn carpet, radiators, fluorescent ceiling panels, a coat rack."
+    },
+    {
+      "id": "s001c01_loc_martin_office",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A small corner office of a charity's controller in an old brick building, after a police search, a gray November afternoon in 2018. On the left, a tall wooden bookshelf: binders and accounting reference books on the upper shelves, among them one thick old book in a worn faded green dust jacket; on the carpet beside the lower shelf, books stacked where they were pulled out. Upper left, a corner window over a rear alley and parking lot. In the center, a wooden desk with a paper desk-pad calendar, its center drawer hanging open with a broken lock, pens and stamps spilled on the blotter, and a clean empty rectangle in the dust on the right-hand corner where a heavy ornament stood; on the wall above it a framed newspaper photograph. Right of center, a gray four-drawer steel filing cabinet with its top two drawers open and black fingerprint powder on the handles, a gray-black toner stain on the carpet in front of it with a square cut out. At the far right, a small laser printer on a side table with pages in its tray, and the open office door with cut police tape. No people."
+    },
+    {
+      "id": "s001c01_loc_keller_home",
+      "kind": "background",
+      "style": "s001",
+      "subject": "The spare room of a modest frame house used as a home office, a gray November afternoon in 2018, empty for days. On the left, a window onto a quiet street of small houses with porches and bare maples. In the center, a plain wooden desk with a lamp, an old mechanical adding machine and a brown accordion file squared to the edge, its top drawer closed. On the wall above the desk, framed photographs. On the right, a doorway into a small kitchen with unopened mail on the counter. Braided rug, a tidy single bed with a quilt, warm lamplight against gray daylight."
+    },
+    {
+      "id": "s001c01_loc_hannah_apt",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A graduate student's small apartment in a brick duplex in Squirrel Hill, Pittsburgh, a cold November afternoon in 2018. On the left, a desk by the window with a laptop, a lamp and stacks of course readers. In the center, open floor space before a worn couch with a folded blanket. On the right, a small kitchen with a refrigerator covered in magnets and photos, and a tall window onto a residential street with bare oaks. Bookshelves of policy books, a string of warm lights, a radiator."
+    },
+    {
+      "id": "s001c01_loc_reddick_shop",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A one-man maintenance contractor's garage bay and office beside a state highway in a small Pennsylvania town, an overcast November day in 2018. On the left, a clipboard hanging on a nail by an office door, and a shelf with a carbon-copy invoice book. In the center, a long wooden workbench with a pegboard of pipe wrenches, a vise, and an empty canvas tool bag hanging from a hook. Center right, a steel desk under a supply-house calendar with a bank statement on the blotter, and a plastic mail tray beside it. At the right, a wide open bay door onto a gravel lot. Concrete floor with oil stains, an overhead heater, a portable radio."
+    },
+    {
+      "id": "s001c01_loc_police",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A small-town police detective bureau in an older civic building, November 2018. On the left, a whiteboard with a floor plan and photos pinned to it. In the center, open floor space in front of a row of desks. On the right, a window with blinds over a street and a stone county courthouse, and below it a cluttered detective's desk with binders, a monitor and a coffee mug. Fluorescent lights, filing cabinets, a bulletin board of notices."
+    },
+    {
+      "id": "s001c01_loc_ames_office",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A small accounting firm's partner's office on the fourth floor of an older downtown Pittsburgh building, a rainy November afternoon in 2018. On the left, floor-to-ceiling shelves of thick tax code volumes and client binders. In the center, open floor space before a desk with two monitors. Center right, a small round conference table with two chairs, a legal pad and two pens laid square. On the right, a tall window over Grant Street with office towers in the rain. Warm desk lamp, framed CPA certificates."
+    },
+    {
+      "id": "s001c01_loc_meridian",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A polished financial advisory suite on the twenty-second floor of a downtown Pittsburgh office tower, a gray November day in 2018. On the left, a glass entry door with two brushed-steel nameplates mounted beside it, one above the other, the upper reading exactly HOLT ADVISORY LLC and the lower reading exactly MERIDIAN ADVISORY GROUP, and a curved walnut reception desk with a small nameplate. In the center, open floor space before a large executive desk with a leather out tray and a coffee cup on its corner. On the right, a wall of floor-to-ceiling windows over the rivers and the North Shore stadiums. Leather chairs, abstract art, low expensive lighting."
+    },
+    {
+      "id": "s001c01_loc_rear_lot",
+      "kind": "background",
+      "style": "s001",
+      "subject": "The small rear parking lot and service entrance of an old four-story brick office building, on a narrow brick alley in a small western Pennsylvania town, a cold gray November dusk in 2018. On the left, two green dumpsters against the back wall with a wide empty stretch of asphalt beside them. Left of center, a steel rear service door with a card reader beside it, its little light red, and through a glass panel beside it a lit security desk with an empty chair. On the right, across the alley, a bank's drive-through lane with a security camera on a tall pole pointed toward the lot. In the foreground right, the wet brick alley running off toward a side street, a few houses at its far end. Sodium lights coming on. No readable signs."
+    },
+    {
+      "id": "s001c01_obj_casefile",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A manila private investigator's case folder, closed, with a printed label on the tab reading exactly: KELLER, M., a police photograph and a few typed pages sticking out of the side."
+    },
+    {
+      "id": "s001c01_obj_van",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A white 2015 Ford Transit 250 high-roof work van seen from the side three-quarter angle, a black ladder rack on the roof, blue vinyl lettering on its side reading exactly: REDDICK MAINTENANCE. A Pennsylvania license plate with soft, unreadable characters."
+    },
+    {
+      "id": "s001c01_obj_labfolder",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A slate blue county crime laboratory folder, closed, with a white label on the front reading exactly: LAB REPORT."
+    },
+    {
+      "id": "s001c01_obj_report_folder",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A plain buff file folder with a typed white label on the front reading exactly: FINAL REPORT."
+    },
+    {
+      "id": "s001c01_obj_envelope_sealed",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A stiff white courier envelope, sealed, with a neatly typed address label and a small printed return address in the corner, all soft and unreadable, lying flat at a slight angle."
+    },
+    {
+      "id": "s001c01_obj_envelope_open",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "The same stiff white courier envelope, opened along the top, a sheet of heavy cream letterhead and a photocopied page with a small slip stapled to its corner sliding out, the writing soft and unreadable."
+    },
+    {
+      "id": "s001c01_obj_schedule_envelope",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A manila nine-by-twelve envelope from an accounting firm, flap tucked in, a few pages of spreadsheet schedules with soft, unreadable columns of figures showing at the top, a yellow sticky note on the front."
+    },
+    {
+      "id": "s001c01_ev_e001",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A police incident report on a clipboard: several typed pages with a Carroway Police Department header, a case number and soft, unreadable text, with a handwritten note in blue ink at the bottom of the last page."
+    },
+    {
+      "id": "s001c01_ev_e002",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Four glossy color crime scene photographs fanned out on a gray desk: a small office in disarray with a desk chair pushed back, a steel filing cabinet with two drawers open, a fan of black toner powder on carpet with a partial boot-sole print in it beside a photo scale, and a desk with a forced drawer. No body is visible in any photograph."
+    },
+    {
+      "id": "s001c01_ev_e003",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A medical examiner's typed summary on county letterhead, a single page with soft, unreadable text and a simple outline diagram of a head with a small triangular mark on its left side, on a steel table."
+    },
+    {
+      "id": "s001c01_ev_e004",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "The corner of a wooden office desk in raking lamplight: a clean, dust-free rectangle about four by six inches in a fine film of dust where a heavy ornament stood, and above it on the wall a framed newspaper clipping of a smiling man in a tie holding a brass eagle on a walnut base."
+    },
+    {
+      "id": "s001c01_ev_e005",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "An open drawer of a gray steel filing cabinet, green hanging files in a row with typed tabs, and one empty hanging folder pushed apart from the others, its tab reading exactly: FUND 2018 - WORKING."
+    },
+    {
+      "id": "s001c01_ev_e006",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A printed building access control report on continuous printer paper, columns of times and card numbers, soft and unreadable except two lines highlighted in yellow marker."
+    },
+    {
+      "id": "s001c01_ev_e007",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A county crime laboratory report beside a pair of well-worn tan leather work boots, one boot turned over to show a chevron lug sole with a worn outer heel edge, an evidence tag tied to its laces."
+    },
+    {
+      "id": "s001c01_ev_e008",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A typed police canvass statement form, a single page with a signature, soft unreadable text, a dog's leash lying across the corner of the page."
+    },
+    {
+      "id": "s001c01_ev_e009",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A paper desk-pad calendar for November 2018 covered in neat blue handwriting in the day squares, soft and unreadable, one Friday square underlined twice, pens and a rubber stamp scattered across it."
+    },
+    {
+      "id": "s001c01_ev_e010",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A printed email on a desk, soft unreadable text, a few lines bracketed in pencil, beside a pair of reading glasses."
+    },
+    {
+      "id": "s001c01_ev_e011",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "An old thick hardback book with a worn, faded green dust jacket lying open, the jacket slipped off to reveal a slim green clothbound columnar ledger hidden inside in place of the book's boards, its ruled pages filled with neat columns of handwritten figures in pencil and ink, soft and unreadable."
+    },
+    {
+      "id": "s001c01_ev_e012",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A brown accordion file with a handwritten label reading exactly: HOME COPIES, stuffed with photocopied payment vouchers stamped with red approval stamps, yellow sticky notes in neat handwriting stuck to several, soft and unreadable."
+    },
+    {
+      "id": "s001c01_ev_e013",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Four printed pages lying in the output tray of a small laser printer, the top page headed DRAFT in bold, the rest soft and unreadable, a handwritten note in the margin of the last page."
+    },
+    {
+      "id": "s001c01_ev_e014",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A sealed white envelope with a name handwritten on it in blue ink, soft and unreadable, lying in an open wooden desk drawer among sorted pencils and a box of staples."
+    },
+    {
+      "id": "s001c01_ev_e015",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A printed nonprofit grant register, long tables of soft, unreadable names and dollar amounts, three lines near the bottom circled in red pen."
+    },
+    {
+      "id": "s001c01_ev_e016",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A thick black ring binder lying open, a payment request form with a second invoice clipped behind it, soft and unreadable, a paper clip catching the light."
+    },
+    {
+      "id": "s001c01_ev_e017",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A printed state business filing certificate with an official seal, soft and unreadable typed fields, and a yellow sticky note in a neat old man's handwriting stuck to the corner."
+    },
+    {
+      "id": "s001c01_ev_e018",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A blue three-ring binder open to a stack of identical disbursement authorization forms, each with the same flowing signature at the bottom, two forms side by side with the same date, the text soft and unreadable."
+    },
+    {
+      "id": "s001c01_ev_e019",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A printed online banking payment confirmation on a leather desk tray, a coffee cup's ring stain on the page, two words scrawled in black pen on the corner, the printed text soft and unreadable."
+    },
+    {
+      "id": "s001c01_ev_e020",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A bound contract with a cover page and a yellow plastic tab flag sticking out of one page, open to a dense page of numbered legal clauses, soft and unreadable."
+    },
+    {
+      "id": "s001c01_ev_e021",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A clipboard with a handwritten weekly job sheet in heavy block capitals, soft and unreadable, one word at the end of a line written in noticeably darker, heavier pen, a carpenter's pencil clipped beside it."
+    },
+    {
+      "id": "s001c01_ev_e022",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A white plastic building access card on a lanyard, a small printed credential record form beneath it with soft unreadable text and a handwritten note at the bottom."
+    },
+    {
+      "id": "s001c01_ev_e023",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Three grainy black-and-white security camera stills from above a bank drive-through lane at night: a white high-roof work van with a ladder rack in a small parking lot by two dumpsters, a lone figure carrying a bag toward a steel door, the van leaving. A vehicle registration printout beside them, soft and unreadable."
+    },
+    {
+      "id": "s001c01_ev_e024",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A small business bank statement on a cluttered steel desk, columns of small deposits soft and unreadable, one larger line highlighted, beside a coffee ring and a parts catalog."
+    },
+    {
+      "id": "s001c01_ev_e025",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A cell phone bill's call detail page, rows of times and phone numbers soft and unreadable, several rows highlighted in yellow, lying in a plastic mail tray."
+    },
+    {
+      "id": "s001c01_ev_e026",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A typed one-page witness statement with a handwritten signature at the bottom, soft and unreadable, beside a lanyard with an office key card."
+    },
+    {
+      "id": "s001c01_ev_e027",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Two printed emails stapled together, soft and unreadable, with a yellow Post-it note on top bearing a short handwritten line in looping script."
+    },
+    {
+      "id": "s001c01_ev_e028",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A typed letter on a nonprofit's letterhead with a pink While You Were Out phone message slip stapled behind it, the slip filled in by hand, all soft and unreadable."
+    },
+    {
+      "id": "s001c01_ev_e029",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A neat accountant's spreadsheet schedule printed on landscape paper, three blocks of figures with arrows all pointing to the same column on the right, a short handwritten note at the bottom, soft and unreadable."
+    },
+    {
+      "id": "s001c01_ev_e030",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A letter on heavy cream letterhead with an elegant engraved heading, written in a graceful hand, soft and unreadable, beside a photocopied invoice with a faint line of small gray print along its bottom edge and a courier waybill stapled to its corner."
+    },
+    {
+      "id": "s001c01_map",
+      "kind": "map",
+      "style": "s001",
+      "subject": "Western Pennsylvania from the edge of Pittsburgh to a small county seat an hour to the east. On the left third, a dense city grid where two broad pale blue rivers meet to form a third, with bridges and a wooded neighborhood of small blocks just east of downtown. A highway in ochre runs from the city across the center through green rolling hills and farmland to the right third, where a small town sits: a compact downtown grid of a few blocks with a courthouse square, a residential grid of small streets below it, and a state highway running out east past a few commercial lots. Wooded hillsides and creeks fill the gaps.",
+      "suffix": "A hand-painted street map, seen flat from directly above and filling the whole image edge to edge like a sheet laid on a table: no table, no border, no frame. Muted map colors: cream paper, ochre streets, sage green parkland, pale blue water, faint fold creases. Absolutely no words, letters, numbers, street names or symbols anywhere on the map."
     }
   ],
   "styles": {
