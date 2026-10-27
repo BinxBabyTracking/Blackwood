@@ -25,7 +25,7 @@ Generated and uploaded pictures are finished the same way as `import-art.mjs`: f
 
 - Versions are kept in the private `art` bucket (images only, 20 MB each) at `art/<id>-<version>.webp`, served by `src/app/art/gen/[file]/route.ts` at `/art/gen/<id>-<version>.webp` (cached for good, since every version has its own name).
 - `art_images.live_version` says which version is live. `refreshArt()` in `src/game/registry.ts` reads it (at most every 20 seconds), lays live versions over the committed paintings in `src/art/painted.ts`, and rebuilds every case's assets. The play pages and game actions call it before building a view.
-- Site and travel pictures (home page, travel scenes, maps, case covers) are read in the browser from the committed list, so a live version of those shows after the next site update.
+- Case covers load through `/art/live/<image id>`, which sends the browser to the live version (else the committed painting), so a new cover shows within about 20 seconds on every page. Other site and travel pictures (home page, travel scenes, maps) are read from the committed list (`src/art/generated.json`), so an Admin-made version of those shows only once it is committed to `public/art` with `node scripts/import-art.mjs`; ask a chat to do that.
 
 ## Rules for a case's art
 
