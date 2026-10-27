@@ -4008,6 +4008,30 @@
       "suffix": "A hand-painted street map, seen flat from directly above and filling the whole image edge to edge like a sheet laid on a table: no table, no border, no frame. Muted map colors: cream paper, ochre streets, sage green parkland, pale blue water, faint fold creases. Absolutely no words, letters, numbers, street names or symbols anywhere on the map."
     },
     {
+      "id": "c003_travel_drive_far",
+      "kind": "panorama",
+      "style": "c003",
+      "subject": "Bellwether at dusk in October 2018, seen side-on from a riverside road: the wide gray river in the middle distance, steep wooded hills beyond it with scattered house lights, an old steel mill's smokestacks and a steel truss bridge, rows of brick row houses climbing the hillside in near-silhouette with warm lit windows, a slate gray to rust-orange sky with low clouds after rain. No cars, no people, no signs with lettering."
+    },
+    {
+      "id": "c003_travel_drive_near",
+      "kind": "strip",
+      "style": "c003",
+      "subject": "A long row of roadside silhouettes beside a small-town Pennsylvania street: bare and half-bare autumn maple trees, two modern cobra-head streetlights with sodium-orange lamps on wooden utility poles strung with wires, a stretch of chain-link fence and a short guardrail. Everything stands on one level baseline along the very bottom edge of the image, evenly spaced across the full width so the row can repeat. No sky, no road, no buildings."
+    },
+    {
+      "id": "c003_travel_drive_car",
+      "kind": "strip",
+      "style": "c003",
+      "subject": "A dark blue 2015 four-door midsize sedan, seen exactly side-on in profile and facing right, headlights on, rain beading on the paint, the silhouette of a driver at the wheel lit faintly by a phone mounted on the dashboard. Whole car in frame with space around it; only a faint contact shadow under the tires."
+    },
+    {
+      "id": "c003_travel_walk",
+      "kind": "pov",
+      "style": "c003",
+      "subject": "Walking along a wet sidewalk on a quiet street of brick row houses in a small western Pennsylvania steel town at dusk in October 2018, looking straight ahead: porches with lit windows, maple trees dropping orange leaves, cars from the 2010s parked at the curb, sodium-orange streetlights coming on, puddles reflecting the light, old mill stacks faint above the rooftops. No people."
+    },
+    {
       "id": "c003_ev_e01",
       "kind": "evidence",
       "style": "c003",

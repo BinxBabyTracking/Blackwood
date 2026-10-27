@@ -33,6 +33,10 @@ Generated and uploaded pictures are finished the same way as `import-art.mjs`: f
 2. **Text that matters is spelled out in the prompt.** For a headline, sign, label or name on a door, quote the exact words line by line and say they must be printed exactly as written. Everything else stays soft and unreadable; the full wording lives in the evidence text.
 3. **Every image has a manifest entry**, so it appears on Admin. A picture added only as a file in `public/art` can't be regenerated there.
 
+## A case's own travel scenes
+
+The drive and the walk between places use the agency's Los Angeles paintings (`travel_drive_far`, `travel_drive_near`, `travel_drive_car`, `travel_walk`) unless the case has its own: `<case>_travel_drive_far` (panorama), `<case>_travel_drive_near` and `<case>_travel_drive_car` (strips) and `<case>_travel_walk` (pov). The case's `assets.ts` passes them as `ui.travel_*`, so live versions from the studio show at once. A case's own drive is used only once all three of its drive layers exist. C003 (Pennsylvania, 2018) has its own set.
+
 ## Talking portraits (kind "face")
 
 A person who talks on screen has a front-facing portrait (`<case>_portrait_<person>`, with a front-facing `suffix`) and six frames: `<case>_<person>_mouth_open_slight`, `_mouth_ah`, `_mouth_ee`, `_mouth_oh`, `_mouth_oo` and `_blink` (optional `_mouth_f`). Each frame is kind `face` with `reference` set to the portrait, so it is made as an edit of the portrait that changes only the mouth (or the eyes).

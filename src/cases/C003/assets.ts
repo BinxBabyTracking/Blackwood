@@ -73,6 +73,8 @@ export const buildAssets = (): AssetManifest => ({
     ...placeholders.images,
     ...Object.fromEntries(Object.entries(PAINTED).flatMap(([key, id]) => (art(id) ? [[key, art(id)!]] : []))),
     ...Object.fromEntries(OVERLAYS.flatMap((k) => (art(`c003_${k}`) ? [[`art.${k}`, art(`c003_${k}`)!]] : []))),
+    // Interface paintings of its own: the map, the corner objects, and the drive and walk between places.
+    ...Object.fromEntries(["map", "obj_notebook", "obj_evidence_bag", "obj_phone", "travel_drive_far", "travel_drive_near", "travel_drive_car", "travel_walk"].flatMap((k) => (art(`c003_${k}`) ? [[`ui.${k}`, art(`c003_${k}`)!]] : []))),
     // Talking portraits (scripts/build-faces.py): face.<person>.<shape>, present only once painted.
     ...Object.fromEntries(TALKERS.flatMap((c) => FACE_SHAPES.flatMap((sh) => (art(FRAME[sh](c)) ? [[`face.${c}.${sh}`, art(FRAME[sh](c))!]] : [])))),
   },

@@ -209,7 +209,7 @@ function WalkScene({ still }: { still: boolean }) {
 }
 
 
-/** Painted travel art, when it has been made. */
+/** The agency's own travel paintings (Los Angeles, 1985), used by any case without its own. */
 const ART = {
   far: paintedArt("travel_drive_far"),
   near: paintedArt("travel_drive_near"),
@@ -232,12 +232,14 @@ function PaintedScroll({ src, seconds, still, className = "" }: { src: string; s
   );
 }
 
-function PaintedDrive({ still }: { still: boolean }) {
+type DriveArt = { far: string; near: string; car: string };
+
+function PaintedDrive({ still, art }: { still: boolean; art: DriveArt }) {
   return (
     <div className="relative h-full w-full overflow-hidden bg-[#1a1420]">
       {/* Distant city and hills */}
       <div className="absolute inset-x-0 top-0 h-[92%]">
-        <PaintedScroll src={ART.far!} seconds={60} still={still} />
+        <PaintedScroll src={art.far} seconds={60} still={still} />
       </div>
       {/* The road */}
       <div className="absolute inset-x-0 bottom-0 h-[24%] bg-gradient-to-b from-[#24201d] to-[#0f0d0c]">
@@ -245,11 +247,11 @@ function PaintedDrive({ still }: { still: boolean }) {
       </div>
       {/* Palms and streetlights along the boulevard */}
       <div className="absolute inset-x-0 bottom-[22%] h-[62%]">
-        <PaintedScroll src={ART.near!} seconds={11} still={still} className="bottom-0" />
+        <PaintedScroll src={art.near} seconds={11} still={still} className="bottom-0" />
       </div>
       {/* The car */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={ART.car!} alt="" draggable={false} className={`absolute bottom-[7%] left-1/2 h-[27%] w-auto -translate-x-1/2 select-none drop-shadow-[0_10px_8px_rgba(0,0,0,0.6)] ${still ? "" : "travel-bob"}`} />
+      <img src={art.car} alt="" draggable={false} className={`absolute bottom-[7%] left-1/2 h-[27%] w-auto -translate-x-1/2 select-none drop-shadow-[0_10px_8px_rgba(0,0,0,0.6)] ${still ? "" : "travel-bob"}`} />
     </div>
   );
 }
@@ -337,6 +339,7 @@ export function TravelScene({
   caseId,
   theme = "noir",
   walkArt = null,
+  driveArt = {},
   mode,
   to,
   subtitle,
@@ -347,6 +350,8 @@ export function TravelScene({
   theme?: "noir" | "medieval";
   /** The case's own walk painting, live versions included. */
   walkArt?: string | null;
+  /** The case's own drive paintings (far, near, car), live versions included. A case uses its own set only when all three exist. */
+  driveArt?: { far?: string; near?: string; car?: string };
   mode: TravelMode;
   to: string;
   subtitle: string;
@@ -363,8 +368,14 @@ export function TravelScene({
 
   const medieval = theme === "medieval";
   // A medieval case walks everywhere, on its own painting when there is one, never the agency's city.
-  const ownWalk = medieval ? walkArt ?? (caseId ? paintedArt(`${caseId.toLowerCase()}_travel_walk`) : null) : null;
-  const paintedReady = medieval ? Boolean(ownWalk) : mode === "drive" ? Boolean(ART.far && ART.near && ART.car) : Boolean(ART.walk);
+  const own = (name: string) => (caseId ? paintedArt(`${caseId.toLowerCase()}_${name}`) : null);
+  const caseWalk = walkArt ?? own("travel_walk");
+  const ownWalk = medieval ? caseWalk : null;
+  // Another era or place has its own street and car once they are painted; otherwise the agency's Los Angeles.
+  const caseDrive = { far: driveArt.far ?? own("travel_drive_far"), near: driveArt.near ?? own("travel_drive_near"), car: driveArt.car ?? own("travel_drive_car") };
+  const drive: DriveArt | null = caseDrive.far && caseDrive.near && caseDrive.car ? (caseDrive as DriveArt) : ART.far && ART.near && ART.car ? { far: ART.far, near: ART.near, car: ART.car } : null;
+  const walk = caseWalk ?? ART.walk;
+  const paintedReady = medieval ? Boolean(ownWalk) : mode === "drive" ? Boolean(drive) : Boolean(walk);
   return (
     <div
       className="fixed inset-0 z-[60] flex items-center justify-center bg-black travel-fade"
@@ -376,7 +387,7 @@ export function TravelScene({
     >
       {paintedReady ? (
         <div className="aspect-video max-h-full w-full max-w-[calc(100dvh*16/9)]" aria-hidden>
-          {medieval ? <PaintedWalk still={reducedMotion} src={ownWalk!} /> : mode === "drive" ? <PaintedDrive still={reducedMotion} /> : <PaintedWalk still={reducedMotion} />}
+          {medieval ? <PaintedWalk still={reducedMotion} src={ownWalk!} /> : mode === "drive" ? <PaintedDrive still={reducedMotion} art={drive!} /> : <PaintedWalk still={reducedMotion} src={walk!} />}
         </div>
       ) : (
         <svg viewBox={`0 0 ${W} ${H}`} className="aspect-video max-h-full w-full max-w-[calc(100dvh*16/9)]" preserveAspectRatio="xMidYMid slice" aria-hidden>
