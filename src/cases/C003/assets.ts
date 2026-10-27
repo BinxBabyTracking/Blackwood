@@ -1,5 +1,5 @@
 import { painted } from "@/art/painted";
-import type { AssetManifest } from "@/game/engine/types";
+import { FACE_SHAPES, type AssetManifest } from "@/game/engine/types";
 import { SOUNDTRACK } from "./soundtrack";
 
 /**
@@ -58,6 +58,8 @@ export const buildAssets = (): AssetManifest => ({
     ...placeholders.images,
     ...Object.fromEntries(Object.entries(PAINTED).flatMap(([key, id]) => (art(id) ? [[key, art(id)!]] : []))),
     ...Object.fromEntries(OVERLAYS.flatMap((k) => (art(`c003_${k}`) ? [[`art.${k}`, art(`c003_${k}`)!]] : []))),
+    // Talking portraits (scripts/build-faces.py): face.<person>.<shape>, present only once painted.
+    ...Object.fromEntries(characters.flatMap((c) => FACE_SHAPES.flatMap((sh) => (art(`c003_face_${c}_${sh}`) ? [[`face.${c}.${sh}`, art(`c003_face_${c}_${sh}`)!]] : [])))),
   },
   audio: placeholders.audio,
 });

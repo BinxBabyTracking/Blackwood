@@ -41,6 +41,9 @@ export function subscribeSpeaking(l: () => void) {
 }
 export const isSpeaking = () => speaking;
 
+/** The voice speaking right now, if any: what a talking portrait keeps time with. */
+export const activeAudio = () => active;
+
 export function claim(a: HTMLAudioElement) {
   if (active && active !== a) active.pause();
   active = a;

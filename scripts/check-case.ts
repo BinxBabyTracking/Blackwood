@@ -13,6 +13,7 @@ import { CASES as MATCH_CASES } from "./match-eval";
 import { checkC002 } from "./check-case-C002";
 import { fileUnder, reportStandardProblems } from "./report-helpers";
 import { checkC003 } from "./check-case-C003";
+import { checkC004 } from "./check-case-C004";
 import type { CaseDefinition, GameAction, InvestigationState, Theory } from "../src/game/engine/types";
 
 const id = process.argv[2] ?? "C001";
@@ -42,7 +43,7 @@ for (const l of def.locations) {
 for (const d of def.deductions) for (const pair of d.connections) for (const x of pair) if (!evIds.has(x) && !charIds.has(x)) problems.push(`deduction ${d.id} item ${x}`);
 const json = JSON.stringify(def);
 for (const m of json.matchAll(/"asked":"([^"]+)"/g)) if (!qIds.has(m[1])) problems.push(`condition references unknown question ${m[1]}`);
-const flagsSet = new Set([...json.matchAll(/"setFlag":"([^"]+)"/g)].map((m) => m[1]).concat(["casefile_read", "case_closed"]));
+const flagsSet = new Set([...json.matchAll(/"setFlag":"([^"]+)"/g)].map((m) => m[1]).concat(["casefile_read", "case_closed", "held", "captivity_over"]));
 for (const m of json.matchAll(/"flag":"([^"]+)"/g)) if (!flagsSet.has(m[1])) problems.push(`flag never set: ${m[1]}`);
 
 // dialogue references
@@ -71,6 +72,7 @@ const REVEALS: Record<string, RegExp> = {
   C001: /\b(murderer|killed her|he killed|mercer killed|daniel killed)\b/i,
   C002: /\b(i took her|i kidnapped|pell took her|gordon took her|pell kidnapped|gordon kidnapped|pell did it|gordon did it|i did it)\b/i,
   C003: /\b(i killed|i shot|we shot|bell killed|bell shot|shaw shot|voss ordered|i did it|we did it|i paid them to)\b/i,
+  C004: /\b(i killed|i hit him|i struck|harlan killed|victor killed|harlan struck|i did it|harlan did it)\b/i,
 };
 const spoken = [
   ...def.questions.flatMap((q) => [q.prompt, ...q.reply, ...(q.variants ?? []).flatMap((v) => v.reply)]),
@@ -126,7 +128,8 @@ function randomWalks() {
           if (qs.length && rnd(4)) W({ type: "askFree", characterId: c.id, text: qs[rnd(qs.length)].prompt, match: qs[rnd(qs.length)].id });
           else if (w.evidence.length) W({ type: "present", characterId: c.id, evidenceId: w.evidence[rnd(w.evidence.length)] });
         }
-        if (rnd(6) === 0 && w.evidence.length > 1) {
+        // Someone held at a warehouse has no murder board to pin things on.
+        if (rnd(6) === 0 && w.evidence.length > 1 && project(def, w).captivity?.role !== "captive") {
           // occasionally try a board connection
           const a = w.evidence[rnd(w.evidence.length)], b = w.evidence[rnd(w.evidence.length)];
           if (a !== b) { W({ type: "boardAdd", itemId: a, x: 10, y: 10 }); W({ type: "boardAdd", itemId: b, x: 20, y: 20 }); W({ type: "connect", a, b }); }
@@ -755,6 +758,8 @@ if (id === "C001") {
   checkC002(def, problems);
 } else if (id === "C003") {
   checkC003(def, problems);
+} else if (id === "C004") {
+  checkC004(def, problems);
 }
 randomWalks();
 

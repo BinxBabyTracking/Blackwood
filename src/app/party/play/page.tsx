@@ -34,7 +34,7 @@ async function GuestDesk() {
       <InvestigationShell
         caseId={def.id}
         homeLocation={def.startLocation}
-        initial={respond(def, normalizeState(def, loaded.state)).view}
+        initial={respond(def, normalizeState(def, loaded.state), { kind: "none" }, { seat: seat.guest.id }).view}
         investigator={host}
         prefs={{ reducedMotion: false, masterVolume: 80, musicVolume: 70, dialogueVolume: 90, sfxVolume: 75 }}
         party={{ label: `${seat.lobby.group_name ? `${seat.lobby.group_name} · ` : ""}Helping ${host} · ${guests.length + 1} at the table`, guest: true, stamp: loaded.updatedAt }}

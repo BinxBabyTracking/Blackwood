@@ -78,7 +78,8 @@
     "c002_nora": "Nora Pruitt, an African American newspaper crime reporter in her mid forties, close-cropped natural hair, reading glasses pushed up on her head, rolled-up shirtsleeves, a pencil behind one ear, dry and skeptical",
     "c002_howard": "Howard Lisk, a 70-year-old white retired machinist, bald on top with a white fringe, bushy eyebrows, reading glasses, a brown zip cardigan over a checked shirt, leaning on a wooden cane, friendly and precise",
     "c002_diane": "Diane Moss, a 41-year-old white woman with auburn hair in a loose clip, a florist, a green canvas apron over a cream sweater, shaken but angry and determined",
-    "c002_gordon": "Gordon Pell, a 38-year-old white man, slight build, thinning light brown hair combed neatly, wire-rimmed glasses, a soft polite face, brown corduroy shirt with a pocket protector holding small screwdrivers, faint solder burns on his fingertips"
+    "c002_gordon": "Gordon Pell, a 38-year-old white man, slight build, thinning light brown hair combed neatly, wire-rimmed glasses, a soft polite face, brown corduroy shirt with a pocket protector holding small screwdrivers, faint solder burns on his fingertips",
+    "c003_rachel": "Rachel Kowalski, a 37-year-old white woman, a public librarian, dark blonde hair pulled back in a loose low ponytail with a few strands falling free at her temples, an oval face, light freckles, gray-green eyes, no glasses, wearing a soft gray-green cardigan over a navy and white striped top and a small silver pendant on a thin chain, tired, grieving but composed"
   },
   "images": [
     {
@@ -456,6 +457,12 @@
       "subject": "A quiet street of brick row houses in a small western Pennsylvania steel town on a rainy autumn night in 2018. On the right, a large oak at the curb with a pale fresh gash in its bark at bumper height; at its foot, a small roadside memorial of glass candle jars glowing in the rain, a few wilted flowers and a child's stuffed rabbit. Across the street, one brick house with its porch light on and a woman in a cardigan standing alone on the top step, half in shadow, looking down the street. Far down the block, at the corner under a sodium-orange streetlight, the red taillights of a dark full-size SUV turning away, a tiny amber glow inside its dashboard. Wet asphalt reflecting the candles and the streetlight, steam rising from a storm drain, smokestacks of an old mill faint against the clouded sky. The left third of the image is quiet dark rain, brick and sky."
     },
     {
+      "id": "c004_cover",
+      "kind": "site",
+      "style": "c004",
+      "subject": "A dark radio station office high above Chicago on a rainy night in 1927. Through a tall window, Art Deco towers lit amber, the elevated train on its trestle, Model T cars on the wet street and a lit bridge over the river under a cloudy moon. Inside, on a polished desk, a gray fedora, a glass of whiskey, an ashtray, a pen on typed pages, a brass carbon microphone on its stand, a radio receiver with three glowing dials, headphones and a record turntable; a wall clock and a red ON AIR lamp glowing behind glass. The left third is the window and the city."
+    },
+    {
       "id": "c002_loc_hale_bedroom",
       "kind": "background",
       "style": "c002",
@@ -812,10 +819,18 @@
       "kind": "map",
       "style": "c002",
       "subject": "Southern California in 1988. Along the left edge and the bottom, the Pacific coastline in pale blue: a small coastal town on the coast at the far left a third of the way down, and a harbor city on the bottom coast just right of center. A large city grid fills the center, slightly below the middle. To the right of the city, a broad valley of small towns. Across the top right corner, green pine-covered mountains with a small lake near the top right. Highways in ochre link the coast town, the city, the valley and the mountains."
+    },
+    {
+      "id": "c003_portrait_rachel",
+      "kind": "portrait",
+      "style": "c003",
+      "person": "c003_rachel",
+      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. The mouth and blink variants are edits of this image (see scripts/build-faces.py)."
     }
   ],
   "styles": {
     "c002": "Painted noir illustration in the manner of a 1980s paperback mystery cover and classic hand-painted point-and-click adventure game backgrounds. Gouache and oil textures with visible brushwork, warm tungsten lamplight against deep blue-black shadows, a muted palette of ochre, oxblood, bottle green, slate and nicotine cream, subtle film grain. Southern California, October 1988: a foggy coastal town, Los Angeles, and the pine-covered San Bernardino Mountains. Period-accurate details. The only readable words are the ones the subject spells out, printed exactly as written and correctly spelled; all other paperwork shows soft, unreadable typing or handwriting. No logos, brand names, watermarks or signatures.",
-    "c003": "Contemporary painted crime-drama illustration, gouache and oil with visible brushwork and light film grain, western Pennsylvania, October 2018. Muted industrial palette of rust, slate gray and sodium-orange streetlight; cold, rain-wet exteriors; warm lamp-lit interiors; brick row houses, a steel-town riverfront, chain-link and gravel. Realistic 2018 cars, smartphones, laptops and screens. No 1980s styling. The only readable words are the ones the subject spells out, printed exactly as written and correctly spelled; all other paperwork and screens show soft, unreadable text. No logos, brand names, watermarks or signatures."
+    "c003": "Contemporary painted crime-drama illustration, gouache and oil with visible brushwork and light film grain, western Pennsylvania, October 2018. Muted industrial palette of rust, slate gray and sodium-orange streetlight; cold, rain-wet exteriors; warm lamp-lit interiors; brick row houses, a steel-town riverfront, chain-link and gravel. Realistic 2018 cars, smartphones, laptops and screens. No 1980s styling. The only readable words are the ones the subject spells out, printed exactly as written and correctly spelled; all other paperwork and screens show soft, unreadable text. No logos, brand names, watermarks or signatures.",
+    "c004": "Painted noir illustration in the manner of a classic paperback mystery cover and hand-painted point-and-click adventure game backgrounds. Gouache and oil textures with visible brushwork, warm tungsten lamplight against deep blue-black shadows, a palette of amber, brass, oxblood, bottle green and soot black, subtle film grain. Chicago, October 1927: Art Deco towers and interiors, rain-wet streets, the elevated train, Packard and Ford Model T traffic, candlestick telephones, radio studios with carbon microphones, velvet curtains and glass control room windows, speakeasy lamplight, river warehouses. No modern objects. Period-accurate details. The only readable words are the ones the subject spells out, printed exactly as written and correctly spelled; all other paperwork shows soft, unreadable typing or handwriting. No logos, brand names, watermarks or signatures."
   }
 }

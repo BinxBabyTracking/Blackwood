@@ -1,9 +1,9 @@
 import { recordUsage } from "@/lib/usage";
 import type { NextRequest } from "next/server";
-import { normalizeState, spokenLine } from "@/game/engine/engine";
+import { heldNow, normalizeState, spokenLine } from "@/game/engine/engine";
 import { findInvestigation } from "@/game/persistence";
 import { loadCase } from "@/game/registry";
-import { castVoice, narrate, NarrationError } from "@/lib/narration/elevenlabs";
+import { cachedTiming, castVoice, narrate, NarrationError } from "@/lib/narration/elevenlabs";
 import { actingUser, fromGuestScreen } from "@/lib/party";
 
 const recent = new Map<string, number[]>();
@@ -26,6 +26,11 @@ const KINDS = new Set(["conversation", "statement", "call", "delivery", "resolut
  * call they have access to) and speaks exactly that text in the speaker's
  * fixed voice, so audio always matches the subtitle and nothing unheard can
  * be requested. Each line is generated once and shared from the cache.
+ *
+ * With &timing=1 it returns, instead of audio, when each character of the line
+ * is spoken (JSON), for a talking portrait. Timing is only ever read from the
+ * cache, never generated: a line spoken before timing was kept gets 404 and
+ * the portrait paces its mouth from the text.
  */
 export async function GET(request: NextRequest) {
   const p = request.nextUrl.searchParams;
@@ -49,16 +54,27 @@ export async function GET(request: NextRequest) {
   try {
     const loaded = await findInvestigation(user.id, def.id);
     if (!loaded) return fail("Accept the assignment first.", 403);
-    const line = spokenLine(def, normalizeState(def, loaded.state), { kind: kind as "conversation", id, n });
+    const state = normalizeState(def, loaded.state);
+    const line = spokenLine(def, state, { kind: kind as "conversation", id, n });
     if (!line) return fail("That line is not available.", 403);
+    // Something only the held investigator heard stays theirs until it is over.
+    const held = heldNow(state);
+    if (held && held.seat !== (acting.guest?.id ?? "host") && kind === "call" && def.calls.find((c) => c.id === id)?.overheard) return fail("That line is not available.", 403);
+    const speaker = line.speakerId === "narrator" ? undefined : def.characters.find((c) => c.id === line.speakerId);
+    if (p.get("timing") === "1") {
+      if (!speaker?.voice) return fail("No timing for this line.", 404);
+      const timing = await cachedTiming(`${def.id}/voices/${speaker.id}`, line.text, castVoice(speaker.id, speaker.voice));
+      return timing ? Response.json(timing, { headers: { "Cache-Control": "private, max-age=86400" } }) : fail("No timing for this line.", 404);
+    }
     let result;
     if (line.speakerId === "narrator") {
       // Written notes use the existing evidence narrator voice.
       result = await narrate(`${def.id}/voices/narrator`, line.text);
     } else {
-      const speaker = def.characters.find((c) => c.id === line.speakerId);
       if (!speaker?.voice) return fail("This person has no voice assigned.", 404);
-      result = await narrate(`${def.id}/voices/${speaker.id}`, line.text, castVoice(speaker.id, speaker.voice));
+      // People with a talking portrait keep the timing of every line, from the same request.
+      const timing = Boolean(def.assets.images[`face.${speaker.id}.rest`]);
+      result = await narrate(`${def.id}/voices/${speaker.id}`, line.text, castVoice(speaker.id, speaker.voice), { timing });
     }
     const { audio, cached } = result;
     recordUsage({

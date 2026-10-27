@@ -184,3 +184,47 @@ export async function hostParty(hostId: string, caseId: string) {
   if (!l || l.status !== "started" || l.case_id !== caseId) return null;
   return l;
 }
+
+// ---- Presence: which screens at the table are still there ------------------
+
+/** A screen not heard from for this long counts as gone (a closed tab, a phone asleep). */
+export const QUIET_MS = 2 * 60 * 1000;
+const STAMP_EVERY_MS = 20 * 1000;
+const stamped = new Map<string, number>();
+
+/**
+ * Notes that a screen at a running table is still there. Written to the lobby
+ * or guest row, never the save, and at most every 20 seconds per screen.
+ */
+export async function touchSeat(lobby: Lobby, guestId: string | null) {
+  const key = `${lobby.id}.${guestId ?? "host"}`;
+  const now = Date.now();
+  if (now - (stamped.get(key) ?? 0) < STAMP_EVERY_MS) return;
+  stamped.set(key, now);
+  const at = new Date(now).toISOString();
+  const q = guestId
+    ? db().from("party_guests").update({ last_seen: at }).eq("id", guestId)
+    : db().from("party_lobbies").update({ host_last_seen: at }).eq("id", lobby.id);
+  const { error } = await q;
+  if (error) stamped.delete(key);
+}
+
+/**
+ * Screens at a running table seen in the last two minutes, as seats ("host" or
+ * a guest id), with names. Null when presence cannot be read, so nobody is
+ * ever treated as gone on a guess.
+ */
+export async function tablePresence(lobby: Lobby): Promise<{ active: string[]; names: Record<string, string> } | null> {
+  const [{ data: l, error: le }, { data: g, error: ge }] = await Promise.all([
+    db().from("party_lobbies").select("host_last_seen").eq("id", lobby.id).maybeSingle(),
+    db().from("party_guests").select("id, name, last_seen").eq("lobby_id", lobby.id),
+  ]);
+  if (le || ge) return null;
+  const fresh = (t: string | null | undefined) => Boolean(t && Date.now() - new Date(t).getTime() < QUIET_MS);
+  const guests = (g ?? []) as { id: string; name: string; last_seen: string | null }[];
+  const active = [
+    ...(fresh((l as { host_last_seen: string | null } | null)?.host_last_seen) ? ["host"] : []),
+    ...guests.filter((x) => fresh(x.last_seen)).map((x) => x.id),
+  ];
+  return { active, names: Object.fromEntries(guests.map((x) => [x.id, x.name])) };
+}

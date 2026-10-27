@@ -7,10 +7,12 @@ import { buildAssets as C002Assets } from "@/cases/C002/assets";
 import { C003 } from "@/cases/C003";
 import { buildAssets as C003Assets } from "@/cases/C003/assets";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { C004 } from "@/cases/C004";
+import { buildAssets as C004Assets } from "@/cases/C004/assets";
 import type { CaseDefinition } from "./engine/types";
 
 /** Every playable case, keyed by stable case id. Add new cases here. */
-const CASES: Record<string, CaseDefinition> = { C001, C002, C003 };
+const CASES: Record<string, CaseDefinition> = { C001, C002, C003, C004 };
 
 /** Every registered case id, in order. */
 export function caseIds() {
@@ -21,7 +23,7 @@ export function loadCase(caseId: string): CaseDefinition | null {
   return CASES[caseId.toUpperCase()] ?? null;
 }
 
-const BUILD: Record<string, () => CaseDefinition["assets"]> = { C001: C001Assets, C002: C002Assets, C003: C003Assets };
+const BUILD: Record<string, () => CaseDefinition["assets"]> = { C001: C001Assets, C002: C002Assets, C003: C003Assets, C004: C004Assets };
 const committed = { ...painted };
 let artCheckedAt = 0;
 let artSignature = "";
