@@ -687,3 +687,24 @@ export const locations: LocationDef[] = [
     ],
   },
 ];
+
+/** Painted artwork for objects and people, by hotspot. Drawn only over painted scenes. */
+const ART: Record<string, string> = {
+  office_casefile: "art.obj_casefile",
+  office_phone: "art.obj_phone",
+  office_notebook: "art.obj_notebook",
+  office_mail: "art.obj_mailtray",
+  vh_louise: "art.figure_louise",
+  so_victor: "art.figure_victor",
+  po_victor: "art.figure_victor_custody",
+  bh_henry: "art.figure_henry",
+  cr_samuel: "art.figure_samuel",
+  so_clara: "art.figure_clara",
+  bl_russo: "art.figure_russo",
+  cr_rose: "art.figure_rose",
+  po_keene: "art.figure_keene",
+  bh_agnes: "art.figure_agnes",
+  wg_frankie: "art.figure_frankie",
+  r2_frankie: "art.figure_frankie",
+};
+for (const l of locations) for (const h of l.hotspots) if (ART[h.id]) h.art = ART[h.id];

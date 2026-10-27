@@ -1,5 +1,5 @@
 import { painted } from "@/art/painted";
-import type { AssetManifest } from "@/game/engine/types";
+import { FACE_SHAPES, type AssetManifest } from "@/game/engine/types";
 import { SOUNDTRACK } from "./soundtrack";
 
 /**
@@ -55,12 +55,24 @@ const OVERLAYS = [
   "figure_louise", "figure_victor", "figure_victor_custody", "figure_henry", "figure_samuel", "figure_clara", "figure_russo", "figure_rose", "figure_keene", "figure_agnes", "figure_frankie",
 ];
 
+/** People who are interviewed, and so talk: each has a talking portrait once its frames are painted. */
+const TALKERS = ["louise", "victor", "henry", "samuel", "clara", "russo", "rose", "keene", "agnes", "frankie"];
+
 /** Built again when Admin makes a new painting live (see refreshArt in the registry). */
 export const buildAssets = (): AssetManifest => ({
   images: {
     ...placeholders.images,
     ...Object.fromEntries(Object.entries(PAINTED).flatMap(([key, id]) => (art(id) ? [[key, art(id)!]] : []))),
     ...Object.fromEntries(OVERLAYS.flatMap((k) => (art(`c004_${k}`) ? [[`art.${k}`, art(`c004_${k}`)!]] : []))),
+    // Talking portraits: face.<person>.<shape>, made on Admin as edits of the portrait. The portrait itself is the resting face.
+    ...Object.fromEntries(
+      TALKERS.flatMap((c) =>
+        FACE_SHAPES.flatMap((sh) => {
+          const url = art(`c004_face_${c}_${sh}`) ?? (sh === "rest" ? art(`c004_portrait_${c}`) : null);
+          return url ? [[`face.${c}.${sh}`, url]] : [];
+        }),
+      ),
+    ),
   },
   audio: placeholders.audio,
 });

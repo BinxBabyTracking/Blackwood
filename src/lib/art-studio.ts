@@ -170,6 +170,49 @@ const SIZE: Record<string, [number, number]> = {
   map: [1600, 1200],
 };
 
+/**
+ * A talking-portrait frame: the edit of the portrait with only the changed area
+ * kept, the mouth (or the eyes, for a blink) blended into the untouched portrait.
+ * An image model redraws small things on every edit, so a raw edit would make
+ * the whole face shimmer as frames switch. Same method as scripts/build-faces.py.
+ */
+async function blendFace(id: string, edit: Buffer, base: Buffer) {
+  const [W, H] = SIZE.portrait;
+  const raw = (b: Buffer) => sharp(b).resize({ width: W, height: H, fit: "cover", position: "centre" }).removeAlpha().raw().toBuffer();
+  const [e, b] = await Promise.all([raw(edit), raw(base)]);
+  const blink = id.endsWith("_blink");
+  // Where the edit differs from the portrait, softened, inside the band where a mouth or eyes can be.
+  const diff = Buffer.alloc(W * H);
+  for (let p = 0; p < W * H; p++) diff[p] = Math.min(255, (Math.abs(e[p * 3] - b[p * 3]) + Math.abs(e[p * 3 + 1] - b[p * 3 + 1]) + Math.abs(e[p * 3 + 2] - b[p * 3 + 2])) / 3);
+  const soft = await sharp(diff, { raw: { width: W, height: H, channels: 1 } }).blur(6).extractChannel(0).raw().toBuffer();
+  const [y0b, y1b] = blink ? [0.2, 0.45] : [0.3, 0.7];
+  const xs: number[] = [];
+  const ys: number[] = [];
+  for (let y = Math.floor(y0b * H); y < Math.floor(y1b * H); y++) {
+    for (let x = Math.floor(0.2 * W); x < Math.floor(0.8 * W); x++) {
+      if (soft[y * W + x] > 18) {
+        xs.push(x);
+        ys.push(y);
+      }
+    }
+  }
+  if (xs.length < 50) throw new Error("The edit changed nothing in the face. Generate it again.");
+  const pct = (a: number[], q: number) => [...a].sort((m, n) => m - n)[Math.min(a.length - 1, Math.floor(q * a.length))];
+  const [x0, x1, y0, y1] = [pct(xs, 0.01), pct(xs, 0.99), pct(ys, 0.01), pct(ys, 0.99)];
+  const margin = blink ? 0.25 : 0.35;
+  const mx = (x1 - x0) * margin;
+  const my = (y1 - y0) * margin;
+  const feather = Math.max(8, (x1 - x0) * 0.12);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}"><rect width="100%" height="100%" fill="black"/><ellipse cx="${(x0 + x1) / 2}" cy="${(y0 + y1) / 2}" rx="${(x1 - x0) / 2 + mx}" ry="${(y1 - y0) / 2 + my}" fill="white"/></svg>`;
+  const mask = await sharp(Buffer.from(svg)).blur(feather).extractChannel(0).raw().toBuffer();
+  const out = Buffer.alloc(W * H * 3);
+  for (let p = 0; p < W * H; p++) {
+    const a = mask[p] / 255;
+    for (let c = 0; c < 3; c++) out[p * 3 + c] = Math.round(e[p * 3 + c] * a + b[p * 3 + c] * (1 - a));
+  }
+  return sharp(out, { raw: { width: W, height: H, channels: 3 } }).webp({ quality: 92 }).toBuffer();
+}
+
 /** Crops and sizes an image for its kind, cutting people and objects out of their backdrop, as webp. */
 async function finish(kind: string, input: Buffer) {
   if (kind === "figure" || kind === "sprite" || kind === "strip") {
@@ -198,13 +241,24 @@ async function store(id: string, version: number, webp: Buffer, row: { source: "
   return { version, url: liveArtUrl(id, version) };
 }
 
-/** The current picture of an image, for use as a reference (a figure is drawn from the person's portrait). */
+/**
+ * The current picture of an image, for use as a reference (a figure is drawn
+ * from the person's portrait; a talking-portrait frame is an edit of it): the
+ * live version, else the committed painting, else the newest version made.
+ */
 async function currentBytes(id: string, origin: string) {
   const { data } = await db().from("art_images").select("live_version").eq("id", id).maybeSingle();
   const live = (data as { live_version: number | null } | null)?.live_version;
   if (live) {
     const b = await readArtFile(`${id}-${live}.webp`);
     if (b) return Buffer.from(b);
+  }
+  if (!committed[id]?.url) {
+    const newest = await nextVersion(id).then((n) => n - 1);
+    if (newest > 0) {
+      const b = await readArtFile(`${id}-${newest}.webp`);
+      if (b) return Buffer.from(b);
+    }
   }
   const url = committed[id]?.url;
   if (!url || !origin) return null;
@@ -222,6 +276,8 @@ export async function generateImage(id: string, origin: string) {
   const { data: m } = await db().from("art_images").select("subject").eq("id", id).maybeSingle();
   const prompt = promptFor(img, (m as { subject: string | null } | null)?.subject ?? img.subject);
   const ref = img.reference ? await currentBytes(img.reference, origin) : null;
+  // A talking-portrait frame is only ever an edit of the portrait; made from nothing it would be someone else.
+  if (img.kind === "face" && !ref) throw new Error(`Make the portrait (${img.reference}) first.`);
 
   for (let attempt = 0; attempt < 4; attempt++) {
     const model = MODELS[modelIndex];
@@ -259,7 +315,7 @@ export async function generateImage(id: string, origin: string) {
     const body = (await res.json()) as { data?: { b64_json?: string }[] };
     const b64 = body.data?.[0]?.b64_json;
     if (!b64) throw new Error("OpenAI returned no image.");
-    const webp = await finish(img.kind, Buffer.from(b64, "base64"));
+    const webp = img.kind === "face" ? await blendFace(id, Buffer.from(b64, "base64"), ref!) : await finish(img.kind, Buffer.from(b64, "base64"));
     const version = await nextVersion(id);
     const saved = await store(id, version, webp, { source: "generated", model, prompt, cost: costOf(k) });
     return { ...saved, model, cost: costOf(k) };
@@ -268,11 +324,15 @@ export async function generateImage(id: string, origin: string) {
 }
 
 /** Keeps an uploaded picture as a new version of an image (not live until chosen). */
-export async function uploadImage(id: string, file: File) {
+export async function uploadImage(id: string, file: File, origin = "") {
   const img = manifest.images.find((i) => i.id === id);
   if (!img) throw new Error("Unknown image.");
   if (file.size > 15 * 1024 * 1024) throw new Error("The file is too large (15 MB at most).");
-  const webp = await finish(img.kind, Buffer.from(await file.arrayBuffer()));
+  const bytes = Buffer.from(await file.arrayBuffer());
+  // An uploaded talking-portrait frame is blended into the portrait the same way a generated one is.
+  const ref = img.kind === "face" && img.reference ? await currentBytes(img.reference, origin) : null;
+  if (img.kind === "face" && !ref) throw new Error(`Make the portrait (${img.reference}) first.`);
+  const webp = img.kind === "face" ? await blendFace(id, bytes, ref!) : await finish(img.kind, bytes);
   const version = await nextVersion(id);
   return store(id, version, webp, { source: "uploaded" });
 }

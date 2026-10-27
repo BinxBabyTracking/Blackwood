@@ -61,6 +61,12 @@
       "quality": "high",
       "background": "opaque",
       "suffix": "A hand-painted fold-out street map from the 1980s, seen flat from directly above and filling the whole image edge to edge like a sheet laid on a table: no table, no border, no frame. Muted period map colours: cream paper, ochre streets, sage green parkland, pale blue water, faint fold creases. Absolutely no words, letters, numbers, street names or symbols anywhere on the map."
+    },
+    "face": {
+      "size": "1024x1536",
+      "quality": "high",
+      "background": "opaque",
+      "suffix": "An edit of the reference portrait: the same painting of the same person, at the same size, framing, pose, lighting, colors and brushwork. Change nothing except what the subject asks for. Do not move the head, change the expression elsewhere, or redraw the hair, clothing or background."
     }
   },
   "people": {
@@ -79,7 +85,20 @@
     "c002_howard": "Howard Lisk, a 70-year-old white retired machinist, bald on top with a white fringe, bushy eyebrows, reading glasses, a brown zip cardigan over a checked shirt, leaning on a wooden cane, friendly and precise",
     "c002_diane": "Diane Moss, a 41-year-old white woman with auburn hair in a loose clip, a florist, a green canvas apron over a cream sweater, shaken but angry and determined",
     "c002_gordon": "Gordon Pell, a 38-year-old white man, slight build, thinning light brown hair combed neatly, wire-rimmed glasses, a soft polite face, brown corduroy shirt with a pocket protector holding small screwdrivers, faint solder burns on his fingertips",
-    "c003_rachel": "Rachel Kowalski, a 37-year-old white woman, a public librarian, dark blonde hair pulled back in a loose low ponytail with a few strands falling free at her temples, an oval face, light freckles, gray-green eyes, no glasses, wearing a soft gray-green cardigan over a navy and white striped top and a small silver pendant on a thin chain, tired, grieving but composed"
+    "c003_rachel": "Rachel Kowalski, a 37-year-old white woman, a public librarian, dark blonde hair pulled back in a loose low ponytail with a few strands falling free at her temples, an oval face, light freckles, gray-green eyes, no glasses, wearing a soft gray-green cardigan over a navy and white striped top and a small silver pendant on a thin chain, tired, grieving but composed",
+    "c004_louise": "Louise Vale, a 38-year-old white woman, a piano teacher, dark brown hair pinned in a neat low chignon, a long pale oval face, dark brown eyes, straight dark brows, no glasses, a black wool mourning dress with a small white lace collar and a jet brooch, grieving but composed",
+    "c004_victor": "Victor Harlan, a 45-year-old white man, a radio station manager, dark hair slicked back and graying at the temples, a neat narrow mustache, cool gray eyes, clean-shaven jaw, a charcoal three-piece suit, a white shirt with a soft collar, a dark silk tie with a gold pin and a gold watch chain, polished and controlled",
+    "c004_henry": "Henry Mercer, a 43-year-old white man, a radio program producer down on his luck, a round tired face, thinning sandy hair, light stubble, pale blue eyes with dark circles, a rumpled brown wool suit, a wilted collar and loosened striped tie, bitter and ashamed",
+    "c004_samuel": "Samuel Finch, a 27-year-old white man, a radio engineer, lanky, short neat brown hair parted on the side, earnest brown eyes, clean-shaven, in shirtsleeves with a buttoned brown vest and sleeve garters, a pair of black radio headphones hanging around his neck, nervous",
+    "c004_clara": "Clara Whitcomb, a 32-year-old white woman, an office secretary, auburn hair in a short finger-waved bob, pale skin with faint freckles, green eyes, no glasses, a high-collared cream blouse with a small bow and a gray wool cardigan, careful and quietly brave",
+    "c004_russo": "Dominic Russo, a 39-year-old Italian-American man, a speakeasy owner, thick black hair brushed straight back, heavy dark brows, a strong nose, olive skin, clean-shaven, a black dinner jacket, a white shirt and black bow tie, a white carnation in the lapel, amused and dangerous",
+    "c004_rose": "Rose Marlowe, a 29-year-old Black woman, a 1920s jazz singer, a short glossy black finger-waved bob, warm brown skin, dark expressive eyes, dark red lipstick, a beaded dark green evening dress with thin straps, a long strand of pearls, warm and wry with grief behind it",
+    "c004_keene": "Officer Thomas Keene, a 49-year-old Irish-American police detective, heavy-set, a broad weathered face, short gray hair, a thick gray mustache, patient tired blue eyes, a rumpled brown suit with a waistcoat, a plain tie, a brown fedora pushed back on his head",
+    "c004_agnes": "Agnes Doyle, a 54-year-old Irish-American widow who keeps a rooming house, gray hair pinned up in a bun, a round firm face, sharp blue eyes, no glasses, a navy dress with a white apron over it, a ring of keys on her belt, brisk and protective",
+    "c004_frankie": "Frankie Moretti, a 24-year-old Italian-American warehouse clerk, curly black hair under a gray tweed flat cap, a thin anxious face, dark eyes, a day's stubble, a stub of pencil behind one ear, a heavy brown wool work jacket over a collarless shirt, jumpy and ashamed",
+    "c004_arthur": "Arthur Vale, a 41-year-old white man, a famous 1920s radio announcer, handsome, wavy dark-blond hair, warm hazel eyes, a broad easy smile, clean-shaven, a tweed jacket, a white shirt and a polka-dot bow tie",
+    "c004_sal": "Sal, a heavy-set white man in his forties, a Chicago hoodlum, a broken nose, small hard eyes, a dark overcoat with the collar up and a black flat cap",
+    "c004_augie": "Augie, a thin white man in his thirties, a warehouse heavy, a pockmarked narrow face, a long nose, a gray flat cap and a rough wool sweater"
   },
   "images": [
     {
@@ -461,6 +480,989 @@
       "kind": "site",
       "style": "c004",
       "subject": "A dark radio station office high above Chicago on a rainy night in 1927. Through a tall window, Art Deco towers lit amber, the elevated train on its trestle, Model T cars on the wet street and a lit bridge over the river under a cloudy moon. Inside, on a polished desk, a gray fedora, a glass of whiskey, an ashtray, a pen on typed pages, a brass carbon microphone on its stand, a radio receiver with three glowing dials, headphones and a record turntable; a wall clock and a red ON AIR lamp glowing behind glass. The left third is the window and the city."
+    },
+    {
+      "id": "c004_portrait_louise",
+      "kind": "portrait",
+      "style": "c004",
+      "person": "c004_louise",
+      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. The mouth and blink variants are edits of this image."
+    },
+    {
+      "id": "c004_portrait_victor",
+      "kind": "portrait",
+      "style": "c004",
+      "person": "c004_victor",
+      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. The mouth and blink variants are edits of this image."
+    },
+    {
+      "id": "c004_portrait_henry",
+      "kind": "portrait",
+      "style": "c004",
+      "person": "c004_henry",
+      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. The mouth and blink variants are edits of this image."
+    },
+    {
+      "id": "c004_portrait_samuel",
+      "kind": "portrait",
+      "style": "c004",
+      "person": "c004_samuel",
+      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. The mouth and blink variants are edits of this image."
+    },
+    {
+      "id": "c004_portrait_clara",
+      "kind": "portrait",
+      "style": "c004",
+      "person": "c004_clara",
+      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. The mouth and blink variants are edits of this image."
+    },
+    {
+      "id": "c004_portrait_russo",
+      "kind": "portrait",
+      "style": "c004",
+      "person": "c004_russo",
+      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. The mouth and blink variants are edits of this image."
+    },
+    {
+      "id": "c004_portrait_rose",
+      "kind": "portrait",
+      "style": "c004",
+      "person": "c004_rose",
+      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. The mouth and blink variants are edits of this image."
+    },
+    {
+      "id": "c004_portrait_keene",
+      "kind": "portrait",
+      "style": "c004",
+      "person": "c004_keene",
+      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. The mouth and blink variants are edits of this image."
+    },
+    {
+      "id": "c004_portrait_agnes",
+      "kind": "portrait",
+      "style": "c004",
+      "person": "c004_agnes",
+      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. The mouth and blink variants are edits of this image."
+    },
+    {
+      "id": "c004_portrait_frankie",
+      "kind": "portrait",
+      "style": "c004",
+      "person": "c004_frankie",
+      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. The mouth and blink variants are edits of this image."
+    },
+    {
+      "id": "c004_portrait_arthur",
+      "kind": "portrait",
+      "style": "c004",
+      "person": "c004_arthur",
+      "subject": "A radio star's publicity portrait from 1927, in three-quarter view, smiling toward the viewer beside a brass carbon microphone, warm studio light."
+    },
+    {
+      "id": "c004_portrait_sal",
+      "kind": "portrait",
+      "style": "c004",
+      "person": "c004_sal",
+      "subject": "Lit from below by a hand lamp in a dark warehouse, looking at the viewer without interest."
+    },
+    {
+      "id": "c004_portrait_augie",
+      "kind": "portrait",
+      "style": "c004",
+      "person": "c004_augie",
+      "subject": "In a dark warehouse doorway at night, a lit cigarette, looking sideways."
+    },
+    {
+      "id": "c004_face_louise_slight",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_louise",
+      "reference": "c004_portrait_louise",
+      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_louise_ah",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_louise",
+      "reference": "c004_portrait_louise",
+      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_louise_ee",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_louise",
+      "reference": "c004_portrait_louise",
+      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_louise_oh",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_louise",
+      "reference": "c004_portrait_louise",
+      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_louise_oo",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_louise",
+      "reference": "c004_portrait_louise",
+      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_louise_blink",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_louise",
+      "reference": "c004_portrait_louise",
+      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_victor_slight",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_victor",
+      "reference": "c004_portrait_victor",
+      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_victor_ah",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_victor",
+      "reference": "c004_portrait_victor",
+      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_victor_ee",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_victor",
+      "reference": "c004_portrait_victor",
+      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_victor_oh",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_victor",
+      "reference": "c004_portrait_victor",
+      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_victor_oo",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_victor",
+      "reference": "c004_portrait_victor",
+      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_victor_blink",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_victor",
+      "reference": "c004_portrait_victor",
+      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_henry_slight",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_henry",
+      "reference": "c004_portrait_henry",
+      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_henry_ah",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_henry",
+      "reference": "c004_portrait_henry",
+      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_henry_ee",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_henry",
+      "reference": "c004_portrait_henry",
+      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_henry_oh",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_henry",
+      "reference": "c004_portrait_henry",
+      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_henry_oo",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_henry",
+      "reference": "c004_portrait_henry",
+      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_henry_blink",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_henry",
+      "reference": "c004_portrait_henry",
+      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_samuel_slight",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_samuel",
+      "reference": "c004_portrait_samuel",
+      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_samuel_ah",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_samuel",
+      "reference": "c004_portrait_samuel",
+      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_samuel_ee",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_samuel",
+      "reference": "c004_portrait_samuel",
+      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_samuel_oh",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_samuel",
+      "reference": "c004_portrait_samuel",
+      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_samuel_oo",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_samuel",
+      "reference": "c004_portrait_samuel",
+      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_samuel_blink",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_samuel",
+      "reference": "c004_portrait_samuel",
+      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_clara_slight",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_clara",
+      "reference": "c004_portrait_clara",
+      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_clara_ah",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_clara",
+      "reference": "c004_portrait_clara",
+      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_clara_ee",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_clara",
+      "reference": "c004_portrait_clara",
+      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_clara_oh",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_clara",
+      "reference": "c004_portrait_clara",
+      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_clara_oo",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_clara",
+      "reference": "c004_portrait_clara",
+      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_clara_blink",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_clara",
+      "reference": "c004_portrait_clara",
+      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_russo_slight",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_russo",
+      "reference": "c004_portrait_russo",
+      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_russo_ah",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_russo",
+      "reference": "c004_portrait_russo",
+      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_russo_ee",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_russo",
+      "reference": "c004_portrait_russo",
+      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_russo_oh",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_russo",
+      "reference": "c004_portrait_russo",
+      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_russo_oo",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_russo",
+      "reference": "c004_portrait_russo",
+      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_russo_blink",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_russo",
+      "reference": "c004_portrait_russo",
+      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_rose_slight",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_rose",
+      "reference": "c004_portrait_rose",
+      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_rose_ah",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_rose",
+      "reference": "c004_portrait_rose",
+      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_rose_ee",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_rose",
+      "reference": "c004_portrait_rose",
+      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_rose_oh",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_rose",
+      "reference": "c004_portrait_rose",
+      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_rose_oo",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_rose",
+      "reference": "c004_portrait_rose",
+      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_rose_blink",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_rose",
+      "reference": "c004_portrait_rose",
+      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_keene_slight",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_keene",
+      "reference": "c004_portrait_keene",
+      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_keene_ah",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_keene",
+      "reference": "c004_portrait_keene",
+      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_keene_ee",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_keene",
+      "reference": "c004_portrait_keene",
+      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_keene_oh",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_keene",
+      "reference": "c004_portrait_keene",
+      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_keene_oo",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_keene",
+      "reference": "c004_portrait_keene",
+      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_keene_blink",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_keene",
+      "reference": "c004_portrait_keene",
+      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_agnes_slight",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_agnes",
+      "reference": "c004_portrait_agnes",
+      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_agnes_ah",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_agnes",
+      "reference": "c004_portrait_agnes",
+      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_agnes_ee",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_agnes",
+      "reference": "c004_portrait_agnes",
+      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_agnes_oh",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_agnes",
+      "reference": "c004_portrait_agnes",
+      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_agnes_oo",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_agnes",
+      "reference": "c004_portrait_agnes",
+      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_agnes_blink",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_agnes",
+      "reference": "c004_portrait_agnes",
+      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_frankie_slight",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_frankie",
+      "reference": "c004_portrait_frankie",
+      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_frankie_ah",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_frankie",
+      "reference": "c004_portrait_frankie",
+      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_frankie_ee",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_frankie",
+      "reference": "c004_portrait_frankie",
+      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_frankie_oh",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_frankie",
+      "reference": "c004_portrait_frankie",
+      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_frankie_oo",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_frankie",
+      "reference": "c004_portrait_frankie",
+      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical."
+    },
+    {
+      "id": "c004_face_frankie_blink",
+      "kind": "face",
+      "style": "c004",
+      "person": "c004_frankie",
+      "reference": "c004_portrait_frankie",
+      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical."
+    },
+    {
+      "id": "c004_loc_office",
+      "kind": "background",
+      "style": "c004",
+      "subject": "A small detective agency office in the Loop, Chicago, on a rainy morning in 1927. On the left wall a large cork board with pins and string, empty. Below it on a side table at the left, a black candlestick telephone. A heavy oak desk across the lower middle, its top clear except a green-shaded banker's lamp and a blotter. On the right wall a framed street map of Chicago. At the far right a wooden filing cabinet with a dictating machine on top, and a typewriter on a stand. A tall window behind the desk with rain on the glass and the elevated train beyond. A frosted glass door at the far right, lettered exactly: 'ASHBY & LOWE' on the first line and 'DETECTIVES' on the second."
+    },
+    {
+      "id": "c004_loc_studio_a",
+      "kind": "background",
+      "style": "c004",
+      "subject": "A 1927 radio broadcasting studio, heavily hung with dark velvet drapes. A large window on the back wall into a control room, covered from this side by a drawn velvet curtain on a brass rod. An announcer's desk at the right with a green desk lamp and typed pages. In the middle of the carpet, a chalk outline and a scrubbed dark stain where a microphone floor stand used to stand. On the far right against the wall, a tall black amplifier rack on casters. On the left, a heavy oak door with two split iron brackets on its frame. A wall clock. Very still."
+    },
+    {
+      "id": "c004_loc_control_room",
+      "kind": "background",
+      "style": "c004",
+      "subject": "A 1927 radio station control room. A long control board of dials, brass keys and two inset turntables across the middle. A thick glass window above it into Studio A with a velvet curtain hanging on the far side. On the left wall a typed program schedule pinned up and a clockwork pen recorder in a glass case with a paper strip. A shelf with ledgers under the board. Warm tungsten light, a hum of equipment."
+    },
+    {
+      "id": "c004_loc_storage",
+      "kind": "background",
+      "style": "c004",
+      "subject": "A cramped equipment storage room at the back of a radio station, 1927. Wooden crates of coiled black cable and spare tubes in straw at the lower left. A single bare bulb on a cord hanging from the ceiling. Low in the right-hand wall, a square painted panel with two small brass turn-buttons. A door with a bright new brass lock on the far right."
+    },
+    {
+      "id": "c004_loc_station_office",
+      "kind": "background",
+      "style": "c004",
+      "subject": "The front office of a 1927 radio station: a secretary's desk on the left with an Underwood typewriter and wire baskets of carbons, a wall shelf of green cloth ledgers behind it, and on the right, through an open glass-paneled door, the manager's private office with a big desk, a leather desk diary on the blotter and a small safe. Art Deco lamps, rain on the windows."
+    },
+    {
+      "id": "c004_loc_workshop",
+      "kind": "background",
+      "style": "c004",
+      "subject": "A small recording workshop at a 1927 radio station: a heavy disc-cutting lathe on a workbench in the middle, a wooden rack of twelve-inch aluminum discs in paper sleeves on the left wall, a ruled logbook chained to the bench on the right, coils of wire, a soldering iron, warm work lamps."
+    },
+    {
+      "id": "c004_loc_blue_lantern",
+      "kind": "background",
+      "style": "c004",
+      "subject": "A Prohibition-era speakeasy in Chicago, 1927, behind a cigar store: a long dark wood bar on the left with crates stacked under a tablecloth behind it, a small bandstand under a blue paper lantern in the back middle with a piano, little tables with candles, smoke, and on the far right a half-open door to a back office with a desk."
+    },
+    {
+      "id": "c004_loc_mercer_apartment",
+      "kind": "background",
+      "style": "c004",
+      "subject": "A shut-up small bachelor apartment in Chicago, 1927, gloomy and dusty, the furniture covered here and there: a rolltop desk by a rain-streaked window on the right, a mantel with papers on it on the left, a door on the far left with a paper notice tacked inside it."
+    },
+    {
+      "id": "c004_loc_vale_house",
+      "kind": "background",
+      "style": "c004",
+      "subject": "A comfortable Hyde Park parlor in 1927, afternoon light through lace curtains: an upright piano on the right with a framed photograph on top and a music stand, a sofa and an armchair, potted ferns, mourning crepe on a mirror, rain outside."
+    },
+    {
+      "id": "c004_loc_police",
+      "kind": "background",
+      "style": "c004",
+      "subject": "A 1920s Chicago police detective bureau squad room: rows of wooden desks with typewriters and candlestick telephones, a chalk blackboard on the left wall with case names, filing cabinets, a holding cell door at the far right, gray daylight through tall windows, cigarette smoke."
+    },
+    {
+      "id": "c004_loc_warehouse_gate",
+      "kind": "background",
+      "style": "c004",
+      "subject": "The gate and yard of a long brick river warehouse in Chicago in 1927, in gray daylight: a chain-link and iron gate, a watchman's shed, trucks and pallets in the yard, and the long warehouse running away toward the river with a painted sign on its end wall reading exactly: 'RIVERSIDE SHIPPING' on the first line and 'AND STORAGE CO.' on the second."
+    },
+    {
+      "id": "c004_loc_boardinghouse",
+      "kind": "background",
+      "style": "c004",
+      "subject": "The front hall and parlor of a respectable Chicago rooming house in 1927: a front desk with a register book and a ring of keys on the left, a staircase, a parlor on the right with a baize card table and a cabinet radio, a lamp, rain outside."
+    },
+    {
+      "id": "c004_loc_wh_storeroom",
+      "kind": "background",
+      "style": "c004",
+      "subject": "A dark upper storeroom in a riverside warehouse at night, 1927: packing crates, one with a broken steel strap curling up, a box of manila shipping tags, a small window boarded over from outside with river lights through the gaps, a plank door to the stairs on the right, and a plank inner door with a cheap hasp and padlock in the middle. Lit only by moonlight through the gaps."
+    },
+    {
+      "id": "c004_loc_wh_tally",
+      "kind": "background",
+      "style": "c004",
+      "subject": "A cramped tally clerk's office upstairs in a riverside warehouse at night, 1927: a desk with a green cloth ledger open under a small lamp, a window over the black river with a bridge and its lamps beyond, a hand lamp with a shutter hanging on a hook by the window, a crate stenciled exactly 'BAY 6' at the top of a narrow stair going down on the right."
+    },
+    {
+      "id": "c004_loc_wh_riverdoor",
+      "kind": "background",
+      "style": "c004",
+      "subject": "Inside a riverside warehouse bay at night, 1927: a wide plank door onto the river, barred with a heavy timber in iron brackets, crates stenciled 'RADIO CABINETS' stacked in the gloom, a narrow stair coming down on the left, river water gleaming under the door."
+    },
+    {
+      "id": "c004_loc_wells_bridge",
+      "kind": "background",
+      "style": "c004",
+      "subject": "The Wells Street bridge over the Chicago River at night in 1927, seen from the walkway at the rail: across the black water, the long dark back of a brick warehouse with its river doors shut, two windows upstairs at the river end, one boarded and one a dark square of glass. Bridge lamps, rain, a streetcar's light passing."
+    },
+    {
+      "id": "c004_loc_wh_night_gate",
+      "kind": "background",
+      "style": "c004",
+      "subject": "The yard of a riverside warehouse at night in 1927, seen from just inside the gate: a watchman's shed with a lamp over it, pallets, and along the river side a row of plank river doors chained and padlocked, numbered in white paint. Headlights sweeping in from the street on the right."
+    },
+    {
+      "id": "c004_map",
+      "kind": "map",
+      "style": "c004",
+      "subject": "Chicago in 1927, painted like a period street map. Lake Michigan in deep blue along the whole right edge. The Chicago River coming in from the lake just above center, then running west and splitting into north and south branches in a Y. South of the main river by the lake, the dense Loop with tiny Art Deco towers and the elevated train in a ring. North of the river, the Near North Side. Along the far left a long street running north to south. In the bottom right corner, a leafy neighborhood by the lake with a park. A street grid everywhere else, rail yards in the lower middle."
+    },
+    {
+      "id": "c004_figure_louise",
+      "kind": "figure",
+      "style": "c004",
+      "person": "c004_louise",
+      "reference": "c004_portrait_louise",
+      "subject": "Standing in her parlor in her mourning dress, hands folded."
+    },
+    {
+      "id": "c004_figure_victor",
+      "kind": "figure",
+      "style": "c004",
+      "person": "c004_victor",
+      "reference": "c004_portrait_victor",
+      "subject": "Standing by his desk, one hand in his waistcoat pocket."
+    },
+    {
+      "id": "c004_figure_victor_custody",
+      "kind": "figure",
+      "style": "c004",
+      "person": "c004_victor",
+      "reference": "c004_portrait_victor",
+      "subject": "Standing in a police station without his tie, his collar open, coat over his arm, cold and composed."
+    },
+    {
+      "id": "c004_figure_henry",
+      "kind": "figure",
+      "style": "c004",
+      "person": "c004_henry",
+      "reference": "c004_portrait_henry",
+      "subject": "Standing with his hat in his hands."
+    },
+    {
+      "id": "c004_figure_samuel",
+      "kind": "figure",
+      "style": "c004",
+      "person": "c004_samuel",
+      "reference": "c004_portrait_samuel",
+      "subject": "Standing by a control board, one hand on the headphones around his neck."
+    },
+    {
+      "id": "c004_figure_clara",
+      "kind": "figure",
+      "style": "c004",
+      "person": "c004_clara",
+      "reference": "c004_portrait_clara",
+      "subject": "Standing with a stenographer's pad held against her chest."
+    },
+    {
+      "id": "c004_figure_russo",
+      "kind": "figure",
+      "style": "c004",
+      "person": "c004_russo",
+      "reference": "c004_portrait_russo",
+      "subject": "Standing with one elbow on a bar, a cigarette between two fingers."
+    },
+    {
+      "id": "c004_figure_rose",
+      "kind": "figure",
+      "style": "c004",
+      "person": "c004_rose",
+      "reference": "c004_portrait_rose",
+      "subject": "Standing by a microphone stand in her evening dress, a hand on her hip."
+    },
+    {
+      "id": "c004_figure_keene",
+      "kind": "figure",
+      "style": "c004",
+      "person": "c004_keene",
+      "reference": "c004_portrait_keene",
+      "subject": "Standing with his hands in his coat pockets."
+    },
+    {
+      "id": "c004_figure_agnes",
+      "kind": "figure",
+      "style": "c004",
+      "person": "c004_agnes",
+      "reference": "c004_portrait_agnes",
+      "subject": "Standing with her arms folded, a ring of keys at her belt."
+    },
+    {
+      "id": "c004_figure_frankie",
+      "kind": "figure",
+      "style": "c004",
+      "person": "c004_frankie",
+      "reference": "c004_portrait_frankie",
+      "subject": "Standing with a clipboard of tally sheets, shoulders hunched."
+    },
+    {
+      "id": "c004_obj_labfolder",
+      "kind": "sprite",
+      "style": "c004",
+      "subject": "A Chicago police department manila envelope, stamped in red exactly 'OFFICE OF THE CITY CHEMIST', lying flat. Transparent background."
+    },
+    {
+      "id": "c004_obj_report_folder",
+      "kind": "sprite",
+      "style": "c004",
+      "subject": "A closed manila report folder with a typed label, lying flat. Transparent background."
+    },
+    {
+      "id": "c004_obj_envelope_sealed",
+      "kind": "sprite",
+      "style": "c004",
+      "subject": "A sealed cream business envelope from the 1920s, addressed in ink, lying flat. Transparent background."
+    },
+    {
+      "id": "c004_obj_envelope_open",
+      "kind": "sprite",
+      "style": "c004",
+      "subject": "An opened cream business envelope from the 1920s with a folded letter sticking out, lying flat. Transparent background."
+    },
+    {
+      "id": "c004_obj_casefile",
+      "kind": "sprite",
+      "style": "c004",
+      "subject": "A closed manila police case folder with a typed cover label reading exactly 'VALE, ARTHUR' and '27-10-2117', lying flat. Transparent background."
+    },
+    {
+      "id": "c004_obj_notebook",
+      "kind": "sprite",
+      "style": "c004",
+      "subject": "A small black leather detective's notebook with a pencil tucked in it, lying flat. Transparent background."
+    },
+    {
+      "id": "c004_obj_mailtray",
+      "kind": "sprite",
+      "style": "c004",
+      "subject": "A wire desk tray holding a few opened envelopes and letters. Transparent background."
+    },
+    {
+      "id": "c004_obj_phone",
+      "kind": "sprite",
+      "style": "c004",
+      "subject": "A black 1920s candlestick telephone with its earpiece on the hook. Transparent background."
+    },
+    {
+      "id": "c004_ev_e01",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "Four black-and-white police photographs and a pencil floor sketch of a radio studio, fanned out on a desk: a man face down on a carpet, a microphone stand on its side, a drawn curtain, a split door bracket."
+    },
+    {
+      "id": "c004_ev_e02",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A typed coroner's report on letterhead, several pages clipped together, under a desk lamp."
+    },
+    {
+      "id": "c004_ev_e03",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A heavy oak studio door's split iron bracket and, beside it, a square wall panel low to the floor with two small brass turn-buttons, in raking light."
+    },
+    {
+      "id": "c004_ev_e04",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A typed radio program schedule for an evening, pinned to a wall with thumbtacks."
+    },
+    {
+      "id": "c004_ev_e05",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A buff index card with typed lines struck through in ink and handwriting below, with a small handwritten note clipped to it."
+    },
+    {
+      "id": "c004_ev_e06",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A twelve-inch aluminum recording disc half out of a paper sleeve, the sleeve labeled in pencil exactly 'A-114'."
+    },
+    {
+      "id": "c004_ev_e07",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A long stenographer's transcript in typed lines on onionskin paper, stapled, with a pencil note at the bottom."
+    },
+    {
+      "id": "c004_ev_e08",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A ruled ledger open on a workbench beside a disc-cutting lathe, columns of handwritten entries."
+    },
+    {
+      "id": "c004_ev_e09",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A long strip of paper with four inked pen traces, unrolled from a clockwork recorder drum."
+    },
+    {
+      "id": "c004_ev_e10",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "Three handwritten letters on personal stationery tied in a bundle with a rubber band."
+    },
+    {
+      "id": "c004_ev_e11",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "An open rooming-house register with handwritten entries, a pen in the gutter."
+    },
+    {
+      "id": "c004_ev_e12",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A handwritten letter on radio station notepaper, folded in thirds, beside its slit envelope."
+    },
+    {
+      "id": "c004_ev_e13",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A green cloth ledger open to columns of figures with small pencil tick marks in the margin."
+    },
+    {
+      "id": "c004_ev_e14",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "Two typed invoices pinned together, one a carbon copy, on a secretary's desk."
+    },
+    {
+      "id": "c004_ev_e15",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A printed delivery receipt tacked to a wooden crate stenciled exactly 'RADIO CABINETS', bottles of whiskey in straw showing under the lid."
+    },
+    {
+      "id": "c004_ev_e16",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A black leather desk diary open on a blotter, one line struck through twice."
+    },
+    {
+      "id": "c004_ev_e17",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A handwritten signed statement on office notepaper, neat secretarial handwriting."
+    },
+    {
+      "id": "c004_ev_e18",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A heavy round brass weight from a microphone floor stand, wiped bright in streaks, a dark crust in its center thread, beside a balled-up stained gray rag."
+    },
+    {
+      "id": "c004_ev_e19",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A police chemist's typed report on letterhead, with a glass slide and a small evidence envelope beside it."
+    },
+    {
+      "id": "c004_ev_e20",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A ruled equipment register book open on a shelf, a pencil note at the bottom of the page."
+    },
+    {
+      "id": "c004_ev_e21",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A two-page letter in green ink on lavender notepaper."
+    },
+    {
+      "id": "c004_ev_e22",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A typed police summary, several pages, with a detective's pencil notes in the margins."
+    },
+    {
+      "id": "c004_ev_e23",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A small sheet torn from a pocket memorandum book, pencil writing, stuck on a desk spike among other papers."
+    },
+    {
+      "id": "c004_ev_e24",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A thick green cloth ledger with no title, open to handwritten columns of dates, cases and dollar figures."
+    },
+    {
+      "id": "c004_ev_e25",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A quick pencil sketch of a warehouse plan on the back of a tally sheet."
+    },
+    {
+      "id": "c004_ev_e26",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "Five manila shipping tags with string, written on in cramped pencil handwriting, beside a carpenter's pencil stub."
+    },
+    {
+      "id": "c004_ev_e27",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A black Packard sedan with a chauffeur at the wheel stopped under a lamp by a watchman's shed at night, a tall man in a gray overcoat and white scarf getting out of the back."
+    },
+    {
+      "id": "c004_ev_e28",
+      "kind": "evidence",
+      "style": "c004",
+      "subject": "A single sheet of ruled accounting paper, folded in four and opened, columns of figures in a firm slanted hand."
     },
     {
       "id": "c002_loc_hale_bedroom",

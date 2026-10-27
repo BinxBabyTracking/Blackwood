@@ -65,7 +65,7 @@ export async function uploadArt(fd: FormData): Promise<Result<{ version: number;
   const file = fd.get("file");
   if (!(file instanceof File) || !file.size) return { error: "Choose an image file." };
   try {
-    return { ok: true, ...(await uploadImage(id, file)) };
+    return { ok: true, ...(await uploadImage(id, file, await origin())) };
   } catch (e) {
     return fail(e, "The upload failed.");
   }
