@@ -34,7 +34,7 @@ import { setMusicEnabled, useBackgroundSound, useMusicEnabled } from "./backgrou
 
 type Layer =
   | { k: "inspect"; text: string; title: string; evidence: ClientEvidence | null; photo: { hotspotId: string; taken: boolean } | null }
-  | { k: "evidence"; id: string; back: "notebook" | "inventory" | "conclusion" }
+  | { k: "evidence"; id: string; back: "notebook" | "inventory" | "conclusion" | "scene"; prev?: Layer }
   | { k: "panel"; panel: PanelId | "inventory" }
   | { k: "conversation"; data: Extract<ActionOutcome, { kind: "conversation" }> }
   | { k: "document"; data: Extract<ActionOutcome, { kind: "document" }> }
@@ -119,15 +119,25 @@ export function InvestigationShell({
   /** Evidence collected since the page loaded, waiting to be shown with the COLLECTED stamp. */
   const [stamps, setStamps] = useState<ClientView["evidence"]>([]);
   const seenEvidence = useRef(new Set(initial.evidence.filter((e) => e.collected).map((e) => e.id)));
+  /** Evidence collected somewhere that could not show it in full (an interview, a call): opened once the player is back in the scene. */
+  const revealQueue = useRef<string[]>([]);
+  const layerRef = useRef<Layer>(null);
   const setView = useCallback((next: ClientView) => {
     const fresh = next.evidence.filter((e) => e.collected && !seenEvidence.current.has(e.id));
     for (const e of fresh) seenEvidence.current.add(e.id);
     if (fresh.length) setStamps((q) => [...q, ...fresh]);
+    // Picked up while looking at it in the scene: the details are already on screen.
+    const cur = layerRef.current;
+    const onScreen = cur?.k === "inspect" ? cur.evidence?.id : cur?.k === "evidence" ? cur.id : undefined;
+    for (const e of fresh) if (e.id !== onScreen && !revealQueue.current.includes(e.id)) revealQueue.current.push(e.id);
     setLabDue(Object.fromEntries(next.labs.map((l) => [l.id, Date.now() + l.remainingMs])));
     setViewState(next);
   }, []);
   const nextStamp = useCallback(() => setStamps((q) => q.slice(1)), []);
   const [layer, setLayer] = useState<Layer>(null);
+  useEffect(() => {
+    layerRef.current = layer;
+  }, [layer]);
   const [pending, setPending] = useState(false);
   const [save, setSave] = useState<SaveStatus>({ state: "saved", at: null });
   const [toast, setToast] = useState<{ text: string; tone: "info" | "error" | "deduction" } | null>(null);
@@ -179,6 +189,13 @@ export function InvestigationShell({
     (res: ActionResponse, action: GameAction) => {
       setView(res.view);
       const o = res.outcome;
+      // Collected from a delivery or a document: show it in full at once, then back to where it came from.
+      if (action.type === "collect" && o.kind !== "error" && o.kind !== "inspect") {
+        const id = action.evidenceId;
+        revealQueue.current = revealQueue.current.filter((x) => x !== id);
+        setLayer((cur) => (cur?.k === "inspect" ? cur : { k: "evidence", id, back: "scene", prev: cur }));
+        return;
+      }
       switch (o.kind) {
         case "inspect":
           setLayer({ k: "inspect", text: o.text, title: o.title, evidence: o.evidence, photo: o.photo });
@@ -260,6 +277,45 @@ export function InvestigationShell({
   );
 
   const close = useCallback(() => setLayer(null), []);
+
+  // The evidence bag glows while it holds things the player has not looked through yet.
+  // The first time ever, it also says so, to teach where the full details live.
+  const bagKey = `bw-evidence-seen-${caseId}`;
+  const [bagSeen, setBagSeen] = useState<number | null>(null);
+  const [bagOpened, setBagOpened] = useState(true);
+  useEffect(() => {
+    let seen = initial.evidence.length;
+    let opened = false;
+    try {
+      const v = localStorage.getItem(bagKey);
+      if (v !== null && Number.isFinite(Number(v))) seen = Number(v);
+      opened = localStorage.getItem("bw-evidence-bag-opened") === "1";
+    } catch {
+      /* nothing saved */
+    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setBagSeen(seen);
+    setBagOpened(opened);
+  }, [bagKey, initial.evidence.length]);
+  const newEvidence = bagSeen !== null && view.evidence.length > bagSeen;
+  const openBag = useCallback(() => {
+    setLayer({ k: "panel", panel: "inventory" });
+    setBagSeen(view.evidence.length);
+    setBagOpened(true);
+    try {
+      localStorage.setItem(bagKey, String(view.evidence.length));
+      localStorage.setItem("bw-evidence-bag-opened", "1");
+    } catch {
+      /* storage unavailable: the glow clears for this visit */
+    }
+  }, [bagKey, view.evidence.length]);
+
+  // Evidence handed over in an interview or a call is shown in full once the player is back in the scene.
+  useEffect(() => {
+    if (layer || trip) return;
+    const id = revealQueue.current.shift();
+    if (id) setLayer({ k: "evidence", id, back: "scene" });
+  }, [layer, trip, view.evidence]);
 
   // Lab countdowns: tick once a second, and when one runs out, let the server deliver the results.
   const waiting = view.labs.filter((l) => !l.done);
@@ -585,22 +641,24 @@ export function InvestigationShell({
         {/* In the office the map and notebook are in the room itself; only the evidence stays in the corner. */}
         {atHome ? null : (
           <>
-            <HudObject label="Map" image={paintedArt(`${caseId.toLowerCase()}_map`)} fallback="map" onClick={() => setLayer({ k: "panel", panel: "map" })} />
-            <HudObject label="Notebook" image={paintedArt(`${caseId.toLowerCase()}_obj_notebook`)} fallback="notebook" onClick={() => setLayer({ k: "panel", panel: "notebook" })} />
+            <HudObject label="Map" image={hudArt(caseId, "map")} fallback="map" onClick={() => setLayer({ k: "panel", panel: "map" })} />
+            <HudObject label="Notebook" image={hudArt(caseId, "obj_notebook")} fallback="notebook" onClick={() => setLayer({ k: "panel", panel: "notebook" })} />
           </>
         )}
         <HudObject
           label="Evidence"
-          image={paintedArt(`${caseId.toLowerCase()}_obj_evidence_bag`)}
+          image={hudArt(caseId, "obj_evidence_bag")}
           fallback="evidence"
           count={view.evidence.length}
-          onClick={() => setLayer({ k: "panel", panel: "inventory" })}
+          glow={newEvidence}
+          callout={newEvidence && !bagOpened ? "New evidence. Open the bag to study it." : undefined}
+          onClick={() => openBag()}
         />
         {/* A case with a mobile phone carries it everywhere; it shakes while a call is coming in. */}
         {view.phone.mobile ? (
           <HudObject
             label="Phone"
-            image={paintedArt(`${caseId.toLowerCase()}_obj_phone`)}
+            image={hudArt(caseId, "obj_phone")}
             fallback="phone"
             alert={Boolean(view.phone.ringing)}
             onClick={() => setLayer({ k: "panel", panel: "phone" })}
@@ -692,8 +750,20 @@ export function InvestigationShell({
           onCollect={() => undefined}
           onPin={() => pin(fromNotebook.id)}
           pinned={pinned(fromNotebook.id)}
-          onClose={() => setLayer({ k: "panel", panel: layer.back })}
-          closeLabel={layer.back === "notebook" ? "Back to notebook" : layer.back === "conclusion" ? "Back to the report" : "Back to evidence"}
+          onClose={() => setLayer(layer.back === "scene" ? (layer.prev ?? null) : { k: "panel", panel: layer.back })}
+          closeLabel={
+            layer.back === "scene"
+              ? layer.prev?.k === "delivery"
+                ? "Back to the delivery"
+                : layer.prev?.k === "document"
+                  ? "Back to the document"
+                  : "Return to scene"
+              : layer.back === "notebook"
+                ? "Back to notebook"
+                : layer.back === "conclusion"
+                  ? "Back to the report"
+                  : "Back to evidence"
+          }
           pending={pending}
           locked={locked}
         />
@@ -930,7 +1000,32 @@ function SaveIndicator({ status }: { status: SaveStatus }) {
 }
 
 /** A painted object in the corner of the scene that opens a panel (the map, the notebook, the evidence). */
-function HudObject({ label, image, fallback, count, alert, onClick }: { label: string; image: string | null; fallback: "map" | "notebook" | "evidence" | "phone"; count?: number; alert?: boolean; onClick: () => void }) {
+/** The agency's own things (map, notebook, evidence bag, phone): the case's painting if it has one, otherwise the agency's usual one. */
+function hudArt(caseId: string, name: string) {
+  return paintedArt(`${caseId.toLowerCase()}_${name}`) ?? paintedArt(`c001_${name}`);
+}
+
+function HudObject({
+  label,
+  image,
+  fallback,
+  count,
+  alert,
+  glow,
+  callout,
+  onClick,
+}: {
+  label: string;
+  image: string | null;
+  fallback: "map" | "notebook" | "evidence" | "phone";
+  count?: number;
+  alert?: boolean;
+  /** Something new inside: a warm pulsing light behind it. */
+  glow?: boolean;
+  /** A note pointing at it, for players who have never opened it. */
+  callout?: string;
+  onClick: () => void;
+}) {
   return (
     <button
       type="button"
@@ -938,22 +1033,29 @@ function HudObject({ label, image, fallback, count, alert, onClick }: { label: s
       aria-label={count !== undefined ? `${label}, ${count} items` : label}
       className="group pointer-events-auto relative flex w-14 flex-col items-center gap-1 sm:w-[4.5rem]"
     >
+      {callout ? (
+        <span className="pointer-events-none absolute bottom-full left-0 mb-2 w-44 rounded-[3px] border border-brass/60 bg-[#161b20]/95 px-2.5 py-2 text-left text-xs normal-case leading-snug tracking-normal text-paper shadow-lg game-fade">
+          {callout}
+          <span className="absolute -bottom-1.5 left-6 h-3 w-3 rotate-45 border-b border-r border-brass/60 bg-[#161b20]" aria-hidden />
+        </span>
+      ) : null}
       <span className={`relative block h-12 w-14 transition-transform duration-200 group-hover:-translate-y-1 group-hover:scale-105 sm:h-16 sm:w-[4.5rem] ${alert ? "animate-bounce" : ""}`}>
+        {glow ? <span className="absolute -inset-2 animate-pulse rounded-full bg-brass/50 blur-md" aria-hidden /> : null}
         {image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={image}
             alt=""
             draggable={false}
-            className={`h-full w-full drop-shadow-[0_6px_8px_rgba(0,0,0,0.75)] ${fallback === "map" ? "rotate-[-6deg] rounded-[3px] border-2 border-[#e8dcc0] object-cover" : "object-contain"}`}
+            className={`relative h-full w-full drop-shadow-[0_6px_8px_rgba(0,0,0,0.75)] ${fallback === "map" ? "rotate-[-6deg] rounded-[3px] border-2 border-[#e8dcc0] object-cover" : "object-contain"}`}
           />
         ) : (
-          <span className="flex h-full w-full items-center justify-center rounded-[4px] border border-white/20 bg-[#161b20]/90 text-paper">
+          <span className="relative flex h-full w-full items-center justify-center rounded-[4px] border border-white/20 bg-[#161b20]/90 text-paper">
             <HudIcon kind={fallback} />
           </span>
         )}
         {count !== undefined ? (
-          <span className="absolute -right-1 -top-1 min-w-5 rounded-full border border-[#0d1013] bg-brass px-1 text-center font-mono text-[0.65rem] font-bold leading-5 text-ink">{count}</span>
+          <span className="absolute -right-1 -top-1 z-10 min-w-5 rounded-full border border-[#0d1013] bg-brass px-1 text-center font-mono text-[0.65rem] font-bold leading-5 text-ink">{count}</span>
         ) : null}
       </span>
       <span className="rounded-[2px] bg-[#0d1013]/80 px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-[0.14em] text-paper/90 group-hover:text-brass sm:text-[0.65rem]">{label}</span>
