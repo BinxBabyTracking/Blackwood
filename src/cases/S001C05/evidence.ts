@@ -896,7 +896,7 @@ export const evidence: EvidenceDef[] = [
         `Baltimore: Halvard cut Baltimore on November 30. I pulled MAG-RM 31-0056-044 on December 3, three days AFTER.`,
       ),
       `Twice Halvard moved before I was even asked. Whoever was telling Miriam what to ask me for knew what Halvard was going to do, or was Halvard.`,
-      `The only person above Miriam I ever met was Dr. Lockhart, once, at Clearwater's donor breakfast in October. She asked me nothing about my work. I thought she was being polite.`,
+      `The only person above Miriam I ever met was Dr. Lockhart, once, at Clearwater's donor breakfast in October. She asked what I did, said something kind about the people who keep the records, and never mentioned Meridian. I thought she was being polite.`,
       `I have no proof of anything beyond my own dates. I may be wrong. C.D."`,
     ),
     discovery: "Claire Donovan sends it after RE09, once E043 is held (knowledge fact donovan_notes).",

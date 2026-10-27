@@ -266,7 +266,7 @@ Not interviewable: **Nathaniel Ogden** (57, victim; on the board).
 
 **Det. Anthony Caruso.** Professional, dry, more worried each day. Skeptical of robbery from the start: "A robber who leaves a gold watch on the wrist and takes a briefcase." Hands over E001, E002 at once, E003 once the player has seen the suite. Sends the whiskey glass to the lab when asked (after the glass has been examined) and the bookend once the briefcase is in. Pulls Knox's vehicle and tunnel records after D05 (RE07, delivered), has him held at JFK, extracts his phone (E026), subpoenas Stratford's bank once shown the wire (E028), gets the storage warrant (RE08) and, after D09, the warrant for Marchetti's office. After RE06 and D08 he can also subpoena Halvard's records (`subpoena_halvard`). He never states a lab result before it is in a report, and never says anything about Evelyn beyond "she's been very cooperative. Very."
 
-**Claire Donovan.** (Phone, after RE09.) Careful, then shaken. Knows only her own C04 facts: she copied records for Miriam Castell of Clearwater, who said they were what the investigators needed next; she kept her own register of what she copied and when; she was rescued on December 14. Met Dr. Lockhart once, at Clearwater's donor breakfast in October: "She asked me nothing about my work. I thought she was being polite." Shown E043, she lays her register dates beside Halvard's (E044) and sees that twice Halvard moved before she was asked. "Whoever was telling Miriam what to ask me for knew what Halvard was going to do. Or was Halvard." She does not know Evelyn's role, says she has no proof, and says she may be wrong.
+**Claire Donovan.** (Phone, after RE09.) Careful, then shaken. Knows only her own C04 facts: she copied records for Miriam Castell of Clearwater, who said they were what the investigators needed next; she kept her own register of what she copied and when; she was rescued on December 14. Met Dr. Lockhart once, at Clearwater's donor breakfast in October: "She asked what I did, said something kind about the people who keep the records, and never mentioned Meridian. I thought she was being polite." Shown E043, she lays her register dates beside Halvard's (E044) and sees that twice Halvard moved before she was asked. "Whoever was telling Miriam what to ask me for knew what Halvard was going to do. Or was Halvard." She does not know Evelyn's role, says she has no proof, and says she may be wrong.
 
 **Bennett.** Board hint. Pulls Meridian's Delaware formation and D.C. registration (E016) once Meridian is part of the research. In RE06 he gives the player Lawrence Abernathy's name.
 
@@ -843,7 +843,7 @@ Counts: 20 scene items, 21 handovers, 5 delivered, 2 lab results.
 >
 > Twice Halvard moved before I was even asked. Whoever was telling Miriam what to ask me for knew what Halvard was going to do, or was Halvard.
 >
-> The only person above Miriam I ever met was Dr. Lockhart, once, at Clearwater's donor breakfast in October. She asked me nothing about my work. I thought she was being polite.
+> The only person above Miriam I ever met was Dr. Lockhart, once, at Clearwater's donor breakfast in October. She asked what I did, said something kind about the people who keep the records, and never mentioned Meridian. I thought she was being polite.
 >
 > I have no proof of anything beyond my own dates. I may be wrong. C.D."
 

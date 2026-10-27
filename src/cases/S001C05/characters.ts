@@ -1196,7 +1196,7 @@ export const questions: DialogueQuestion[] = [
     "My own register. Every record, every date. I didn't trust anyone else to keep one.",
   ]),
   q("donovan", "People", "donovan_lockhart", "Have you met Dr. Lockhart?", [
-    "Once. Clearwater's donor breakfast, in October. She asked me nothing about my work.",
+    "Once. Clearwater's donor breakfast, in October. She asked what I did and said something kind about record keepers. She never mentioned Meridian.",
     "I thought she was being polite.",
   ]),
   q("donovan", "About her", "donovan_safe", "Are you safe now?", [

@@ -1,0 +1,67 @@
+/**
+ * S01 C04 The Informant: the series reference playthrough, configured.
+ * Run through: npm run check:case -- S001C04
+ */
+import type { SeriesCaseConfig } from "./series-case-check";
+
+export const S001C04_CHECK: SeriesCaseConfig = {
+  hidden: [
+    ["claire_apt", "apt_kickplate", "the bookcase kickplate (before the screwdriver call)"],
+    ["storage", "st_set1", "Claire's carton (before the warrant)"],
+    ["tate_office", "to_tate", "Tate's office records (before the warrant)"],
+  ],
+  flags: ["casefile_read", "note_given", "screwdriver_known", "carton_warrant", "castell_cooperates", "courier_known", "tate_known", "tate_warrant", "claire_rescued", "claire_passphrase", "tyler_key"],
+  right: {
+    why_contact: "selected",
+    why_left: "protective",
+    held: "yes",
+    detainer: "tate",
+    director: "rourke",
+    why_held: "records",
+    claire_role: "copied",
+    conclusions: "genuine",
+    steered: "yes",
+    selector: "above",
+  },
+  key: ["E007", "E028", "E035", "E030", "E032", "E018", "E038", "E022", "E040"],
+  wrong: [
+    [{ detainer: "castell" }, "a report blaming Castell for the detention"],
+    [{ director: "lockhart" }, "a report naming Dr. Lockhart as the director, on this case's evidence"],
+    [{ conclusions: "forged" }, "a report calling the earlier leads forged"],
+    [{ steered: "random" }, "a report saying the leads were random"],
+    [{ selector: "claire" }, "a report saying Claire chose the leads"],
+    [{ held: "never_there" }, "a report saying Claire was never held"],
+    [{ why_left: "fled" }, "a report saying Claire simply fled"],
+  ],
+  unsupported: [[["E007", "E028", "E030", "E032", "E018", "E038", "E022", "E040"], "a report that never shows where or how Claire was held"]],
+  caller: "harris",
+  match: [
+    ["donovan", "Are you hurt?", "claire_how"],
+    ["donovan", "How did Castell first contact you?", "claire_castell"],
+    ["donovan", "Why did you quit Meridian?", "claire_resign"],
+    ["donovan", "What's the drive passphrase?", "claire_passphrase"],
+    ["tate", "Where was your Tahoe Wednesday night?", "tate_tahoe"],
+    ["tate", "Where is Claire?", "tate_where"],
+    ["rourke", "Who leaked your client list?", "rourke_handed"],
+    ["lockhart", "Why did you pass the envelope to Blackwood?", "lockhart_why_sent"],
+    ["castell", "How do you know Claire Donovan?", "castell_claire"],
+    ["castell", "Who is your source?", "castell_identity"],
+    ["castell", "Why did the first one go to the Lockhart Foundation?", "castell_first"],
+    ["castell", "Who knew about the meeting on Tuesday?", "castell_tuesday"],
+    ["prentiss", "Do you know where Claire is?", "prentiss_where"],
+    ["prentiss", "How did you encrypt the drive?", "prentiss_drive"],
+    ["patel", "Have you seen anyone strange in the building?", "patel_smoke"],
+    ["corbett", "Why did you leave Meridian?", "corbett_left"],
+    ["corbett", "Who is SEC-RM?", "corbett_secrm"],
+    ["halvorsen", "What happened when Claire came in?", "halvorsen_morning"],
+    ["lang", "How does the checkout system work?", "lang_system"],
+    ["harris", "Can you get her phone records?", "harris_phone"],
+    ["harris", "Can you run the Tahoe on the plate readers?", "harris_vehicle"],
+    ["harris", "What do you know about Brandon Tate?", "harris_tate"],
+    ["collins", "Can I talk to Rourke?", "collins_interview"],
+    ["bennett", "What can you find on Clearwater?", "bennett_clearwater"],
+    ["patel", "Do you like the Nationals?", null],
+  ],
+  secrets: ["District Attorney", "Saddle Ridge", "MAG-RM 14", "Tyler Prentiss"],
+  closingSecrets: /Architect is|Lockhart is the|Exposure Sequence|Executive Authorization/,
+};

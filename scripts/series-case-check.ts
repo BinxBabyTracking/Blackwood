@@ -27,7 +27,7 @@ export interface SeriesCaseConfig {
   /** [location, hotspot, what it is]: must not be visible at the start. */
   hidden: [string, string, string][];
   /** How each item arrives, when not found in a scene: "dialogue" or "delivery". Derived from the case when left out. */
-  via?: Record<string, "dialogue" | "delivery">;
+  via?: Record<string, "dialogue" | "delivery" | "document">;
   /** Story flags the thorough playthrough must set. */
   flags: string[];
   /** The right answers, without evidence. */
@@ -60,8 +60,9 @@ export function checkSeriesCase(id: string, def: CaseDefinition, problems: strin
   const scene = def.locations.flatMap((l) => l.hotspots.map((h) => (h.interaction as { evidence?: string }).evidence).filter(Boolean));
   const delivered = def.deliveries.flatMap((d) => d.evidence);
   const given = [...json.matchAll(/"giveEvidence":"([^"]+)"/g)].map((m) => m[1]);
+  const documented = def.documents.flatMap((d) => d.evidence);
   for (const e of def.evidence) {
-    const routes = scene.filter((x) => x === e.id).length + delivered.filter((x) => x === e.id).length + (given.includes(e.id) ? 1 : 0);
+    const routes = scene.filter((x) => x === e.id).length + delivered.filter((x) => x === e.id).length + documented.filter((x) => x === e.id).length + (given.includes(e.id) ? 1 : 0);
     expect(routes === 1, `${e.id} is reachable ${routes} ways`);
   }
 
@@ -88,7 +89,8 @@ export function checkSeriesCase(id: string, def: CaseDefinition, problems: strin
   };
 
   run({ type: "dismissIntro" });
-  run({ type: "readDocument", documentId: "casefile" });
+  const file = run({ type: "readDocument", documentId: "casefile" });
+  if (file?.kind === "document") for (const e of file.evidence) if (!e.collected) run({ type: "collect", evidenceId: e.id });
   for (const [loc, h, what] of cfg.hidden) expect(!visible(loc, h), `${what} is visible at the start`);
 
   const present = new Set(cfg.present ?? []);
@@ -159,8 +161,8 @@ export function checkSeriesCase(id: string, def: CaseDefinition, problems: strin
   for (const e of def.evidence) {
     const via = s.discoveries[e.id]?.via;
     if (!via) continue;
-    const want = cfg.via?.[e.id] ?? (delivered.includes(e.id) ? "delivery" : given.includes(e.id) ? "dialogue" : "scene");
-    const got = via === "scene" || via === "delivery" ? via : "dialogue";
+    const want = cfg.via?.[e.id] ?? (delivered.includes(e.id) ? "delivery" : given.includes(e.id) ? "dialogue" : documented.includes(e.id) ? "document" : "scene");
+    const got = via === "scene" || via === "delivery" || via === "document" ? via : "dialogue";
     expect(got === want, `${e.id} arrived via ${via}, expected ${want}`);
   }
 
