@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750" width="600" height="750">
+  <defs><radialGradient id="l" cx="0.4" cy="0.3" r="0.8"><stop offset="0" stop-color="#fff" stop-opacity="0.18"/><stop offset="1" stop-color="#000" stop-opacity="0.4"/></radialGradient>
+  <filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2"/><feColorMatrix values="0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0.16 0"/></filter></defs>
+  <rect width="600" height="750" fill="#2f363b"/>
+  <path d="M90 750 L110 520 Q300 430 490 520 L510 750 Z" fill="#2f3a52"/>
+  <path d="M250 470 L300 560 L350 470 Z" fill="#eee" opacity="0.6"/>
+  <rect x="255" y="380" width="90" height="100" fill="#d6b08f"/>
+  <ellipse cx="300" cy="300" rx="115" ry="140" fill="#d6b08f"/>
+  <path d="M180 300 Q190 140 300 150 Q420 140 420 300 Q300 210 180 300" fill="#3a2a1f"/>
+  <rect width="600" height="750" fill="url(#l)"/><rect width="600" height="750" filter="url(#g)"/>
+  <rect x="0" y="660" width="600" height="90" fill="#111" opacity="0.75"/>
+  <text x="300" y="715" text-anchor="middle" font-family="Georgia, serif" font-size="34" fill="#f3ede3">Douglas Wallace</text>
+  <text x="590" y="24" text-anchor="end" font-family="Courier New, monospace" font-size="14" fill="#fff" opacity="0.4">PLACEHOLDER</text>
+  </svg>

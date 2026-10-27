@@ -175,7 +175,19 @@
     "s001c05_mendes": "a 32-year-old Latina woman, a hotel banquet server, dark hair in a tight bun, large brown eyes, small gold hoops, wearing a white shirt, black vest and a name tag reading exactly: OLIVIA, nervous",
     "s001c05_abernathy": "a 47-year-old Black man, a trusts and private funds lawyer and law school adjunct, a shaved head, a short salt-and-pepper beard, tortoiseshell glasses, wearing a gray tweed jacket over a white shirt and a knit tie, careful and engaged",
     "s001c05_caruso": "a 49-year-old white man, a New York homicide detective, thick dark hair graying at the sides, heavy brows, a broken nose, tired brown eyes, a five o'clock shadow, wearing a rumpled gray suit with a gold detective shield on his belt, dry and professional",
-    "s001c05_donovan": "a 34-year-old white woman, a former records analyst, straight light brown hair to the shoulders, a pale, freckled face, gray eyes, no makeup, wearing a navy cardigan over a white blouse, careful and shaken"
+    "s001c05_donovan": "a 34-year-old white woman, a former records analyst, straight light brown hair to the shoulders, a pale, freckled face, gray eyes, no makeup, wearing a navy cardigan over a white blouse, careful and shaken",
+    "s001c02_jonathan": "a 41-year-old white man, a defense procurement analyst, brown hair cut short and neat, rectangular wire glasses, clean-shaven but with two days of stubble now, a thin, tired, intelligent face, wearing a light gray crew-neck sweater, exhausted and ashamed",
+    "s001c02_natalie": "a 37-year-old white woman, a physical therapist, light brown hair in a practical ponytail, strong shoulders, no makeup, gray eyes, wearing a navy zip-up clinic fleece over a polo shirt, frightened but steady",
+    "s001c02_rourke": "a 46-year-old white man, a corporate intelligence director at a Washington consulting firm, dark hair graying neatly at the temples, a lean, handsome, composed face, a faint easy smile, wearing a perfectly cut navy suit, a pale blue shirt and no tie, polished and unhurried",
+    "s001c02_lyons": "a 39-year-old white man, the principal of a small security firm and a former Army military policeman, short dark hair, a square jaw, a fit, compact build, watchful eyes and a slightly amused mouth, wearing a navy quilted jacket over a dark gray quarter-zip, relaxed and practical",
+    "s001c02_hurst": "a 32-year-old white man, a hotel maintenance engineer, a round friendly face, short brown hair, a patchy beard, a radio clipped to his belt, wearing a gray hotel work shirt with a small embroidered patch that has no readable words, nervous",
+    "s001c02_chen": "a 48-year-old Chinese American woman, a white-collar defense attorney, a sleek chin-length black bob, rimless glasses, small pearl earrings, wearing a tailored charcoal suit jacket over a black shell, precise and reserved",
+    "s001c02_grant": "a 44-year-old white woman, a luxury hotel general manager, honey-blonde hair in a smooth low twist, polished makeup, wearing a fitted burgundy dress with a slim gold name badge that has no readable words, gracious and guarded",
+    "s001c02_wallace": "a 56-year-old Black man, a hotel security director and retired city police officer, close-cropped gray hair, a gray mustache, a heavy, lined, serious face, wearing a dark gray suit with a radio earpiece coiled at his collar, gruff and exact",
+    "s001c02_monroe": "a 29-year-old Latina woman, a hotel front desk supervisor, dark hair in a neat bun, warm brown eyes, wearing a black hotel blazer over a white blouse with a small name badge that has no readable words, bright and conscientious",
+    "s001c02_okoye": "a 52-year-old Black man of Nigerian descent, a corporate ethics and compliance director, a shaved head, round tortoiseshell glasses, a neatly trimmed gray beard, wearing a gray suit, a white shirt and a dark green tie, careful and legalistic",
+    "s001c02_collins": "a 42-year-old white woman, a big-city police detective in a missing persons unit, auburn hair pulled back tight, freckles, a dry, alert face, wearing a dark wool peacoat over a gray sweater with a detective's badge on a lanyard, quick and decent",
+    "s001c02_quinlan": "a 44-year-old Black woman, an FBI special agent, short natural hair, small gold stud earrings, a calm, unreadable face, wearing a dark navy windbreaker over a white blouse, measured and sparing with words"
   },
   "images": [
     {
@@ -7005,6 +7017,547 @@
       "kind": "map",
       "style": "s001",
       "subject": "Manhattan and western Queens from above. In the center, the long narrow island of Manhattan running from bottom to top, a regular grid of avenues and cross streets, a large green rectangular park in its upper middle with residential blocks on either side, and dense midtown blocks below the park. On the right, across a broad pale blue river, the industrial grid of Long Island City in Queens with an elevated railway line, joined to midtown by a tunnel shown as a dashed line under the river. On the left, a pale blue river and the edge of New Jersey. In the top left corner, a small inset, set apart by a band of plain cream paper, showing a different city where two rivers meet to form a third, with bridges.",
+      "suffix": "A hand-painted street map, seen flat from directly above and filling the whole image edge to edge like a sheet laid on a table: no table, no border, no frame. Muted map colors: cream paper, ochre streets, sage green parkland, pale blue water, faint fold creases. Absolutely no words, letters, numbers, street names or symbols anywhere on the map."
+    },
+    {
+      "id": "s001c02_loc_lobby",
+      "kind": "background",
+      "style": "s001",
+      "subject": "The lobby of an upscale downtown Washington, D.C. hotel near Thomas Circle on a sleety November afternoon in 2018, Thanksgiving week. At the far left, brass-framed glass doors onto a city street with taxis at the curb and a camera dome in the ceiling above. Left of center, a long marble front desk with computer screens, an empty sofa by a tall window in front of it, and a smoked-glass camera dome in the ceiling above the desk. In the center, a round table with a tall arrangement of rust and gold chrysanthemums and wheat stalks, and behind it an open stretch of marble floor. Right of center, above head height, a discreet door marked only by a small plaque, and a polished wooden door to the general manager's office. On the right, a bank of brass guest elevators. At the far right, a valet podium with a board of numbered key hooks by a passage to a garage ramp. Luggage carts, warm lamplight, coffered ceiling."
+    },
+    {
+      "id": "s001c02_loc_corridor_6",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A long, straight hotel guest corridor on the sixth floor, seen from the elevator landing, Washington, D.C., 2018. On the left, the brass doors of the guest elevators and, high on the ceiling just ahead, a smoked-glass camera dome. Patterned carpet and brass sconces lead away down the corridor in strong perspective, numbered room doors on both sides. Right of center, a room door with a paper Do Not Disturb card on its handle, and next to it the door of Room 614. At the far end of the corridor, brightly lit: a small ice-machine alcove and, under a lit green EXIT sign, a plain gray steel service door flush with the wall with a card reader and a small keypad beside it. Quiet, evening light."
+    },
+    {
+      "id": "s001c02_loc_room_614",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A mid-priced king room in a downtown Washington hotel, 2018, left as its guest left it. At the far left, the room's entry door. Left of center, an open closet. In the center, a king bed made but with the cover rumpled on top and both pillows propped against the headboard. Beside it, a bedside table with a crooked lamp shade and a water glass on its side, a small drawer below. Right of center, a tall window onto a city street six floors down, and under it a writing desk with a lamp, the desk chair turned out, the desk top otherwise bare. At the far right, an open bathroom doorway, and below it an open suitcase on a luggage rack. A navy wool overcoat over an armchair. Gray afternoon light."
+    },
+    {
+      "id": "s001c02_loc_security_office",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A cramped hotel security office below the lobby, 2018. At the far left, a door back to the lobby stairs. Across the upper left, a wall of sixteen video monitors in a grid showing hotel corridors and entrances, soft and unreadable. Below it on the left, a computer workstation for the staff access-control system. In the center, an empty space before a worn desk chair. Right of center, a corkboard with pinned work-order sheets, and below it a small card printer with a screen and a binder. Further right, a black incident binder on a counter, and on the far right wall a locked steel key cabinet. Fluorescent light, a radio handset in a charger, a desk fan."
+    },
+    {
+      "id": "s001c02_loc_service_corridor",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A bare concrete back-of-house service vestibule behind a hotel guest floor, 2018. At the far left, the inside of a plain gray steel door with a push bar, a small alarm keypad box with two lights beside it. Left of center, a red-framed glass fire hose cabinet. In the center, a brushed steel service elevator with closed doors, and on the painted wall beside the doors, at knee height, a short black rubber scuff mark. Right of the elevator, a small locked steel service panel. Concrete floor, a fluorescent tube, a ventilation duct overhead. Hard, empty, cold light."
+    },
+    {
+      "id": "s001c02_loc_loading_dock",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A downtown hotel's loading dock and engineering shop on a service alley, at night in the rain, 2018. At the far left, the steel doors of a freight elevator. Left of center, an open door into a cluttered engineering shop with a row of gray staff lockers along its back wall. In the center, a glassed-in dock office with a desk, a space heater and a monitor glowing on the desk, and a clipboard hanging on a nail by its window. Right of center, a steel personnel door with a card reader. On the right, two empty loading bays under a steel canopy, roll-up doors open to the wet alley, a green trash compactor beside the second bay and wheeled kitchen bins. At the far right, a wooden smoking bench with a coffee can of sand and a dented ashtray tin. Across the bottom right, the wet alley lit orange by one wall lamp."
+    },
+    {
+      "id": "s001c02_loc_eastbridge",
+      "kind": "background",
+      "style": "s001",
+      "subject": "The executive floor of a defense contractor's glass office building in a suburban Virginia office park, a gray November morning in 2018. At the far left, a security badge desk with a visitor sign-in screen. Left of center, a glass-walled small office seen from the corridor, very tidy, a wiped whiteboard and a framed photo on the desk. In the center, an empty stretch of carpet before a corner office desk. Right of center, a very clean executive desk with a legal pad and a fountain pen. On the right, a wide window over landscaped lawns, other glass office buildings and a large parking garage. Muted corporate colors."
+    },
+    {
+      "id": "s001c02_loc_chen_office",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A small, orderly white-collar defense lawyer's office on the fourth floor of a downtown Washington building, 2018. On the left, a tall bookshelf of law books and bound transcripts with one shelf of worn paperbacks, and below it beside the filing cabinets a gray fire safe with a clipboard log on top. In the center, an empty space before a client chair. Right of center, a desk of neat squared stacks of paper with yellow sticky notes and a desk calendar. On the right, a tall window over a busy downtown street. Warm desk lamp against gray daylight."
+    },
+    {
+      "id": "s001c02_loc_meridian_hq",
+      "kind": "background",
+      "style": "s001",
+      "subject": "The eighth-floor reception and an executive office of an expensive consulting firm on K Street in Washington, 2018. At the far left, through glass, a brushed-steel plaque on the wall of the ground-floor lobby, its lettering small and soft. Left of center, a long pale-oak reception desk with only a phone and a white orchid on it, glass card-reader doors behind. In the center, an open doorway into a corner office with empty floor before a desk. Right of center, a bookshelf with a few books, a framed sailboat photograph and a squash trophy, and below it a low walnut credenza with closed doors and a crystal decanter on top. On the right, a tall window over K Street office blocks at dusk, every window lit. Thick carpet, quiet money."
+    },
+    {
+      "id": "s001c02_loc_kestrel",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A small, tidy licensed security company's office suite in a suburban Maryland office park, at night, 2018. On the far left, a whiteboard grid of company vehicles in marker, soft and unreadable. Left of center, a staff assignment whiteboard. In the center, empty carpet before a desk. Right of center, a small alarm-monitoring desk with a screen of status lights, a headset and a printer with an output tray. On the right, a gray four-drawer file cabinet, and at the far right a window onto a parking lot and a rail embankment, with an executive desk below it. Fluorescent light, a police radio scanner, framed licenses on the wall."
+    },
+    {
+      "id": "s001c02_loc_kestrel_searched",
+      "kind": "background",
+      "style": "s001",
+      "subject": "The same small security company's office suite in a suburban Maryland office park, at night, 2018, just after a police search. On the far left, a whiteboard grid of vehicles with a small evidence tag taped to its corner. Left of center, a staff assignment whiteboard. In the center, empty carpet before a desk. Right of center, a small alarm-monitoring desk with a screen of status lights and a printer, its tray full of paper. On the right, a gray four-drawer file cabinet with every drawer pulled out and files fanned for photographs, and at the far right a window onto a parking lot, an executive desk below it with its drawers out. Yellow evidence placards on the carpet, a box of evidence bags, fluorescent light."
+    },
+    {
+      "id": "s001c02_loc_holding_property",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A two-story white clapboard farmhouse at the end of a long gravel lane in rural Frederick County, Maryland, before dawn in November, seen from the end of the lane. The sky only just going gray over a wooded ridge. On the left, bare trees and the verge of the lane where unmarked cars sit with their lights off. Left of center, high on the back corner of the house, one upstairs window boarded over from the inside with raw lumber pressed against the glass. In the center, the front porch with its light on and the front door, and an empty stretch of gravel drawn up to the porch steps. Right of center and on the right, a pasture fence, an outbuilding and open gravel. Across the bottom left, the gravel lane running toward the viewer. Cold, hushed, blue light."
+    },
+    {
+      "id": "s001c02_loc_holding_property_cleared",
+      "kind": "background",
+      "style": "s001",
+      "subject": "The same two-story white clapboard farmhouse at the end of a gravel lane in rural Frederick County, Maryland, just after dawn in November, the morning of a police raid. The sky pale gray over a wooded ridge. On the left, the lane full of Maryland State Police cruisers with their light bars flashing and two unmarked dark sedans. Left of center, high on the back corner of the house, one upstairs window boarded over from the inside, a flashlight moving behind the gaps. In the center, the front porch with its door standing open and an empty stretch of gravel drawn up to the porch steps. Right of center, an ambulance with its back doors open. On the right, a police cruiser parked by a pasture fence. Across the bottom left, the gravel lane. Blue and red light washing over everything."
+    },
+    {
+      "id": "s001c02_loc_holding_room",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A small upstairs back bedroom in an old farmhouse, seen from its doorway, early morning. At the far left, a narrow hallway and the top of steep stairs. In the center, the room: its only window boarded over from the inside with four raw 2x4s screwed into the frame, a bare mattress on the floor with a blanket, a bucket, a case of bottled water with some missing, a few protein bar wrappers. The door, standing open toward the viewer, has a bright new steel hasp and an open padlock on its outside, wood shavings on the hall floor. A cut cable tie on the floorboards. Gray light through the gaps in the boards."
+    },
+    {
+      "id": "s001c02_portrait_jonathan",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Wrapped in a gray blanket, just after his rescue, looking down and away.",
+      "person": "s001c02_jonathan"
+    },
+    {
+      "id": "s001c02_portrait_natalie",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Arms folded tight, jaw set, waiting for news.",
+      "person": "s001c02_natalie"
+    },
+    {
+      "id": "s001c02_portrait_rourke",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Leaning back slightly, hands loosely folded, giving nothing away.",
+      "person": "s001c02_rourke"
+    },
+    {
+      "id": "s001c02_portrait_lyons",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Half a smile, eyes level, completely at ease.",
+      "person": "s001c02_lyons"
+    },
+    {
+      "id": "s001c02_portrait_hurst",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Rubbing the back of his neck, glancing toward a door.",
+      "person": "s001c02_hurst"
+    },
+    {
+      "id": "s001c02_portrait_chen",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Hands folded on a closed folder, choosing her words.",
+      "person": "s001c02_chen"
+    },
+    {
+      "id": "s001c02_portrait_grant",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "A practiced, gracious smile that stops short of her eyes.",
+      "person": "s001c02_grant"
+    },
+    {
+      "id": "s001c02_portrait_wallace",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Arms crossed, head tilted, skeptical and tired.",
+      "person": "s001c02_wallace"
+    },
+    {
+      "id": "s001c02_portrait_monroe",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Attentive, a pen in her hand, trying hard to remember.",
+      "person": "s001c02_monroe"
+    },
+    {
+      "id": "s001c02_portrait_okoye",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Fingertips pressed together, cautious.",
+      "person": "s001c02_okoye"
+    },
+    {
+      "id": "s001c02_portrait_collins",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "One eyebrow up, a coffee cup in one hand.",
+      "person": "s001c02_collins"
+    },
+    {
+      "id": "s001c02_portrait_quinlan",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Still and level, listening.",
+      "person": "s001c02_quinlan"
+    },
+    {
+      "id": "s001c02_figure_jonathan",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing by an ambulance's open back doors with a gray blanket over his shoulders, light gray sweater, sneakers, red marks on both wrists, glasses, utterly exhausted.",
+      "person": "s001c02_jonathan",
+      "reference": "s001c02_portrait_jonathan"
+    },
+    {
+      "id": "s001c02_figure_natalie",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing with her car keys in one hand and her phone in the other, her clinic fleece zipped to the chin.",
+      "person": "s001c02_natalie",
+      "reference": "s001c02_portrait_natalie"
+    },
+    {
+      "id": "s001c02_figure_rourke",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing easily with one hand in his trouser pocket, the other holding a folded document.",
+      "person": "s001c02_rourke",
+      "reference": "s001c02_portrait_rourke"
+    },
+    {
+      "id": "s001c02_figure_lyons",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing with his weight on one foot, hands in his jacket pockets, a dark ball cap pushed back on his head.",
+      "person": "s001c02_lyons",
+      "reference": "s001c02_portrait_lyons"
+    },
+    {
+      "id": "s001c02_figure_hurst",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing with a ring of keys in one hand, shoulders hunched, his work shirt untucked on one side.",
+      "person": "s001c02_hurst",
+      "reference": "s001c02_portrait_hurst"
+    },
+    {
+      "id": "s001c02_figure_chen",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing upright holding a gray tamper-evident document envelope against her chest.",
+      "person": "s001c02_chen",
+      "reference": "s001c02_portrait_chen"
+    },
+    {
+      "id": "s001c02_figure_grant",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing very straight, hands clasped in front of her, a tablet held against her hip.",
+      "person": "s001c02_grant",
+      "reference": "s001c02_portrait_grant"
+    },
+    {
+      "id": "s001c02_figure_wallace",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing squarely, a printout in one hand and a pair of reading glasses in the other.",
+      "person": "s001c02_wallace",
+      "reference": "s001c02_portrait_wallace"
+    },
+    {
+      "id": "s001c02_figure_monroe",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing behind an invisible counter line, hands resting flat, leaning slightly forward to listen.",
+      "person": "s001c02_monroe",
+      "reference": "s001c02_portrait_monroe"
+    },
+    {
+      "id": "s001c02_figure_okoye",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing with a thin file under one arm, adjusting his glasses.",
+      "person": "s001c02_okoye",
+      "reference": "s001c02_portrait_okoye"
+    },
+    {
+      "id": "s001c02_figure_collins",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing in her peacoat with a notebook open in one hand and a phone in the other.",
+      "person": "s001c02_collins",
+      "reference": "s001c02_portrait_collins"
+    },
+    {
+      "id": "s001c02_figure_quinlan",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing in an FBI windbreaker over her blouse, a radio in one hand, an evidence bag in the other.",
+      "person": "s001c02_quinlan",
+      "reference": "s001c02_portrait_quinlan"
+    },
+    {
+      "id": "s001c02_obj_casefile",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A manila private investigator's case folder, closed, with a printed label on the tab reading exactly: ELLERY, J., a hotel photograph and a few typed pages sticking out of the side."
+    },
+    {
+      "id": "s001c02_obj_van",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A gray 2016 Ford Transit Connect small cargo van with a high roof and no rear side windows, seen from the side and slightly behind, its sliding side door open and a bare mattress half pushed into it, two clean rectangular patches on the front door where magnetic signs usually go. No readable plate and no lettering."
+    },
+    {
+      "id": "s001c02_obj_labfolder",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A slate blue police department folder, closed, with a white label on the front reading exactly: LAB REPORT."
+    },
+    {
+      "id": "s001c02_obj_fbi_folder",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A dark navy federal agency report folder, closed, with a white label on the front reading exactly: FORENSIC SUMMARY."
+    },
+    {
+      "id": "s001c02_obj_security_envelope",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A manila interoffice envelope from a hotel, sealed, with a hand-printed address in block capitals that is soft and unreadable, lying flat at a slight angle."
+    },
+    {
+      "id": "s001c02_obj_courier_sealed",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A stiff white and orange courier envelope, sealed, with a printed waybill sleeve on the front, the waybill's boxes soft and unreadable, lying flat at a slight angle."
+    },
+    {
+      "id": "s001c02_obj_courier_open",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A stiff white and orange courier envelope, torn open along the top, a few photocopied pages sliding out, a printed waybill sleeve on the front, all text soft and unreadable."
+    },
+    {
+      "id": "s001c02_obj_fbi_envelope",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A clear plastic evidence envelope with a red sealing strip and a printed chain-of-custody block, a photocopied index card visible inside, all text soft and unreadable."
+    },
+    {
+      "id": "s001c02_obj_report_folder",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A black leather report folder, closed, with a typed white label on the front reading exactly: FINAL REPORT."
+    },
+    {
+      "id": "s001c02_ev_e001",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A police missing person report on a clipboard: several typed pages with a city police department header and a case number, soft and unreadable text, a short handwritten note in blue ink at the bottom of the last page."
+    },
+    {
+      "id": "s001c02_ev_e002",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A spread of glossy police scene photographs of a hotel room: a rumpled made bed, a bedside lamp knocked crooked and a tipped water glass, a laptop charger cable ending on an empty desk, a suit in a closet, a short clear plastic strip on carpet."
+    },
+    {
+      "id": "s001c02_ev_e003",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "An iPhone 8 in a black case lying face down beside a hotel bedside lamp, then shown face up with a recent-calls list on its screen, the entries soft and unreadable."
+    },
+    {
+      "id": "s001c02_ev_e004",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A black laptop power brick and cable plugged into a hotel desk outlet, the cable ending in an empty space on a desk blotter, a small silver asset tag on the brick with soft, unreadable text."
+    },
+    {
+      "id": "s001c02_ev_e005",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A hotel registration printout on a front desk, typed fields soft and unreadable, a short handwritten note in pen at the bottom, a key card sleeve beside it."
+    },
+    {
+      "id": "s001c02_ev_e006",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A printed hotel guest-room lock audit, a short list of timestamped lines soft and unreadable, with a handheld lock-reading device lying beside it and a handwritten note at the bottom."
+    },
+    {
+      "id": "s001c02_ev_e007",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Printed still frames from a hotel corridor security camera: a long corridor seen from one end, a man with a takeout bag walking away, a later frame where the far end of the corridor is bright, timestamps soft and unreadable."
+    },
+    {
+      "id": "s001c02_ev_e008",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A printed access-control event report, a column of timestamped badge events soft and unreadable, one line marked with a yellow highlighter."
+    },
+    {
+      "id": "s001c02_ev_e009",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A typed hotel security incident report with a printed door-alarm panel history clipped to it, a few lines highlighted, a handwritten paragraph and initials at the bottom."
+    },
+    {
+      "id": "s001c02_ev_e010",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A printed engineering work-order list pinned to a corkboard with a red pushpin, four short entries and a footer, all soft and unreadable."
+    },
+    {
+      "id": "s001c02_ev_e011",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Grainy black-and-white infrared stills from a loading dock security camera: a small high-roofed cargo van backed into a bay with its lights off, three figures coming out of a steel door, the middle one coatless with his head down."
+    },
+    {
+      "id": "s001c02_ev_e012",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A receiving log on a battered clipboard, a handful of handwritten entries soft and unreadable, the last one underlined."
+    },
+    {
+      "id": "s001c02_ev_e013",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A photocopied handwritten statement on lined paper, folded twice, pinned under a dented ashtray tin on a wooden bench."
+    },
+    {
+      "id": "s001c02_ev_e014",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A curling strip of thermal printer paper from an elevator controller, a column of timestamped events soft and unreadable, lying across a brushed steel panel."
+    },
+    {
+      "id": "s001c02_ev_e015",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A printed temporary credential record with a blank white vendor badge card clipped to it, and behind it two short memos, all text soft and unreadable."
+    },
+    {
+      "id": "s001c02_ev_e016",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A human resources file folder open to a schedule grid, a timeclock printout and a short typed note, all soft and unreadable."
+    },
+    {
+      "id": "s001c02_ev_e017",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A formal letter on government letterhead folded in thirds, half unfolded, soft and unreadable typed text, a short handwritten note in the margin in pen, lying on a charcoal suit jacket."
+    },
+    {
+      "id": "s001c02_ev_e018",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A confidential corporate internal review report, a few stapled pages with a red CONFIDENTIAL stamp, soft and unreadable findings, a handwritten note on the cover."
+    },
+    {
+      "id": "s001c02_ev_e019",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "An open personnel security file folder with a few typed pages and a photocopied loan note, all soft and unreadable, a paper clip and a red tab."
+    },
+    {
+      "id": "s001c02_ev_e020",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A few printed screenshots of text message conversations on a phone, gray and blue message bubbles with soft, unreadable text, lying on a hotel front desk."
+    },
+    {
+      "id": "s001c02_ev_e021",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A cream lawyer's business card tucked behind a driver's license in a brown leather wallet, its back showing two short lines of handwriting in different hands, soft and unreadable."
+    },
+    {
+      "id": "s001c02_ev_e022",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A gray tamper-evident document envelope with an intact numbered seal and two signatures across the flap, beside it a small gray USB drive with a ten-key PIN pad and a red and a green light, and a folded handwritten note."
+    },
+    {
+      "id": "s001c02_ev_e023",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A federal forensic summary report beside a laptop screen showing a list of files and an audio waveform, a small gray PIN-pad drive connected by a cable to a write-blocker, all text soft and unreadable."
+    },
+    {
+      "id": "s001c02_ev_e024",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A small black pocket notebook with an elastic band, open to pages of small, square handwriting, soft and unreadable, lying in a hotel nightstand drawer."
+    },
+    {
+      "id": "s001c02_ev_e025",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A consulting agreement on heavy letterhead with a yellow flag stuck on one section and a business card clipped to the front, all text soft and unreadable."
+    },
+    {
+      "id": "s001c02_ev_e026",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A thick printout of phone carrier records with columns of numbers and times, soft and unreadable, several lines highlighted, a handwritten note in the margin."
+    },
+    {
+      "id": "s001c02_ev_e027",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A vehicle registration printout, two license plate reader photographs of a small gray van on a highway at night, and a driver's license photo of a man with short dark hair, clipped together."
+    },
+    {
+      "id": "s001c02_ev_e028",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A residential lease with a property survey sketch of a farmhouse and outbuilding, and a stapled alarm monitoring agreement, in a plastic sleeve with a police evidence tag, all text soft and unreadable."
+    },
+    {
+      "id": "s001c02_ev_e029",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A rubber-banded wad of ATM receipts, a folded printed email and a past-due notice, lying under a burgundy and gold football cap on a locker shelf, all text soft and unreadable."
+    },
+    {
+      "id": "s001c02_ev_e030",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A police digital extraction report printout of recovered text messages in a two-column layout, beside a Samsung phone in an evidence bag, all text soft and unreadable."
+    },
+    {
+      "id": "s001c02_ev_e031",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A dot-matrix style alarm monitoring daily activity report, a long column of timestamped arm and disarm events soft and unreadable, in a printer output tray."
+    },
+    {
+      "id": "s001c02_ev_e032",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A small farmhouse bedroom window boarded over from the inside with raw 2x4 lumber screwed into the frame, a bare mattress below, three cut clear cable ties on the floorboards, and a new steel hasp and padlock on the open door."
+    },
+    {
+      "id": "s001c02_ev_e033",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Four photocopied pages of a restricted client list fanned out beside a white and orange courier envelope with a waybill sleeve, all text soft and unreadable except a faint gray line along the bottom edge of each page."
+    },
+    {
+      "id": "s001c02_ev_e034",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A spreadsheet-style internal budget printout in a black ring binder, columns of figures soft and unreadable, a short handwritten line across the top."
+    },
+    {
+      "id": "s001c02_ev_e035",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Three stapled pages folded in quarters, a restricted index listing with soft, unreadable entries, a penciled note on the last page, pulled from the side pocket of a black duffel bag beside a laptop in its bag."
+    },
+    {
+      "id": "s001c02_ev_e036",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A plain white index card in a plain white envelope, a few centered lines of laser-printed text soft and unreadable, inside a clear evidence bag, beside a passport and banded cash in an open wall safe."
+    },
+    {
+      "id": "s001c02_map",
+      "kind": "map",
+      "style": "s001",
+      "subject": "Washington, D.C., and the Maryland and Virginia country around it, seen from above. On the lower right, a dense city grid of downtown Washington with wide diagonal avenues, a traffic circle and a long green mall, a broad pale blue river along its southwest edge. A highway in ochre runs northwest from the city through suburbs to a cluster of low office parks in the center of the map, then on northwest through green rolling farmland and woods to the upper left, where a small farm lane ends at a lone house among fields. On the left middle, west of the river, a suburban office-park district with a long highway toward an airport. In the top right corner, a small inset rectangle showing a different city where two rivers meet to form a third.",
       "suffix": "A hand-painted street map, seen flat from directly above and filling the whole image edge to edge like a sheet laid on a table: no table, no border, no frame. Muted map colors: cream paper, ochre streets, sage green parkland, pale blue water, faint fold creases. Absolutely no words, letters, numbers, street names or symbols anywhere on the map."
     }
   ],
