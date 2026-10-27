@@ -108,6 +108,7 @@ export const KNOWLEDGE: Record<string, Fact[]> = {
     f("Miss Kessler came home on Wednesday without a scratch and no ransom was paid.", home),
     f("At five on Wednesday I told the press the abduction appears to have been staged. The chief wanted it said.", { hasEvidence: "E11" }, "ferris_hoax"),
     f("Nobody from patrol gave me a note from a neighbor.", { hasEvidence: "E06" }, "ferris_howard"),
+    f("The Oak Terrace pager isn't mine. Oak Terrace sent it to Frank Bennett; ask him whose it is.", { hasEvidence: "E16" }, "ferris_pager"),
     f("We're holding Gordon Pell for questioning. He says he was home every night and his van has been in the shop since September. He has a cut on his head he says came from a tailgate.", arrested, "ferris_gordon"),
     f("I had those letters on Tuesday. The department will withdraw the statement.", { hasEvidence: "E19" }, "ferris_typewriter"),
   ],
@@ -140,7 +141,7 @@ export const KNOWLEDGE: Record<string, Fact[]> = {
     f("I hit him on the head with my ceramic lamp. He was bleeding. He dropped the ties and the stun gun, grabbed the tape player and ran out the back gate.", undefined, "diane_lamp"),
     f("He came in through the garage side door, which I don't always lock after taking out the trash on Thursdays. My dog was at the kennel that week.", undefined, "diane_door"),
     f("He had a steel thermos. The police said it held something orange and sweet.", undefined, "diane_thermos"),
-    f("A pager fell out of his jacket by the side gate. The police have it.", undefined, "diane_pager"),
+    f("A pager fell out of his jacket by the side gate. The Oak Terrace police took it and sent it on to Det. Bennett of the LAPD. Bennett is the one who can find out whose it is.", undefined, "diane_pager"),
   ],
   gordon: [
     f("I'm Gordon Pell. I fix televisions, radios and stereos and do house calls on the mountain.", undefined, "gordon_who"),
@@ -156,7 +157,7 @@ export const KNOWLEDGE: Record<string, Fact[]> = {
     f("I don't know any Laura Kessler."),
     f("On November fourth I was asleep at home.", { hasEvidence: "E16" }, "gordon_oak"),
     f("I don't know anything about a pager. My mother never used one.", { hasEvidence: "E17" }, "gordon_pager"),
-    f("I cut my head on the van's tailgate.", arrested, "gordon_head"),
+    f("I cut my head on the van's tailgate.", { any: [arrested, { flag: "oak_terrace" }] }, "gordon_head"),
   ],
   bennett: [
     f("I'm Detective Frank Bennett, LAPD, twenty-five years. Mariposa Bay isn't my town, but Walt Ferris lets me see his file."),

@@ -223,6 +223,8 @@ export const characters: CharacterDef[] = [
     bio: [
       { text: "Thirty-eight. Repairs televisions, radios and stereos from his mother's cabin at Tamarack Lake." },
       { text: "His mother, Vera Pell, has lived in a care home in Redlands since spring.", requires: { any: [{ asked: "gordon_who" }, { hasEvidence: "E17" }] } },
+      // After Oak Terrace (November 4) he has a fresh cut where Diane Moss hit him with the lamp.
+      { text: "A fresh cut on his scalp above the left ear, half hidden under a ball cap.", requires: { flag: "oak_terrace" } },
       { text: "Arrested at Cabin 14 on Monday, November 7, and brought to Mariposa Bay.", requires: arrested },
     ],
     available: { always: true },
@@ -547,6 +549,10 @@ export const questions: DialogueQuestion[] = [
     "Bennett sent me that report. Stun gun, cable ties, a tape player and a thermos.",
     "I've been in this job twenty years. I know what a pattern looks like. I just didn't want this to be one.",
   ], { requiresEvidence: ["E16"] }),
+  q("ferris", "Evidence", "ferris_pager", "What about the pager from Oak Terrace?", [
+    "Oak Terrace isn't my town and that pager isn't my evidence. Oak Terrace sent it to Frank Bennett.",
+    "If you want to know whose it is, ring Bennett. He likes making phone calls.",
+  ], { requiresEvidence: ["E16"] }),
   q("ferris", "Evidence", "ferris_gordon", "How is Gordon Pell answering your questions?", [
     "Polite as a church usher. Says he was home every night of his life and his van's been in the shop since September.",
     "He has a cut on his head he says came from a tailgate.",
@@ -664,9 +670,9 @@ export const questions: DialogueQuestion[] = [
     "A steel thermos. The police said it was full of something orange and sweet. He wanted me to drink it.",
   ]),
   q("diane", "That night", "diane_pager", "Did he leave anything behind?", [
-    "A pager. It fell out of his jacket by the side gate when he ran. The police took it.",
-    "You'd think a man that careful would have checked his pockets.",
-  ], { reveals: "A pager fell from the intruder's jacket in Diane's side yard." }),
+    "A pager. It fell out of his jacket by the side gate when he ran. Our police took it, and they've sent it on to that LAPD detective, Bennett.",
+    "You'd think a man that careful would have checked his pockets. If anybody can find out whose it is, it's Bennett. Call him.",
+  ], { reveals: "A pager fell from the intruder's jacket in Diane's side yard. Det. Bennett has it now." }),
   q("diane", "Evidence", "diane_laura", "A woman in Mariposa Bay was taken the same way in October.", [
     "The schoolteacher? The one the paper said made it up?",
     "Oh my God. She didn't make it up, did she.",
@@ -719,7 +725,7 @@ export const questions: DialogueQuestion[] = [
   ], { requiresEvidence: ["E17"], reveals: "Gordon Pell says he knows nothing about a pager in his mother's name." }),
   q("gordon", "Oak Terrace", "gordon_head", "How did you cut your head?", [
     "Hit it on the tailgate of the van. Stupid. Bled like anything.",
-  ], { requires: arrested }),
+  ], { requires: { any: [arrested, { flag: "oak_terrace" }] }, reveals: "Gordon Pell has a fresh cut on his head. He says he hit it on the tailgate of his van." }),
   q("gordon", "The search", "gordon_mask", "Deputies found a ski mask in your cabin with blood inside it.", [
     "I want a lawyer. I'm not saying anything else.",
   ], { requiresEvidence: ["E18"], effects: [{ setFlag: "gordon_lawyered" }] }),
@@ -935,6 +941,7 @@ const KEYWORDS: Record<string, string> = {
   ferris_hoax: "you told the press it was staged hoax press conference why did you say it was a hoax",
   ferris_lab: "lab report on the glasses sleep preparation wiped prints both glasses",
   ferris_oak: "oak terrace the same method another attack break in diane moss",
+  ferris_pager: "the pager from oak terrace who has the pager the pager diane's pager",
   ferris_gordon: "gordon pell what is pell saying the suspect how is the interview going",
   ferris_typewriter: "the typewriter matched the letters same machine smith corona",
   nora_package: "tell me about the package the letter the cassette what came in the mail what did you receive",
