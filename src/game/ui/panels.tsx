@@ -246,7 +246,7 @@ export function MailPanel({ view, dispatch, onClose, pending }: { view: ClientVi
   );
 }
 
-export function CallPanel({ caseId, data, onClose, voices, volume }: { caseId: string; data: Out<"call">; onClose: () => void; voices: boolean; volume: number }) {
+export function CallPanel({ caseId, data, onClose, voices, volume, closeLabel = "Hang up", replayLabel = "Replay call" }: { caseId: string; data: Out<"call">; onClose: () => void; voices: boolean; volume: number; closeLabel?: string; replayLabel?: string }) {
   const player = useLinePlayer(volume);
   const voiced = data.voiced && voices;
   const srcs = useMemo(() => data.lines.map((_, i) => voiceSrc(caseId, "call", data.id, i)), [caseId, data.id, data.lines]);
@@ -255,7 +255,7 @@ export function CallPanel({ caseId, data, onClose, voices, volume }: { caseId: s
     if (voiced) play(0, srcs);
   }, [voiced, srcs, play]);
   return (
-    <Overlay title={data.title} onClose={onClose} closeLabel="Hang up">
+    <Overlay title={data.title} onClose={onClose} closeLabel={closeLabel}>
       <div className="space-y-4 p-6">
         <p className="font-mono text-xs uppercase tracking-[0.14em] text-smoke">{data.from}</p>
         {data.lines.map((l, i) => (
@@ -271,7 +271,7 @@ export function CallPanel({ caseId, data, onClose, voices, volume }: { caseId: s
               <GameButton variant="ghost" onClick={player.resume}>Resume</GameButton>
             ) : (
               <GameButton variant="ghost" onClick={() => play(0, srcs)} disabled={player.status === "loading"}>
-                {player.status === "loading" ? "Connecting" : "Replay call"}
+                {player.status === "loading" ? "Connecting" : replayLabel}
               </GameButton>
             )}
             <span role="status" className="text-xs text-smoke">{player.error ?? ""}</span>
@@ -285,18 +285,19 @@ export function CallPanel({ caseId, data, onClose, voices, volume }: { caseId: s
 export function PhonePanel({ view, dispatch, onClose, pending, onDefer }: { view: ClientView; dispatch: Dispatch; onClose: () => void; pending: boolean; onDefer: () => void }) {
   const closed = view.status === "closed";
   const mobile = view.phone.mobile;
+  const w = view.words;
   return (
-    <Overlay title={mobile ? "Phone" : "Telephone"} onClose={onClose}>
+    <Overlay title={mobile ? "Phone" : w.phone} onClose={onClose}>
       <div className="space-y-8 p-6">
         {view.phone.ringing ? (
           <div className="border border-brass/50 bg-brass/10 p-4">
-            <p className="font-serif text-lg">{mobile ? `${view.phone.ringing.from} is calling.` : "The line is ringing."}</p>
+            <p className="font-serif text-lg">{mobile ? `${view.phone.ringing.from} is calling.` : w.callNotice}</p>
             <div className="mt-3 flex flex-wrap items-center gap-3">
               <GameButton disabled={pending || closed} onClick={() => dispatch({ type: "answerCall", callId: view.phone.ringing!.id })}>
-                {mobile ? "Answer" : "Answer the telephone"}
+                {mobile ? "Answer" : w.callAnswer}
               </GameButton>
               <button type="button" onClick={onDefer} className="text-sm text-smoke underline-offset-4 hover:text-paper hover:underline">
-                Let it ring
+                {w.callDefer}
               </button>
             </div>
           </div>
@@ -310,7 +311,7 @@ export function PhonePanel({ view, dispatch, onClose, pending, onDefer }: { view
                   <p className="font-serif text-lg">{c.name}</p>
                   <p className="text-xs text-smoke">{c.note || c.role}</p>
                   <GameButton className="mt-3" disabled={pending || closed} onClick={() => dispatch({ type: "talk", characterId: c.id })}>
-                    Call {c.name.startsWith("Det.") ? `Det. ${c.name.split(" ").slice(-1)[0]}` : c.name}
+                    {w.callContact} {c.name.startsWith("Det.") ? `Det. ${c.name.split(" ").slice(-1)[0]}` : c.name}
                   </GameButton>
                 </li>
               ))}
@@ -331,7 +332,7 @@ export function PhonePanel({ view, dispatch, onClose, pending, onDefer }: { view
           </div>
         ) : null}
         <div>
-          <h3 className="text-sm text-smoke">Make a call</h3>
+          <h3 className="text-sm text-smoke">{w.outgoing}</h3>
           {view.phone.outgoing.length ? (
             <ul className="mt-3 space-y-2">
               {view.phone.outgoing.map((c) => (
@@ -349,12 +350,12 @@ export function PhonePanel({ view, dispatch, onClose, pending, onDefer }: { view
               ))}
             </ul>
           ) : (
-            <p className="mt-2 text-sm text-smoke">There is no one you need to call right now.</p>
+            <p className="mt-2 text-sm text-smoke">{view.theme === "medieval" ? "There is no one you need to send for just now." : "There is no one you need to call right now."}</p>
           )}
         </div>
         {view.phone.log.length ? (
           <div>
-            <h3 className="text-sm text-smoke">Earlier calls</h3>
+            <h3 className="text-sm text-smoke">{w.callLog}</h3>
             <ul className="mt-2 space-y-1 text-sm text-paper/80">
               {view.phone.log.map((c, i) => (
                 <li key={`${c.id}-${i}`}>{c.title}</li>

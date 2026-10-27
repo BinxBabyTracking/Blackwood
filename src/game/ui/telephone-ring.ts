@@ -10,7 +10,7 @@ import { useEffect } from "react";
  */
 const RINGS = 3;
 
-export function useTelephoneRing(active: boolean, volume: number) {
+export function useTelephoneRing(active: boolean, volume: number, kind: "telephone" | "knock" = "telephone") {
   useEffect(() => {
     if (!active || volume <= 0 || typeof window === "undefined") return;
     const Ctx = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
@@ -44,11 +44,28 @@ export function useTelephoneRing(active: boolean, volume: number) {
         osc.stop(t0 + 2.3);
       }
     };
+    // A messenger at the door, in a medieval case: three knocks on oak, twice.
+    const knock = (t0: number) => {
+      const n = Math.floor(ctx.sampleRate * 0.12);
+      const buf = ctx.createBuffer(1, n, ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 6);
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      const f = ctx.createBiquadFilter();
+      f.type = "lowpass";
+      f.frequency.value = 520;
+      const g = ctx.createGain();
+      g.gain.value = 5;
+      src.connect(f).connect(g).connect(master);
+      src.start(t0);
+    };
     const start = ctx.currentTime + 0.4;
-    for (let n = 0; n < RINGS; n++) ring(start + n * 6);
+    if (kind === "knock") for (let n = 0; n < 2; n++) for (let k = 0; k < 3; k++) knock(start + n * 5 + k * 0.32);
+    else for (let n = 0; n < RINGS; n++) ring(start + n * 6);
     ctx.resume().catch(() => undefined);
     return () => {
       ctx.close().catch(() => undefined);
     };
-  }, [active, volume]);
+  }, [active, volume, kind]);
 }

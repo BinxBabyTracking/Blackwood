@@ -81,9 +81,9 @@ export function MurderBoard({
   };
 
   return (
-    <div className="fixed inset-0 z-40 flex flex-col bg-[#2b2118] game-fade" role="dialog" aria-modal="true" aria-label="Murder board">
+    <div className="fixed inset-0 z-40 flex flex-col bg-[#2b2118] game-fade" role="dialog" aria-modal="true" aria-label={view.words.board}>
       <div className="flex items-center justify-between gap-3 border-b border-black/40 bg-[#1d1610] px-4 py-2 text-sm text-paper">
-        <p className="font-serif text-lg">Murder Board</p>
+        <p className="font-serif text-lg">{view.theme === "medieval" ? view.words.board : "Murder Board"}</p>
         <p className="hidden text-xs text-smoke md:block" aria-live="polite">
           {readOnly
             ? "This case is closed. The board is kept as you left it."

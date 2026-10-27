@@ -21,6 +21,7 @@ export function EvidenceInspection({
   pending,
   locked,
   closeLabel = "Return to scene",
+  boardName = "murder board",
   narration,
   onSaveNote,
 }: {
@@ -35,6 +36,8 @@ export function EvidenceInspection({
   /** True when the case is closed and nothing may change. */
   locked?: boolean;
   closeLabel?: string;
+  /** What the case calls its board. */
+  boardName?: string;
   /** Narration source and volume, or null when narration is switched off. */
   narration?: { src: string; volume: number } | null;
   onSaveNote?: (text: string) => Promise<unknown>;
@@ -106,7 +109,7 @@ export function EvidenceInspection({
                 </span>
                 {e.boardable && onPin ? (
                   <GameButton variant="ghost" disabled={pinned || pending || locked} onClick={onPin}>
-                    {pinned ? "On the murder board" : "Add to Murder Board"}
+                    {pinned ? `On the ${boardName.toLowerCase()}` : `Add to the ${boardName.toLowerCase()}`}
                   </GameButton>
                 ) : null}
               </>
@@ -115,7 +118,7 @@ export function EvidenceInspection({
                 <GameButton disabled={pending || locked} onClick={onCollect}>
                   {pending ? "Collecting" : "Collect Evidence"}
                 </GameButton>
-                <span className="text-xs text-smoke">Adds it to your notebook and the murder board tray.</span>
+                <span className="text-xs text-smoke">Adds it to your files and the {boardName.toLowerCase()} tray.</span>
               </>
             )}
             <GameButton variant="ghost" onClick={onClose}>

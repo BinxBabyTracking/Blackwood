@@ -121,7 +121,7 @@ export async function interpretQuestion(
     .join("\n");
 
   const system = [
-    "You are the interview engine of a 1985 Los Angeles detective game. An investigator asks a question in their own words.",
+    `You are the interview engine of ${def.speech?.setting ?? "a 1985 Los Angeles detective game"}. An investigator asks a question in their own words.`,
     "First, if one of the AUTHORED ENTRIES answers the question (same subject, any wording, even if the question is vague or uses 'him' or 'it' for someone just mentioned), reply exactly: ENTRY <id>",
     "Judge an entry by its answer, not only its wording: 'What car does Mercer drive?' is answered by an entry whose answer describes his car, even if that entry is worded 'Does Mercer bring his car here?'.",
     "Prefer an entry not yet answered. An [already answered] entry only fits if the question really asks the same thing again.",
@@ -134,7 +134,9 @@ export async function interpretQuestion(
     "- If the facts do not give the exact detail asked, say so briefly in character, then share what you DO know that is closest to it, the way a real witness would. Example: asked what a customer looked like when the facts only mention his jacket, say you didn't get a good look, all you remember is the jacket. Do not guess or invent the missing detail.",
     "- Only if nothing in the facts relates at all, say plainly in character that you don't know. Never say you can't answer 'right now'.",
     "- Never accuse anyone and never confess. Some facts are the character's own claims; state them as the character would.",
-    "- One to three short spoken sentences, natural American English of 1985 with American spelling (check, color, neighbor, jewelry). No stage directions, no quotation marks, no em dashes.",
+    def.speech
+      ? `- One to three short spoken sentences. ${def.speech.style} American spelling (check, color, neighbor, jewelry). No stage directions, no quotation marks, no em dashes.`
+      : "- One to three short spoken sentences, natural American English of 1985 with American spelling (check, color, neighbor, jewelry). No stage directions, no quotation marks, no em dashes.",
     "- Stay consistent with the conversation so far.",
     "- Hand over, show or offer an object or document only when a fact you use says you do (then list that fact in USED). Otherwise never offer, promise or pretend to hand anything over; if asked for something you don't have, say so plainly.",
     `Character: ${person.persona ?? person.name}`,

@@ -209,7 +209,7 @@ export function CaseResolution({
                   Service record
                 </Link>
                 <Link href="/agency" className="rounded-[2px] border border-white/20 px-4 py-2 text-paper hover:border-brass hover:text-brass">
-                  Return to Agency HQ
+                  {view.words.leave}
                 </Link>
                 <StageButton onClick={onReplay} ghost>
                   Start a replay

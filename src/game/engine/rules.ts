@@ -73,6 +73,14 @@ export function apply(effects: Effect[] | undefined, s: InvestigationState, def:
       s.labs ??= {};
       if (lab && !s.labs[lab.id]) s.labs[lab.id] = { startedAt: s.lastActionAt, readyAt: s.lastActionAt + lab.seconds * 1000, done: false };
     }
+    else if ("deduce" in e) {
+      const d = def.deductions.find((x) => x.id === e.deduce);
+      if (d && !s.deductions.includes(d.id)) {
+        s.deductions.push(d.id);
+        if (!s.notebook.some((n) => n.id === `deduction:${d.id}`)) s.notebook.push({ id: `deduction:${d.id}`, kind: "event", title: `Deduction: ${d.title}`, text: d.text, at: Date.now() });
+        apply(d.effects, s, def);
+      }
+    }
     else if ("when" in e) {
       if (check(e.when, s)) apply(e.then, s, def);
     }

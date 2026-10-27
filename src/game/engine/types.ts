@@ -59,6 +59,8 @@ export type Effect =
   | { startLab: string } // sends a lab test off; results come back after its time
   /** A text message arrives on the investigator's phone (a TextDef id). */
   | { text: string }
+  /** Records a deduction as established, with its notebook entry and effects (a timeline finding or a comparison can establish one). */
+  | { deduce: string }
   | { when: Condition; then: Effect[] }; // applies only if the condition holds at that moment
 
 export interface NotebookEntryInput {
@@ -305,7 +307,7 @@ export interface HotspotDef {
   callout?: { text: string; when: Condition };
 }
 
-export type PanelId = "casefile" | "board" | "notebook" | "map" | "phone" | "statements" | "delivery" | "conclusion";
+export type PanelId = "casefile" | "board" | "notebook" | "map" | "phone" | "statements" | "delivery" | "conclusion" | "sequence" | "comparison";
 
 export interface LocationDef {
   id: string;
@@ -663,6 +665,164 @@ export interface CaseDefinition {
   boardSections?: { id: string; label: string; when?: Condition }[];
   /** The date typed by the signature on the final report, e.g. "October 2018". Default "August 1985". */
   reportDate?: string;
+  /**
+   * The case's look. Default: the agency's noir. "medieval" dresses the game
+   * as an illuminated manuscript: parchment journal, wooden table, letters.
+   */
+  theme?: "medieval";
+  /** Words the interface uses for this case, where the agency's usual ones would not fit (no photographs in 1327). */
+  words?: Partial<CaseWords>;
+  /** How characters speak, for answers composed from their knowledge. */
+  speech?: { setting: string; style: string };
+  /** Timelines the player puts in order to test accounts (the bell timeline). */
+  sequences?: SequenceDef[];
+  /** Documents the player compares, side by side, to find what differs. */
+  comparisons?: ComparisonDef[];
+}
+
+/** Words the interface uses. Every case gets the defaults in `src/game/words.ts` unless it supplies its own. */
+export interface CaseWords {
+  /** What a picture of a scene is called: "Photo", "Sketch". */
+  photo: string;
+  /** The button that takes one: "Take a photo". */
+  photoAction: string;
+  /** Said once it is taken. */
+  photoTaken: string;
+  /** The notebook heading for one: "Photographed". */
+  photoNote: string;
+  /** Letter before its number on screen, "P" for P1. */
+  photoPrefix: string;
+  /** The stamp on a new picture, two lines: ["Photo", "Filed"]. */
+  photoStamp: [string, string];
+  /** The stamp on new evidence, two lines: ["Collected", "Evidence"]. */
+  collectedStamp: [string, string];
+  notebook: string;
+  evidence: string;
+  map: string;
+  /** The murder board's name. */
+  board: string;
+  /** The home base, in a sentence: "the office". */
+  home: string;
+  /** The telephone panel's title. */
+  phone: string;
+  /** Top bar, a call waiting while away: "A call is waiting at the office". */
+  callWaiting: string;
+  /** Top bar, a call coming in at home: "Telephone ringing". */
+  callRinging: string;
+  /** The ringing call, in the panel: "The line is ringing." */
+  callNotice: string;
+  /** The button that takes it: "Answer the telephone". */
+  callAnswer: string;
+  /** Leave it for later: "Let it ring". */
+  callDefer: string;
+  /** Close a call: "Hang up". */
+  callClose: string;
+  /** Heading over earlier calls: "Earlier calls". */
+  callLog: string;
+  /** How a telephone contact is reached, in the people list: "By telephone from your office". */
+  byPhone: string;
+  /** Start talking to a telephone contact: "Call". */
+  callContact: string;
+  /** Heading for things one can send for: "Make a call". */
+  outgoing: string;
+  /** The board hint while away from home. */
+  boardHintWaiting: string;
+  /** The way home in the top bar: "Return to Agency HQ". */
+  leave: string;
+  /** Who judges the final report, in a sentence: "the agency". */
+  reviewer: string;
+  /** The report form's name in its header: "FORM BI-7". */
+  form: string;
+  /** Journal tags for what was seen and what was said. Empty strings show no tags. */
+  observed: string;
+  claimed: string;
+}
+
+/**
+ * A timeline the player assembles from what they have learned, to test
+ * people's accounts against each other. The correct places are known only
+ * to the server; testing reports only the contradictions (findings) that the
+ * cards as placed now show, never where a card belongs.
+ */
+export interface SequenceDef {
+  id: string;
+  title: string;
+  /** How to use it, shown at the top. */
+  intro: string;
+  /** Shown once this holds (usually once there are cards). */
+  available: Condition;
+  /** The spaces, in order, e.g. Before Vespers, After Vespers. */
+  spaces: { id: string; label: string }[];
+  cards: SequenceCard[];
+  findings: SequenceFinding[];
+  /** Said when a test finds nothing new. */
+  nothingNew: string;
+}
+
+export interface SequenceCard {
+  id: string;
+  text: string;
+  /** Who or what it comes from, shown in the corner. */
+  source: string;
+  /** Observed: seen or found. Claimed: someone's account of themselves, placed where they say it belongs. */
+  kind: "observed" | "claimed";
+  /** When the card appears. */
+  unlock: Condition;
+  /** Where it really belongs (observed cards). Server-only. */
+  space?: string;
+}
+
+export interface SequenceFinding {
+  id: string;
+  title: string;
+  /** Written into the journal when found. */
+  text: string;
+  /** Cards that must be placed, each in its correct space (observed) or anywhere listed (claimed). */
+  needs: { card: string; anyOf?: string[] }[];
+  /** Cards that must also be in this order, earliest first. */
+  ordered?: string[];
+  effects?: Effect[];
+}
+
+/**
+ * Two documents side by side. The player picks a passage and says what
+ * differs between them; only true discrepancies are entered in the journal.
+ * Which observation is right never reaches the browser.
+ */
+export interface ComparisonDef {
+  id: string;
+  title: string;
+  intro: string;
+  /** When the comparison can be opened. */
+  available: Condition;
+  /** Who comments on each find, by character id. */
+  expert: string;
+  left: { title: string; evidence?: string };
+  right: { title: string; evidence?: string };
+  regions: ComparisonRegion[];
+  /** Said on a wrong pick. */
+  wrong: string;
+  /** Once every true discrepancy is found. */
+  onComplete?: Effect[];
+  completeText: string;
+}
+
+export interface ComparisonRegion {
+  id: string;
+  label: string;
+  /** What each document says or shows at this place. */
+  leftText: string;
+  rightText: string;
+  /** Detail images, by asset key. */
+  leftImage?: string;
+  rightImage?: string;
+  options: { id: string; text: string }[];
+  /** The true observation. A decoy region's answer is that nothing differs in substance. */
+  answer: string;
+  /** True discrepancies count toward completion; decoys do not. */
+  discrepancy: boolean;
+  /** The expert's comment on the right pick. */
+  comment: string;
 }
 
 export interface TextDef {
@@ -745,6 +905,10 @@ export interface InvestigationState {
   messages: string[];
   /** Text messages received on the investigator's phone, oldest first. */
   texts?: string[];
+  /** Where the player has put each card on each timeline, and the findings it has shown. */
+  sequences?: Record<string, { placed: Record<string, { space: string; pos: number }>; findings: string[] }>;
+  /** Passages compared: right picks found, and every pick tried (`region:option`). */
+  comparisons?: Record<string, { found: string[]; tried: string[]; done: boolean }>;
   attempts: number;
   /** The final report: the working draft, every submission, and the accepted report. */
   report: { draft: ReportDraft; submissions: ReportSubmission[]; final: FinalReport | null };
@@ -838,6 +1002,12 @@ export type GameAction =
   | { type: "setVoices"; enabled: boolean }
   | { type: "dismissMessages" }
   | { type: "saveReport"; draft: ReportDraft }
+  /** Puts a timeline card in a space (`pos` orders cards within it), or takes it off (`space: null`). */
+  | { type: "sequencePlace"; sequenceId: string; cardId: string; space: string | null; pos: number }
+  /** Tests the timeline as it stands. */
+  | { type: "sequenceTest"; sequenceId: string }
+  /** Says what differs at one passage of a comparison. */
+  | { type: "compare"; comparisonId: string; regionId: string; optionId: string }
   /** `investigator` is set by the server from the signed-in profile, never by the browser. */
   | { type: "submitConclusion"; theory: Theory; investigator?: string };
 
@@ -984,6 +1154,34 @@ export interface ClientView {
   };
   /** The case's status line, if the case has one. */
   caseStatus: string | null;
+  /** The case's look and its words for things. */
+  theme: "noir" | "medieval";
+  words: CaseWords;
+  /** Timelines open to the player: the cards they have, where they put them, the findings so far. */
+  sequences: {
+    id: string;
+    title: string;
+    intro: string;
+    spaces: { id: string; label: string }[];
+    cards: { id: string; text: string; source: string; kind: "observed" | "claimed" }[];
+    placed: Record<string, { space: string; pos: number }>;
+    findings: { id: string; title: string; text: string }[];
+  }[];
+  /** Comparisons open to the player. */
+  comparisons: {
+    id: string;
+    title: string;
+    intro: string;
+    expert: string;
+    left: string;
+    right: string;
+    regions: { id: string; label: string; leftText: string; rightText: string; leftImage: string | null; rightImage: string | null; options: { id: string; text: string }[]; found: boolean }[];
+    found: number;
+    total: number;
+    done: boolean;
+    /** Every find so far, with the expert's comment. */
+    notes: { region: string; text: string }[];
+  }[];
   /** Labeled sections of the murder board that are open. */
   boardSections: { id: string; label: string }[];
   deliveries: { id: string; title: string }[];
@@ -1080,6 +1278,10 @@ export type ActionOutcome =
       evidence: { id: string; title: string; collected: boolean }[];
     }
   | { kind: "deduction"; id: string; title: string; text: string }
+  /** A timeline test: the findings it turned up, or none. */
+  | { kind: "sequence"; found: { title: string; text: string }[]; message: string }
+  /** A comparison pick: right or not, and what the expert says. */
+  | { kind: "compare"; regionId: string; correct: boolean; comment: string; complete: boolean }
   | {
       kind: "verdict";
       correct: boolean;

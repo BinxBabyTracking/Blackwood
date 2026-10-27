@@ -14,8 +14,11 @@ import {
   WARN_AT,
 } from "./questions";
 import { apply, check, collectEvidence, demeanorOf, runContradictions, runDemeanor, runEvents } from "./rules";
+import { wordsFor } from "../words";
 import type {
   CharacterDef,
+  ComparisonDef,
+  SequenceDef,
   ClientDevelopment,
   ClientEvidence,
   ClientInterview,
@@ -78,6 +81,8 @@ export function newState(def: CaseDefinition, now = Date.now()): InvestigationSt
     readDocuments: [],
     messages: [],
     texts: [],
+    sequences: {},
+    comparisons: {},
     attempts: 0,
     report: { draft: { evidence: [] }, submissions: [], final: null },
     activeSeconds: 0,
@@ -136,7 +141,7 @@ function characterHere(def: CaseDefinition, s: InvestigationState, id: string) {
 /** Why a person cannot be talked to right now, in words. */
 function unreachable(def: CaseDefinition, s: InvestigationState, c: CharacterDef) {
   if (isDeceased(c, s)) return `${c.name} is dead.`;
-  if (c.medium === "telephone") return `${c.name} can be reached from your office telephone.`;
+  if (c.medium === "telephone") return `${c.name} is reached ${wordsFor(def).byPhone.replace(/^By /, "by ")}.`;
   return `${c.name} is not here.`;
 }
 
@@ -185,6 +190,8 @@ export function normalizeState(def: CaseDefinition, raw: InvestigationState): In
   s.conversations ??= {};
   s.eventStates ??= {};
   s.texts ??= [];
+  s.sequences ??= {};
+  s.comparisons ??= {};
   s.report ??= { draft: { evidence: [] }, submissions: [], final: null };
   // Saves from before the event lifecycle recorded only which events had fired.
   for (const id of s.events ?? []) s.eventStates[id] ??= "active";
@@ -231,10 +238,11 @@ export function hasItem(s: InvestigationState, id: string) {
 
 /** A photograph, shown everywhere evidence is shown. */
 export function photoView(def: CaseDefinition, s: InvestigationState, p: InvestigationState["photos"][number]): ClientEvidence {
+  const w = wordsFor(def);
   return {
     id: p.id,
-    title: `Photo: ${p.title}`,
-    description: `A photograph you took at ${loc(def, p.locationId)?.name ?? "the scene"}.`,
+    title: `${w.photo}: ${p.title}`,
+    description: def.words?.photo ? `A ${w.photo.toLowerCase()} you made at ${loc(def, p.locationId)?.name ?? "the scene"}.` : `A photograph you took at ${loc(def, p.locationId)?.name ?? "the scene"}.`,
     inspection: p.text,
     image: p.image,
     source: loc(def, p.locationId)?.name ?? "",
@@ -246,7 +254,7 @@ export function photoView(def: CaseDefinition, s: InvestigationState, p: Investi
     related: [],
     note: s.evidenceNotes?.[p.id] ?? "",
     photo: true,
-    label: `P${(s.photos ?? []).findIndex((x) => x.id === p.id) + 1}`,
+    label: `${w.photoPrefix}${(s.photos ?? []).findIndex((x) => x.id === p.id) + 1}`,
   };
 }
 
@@ -313,7 +321,7 @@ function shortName(c: CharacterDef) {
 
 function whereOf(def: CaseDefinition, s: InvestigationState, c: CharacterDef) {
   if (isDeceased(c, s)) return "Deceased";
-  if (c.medium === "telephone") return mobile(def) ? "By phone" : "By telephone from your office";
+  if (c.medium === "telephone") return mobile(def) ? "By phone" : wordsFor(def).byPhone;
   if (reachOf(def, s, c) === "telephone") return "By phone";
   const at = characterLocation(c, s);
   return at ? loc(def, at)?.name ?? "" : "";
@@ -599,7 +607,7 @@ export function reduce(
       s.photos.push({ id, hotspotId: h.id, locationId: l.id, title: it.title, text, image: `/api/photo?${q}`, at: now });
       s.discoveries[id] = { locationId: l.id, sceneState: (typeof l.background === "string" ? "A" : s.env[l.background.env]) ?? "A", via: "scene", at: now };
       if (!s.inspected.includes(h.id)) s.inspected.push(h.id);
-      apply([{ note: { id: `photo:${id}`, kind: "observation", title: `Photographed: ${it.title}`, text } }], s, def);
+      apply([{ note: { id: `photo:${id}`, kind: "observation", title: `${wordsFor(def).photoNote}: ${it.title}`, text } }], s, def);
       break;
     }
 
@@ -888,6 +896,56 @@ export function reduce(
       break;
     }
 
+    case "sequencePlace": {
+      const q = openSequence(def, s, action.sequenceId);
+      const card = q.cards.find((c) => c.id === action.cardId && check(c.unlock, s)) ?? fail("You have no such card.");
+      const st = (s.sequences![q.id] ??= { placed: {}, findings: [] });
+      if (action.space === null) delete st.placed[card.id];
+      else {
+        if (!q.spaces.some((x) => x.id === action.space)) fail("There is no such place on the timeline.");
+        st.placed[card.id] = { space: action.space, pos: Number.isFinite(action.pos) ? Math.max(0, Math.min(99, Math.round(action.pos))) : 0 };
+      }
+      break;
+    }
+
+    case "sequenceTest": {
+      const q = openSequence(def, s, action.sequenceId);
+      const st = (s.sequences![q.id] ??= { placed: {}, findings: [] });
+      const found: { title: string; text: string }[] = [];
+      for (const f of q.findings) {
+        if (st.findings.includes(f.id) || !findingHolds(q, st.placed, f)) continue;
+        st.findings.push(f.id);
+        found.push({ title: f.title, text: f.text });
+        apply([{ note: { id: `finding:${q.id}:${f.id}`, kind: "contradiction", title: f.title, text: f.text } }], s, def);
+        apply(f.effects, s, def);
+      }
+      outcome = { kind: "sequence", found, message: found.length ? "" : q.nothingNew };
+      break;
+    }
+
+    case "compare": {
+      const c = openComparison(def, s, action.comparisonId);
+      const r = c.regions.find((x) => x.id === action.regionId) ?? fail("There is no such passage.");
+      if (!r.options.some((o) => o.id === action.optionId)) fail("That is not one of the choices.");
+      const st = (s.comparisons![c.id] ??= { found: [], tried: [], done: false });
+      const key = `${r.id}:${action.optionId}`;
+      if (!st.tried.includes(key)) st.tried.push(key);
+      const correct = action.optionId === r.answer;
+      if (correct && r.discrepancy && !st.found.includes(r.id)) {
+        st.found.push(r.id);
+        const expert = char(def, c.expert)?.name ?? "";
+        apply([{ note: { id: `compare:${c.id}:${r.id}`, kind: "document", title: `${c.title}: ${r.label}`, text: expert ? `${expert}: ${r.comment}` : r.comment } }], s, def);
+      }
+      const complete = c.regions.filter((x) => x.discrepancy).every((x) => st.found.includes(x.id));
+      if (complete && !st.done) {
+        st.done = true;
+        apply([{ note: { id: `compare:${c.id}:done`, kind: "document", title: c.title, text: c.completeText } }], s, def);
+        apply(c.onComplete, s, def);
+      }
+      outcome = { kind: "compare", regionId: r.id, correct, comment: correct ? r.comment : c.wrong, complete };
+      break;
+    }
+
     default:
       fail("Unknown action.");
   }
@@ -929,7 +987,7 @@ function runBoardHint(s: InvestigationState, def: CaseDefinition) {
   if (!phoneInReach(def, s)) {
     if (!s.flags.includes("board_hint_waiting")) {
       s.flags.push("board_hint_waiting");
-      s.messages.push("Det. Bennett is trying to reach you at the office.");
+      s.messages.push(wordsFor(def).boardHintWaiting);
     }
     return;
   }
@@ -996,6 +1054,48 @@ function patienceLines(def: CaseDefinition, s: InvestigationState, c: CharacterD
   if (!line) return [];
   const log = (s.conversations[c.id] ??= []);
   return [log.push({ speaker: c.id, text: line, kind: "answer", q: "patience" }) - 1];
+}
+
+function openSequence(def: CaseDefinition, s: InvestigationState, id: string): SequenceDef {
+  const q = def.sequences?.find((x) => x.id === id) ?? fail("There is no such timeline.");
+  if (!check(q.available, s)) fail("You have nothing to put on that timeline yet.");
+  s.sequences ??= {};
+  return q;
+}
+
+function openComparison(def: CaseDefinition, s: InvestigationState, id: string): ComparisonDef {
+  const c = def.comparisons?.find((x) => x.id === id) ?? fail("There is nothing like that to compare.");
+  if (!check(c.available, s)) fail("You do not have both documents yet.");
+  s.comparisons ??= {};
+  return c;
+}
+
+/**
+ * Whether a finding shows on the timeline as placed: every card it needs is
+ * where it belongs (a claim, anywhere it may be put), and the ordered cards
+ * run earliest first. Server-only: the browser never learns where cards belong.
+ */
+export function findingHolds(q: SequenceDef, placed: Record<string, { space: string; pos: number }>, f: SequenceDef["findings"][number]) {
+  for (const n of f.needs) {
+    const at = placed[n.card];
+    const card = q.cards.find((c) => c.id === n.card);
+    if (!at || !card) return false;
+    if (n.anyOf) {
+      if (!n.anyOf.includes(at.space)) return false;
+    } else if (card.kind === "observed" && card.space && at.space !== card.space) return false;
+  }
+  const order = (id: string) => {
+    const at = placed[id];
+    return at ? q.spaces.findIndex((x) => x.id === at.space) * 1000 + at.pos : -1;
+  };
+  const ord = (f.ordered ?? []).map(order);
+  return ord.every((v, i) => v >= 0 && (i === 0 || v > ord[i - 1]));
+}
+
+/** A fixed shuffle, the same on every load, so the right answer is not always first. */
+function shuffled<T extends { id: string }>(items: T[], seed: string) {
+  const h = (t: string) => [...(seed + t)].reduce((a, ch) => (Math.imul(a, 31) + ch.charCodeAt(0)) >>> 0, 7);
+  return [...items].sort((a, b) => h(a.id) - h(b.id));
 }
 
 function clamp(n: number) {
@@ -1101,6 +1201,51 @@ export function project(def: CaseDefinition, s: InvestigationState, now = Date.n
       }),
     },
     caseStatus: [...(def.status ?? [])].reverse().find((x) => check(x.when, s))?.label ?? null,
+    theme: def.theme ?? "noir",
+    words: wordsFor(def),
+    sequences: (def.sequences ?? [])
+      .filter((q) => check(q.available, s))
+      .map((q) => {
+        const st = s.sequences?.[q.id] ?? { placed: {}, findings: [] };
+        const cards = q.cards.filter((c) => check(c.unlock, s));
+        return {
+          id: q.id,
+          title: q.title,
+          intro: q.intro,
+          spaces: q.spaces,
+          cards: cards.map((c) => ({ id: c.id, text: c.text, source: c.source, kind: c.kind })),
+          placed: Object.fromEntries(Object.entries(st.placed).filter(([id]) => cards.some((c) => c.id === id))),
+          findings: st.findings.map((id) => q.findings.find((f) => f.id === id)!).filter(Boolean).map((f) => ({ id: f.id, title: f.title, text: f.text })),
+        };
+      }),
+    comparisons: (def.comparisons ?? [])
+      .filter((c) => check(c.available, s))
+      .map((c) => {
+        const st = s.comparisons?.[c.id] ?? { found: [], tried: [], done: false };
+        const expert = char(def, c.expert)?.name ?? "";
+        return {
+          id: c.id,
+          title: c.title,
+          intro: c.intro,
+          expert,
+          left: c.left.title,
+          right: c.right.title,
+          regions: c.regions.map((r) => ({
+            id: r.id,
+            label: r.label,
+            leftText: r.leftText,
+            rightText: r.rightText,
+            leftImage: r.leftImage ? img(r.leftImage) || null : null,
+            rightImage: r.rightImage ? img(r.rightImage) || null : null,
+            options: shuffled(r.options, `${c.id}:${r.id}`).map((o) => ({ id: o.id, text: o.text })),
+            found: st.found.includes(r.id),
+          })),
+          found: st.found.length,
+          total: c.regions.filter((r) => r.discrepancy).length,
+          done: st.done,
+          notes: c.regions.filter((r) => st.found.includes(r.id)).map((r) => ({ region: r.label, text: r.comment })),
+        };
+      }),
     boardSections: (def.boardSections ?? []).filter((b) => check(b.when, s)).map((b) => ({ id: b.id, label: b.label })),
     deliveries: [...s.pendingDeliveries, ...s.openedDeliveries].map((id) => ({ id, title: def.deliveries.find((d) => d.id === id)!.title })),
     documents: def.documents.map((d) => ({ id: d.id, title: d.title, read: s.readDocuments.includes(d.id) })),

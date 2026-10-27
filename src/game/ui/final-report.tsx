@@ -121,7 +121,7 @@ export function FinalReport({
       {...backdrop}>
       <div ref={top} className="relative mx-auto w-full max-w-3xl bg-[#efe8d6] text-[#231e17] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9)]">
         <div className="flex items-center justify-between gap-4 border-b border-[#231e17]/15 px-5 py-2.5 font-mono text-xs">
-          <span className="tracking-[0.14em] text-[#231e17]/60">CASE {view.caseId} · FORM BI-7</span>
+          <span className="tracking-[0.14em] text-[#231e17]/60">CASE {view.caseId} · {view.words.form}</span>
           <button type="button" onClick={leave} className="underline-offset-4 hover:underline">
             {filed ? "Close the report" : "Return to investigating"}
           </button>
@@ -148,7 +148,7 @@ export function FinalReport({
           {filed ? (
             <Stamp text="Filed and accepted" sub={`Submission ${filed.attempts}`} />
           ) : mode === "returned" && c.review ? (
-            <ReturnedMemo review={c.review} onRevise={() => setMode("form")} onLeave={leave} />
+            <ReturnedMemo review={c.review} reviewer={view.words.reviewer} onRevise={() => setMode("form")} onLeave={leave} />
           ) : null}
 
           {mode === "review" && !filed ? (
@@ -275,7 +275,7 @@ export function FinalReport({
                   <legend className="w-full border-b border-[#231e17]/25 pb-1 font-mono text-sm font-bold tracking-[0.12em]">SECTION {evidenceSection}. SUPPORTING EVIDENCE</legend>
                   <p className="mt-3 font-serif text-[1.05rem] italic">Which evidence supports your conclusions?</p>
                   <p className="mt-1 font-mono text-xs text-[#231e17]/65">
-                    Attach between {c.minItems} and {c.maxItems} items from your evidence: the key evidence that proves your findings, plus up to two supporting items or photographs if you like. Attached: {shown.evidence.length}.
+                    Attach between {c.minItems} and {c.maxItems} items from your evidence: the key evidence that proves your findings, plus up to two supporting items or {view.words.photo.toLowerCase()}s if you like. Attached: {shown.evidence.length}.
                   </p>
                   {!filed && draft.evidence.length >= c.maxItems ? (
                     <p className="mt-1 font-mono text-xs font-bold text-[#7d3a33]" role="status">
@@ -358,7 +358,7 @@ export function FinalReport({
             <div className="w-full max-w-md bg-[#efe8d6] p-6 text-[#231e17] shadow-2xl">
               <p id="confirm-h" className="font-mono text-sm font-bold tracking-[0.12em]">SUBMIT FINDINGS?</p>
               <p className="mt-3 font-serif leading-relaxed">
-                Your report will be evaluated by the agency against the case file and the evidence you have attached. If it is returned, your
+                Your report will be evaluated by {view.words.reviewer} against the case file and the evidence you have attached. If it is returned, your
                 investigation continues and you can file a revised report.
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
@@ -401,11 +401,11 @@ function Signature({ name, date }: { name: string; date: string }) {
   );
 }
 
-function ReturnedMemo({ review, onRevise, onLeave }: { review: NonNullable<ClientView["conclusion"]["review"]>; onRevise: () => void; onLeave: () => void }) {
+function ReturnedMemo({ review, reviewer, onRevise, onLeave }: { review: NonNullable<ClientView["conclusion"]["review"]>; reviewer: string; onRevise: () => void; onLeave: () => void }) {
   return (
     <section className="mt-8 rotate-[-0.4deg] border border-[#7d3a33]/50 bg-[#f6efdd] p-5 shadow-[0_6px_14px_rgba(0,0,0,0.15)]" aria-labelledby="memo-h">
       <p id="memo-h" className="font-mono text-xs font-bold tracking-[0.16em] text-[#7d3a33]">
-        AGENCY REVIEW · REPORT RETURNED · SUBMISSION {review.attempt}
+        {reviewer.replace(/^the /i, "").toUpperCase()} REVIEW · REPORT RETURNED · SUBMISSION {review.attempt}
       </p>
       <p className="mt-3 font-serif text-lg leading-relaxed">
         Your findings have been reviewed. The available evidence does not sufficiently support the conclusions presented. Further investigation is recommended.
@@ -518,14 +518,14 @@ function ProofPoints({
 
   const rows = [
     ...claims.map((cl, i) => ({ id: cl.id, n: String(i + 1), label: cl.label, ids: picks(draft[claimKey(cl.id)]), optional: false })),
-    { id: "support", n: "+", label: "Supporting material (optional): anything else that backs up your findings, photographs included", ids: support, optional: true },
+    { id: "support", n: "+", label: `Supporting material (optional): anything else that backs up your findings, ${view.words.photo.toLowerCase()}s included`, ids: support, optional: true },
   ];
 
   return (
     <fieldset className="mt-10" disabled={filed}>
       <legend className="w-full border-b border-[#231e17]/25 pb-1 font-mono text-sm font-bold tracking-[0.12em]">SECTION {section}. THE EVIDENCE</legend>
       <div className="mt-4 border border-[#231e17]/30 bg-[#f6efdd] px-4 py-3">
-        <p className="font-mono text-xs font-bold tracking-[0.14em] text-[#7d3a33]">WHAT THE AGENCY NEEDS</p>
+        <p className="font-mono text-xs font-bold tracking-[0.14em] text-[#7d3a33]">WHAT {view.words.reviewer.toUpperCase()} NEEDS</p>
         <p className="mt-1 font-serif text-[1.02rem] italic">Your report must show each of the points below. File the evidence that proves each one under it.</p>
         <p className="mt-2 font-mono text-xs leading-relaxed text-[#231e17]/75">
           At least {c.minKey} pieces of key evidence in all. Attach up to {c.maxItems}. Attached: {draft.evidence.length}. Evidence found so far: {c.found} of {c.total}.

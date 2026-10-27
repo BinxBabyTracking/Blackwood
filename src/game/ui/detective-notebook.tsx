@@ -32,7 +32,7 @@ export function DetectiveNotebook({
   const records = view.notebook.filter((n) => n.kind === "call" || n.kind === "document").slice().reverse();
 
   return (
-    <Overlay title="Notebook" onClose={onClose} wide tone="paper" closeLabel="Close notebook">
+    <Overlay title={view.words.notebook} onClose={onClose} wide tone="paper" closeLabel={`Close ${view.words.notebook.toLowerCase()}`}>
       <div className="flex min-h-[70vh] flex-col md:flex-row">
         <nav className="flex shrink-0 gap-1 overflow-x-auto border-b border-[#2a241c]/20 p-2 md:w-44 md:flex-col md:border-b-0 md:border-r">
           {TABS.map((t) => (
@@ -69,7 +69,16 @@ export function DetectiveNotebook({
             </ul>
             </>
           ) : null}
-          {tab === "Evidence" ? <EvidenceList items={view.evidence} onOpen={onOpenEvidence} tone="paper" detailed /> : null}
+          {tab === "Evidence" ? (
+            <>
+              {view.words.observed ? (
+                <p className="mb-4 text-sm opacity-80">
+                  <Tag>{view.words.observed}</Tag> Everything listed here you have seen or hold yourself. What people tell you is under Interviews, marked <Tag>{view.words.claimed}</Tag>.
+                </p>
+              ) : null}
+              <EvidenceList items={view.evidence} onOpen={onOpenEvidence} tone="paper" detailed />
+            </>
+          ) : null}
           {tab === "People" ? (
             view.characters.length ? (
               <ul className="space-y-5">
@@ -125,7 +134,7 @@ export function DetectiveNotebook({
                 ))}
               </ul>
             ) : (
-              <p className="opacity-70">Nothing established yet. Connect evidence on the murder board to test your ideas.</p>
+              <p className="opacity-70">Nothing established yet. Connect evidence on the {view.words.board.toLowerCase()} to test your ideas.</p>
             )
           ) : null}
           {tab === "My notes" ? (
@@ -163,6 +172,11 @@ export function DetectiveNotebook({
       </div>
     </Overlay>
   );
+}
+
+/** A small marker in the journal: observed with one's own eyes, or claimed by someone. */
+function Tag({ children }: { children: string }) {
+  return <span className="mr-1 inline-block border border-[#7d3a33]/60 px-1.5 py-px align-middle font-mono text-[0.62rem] uppercase tracking-[0.14em] text-[#7d3a33]">{children}</span>;
 }
 
 /** Friday evening first, then the small hours and Saturday. Times are read from the entry, e.g. "11:05 PM" or "7:40 AM (Sat)". */
@@ -246,7 +260,9 @@ function InterviewRecords({ view, records, initial }: { view: ClientView; record
             ) : null}
             {p.statements.length ? (
               <section className="mt-4">
-                <h3 className="font-mono text-xs font-bold uppercase tracking-[0.12em] text-[#7d3a33]">Important statements</h3>
+                <h3 className="font-mono text-xs font-bold uppercase tracking-[0.12em] text-[#7d3a33]">
+                  {view.words.claimed ? <><Tag>{view.words.claimed}</Tag> What {p.name} says</> : "Important statements"}
+                </h3>
                 <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-relaxed">
                   {p.statements.map((x) => (
                     <li key={x.id}>{x.text}</li>

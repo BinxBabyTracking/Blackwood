@@ -24,6 +24,8 @@ import {
   StatementsPanel,
 } from "./panels";
 import { InterviewScreen } from "./interview-screen";
+import { SequencePanel } from "./sequence-panel";
+import { ComparisonPanel } from "./comparison-panel";
 import { useTelephoneRing } from "./telephone-ring";
 import { playTravelSound, type TravelMode } from "./travel-audio";
 import { setTravelScenes, TravelScene, useTravelScenes } from "./travel-scene";
@@ -453,7 +455,8 @@ export function InvestigationShell({
   // The telephone rings only in the office (anywhere, with a mobile phone), and never over an interview, a document or an inspection.
   const phoneHere = atHome || view.phone.mobile;
   const ringing = Boolean(!trip && view.phone.ringing && phoneHere && view.introSeen && (layer === null || panel === "phone") && deferredCall !== view.phone.ringing.id);
-  useTelephoneRing(ringing, (prefs.masterVolume / 100) * (prefs.sfxVolume / 100));
+  useTelephoneRing(ringing, (prefs.masterVolume / 100) * (prefs.sfxVolume / 100), view.theme === "medieval" ? "knock" : "telephone");
+  const words = view.words;
   const locked = view.status === "closed";
   const pin = (id: string) => dispatch({ type: "boardAdd", itemId: id, x: 10 + Math.random() * 70, y: 10 + Math.random() * 60 });
   const pinned = (id: string) => view.board.items.some((i) => i.id === id);
@@ -473,7 +476,7 @@ export function InvestigationShell({
   const fromNotebook = layer?.k === "evidence" ? view.evidence.find((e) => e.id === layer.id) ?? null : null;
 
   return (
-    <div className="fixed inset-0 flex select-none flex-col bg-black text-paper">
+    <div className="fixed inset-0 flex select-none flex-col bg-black text-paper" data-theme={view.theme}>
       {/* Top bar: where you are, whether it is saved, and the way out */}
       <div className="flex shrink-0 items-center justify-between gap-3 bg-[#0d1013] px-3 py-1.5 text-xs">
         <p className="truncate font-mono text-paper/70">
@@ -495,7 +498,7 @@ export function InvestigationShell({
           {party ? <span className="hidden font-mono text-brass/80 md:inline">{party.label}</span> : null}
           {view.phone.ringing ? (
             <span className="hidden whitespace-nowrap font-mono text-brass sm:inline" role="status">
-              {view.phone.mobile ? `${view.phone.ringing.from} calling` : atHome ? "Telephone ringing" : "A call is waiting at the office"}
+              {view.phone.mobile ? `${view.phone.ringing.from} calling` : atHome ? words.callRinging : words.callWaiting}
             </span>
           ) : null}
           <SaveIndicator status={save} />
@@ -505,7 +508,7 @@ export function InvestigationShell({
             </Link>
           ) : (
             <Link href="/agency" className="text-paper/80 underline-offset-4 hover:text-brass hover:underline">
-              Return to Agency HQ
+              {words.leave}
             </Link>
           )}
           <div className="relative">
@@ -641,24 +644,24 @@ export function InvestigationShell({
         {/* In the office the map and notebook are in the room itself; only the evidence stays in the corner. */}
         {atHome ? null : (
           <>
-            <HudObject label="Map" image={hudArt(caseId, "map")} fallback="map" onClick={() => setLayer({ k: "panel", panel: "map" })} />
-            <HudObject label="Notebook" image={hudArt(caseId, "obj_notebook")} fallback="notebook" onClick={() => setLayer({ k: "panel", panel: "notebook" })} />
+            <HudObject label={words.map} image={hudArt(caseId, "map", view.theme)} fallback="map" onClick={() => setLayer({ k: "panel", panel: "map" })} />
+            <HudObject label={words.notebook} image={hudArt(caseId, "obj_notebook", view.theme)} fallback="notebook" onClick={() => setLayer({ k: "panel", panel: "notebook" })} />
           </>
         )}
         <HudObject
-          label="Evidence"
-          image={hudArt(caseId, "obj_evidence_bag")}
+          label={words.evidence}
+          image={hudArt(caseId, "obj_evidence_bag", view.theme)}
           fallback="evidence"
           count={view.evidence.length}
           glow={newEvidence}
-          callout={newEvidence && !bagOpened ? "New evidence. Open the bag to study it." : undefined}
+          callout={newEvidence && !bagOpened ? (view.theme === "medieval" ? "Something new. Open your satchel to study it." : "New evidence. Open the bag to study it.") : undefined}
           onClick={() => openBag()}
         />
         {/* A case with a mobile phone carries it everywhere; it shakes while a call is coming in. */}
         {view.phone.mobile ? (
           <HudObject
             label="Phone"
-            image={hudArt(caseId, "obj_phone")}
+            image={hudArt(caseId, "obj_phone", view.theme)}
             fallback="phone"
             alert={Boolean(view.phone.ringing)}
             onClick={() => setLayer({ k: "panel", panel: "phone" })}
@@ -721,10 +724,12 @@ export function InvestigationShell({
           onClose={close}
           pending={pending}
           locked={locked}
+          boardName={words.board}
         />
       ) : null}
       {layer?.k === "inspect" && !layer.evidence ? (
         <ObservationCard
+          words={words}
           title={layer.title}
           text={layer.text}
           onClose={close}
@@ -735,7 +740,8 @@ export function InvestigationShell({
             if (!layer.photo) return;
             const r = await dispatch({ type: "photograph", hotspotId: layer.photo.hotspotId });
             if (r) {
-              cameraShutter((prefs.masterVolume / 100) * (prefs.sfxVolume / 100));
+              if (view.theme === "medieval") quillScratch((prefs.masterVolume / 100) * (prefs.sfxVolume / 100));
+              else cameraShutter((prefs.masterVolume / 100) * (prefs.sfxVolume / 100));
               setLayer((l) => (l?.k === "inspect" && l.photo ? { ...l, photo: { ...l.photo, taken: true } } : l));
             }
           }}
@@ -764,6 +770,7 @@ export function InvestigationShell({
                   ? "Back to the report"
                   : "Back to evidence"
           }
+          boardName={words.board}
           pending={pending}
           locked={locked}
         />
@@ -773,7 +780,7 @@ export function InvestigationShell({
         <InterviewScreen key={`interview-${layer.data.characterId}`} caseId={caseId} data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} volume={dialogueVolume} />
       ) : null}
       {layer?.k === "document" ? <DocumentPanel caseId={caseId} data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} volume={dialogueVolume} /> : null}
-      {layer?.k === "call" ? <CallPanel caseId={caseId} data={layer.data} voices={view.voices} volume={dialogueVolume} onClose={() => setLayer({ k: "panel", panel: "phone" })} /> : null}
+      {layer?.k === "call" ? <CallPanel caseId={caseId} data={layer.data} voices={view.voices} volume={dialogueVolume} closeLabel={words.callClose} replayLabel={view.theme === "medieval" ? "Hear it again" : "Replay call"} onClose={() => setLayer({ k: "panel", panel: "phone" })} /> : null}
       {layer?.k === "delivery" ? (
         <DeliveryPanel caseId={caseId} data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} volume={dialogueVolume} />
       ) : null}
@@ -785,9 +792,9 @@ export function InvestigationShell({
         <EvidenceInventory items={view.evidence} onOpen={(id) => setLayer({ k: "evidence", id, back: "inventory" })} onClose={close} />
       ) : null}
       {panel === "map" ? <TravelMap view={view} onTravel={(id) => travelTo(id)} onClose={close} pending={pending} /> : null}
-      {trip ? <TravelScene mode={trip.mode} to={trip.to} subtitle={trip.subtitle} reducedMotion={prefs.reducedMotion} onSkip={() => skipTrip.current?.()} /> : null}
+      {trip ? <TravelScene caseId={caseId} theme={view.theme} mode={trip.mode} to={trip.to} subtitle={trip.subtitle} reducedMotion={prefs.reducedMotion} onSkip={() => skipTrip.current?.()} /> : null}
       {stamps.length && !trip ? (
-        <EvidenceStamp key={`stamp-${stamps[0].id}`} item={stamps[0]} volume={(prefs.masterVolume / 100) * (prefs.sfxVolume / 100)} reducedMotion={prefs.reducedMotion} onDone={nextStamp} />
+        <EvidenceStamp key={`stamp-${stamps[0].id}`} item={stamps[0]} words={words} volume={(prefs.masterVolume / 100) * (prefs.sfxVolume / 100)} reducedMotion={prefs.reducedMotion} onDone={nextStamp} />
       ) : null}
       {panel === "phone" ? (
         <PhonePanel
@@ -815,6 +822,8 @@ export function InvestigationShell({
           onExamine={(id) => setLayer({ k: "evidence", id, back: "conclusion" })}
         />
       ) : null}
+      {panel === "sequence" ? <SequencePanel view={view} dispatch={dispatch} onClose={close} pending={pending} /> : null}
+      {panel === "comparison" ? <ComparisonPanel view={view} dispatch={dispatch} onClose={close} pending={pending} /> : null}
       {panel === "board" ? <MurderBoard view={view} dispatch={dispatch} onClose={close} onLocalBoard={(board) => setViewState((v) => ({ ...v, board }))} /> : null}
 
       {layer?.k === "closure" && view.closure ? (
@@ -858,6 +867,7 @@ export function InvestigationShell({
 }
 
 function ObservationCard({
+  words,
   title,
   text,
   onClose,
@@ -866,6 +876,7 @@ function ObservationCard({
   pending,
   locked,
 }: {
+  words: ClientView["words"];
   title: string;
   text: string;
   onClose: () => void;
@@ -894,7 +905,7 @@ function ObservationCard({
           {photo && !locked ? (
             photo.taken ? (
               <span className="inline-flex items-center gap-2 font-mono text-xs text-[color:var(--color-ok)]">
-                <CameraIcon /> Photographed. It is filed with your evidence.
+                <CameraIcon /> {words.photoTaken}
               </span>
             ) : (
               <button
@@ -903,7 +914,7 @@ function ObservationCard({
                 onClick={onPhoto}
                 className="inline-flex items-center gap-2 rounded-[2px] bg-brass px-4 py-2 text-sm font-semibold text-ink hover:bg-[#d4b585] disabled:opacity-50"
               >
-                <CameraIcon /> Take a photo
+                <CameraIcon /> {words.photoAction}
               </button>
             )
           ) : null}
@@ -984,6 +995,33 @@ function cameraShutter(volume: number) {
   setTimeout(() => ctx.close().catch(() => undefined), 800);
 }
 
+/** A quill on parchment: a few quick scratches, synthesized, for a sketch made in a medieval case. */
+function quillScratch(volume: number) {
+  if (typeof window === "undefined" || volume <= 0) return;
+  const Ctx = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  if (!Ctx) return;
+  const ctx = new Ctx();
+  const out = ctx.createGain();
+  out.gain.value = Math.min(1, volume) * 0.35;
+  out.connect(ctx.destination);
+  const t = ctx.currentTime + 0.02;
+  for (let i = 0; i < 5; i++) {
+    const len = 0.09 + (i % 2) * 0.05;
+    const n = Math.floor(ctx.sampleRate * len);
+    const buf = ctx.createBuffer(1, n, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let j = 0; j < n; j++) d[j] = (Math.random() * 2 - 1) * Math.sin((Math.PI * j) / n) * 0.8;
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    const f = ctx.createBiquadFilter();
+    f.type = "highpass";
+    f.frequency.value = 2600 + i * 300;
+    src.connect(f).connect(out);
+    src.start(t + i * 0.13);
+  }
+  setTimeout(() => ctx.close().catch(() => undefined), 1200);
+}
+
 function SaveIndicator({ status }: { status: SaveStatus }) {
   const time = status.at ? new Date(status.at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : null;
   const label =
@@ -1001,8 +1039,9 @@ function SaveIndicator({ status }: { status: SaveStatus }) {
 
 /** A painted object in the corner of the scene that opens a panel (the map, the notebook, the evidence). */
 /** The agency's own things (map, notebook, evidence bag, phone): the case's painting if it has one, otherwise the agency's usual one. */
-function hudArt(caseId: string, name: string) {
-  return paintedArt(`${caseId.toLowerCase()}_${name}`) ?? paintedArt(`c001_${name}`);
+function hudArt(caseId: string, name: string, theme: ClientView["theme"] = "noir") {
+  // A medieval case never borrows the agency's modern things: until its own are painted, a drawn icon stands in.
+  return paintedArt(`${caseId.toLowerCase()}_${name}`) ?? (theme === "medieval" ? null : paintedArt(`c001_${name}`));
 }
 
 function HudObject({

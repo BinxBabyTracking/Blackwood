@@ -9,6 +9,11 @@
 @import "@fontsource-variable/public-sans/index.css";
 @import "@fontsource/courier-prime/400.css";
 @import "@fontsource/courier-prime/700.css";
+/* Medieval cases: a Gothic textura for headings, Garamond for reading. */
+@import "@fontsource/grenze-gotisch/600.css";
+@import "@fontsource/eb-garamond/400.css";
+@import "@fontsource/eb-garamond/400-italic.css";
+@import "@fontsource/eb-garamond/600.css";
 
 @theme {
   --color-ink: #12171d;          /* primary background */
@@ -230,4 +235,61 @@ html[data-vision="tritanopia"] {
 .travel-caption { animation: game-caption 2.4s ease-out both; }
 @media (prefers-reduced-motion: reduce) {
   .travel-scroll, .travel-pan, .travel-dashes-run, .travel-walk-push, .travel-walk-sway, .travel-bob, .travel-spin, .travel-step, .travel-leg-a, .travel-leg-b, .travel-arm, .travel-arm-b { animation: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   Medieval theme (theme: "medieval"): an illuminated manuscript. Dark oak and
+   soot for surfaces, vellum for text, gold leaf for accents, vermilion for
+   warnings, verdigris for success; a Gothic textura for headings and
+   Garamond for everything read. Scoped to the game, so the agency keeps its look.
+   --------------------------------------------------------------------------- */
+[data-theme="medieval"] {
+  --color-ink: #1b140e;
+  --color-ink-2: #241a12;
+  --color-rail: #2a1f15;
+  --color-card: #30241a;
+  --color-brass: #d7aa45;
+  --color-brass-dim: #9e7c34;
+  --color-paper: #f2e6c9;
+  --color-smoke: #c4b08a;
+  --color-rule: #5c4630;
+  --color-ok: #6f8f55;
+  --color-caution: #c98b3a;
+  --color-fault: #c0392b;
+  --font-display: "Grenze Gotisch", "EB Garamond", Georgia, serif;
+  --font-serif: "EB Garamond", Georgia, serif;
+  --font-sans: "EB Garamond", Georgia, serif;
+  --font-mono: "EB Garamond", Georgia, serif;
+  font-size: 1.04em;
+}
+/* The noir game's blue-black surfaces become soot and oak. */
+[data-theme="medieval"] [class*="bg-[#161b20]"] { background-color: rgb(36 26 18 / 0.96); }
+[data-theme="medieval"] [class*="bg-[#0d1013]"] { background-color: rgb(24 17 11 / 0.92); }
+[data-theme="medieval"] [class*="bg-[#14171a]"] { background-color: rgb(30 22 15 / 0.96); }
+[data-theme="medieval"] [class*="bg-[#2b2118]"] { background-color: #3a2a1b; }
+[data-theme="medieval"] [class*="border-white/10"],
+[data-theme="medieval"] [class*="border-white/15"],
+[data-theme="medieval"] [class*="border-white/20"] { border-color: rgb(215 170 69 / 0.28); }
+/* Panels: a fine double rule in gold, like the frame of a miniature. */
+[data-theme="medieval"] .bw-panel[data-panel="dark"] {
+  border: 1px solid rgb(215 170 69 / 0.55);
+  box-shadow: inset 0 0 0 3px rgb(27 20 14), inset 0 0 0 4px rgb(215 170 69 / 0.35), 0 30px 80px -20px rgba(0, 0, 0, 0.9);
+}
+[data-theme="medieval"] .bw-panel[data-panel="paper"] {
+  background-color: #efe2c2;
+  background-image: radial-gradient(ellipse at 50% 40%, rgb(255 250 235 / 0.55), transparent 70%), radial-gradient(ellipse at 100% 100%, rgb(150 110 60 / 0.18), transparent 60%);
+  box-shadow: inset 0 0 0 1px rgb(120 80 40 / 0.35), inset 0 0 40px rgb(140 100 50 / 0.25), 0 30px 80px -20px rgba(0, 0, 0, 0.9);
+}
+[data-theme="medieval"] h2,
+[data-theme="medieval"] .font-display { font-family: var(--font-display); letter-spacing: 0.02em; }
+[data-theme="medieval"] .bw-panel h2 { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; letter-spacing: 0.03em; text-transform: none; }
+[data-theme="medieval"] .bw-panel[data-panel="paper"] h2 { color: #7a2418; }
+/* An illuminated initial: the first letter of a journal entry in vermilion. */
+[data-theme="medieval"] .bw-initial::first-letter {
+  float: left;
+  font-family: var(--font-display);
+  font-size: 2.6em;
+  line-height: 0.85;
+  padding: 0.06em 0.12em 0 0;
+  color: #a8281c;
 }

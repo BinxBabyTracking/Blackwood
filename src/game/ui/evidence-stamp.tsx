@@ -58,11 +58,13 @@ function stampSound(volume: number) {
 
 export function EvidenceStamp({
   item,
+  words,
   volume,
   reducedMotion,
   onDone,
 }: {
   item: ClientEvidence;
+  words?: { photoStamp: [string, string]; collectedStamp: [string, string]; photo: string };
   volume: number;
   reducedMotion: boolean;
   onDone: () => void;
@@ -88,15 +90,15 @@ export function EvidenceStamp({
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={item.image} alt="" draggable={false} className="aspect-square w-full bg-black object-cover" />
-        <p className="mt-2.5 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-[#7a2a22]">{item.photo ? "Photograph" : item.id}</p>
+        <p className="mt-2.5 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-[#7a2a22]">{item.photo ? words?.photo ?? "Photograph" : item.id}</p>
         <p className="font-display text-xl leading-tight">{item.title}</p>
         <span
           aria-hidden
           className={`absolute left-1/2 top-[38%] whitespace-nowrap rounded-[6px] border-[3px] border-[#c8382c] bg-[#efe6d3]/45 px-3 py-1.5 text-center font-mono text-[1.35rem] font-bold uppercase leading-none tracking-[0.12em] text-[#c8382c] shadow-[0_0_0_1px_rgba(0,0,0,0.25)] [text-shadow:0_1px_0_rgba(0,0,0,0.35)] ${reducedMotion ? "evidence-stamp-still" : "evidence-stamp"}`}
         >
-          {item.photo ? "Photo" : "Collected"}
+          {(item.photo ? words?.photoStamp : words?.collectedStamp)?.[0] ?? (item.photo ? "Photo" : "Collected")}
           <br />
-          <span className="text-[0.95rem] tracking-[0.3em]">{item.photo ? "Filed" : "Evidence"}</span>
+          <span className="text-[0.95rem] tracking-[0.3em]">{(item.photo ? words?.photoStamp : words?.collectedStamp)?.[1] ?? (item.photo ? "Filed" : "Evidence")}</span>
         </span>
       </button>
     </div>

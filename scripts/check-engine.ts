@@ -140,6 +140,102 @@ def.solution = { ...right, answers: { culprit: [right.culprit!, "tom"], motive: 
   expect(reportProblem(def, withAll, { ...full, culprit: ["tom", "made_up"] }) !== null, "an unknown option was allowed");
 }
 
+// --- Settings added for C005: words, theme, timelines, comparisons, the deduce effect -------
+{
+  const base = C002;
+  const v0 = project(base, started(base), 10);
+  expect(v0.theme === "noir" && v0.words.photo === "Photo" && v0.words.board === "Murder board", "a case without words lost the agency's words");
+  expect(v0.sequences.length === 0 && v0.comparisons.length === 0, "a case without timelines shows one");
+
+  const ded = base.deductions[0];
+  const def: CaseDefinition = {
+    ...base,
+    theme: "medieval",
+    words: { photo: "Sketch", photoPrefix: "S", board: "Deduction table" },
+    sequences: [
+      {
+        id: "bells",
+        title: "The bell timeline",
+        intro: "Set the cards in order.",
+        available: { always: true },
+        nothingNew: "Nothing new.",
+        spaces: [
+          { id: "a", label: "Before" },
+          { id: "b", label: "During" },
+          { id: "c", label: "After" },
+        ],
+        cards: [
+          { id: "x", text: "X happened", source: "Someone", kind: "observed", unlock: { always: true }, space: "a" },
+          { id: "y", text: "Y happened", source: "Someone", kind: "observed", unlock: { always: true }, space: "b" },
+          { id: "k", text: "I was there", source: "Liar", kind: "claimed", unlock: { always: true } },
+          { id: "z", text: "Not yet known", source: "Someone", kind: "observed", unlock: { flag: "never" }, space: "c" },
+        ],
+        findings: [
+          { id: "f1", title: "The claim fails", text: "It cannot be true.", needs: [{ card: "x" }, { card: "y" }, { card: "k", anyOf: ["b"] }], ordered: ["x", "y"], effects: [{ deduce: ded.id }] },
+        ],
+      },
+    ],
+    comparisons: [
+      {
+        id: "cmp",
+        title: "Two writings",
+        intro: "Compare them.",
+        available: { always: true },
+        expert: base.characters[0].id,
+        left: { title: "Old" },
+        right: { title: "New" },
+        wrong: "Nothing amiss there.",
+        completeText: "All found.",
+        onComplete: [{ setFlag: "cmp_done" }],
+        regions: [
+          { id: "r1", label: "Seal", leftText: "Seated", rightText: "Standing", options: [{ id: "a", text: "The saint stands" }, { id: "b", text: "Same" }], answer: "a", discrepancy: true, comment: "Right." },
+          { id: "r2", label: "Greeting", leftText: "Hail", rightText: "Hail", options: [{ id: "a", text: "Later form" }, { id: "b", text: "Nothing differs" }], answer: "b", discrepancy: false, comment: "Agreed." },
+        ],
+      },
+    ],
+  };
+  let s = started(def);
+  const run = (a: GameAction) => {
+    const r = reduce(def, s, a, 5000);
+    s = r.state;
+    return r.outcome;
+  };
+  const v = project(def, s, 10);
+  expect(v.theme === "medieval" && v.words.photo === "Sketch" && v.words.notebook === "Notebook", "case words not merged with the defaults");
+  const seq = v.sequences[0];
+  expect(seq && seq.cards.length === 3, "a locked timeline card was shown");
+  expect(!JSON.stringify(v.sequences).includes('"space":"a"') || !JSON.stringify(seq.cards).includes("space"), "a card's correct place reached the browser");
+  expect(!JSON.stringify(v.comparisons).includes("answer") && !JSON.stringify(v.comparisons).includes("discrepancy"), "a comparison answer reached the browser");
+  expect(refused(def, s, { type: "sequencePlace", sequenceId: "bells", cardId: "z", space: "c", pos: 0 }), "a locked card was placed");
+  expect(refused(def, s, { type: "sequencePlace", sequenceId: "bells", cardId: "x", space: "nowhere", pos: 0 }), "a card went to a place that does not exist");
+  run({ type: "sequencePlace", sequenceId: "bells", cardId: "x", space: "b", pos: 0 });
+  run({ type: "sequencePlace", sequenceId: "bells", cardId: "y", space: "b", pos: 1 });
+  run({ type: "sequencePlace", sequenceId: "bells", cardId: "k", space: "b", pos: 2 });
+  let o = run({ type: "sequenceTest", sequenceId: "bells" });
+  expect(o.kind === "sequence" && o.found.length === 0 && o.message === "Nothing new.", "a finding showed with a card in the wrong place");
+  run({ type: "sequencePlace", sequenceId: "bells", cardId: "x", space: "a", pos: 0 });
+  o = run({ type: "sequenceTest", sequenceId: "bells" });
+  expect(o.kind === "sequence" && o.found.length === 1, "the finding did not show once the cards were right");
+  expect(s.deductions.includes(ded.id) && s.notebook.some((n) => n.id === `deduction:${ded.id}`), "the deduce effect did not record the deduction");
+  o = run({ type: "sequenceTest", sequenceId: "bells" });
+  expect(o.kind === "sequence" && o.found.length === 0, "a finding was found twice");
+  run({ type: "sequencePlace", sequenceId: "bells", cardId: "k", space: null, pos: 0 });
+  expect(!s.sequences!.bells.placed.k && s.sequences!.bells.findings.length === 1, "taking a card off lost a finding");
+
+  o = run({ type: "compare", comparisonId: "cmp", regionId: "r1", optionId: "b" });
+  expect(o.kind === "compare" && !o.correct && o.comment === "Nothing amiss there.", "a wrong pick was accepted");
+  o = run({ type: "compare", comparisonId: "cmp", regionId: "r2", optionId: "b" });
+  expect(o.kind === "compare" && o.correct && !o.complete && !s.comparisons!.cmp.found.includes("r2"), "a decoy counted as a discrepancy");
+  o = run({ type: "compare", comparisonId: "cmp", regionId: "r1", optionId: "a" });
+  expect(o.kind === "compare" && o.correct && o.complete && s.flags.includes("cmp_done"), "completing the comparison did not apply its effects");
+  expect(project(def, s, 10).comparisons[0].done, "the comparison does not show as done");
+  expect(refused(def, s, { type: "compare", comparisonId: "cmp", regionId: "r1", optionId: "zzz" }), "an unknown option was accepted");
+
+  const photoDef: CaseDefinition = { ...def };
+  const pv = project(photoDef, { ...s, photos: [{ id: "PH_x", hotspotId: "x", locationId: s.location, title: "Desk", text: "A desk.", image: "", at: 1 }] }, 10);
+  expect(pv.evidence.some((e) => e.label === "S1" && e.title === "Sketch: Desk"), "a sketch is still called a photo");
+}
+
 if (problems.length) {
   console.error(`Engine checks failed:\n- ${problems.join("\n- ")}`);
   process.exit(1);

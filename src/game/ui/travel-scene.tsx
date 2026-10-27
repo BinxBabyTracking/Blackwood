@@ -254,13 +254,13 @@ function PaintedDrive({ still }: { still: boolean }) {
   );
 }
 
-function PaintedWalk({ still }: { still: boolean }) {
+function PaintedWalk({ still, src = ART.walk! }: { still: boolean; src?: string }) {
   return (
     <div className="relative h-full w-full overflow-hidden bg-black">
       {/* Seen through the investigator's eyes: a slow push forward with a walker's sway. */}
       <div className={`absolute inset-0 ${still ? "" : "travel-walk-push"}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={ART.walk!} alt="" draggable={false} className={`h-full w-full select-none object-cover ${still ? "" : "travel-walk-sway"}`} />
+        <img src={src} alt="" draggable={false} className={`h-full w-full select-none object-cover ${still ? "" : "travel-walk-sway"}`} />
       </div>
     </div>
   );
@@ -296,13 +296,54 @@ export function useTravelScenes() {
 }
 export { readScenes as travelScenesEnabled };
 
+/**
+ * A medieval case's walk, until its painting exists: a moor road under a
+ * manuscript sky, in the flat colors of an illumination.
+ */
+function MedievalWalk({ still }: { still: boolean }) {
+  return (
+    <>
+      <rect width={W} height={H} fill="#e9dcb8" />
+      <rect width={W} height={H * 0.5} fill="#2f4f86" />
+      <g fill="none" stroke="#d7aa45" strokeWidth="2" opacity="0.5">
+        {[...Array(9)].map((_, i) => (
+          <path key={i} d={`M${i * 190} ${60 + (i % 3) * 40} q30 -18 60 0 t60 0`} />
+        ))}
+      </g>
+      <Scroll seconds={40} still={still}>
+        <path d={`M0 ${H * 0.52} Q200 330 420 ${H * 0.5} T860 420 T1300 ${H * 0.5} T${W} 430 V${H} H0Z`} fill="#6f8f55" stroke="#2a1f15" strokeWidth="4" />
+        {[180, 520, 980, 1360].map((x) => (
+          <g key={x} stroke="#2a1f15" strokeWidth="3">
+            <rect x={x} y="370" width="10" height="60" fill="#6b4a2b" />
+            <circle cx={x + 5} cy="350" r="38" fill="#3f6b3a" />
+          </g>
+        ))}
+      </Scroll>
+      <Scroll seconds={14} still={still}>
+        <path d={`M0 ${H * 0.66} Q300 560 640 ${H * 0.64} T1200 600 T${W} ${H * 0.66} V${H} H0Z`} fill="#8aa35e" stroke="#2a1f15" strokeWidth="4" />
+        <path d={`M0 ${H * 0.8} Q400 690 800 ${H * 0.78} T${W} ${H * 0.8}`} fill="none" stroke="#b08a5a" strokeWidth="46" strokeLinecap="round" />
+      </Scroll>
+      {/* The examiner, in a dark cloak, staff in hand */}
+      <g transform={`translate(${W / 2 - 40} 520)`} className={still ? undefined : "travel-bob"} stroke="#1b140e" strokeWidth="3">
+        <path d="M40 0 q22 0 22 24 q0 22 -22 22 q-22 0 -22 -22 q0 -24 22 -24z" fill="#e8c9a0" />
+        <path d="M10 44 q30 -14 60 0 l14 150 h-88z" fill="#3b2a6b" />
+        <path d="M82 30 l18 190" strokeWidth="6" />
+      </g>
+    </>
+  );
+}
+
 export function TravelScene({
+  caseId,
+  theme = "noir",
   mode,
   to,
   subtitle,
   reducedMotion,
   onSkip,
 }: {
+  caseId?: string;
+  theme?: "noir" | "medieval";
   mode: TravelMode;
   to: string;
   subtitle: string;
@@ -317,7 +358,10 @@ export function TravelScene({
     return () => window.removeEventListener("keydown", onKey);
   }, [onSkip]);
 
-  const paintedReady = mode === "drive" ? Boolean(ART.far && ART.near && ART.car) : Boolean(ART.walk);
+  const medieval = theme === "medieval";
+  // A medieval case walks everywhere, on its own painting when there is one, never the agency's city.
+  const ownWalk = medieval && caseId ? paintedArt(`${caseId.toLowerCase()}_travel_walk`) : null;
+  const paintedReady = medieval ? Boolean(ownWalk) : mode === "drive" ? Boolean(ART.far && ART.near && ART.car) : Boolean(ART.walk);
   return (
     <div
       className="fixed inset-0 z-[60] flex items-center justify-center bg-black travel-fade"
@@ -329,16 +373,16 @@ export function TravelScene({
     >
       {paintedReady ? (
         <div className="aspect-video max-h-full w-full max-w-[calc(100dvh*16/9)]" aria-hidden>
-          {mode === "drive" ? <PaintedDrive still={reducedMotion} /> : <PaintedWalk still={reducedMotion} />}
+          {medieval ? <PaintedWalk still={reducedMotion} src={ownWalk!} /> : mode === "drive" ? <PaintedDrive still={reducedMotion} /> : <PaintedWalk still={reducedMotion} />}
         </div>
       ) : (
         <svg viewBox={`0 0 ${W} ${H}`} className="aspect-video max-h-full w-full max-w-[calc(100dvh*16/9)]" preserveAspectRatio="xMidYMid slice" aria-hidden>
-          {mode === "drive" ? <DriveScene still={reducedMotion} /> : <WalkScene still={reducedMotion} />}
+          {medieval ? <MedievalWalk still={reducedMotion} /> : mode === "drive" ? <DriveScene still={reducedMotion} /> : <WalkScene still={reducedMotion} />}
           <rect width={W} height={H} fill="#000" opacity="0.08" />
         </svg>
       )}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-6 pb-8 pt-20 sm:px-12">
-        <p className="font-mono text-xs uppercase tracking-[0.22em] text-paper/70">{mode === "drive" ? "Driving to" : "Walking to"}</p>
+        <p className="font-mono text-xs uppercase tracking-[0.22em] text-paper/70">{medieval ? "On foot to" : mode === "drive" ? "Driving to" : "Walking to"}</p>
         <p className="mt-1 font-display text-3xl text-paper sm:text-4xl travel-caption">{to}</p>
         <p className="font-mono text-xs text-paper/70">{subtitle}</p>
       </div>

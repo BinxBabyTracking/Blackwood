@@ -58,7 +58,8 @@ export function Overlay({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`relative flex max-h-full w-full flex-col overflow-hidden outline-none ${
+        data-panel={tone}
+        className={`bw-panel relative flex max-h-full w-full flex-col overflow-hidden outline-none ${
           full ? "h-full max-w-none" : wide ? "max-w-5xl" : "max-w-2xl"
         } ${tone === "paper" ? "bg-[#ebe2cd] text-[#2a241c] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9)]" : "border border-white/10 bg-[#161b20]/95 text-paper"}`}
       >
