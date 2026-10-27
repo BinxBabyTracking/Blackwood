@@ -7,6 +7,7 @@
 import { C002 } from "../src/cases/C002";
 import { newState, project, reduce, GameError } from "../src/game/engine/engine";
 import { evaluateReport, reportProblem } from "../src/game/engine/evaluation";
+import { fileUnder } from "./report-helpers";
 import type { CaseDefinition, GameAction, InvestigationState } from "../src/game/engine/types";
 
 const problems: string[] = [];
@@ -123,8 +124,10 @@ def.solution = { ...right, answers: { culprit: [right.culprit!, "tom"], motive: 
   const evaluated = evaluateReport(def, { ...theory, evidence: [] });
   expect(evaluated.note.length > 0, "an unsupported report was accepted");
   const std = def.solution.standard;
-  const keyItems = std.lines.flatMap((l) => l.anyOf.slice(0, 2)).slice(0, std.maxItems);
-  const full = { ...theory, evidence: [...new Set([...std.linkToSuspect.slice(0, 1), ...keyItems])].slice(0, std.maxItems) };
+  // One proof per report point first, then items from each line of inquiry, filed under their points as a player would.
+  const keyItems = [...(std.claims ?? []).map((c) => c.anyOf[0]), ...std.lines.flatMap((l) => l.anyOf.slice(0, 2))];
+  const evidence = [...new Set([...std.linkToSuspect.slice(0, 1), ...keyItems])].slice(0, std.maxItems);
+  const full = { ...theory, evidence, ...fileUnder(def, evidence) };
   const order = evaluateReport(def, { ...full, culprit: [right.culprit!, "tom"] });
   const ok = evaluateReport(def, full);
   expect(ok.accepted === order.accepted, "answer order changed the verdict");
