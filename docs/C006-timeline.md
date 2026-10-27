@@ -94,18 +94,18 @@ The "Learned from" column names the evidence by subject; exact ids are fixed in 
 | Monday, March 11 | Ron Lasko, union safety steward, files a written complaint: Gallery B monitors alarm falsely or not at all; EF-3 grinds and stops. Earl forwards it as Grievance 96-031 | Union complaint file, Earl, Ray |
 | Tuesday, April 2 | Work order WO-96-0412 opened: three CO monitor heads failing calibration, EF-3 bearing failing | Maintenance work orders, Glenn's storage unit |
 | April 15 | Earl mails a copy of the complaint to the Borough of Hollow Creek code office, asking it to refer the hazard to OSHA and the county fire marshal. Len Greer stamps it received | Borough files (Karen), Len |
-| Monday, May 20 | Glenn's memo to Stroud: repair estimate $186,000; "recommend immediate repair, gallery should not be entered without portable monitors." | Evelyn's carbon copy; Emily's photographs |
-| Wednesday, May 22 | Stroud's handwritten reply on the memo: "Defer to Q3 outage. No capital outside the sale schedule. RS" | Evelyn's carbon copy; Emily's photographs |
+| Monday, May 20 | Glenn's memo to Stroud: repair estimate $186,000; "recommend immediate repair, gallery should not be entered without portable monitors." | Evelyn's photocopy; Emily's photographs |
+| Wednesday, May 22 | Stroud's handwritten reply on the memo: "Defer to Q3 outage. No capital outside the sale schedule. RS" | Evelyn's photocopy; Emily's photographs |
 | May 28 | Len's letter to Earl: complaint "reviewed, no municipal code violation found, matter is internal to the employer." No referral is made | Borough files, Earl |
 | Thursday, June 13, 11 PM | Night shift. Gallery B crew: Carl Brennan, Tony Mazur, Eddie Sokol, Ray Dalton | Shift roster |
 | Friday, June 14, about 2:40 AM | A valve packing leak fills Gallery B with gas. The monitors do not alarm; EF-3 is not running. Brennan, Mazur and Sokol die. Dalton, by the ladder, is pulled out by the furnace crew at about 2:55 and survives | Incident report, Ray, Jessica's tapes |
 | June 14, afternoon | Company statement: the crew "bypassed a lockout and entered without authorization." Employee error | Newspaper archive, company statement |
-| Monday, June 17 | Glenn rewrites page 41 of the Gallery B inspection log: the calibration entry for June 10 now reads "monitors tested OK, GS." The original page, which reads "heads 1 and 3 failed, parts on order, EF-3 tagged out," goes into his own files | Altered log (official), original page (Glenn's storage unit), Len |
+| Monday, June 17 | Glenn rewrites page 41 of the Gallery B inspection log: the calibration entry for June 10 now reads "monitors tested OK, GS." The original page, which reads "heads 1 and 3 failed, parts on hold per GM, EF-3 still out," goes into his own files | Altered log (official), original page (Glenn's storage unit), Len |
 | June 19 | Len's borough memo to the county fire marshal: Gallery B "inspected by this office, no code deficiencies." He never went into it | Borough files, Len |
 | June 24 to July 12 | OSHA inspection relies on the log and the borough memo. One citation, for training. $4,500 penalty | OSHA summary (regulatory archive) |
 | July | Evelyn, sick about it, gives Ron Lasko a photocopy of the May 20 memo with Stroud's note | Evelyn, Sarah's box |
 | July | Emily reads Ron's papers, photographs the memo at the studio after hours, prints copies, and starts asking questions: Ray, Earl, the newspaper | Emily's prints, studio job log, Ray, Earl |
-| August 2 | Stroud's land company pays Len Greer $8,000, "consulting, subdivision review" | Len's bank records, financial records |
+| August 2 | Mon Valley Land Partners, the parcel's buyer, pays Len Greer $8,000, "consulting, subdivision review"; Stroud had told Len the buyers would "take care of the borough's trouble" | Len's passbook and check stub, Len's statement |
 | September 9 | Hollow Creek Steel sells Lot 7, Ridge Avenue, to Leonard Greer for $1 | Deed (Karen) |
 | Friday, October 4 | The East Mill parcel sale closes. Stroud's bonus: $240,000 | Property sale documents, company financial records |
 
@@ -115,24 +115,25 @@ The "Learned from" column names the evidence by subject; exact ids are fixed in 
 | --- | --- | --- |
 | Spring 1996 | Wade starts seeing Denise Hollins in Brackett. They write letters | Denise's letters |
 | June to August 10 | Wade strips copper and brass from the East Mill Maintenance Building at night and sells it at Mon Valley Scrap, about weekly. Last sale Saturday, August 10 | Scrap yard ledger, Wade |
-| Wednesday, August 14 | Emily finds a letter from Denise in the glove box of Wade's truck | Emily's diary entry, Rebecca |
+| Wednesday, August 14 | Emily finds a letter from Denise in the glove box of Wade's truck. (Her diary page for that day is torn out.) | Rebecca's revised statement, Wade's letters |
 | Friday, August 16, about 6:30 PM | Emily and Wade argue in the Corner Mart lot. Andrew, at the register, sees it | Andrew |
 | Friday, August 16, night | Emily writes in her calendar for Saturday: "W. 9. East gate. END IT." | Emily's calendar (Sarah) |
 | Saturday, August 17, 10 AM to 6 PM | Emily works at Corso Photo and Frame | Studio time card |
-| 7:15 PM | Emily pages Rebecca from home | Emily's pager (memory holds the callback number) |
-| 7:40 PM | Rebecca calls back from Room 12 of the Valley View Motor Inn, where she is with a married man. Emily says she is ending it with Wade at nine at the East Gate, and asks to stay at Rebecca's tonight. Rebecca says yes, after eleven | Rebecca (only once confronted), pager, motel |
+| 7:14 PM | Rebecca, at the Valley View Motor Inn, pages Emily with the motel's number and her room, \"12\", as Emily had asked | Carol's note of the pager's last messages (E020) |
+| 7:40 PM | Emily calls Room 12 of the Valley View Motor Inn from home, where Rebecca is with a married man. Emily says she is ending it with Wade at nine at the East Gate, and asks to stay at Rebecca's tonight. Rebecca says yes, after eleven | Rebecca (only once confronted), pager, motel |
 | 8:30 PM | Emily leaves home in her blue 1987 Chevrolet Cavalier with an overnight bag. Sarah, 16, sees her go and notices the bag | Sarah |
 | 8:30 PM | Andrew's Corner Mart shift ends; he clocks out | Corner Mart time sheet |
-| About 8:50 PM | Andrew, walking home along Mill Road, sees Emily get out of her car by the East Gate and a dark pickup with a ladder rack parked inside the gate. He later says "about ten" | Andrew, time sheet |
+| About 8:40 PM | Andrew, walking home along Mill Road, sees Emily get out of her car by the East Gate and a dark pickup with a ladder rack parked inside the gate. He later says "about ten" | Andrew, time sheet |
 | About 9:00 PM | Emily and Wade meet in the Maintenance Building, where he keeps his stripped copper | Closing report only (the meeting itself) |
 | About 9:15 PM | She ends it, says she knows about Denise and will tell Gus about the copper. He strikes her; she falls and her head hits the edge of the steel workbench. She dies within minutes | Closing report only. Skull fracture pattern (Brooks), bench (scene) |
-| 9:20 to 10:40 PM | Wade carries her into Tool Crib 4, shuts the steel door, chains the hasp with a padlock, stacks pallets across the door. He takes her overnight bag and her car keys | Closing report only. Scene, pallets, chain |
+| 9:20 to 10:40 PM | Wade carries her into Tool Crib 4, shuts the steel door and wedges pallets across it. He takes her overnight bag and her car keys | Closing report only. Scene, pallets |
 | About 10:50 PM | Wade drives Emily's Cavalier to Brackett, 14 miles. He adjusts the driver's seat all the way back (he is 6 feet 2; Emily was 5 feet 3) and leaves it at the Brackett Transit Depot, keys under the mat | Impound inventory (seat position), Sarah (how Emily drove) |
 | 11:52 PM | Brackett Yellow Cab picks up a tall young man at the depot; fare to Mill Road, Hollow Creek, $22 cash | Cab trip log (Karen or Mitchell), 1996 file |
-| About 12:25 AM, Sunday | Wade drives his own truck home from the East Gate. On the way he throws Emily's bag into the river at the Riverfront access ramp | Closing report only (the bag). Andrew saw the truck earlier |
-| Sunday, August 18, night | Wade returns with his uncle's portable welder and welds the hasp of Tool Crib 4 shut | Weld on the hasp (scene), garage welder log is not kept; Wade's account changes |
+| About 12:35 AM, Sunday | Having walked half a mile from the Corner Mart, Wade drives his own truck home from the East Gate. On the way he throws Emily's bag into the river at the Riverfront access ramp | Closing report only (the bag). Andrew saw the truck earlier |
+| Sunday, August 18 | Wade takes ten feet of 3/8 chain, a Master No. 5 padlock, flux-core wire and his uncle's portable welder and generator from the closed garage. That night he chains and padlocks the crib door, welds the hasp to its staple, and stacks the pallets back | Reeves Garage parts ledger (Gus noted "Sunday?? Shop closed"), hasp, chain and weld (scene) |
 | Monday, August 19 | Carol Lasko reports Emily missing. Brackett police ticket the Cavalier at the depot | Missing-person report, parking ticket |
 | Tuesday, August 20 | Cavalier towed and inventoried. Driver's seat "full rear track position." No bag | Impound inventory |
+| August 20 | Joan Reeves tells Granger her son "was home when I went to bed" at 10:30. She did not check his room; he came home after 12:35 | Granger's notes |
 | August 20 | Wade's statement to Det. Sgt. Granger: last saw Emily Friday, August 16; she talked of moving to Pittsburgh; Saturday he worked until 6 and was home all night | Wade's 1996 statement |
 | August 21 | Rebecca's statement: home all evening, did not hear from Emily | Rebecca's 1996 statement |
 | August 22 | A Brackett ticket clerk tells police a young woman "might have" bought a ticket to Pittsburgh Saturday night. No name, no description beyond "dark hair" | Granger's notes |
@@ -166,7 +167,7 @@ Events fire from what the player has done, never from the clock. The dates are t
 | Mon Oct 22 | 1 | Investigation opens. Sarah's photograph | RE01 |
 | Tue Oct 23 | 2 | Ray Dalton calls the field office after hearing Blackwood is asking about the mill | RE02 |
 | Tue Oct 23 | 2 | Karen turns up the borough's Gallery B file | RE03 |
-| Wed Oct 24 | 3 | Glenn Sutter calls and asks to meet. The player can talk to him at his house. He admits the log "wasn't what it should have been" and says he will bring something tomorrow. That evening he tells Stroud, by phone, that he is going to talk. At 9:14 PM Stroud calls Michael | RE05 |
+| Wed Oct 24 | 3 | Glenn Sutter calls and asks to meet. The player can talk to him at his house. He admits the log "wasn't what it should have been" and says he will bring something to the field office on Friday at ten. That evening he tells Stroud, by phone, that he is going to talk. At 9:14 PM Stroud calls Michael | RE05 |
 | Thu Oct 25, 8:52 PM | 3 | Glenn enters Creekside Self Storage with his own code, to fetch the original log page from Unit 14 | Gate log |
 | Thu Oct 25, 9:05 PM | 3 | Michael enters with the management override code, which Creekside issued to its security contractor, Trent Protective Services. He kills Glenn in Unit 14 with a pry bar, takes his wallet and watch, ransacks the unit and takes a file box. He misses the original log page, hidden under the false floor of a tackle box. Leaves 9:31 PM | Closing report only (the attack). Gate log, scene, autopsy |
 | Fri Oct 26, 7:30 AM | 3 | The facility manager finds Glenn. Mitchell calls Blackwood | RE06 |
@@ -178,7 +179,7 @@ Events fire from what the player has done, never from the clock. The dates are t
 | Mon Oct 29, 10 AM | 4 | Len does not come | RE11 |
 | Mon Oct 29 | 4 | Len's house becomes a scene | RE12 |
 | Mon Oct 29 | 4 | The player traces Laurel Hollow Holdings LLC to the Trent family | RE13 |
-| Tue Oct 30, dawn | 4 | Police reach the camp on Laurel Hollow Road. Len is in the cellar, alive, dehydrated. Michael is arrested at his office that morning | RE14, RE15 |
+| Tue Oct 30, before dawn | 4 | Police reach the camp on Laurel Hollow Road. Len is in the cellar, alive, dehydrated. Michael is arrested at his office that morning | RE14, RE15 |
 | Tue Oct 30 | 4 | Len's statement from his hospital bed: the payment, the lot, Stroud. His copies are in a safe deposit box at Mon Valley Savings | RE16 |
 | Wed Oct 31 | 5 | Stroud's lawyer calls the press and the police, calling Blackwood "a tabloid outfit" | RE17 |
 | Wed Oct 31 | 5 | The safe deposit papers include the 1996 complaint with Len's routing note "file, no referral, per R.S." | RE18 |
@@ -194,7 +195,6 @@ These moments are never said by anyone and never written in any evidence. They a
 - Wade carrying her into Tool Crib 4 and closing it.
 - Wade throwing her bag into the river.
 - Michael's attack on Glenn in Unit 14.
-- Michael taking Len from his house.
 - The telephone conversation between Stroud and Michael on October 24.
 
 ## Knowledge boundaries
@@ -257,4 +257,7 @@ Fixed while writing this timeline, before any dialogue:
 3. The brief called Thomas Greer both a "former municipal official" and a "former plant employee." He is the borough's code enforcement and safety officer: a municipal official who dealt with the plant.
 4. The brief called Harold Mercer both "maintenance director" and "retired supervisor." He is the retired maintenance director.
 5. The brief places Emily's death and the disaster at "the facility." They are kept apart: the disaster was in the working West End; Emily died in the East Mill, closed since 1991, where Wade worked his copper. The cover-up's people had no reason to know Tool Crib 4.
-6. Andrew's sighting must be about 8:50 PM to fit his 8:30 PM clock-out and a half-mile walk. His memory says "about ten," which is the point of his testimony being imperfect.
+6. Andrew's sighting must be about 8:40 PM to fit his 8:30 PM clock-out and a ten-minute walk. His memory says "about ten," which is the point of his testimony being imperfect.
+7. The 724 area code did not exist until 1998, so 1996 Hollow Creek numbers are 412.
+8. Joan Reeves gave Wade an alibi in 1996 ("home when I went to bed," 10:30). She was wrong or covering; she died in 2014. Len's own taking is told by Len (E077), so it is no longer closing-report only.
+9. Fixed after an independent review (Oct 27): the teenagers cut the crib's chain as well as breaking the weld; the 1996 incident report no longer cites the log (it was rewritten on June 17); the Unit 22 renter saw Glenn's car as he left; documents produced under court order are dated October 31.
