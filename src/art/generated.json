@@ -732,6 +732,12 @@
       "model": "hand-imported",
       "generatedAt": "2026-10-27T13:42:27.186Z"
     },
+    "c003_portrait_rachel": {
+      "url": "/art/c003_portrait_rachel.webp",
+      "kind": "portrait",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-27T14:22:15.057Z"
+    },
     "site_hero": {
       "url": "/art/site_hero.webp",
       "kind": "site",
@@ -761,6 +767,48 @@
       "kind": "pov",
       "model": "hand-imported",
       "generatedAt": "2026-10-22T17:21:15.285Z"
+    },
+    "c003_face_rachel_rest": {
+      "url": "/art/c003_face_rachel_rest.webp",
+      "kind": "face",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-27T14:22:16.274549Z"
+    },
+    "c003_face_rachel_slight": {
+      "url": "/art/c003_face_rachel_slight.webp",
+      "kind": "face",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-27T14:22:16.274549Z"
+    },
+    "c003_face_rachel_ah": {
+      "url": "/art/c003_face_rachel_ah.webp",
+      "kind": "face",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-27T14:22:16.274549Z"
+    },
+    "c003_face_rachel_ee": {
+      "url": "/art/c003_face_rachel_ee.webp",
+      "kind": "face",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-27T14:22:16.274549Z"
+    },
+    "c003_face_rachel_oh": {
+      "url": "/art/c003_face_rachel_oh.webp",
+      "kind": "face",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-27T14:22:16.274549Z"
+    },
+    "c003_face_rachel_oo": {
+      "url": "/art/c003_face_rachel_oo.webp",
+      "kind": "face",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-27T14:22:16.274549Z"
+    },
+    "c003_face_rachel_blink": {
+      "url": "/art/c003_face_rachel_blink.webp",
+      "kind": "face",
+      "model": "hand-imported",
+      "generatedAt": "2026-10-27T14:22:16.274549Z"
     }
   }
 }

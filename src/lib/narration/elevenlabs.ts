@@ -42,13 +42,48 @@ export function castVoice(characterId: string, voice: VoiceOptions): VoiceOption
  * narrator voice; characters pass their own voice so each one sounds the
  * same in every scene. Identical text and voice is shared by every player.
  */
-export async function narrate(cacheKey: string, text: string, voice?: VoiceOptions): Promise<{ audio: ArrayBuffer; cached: boolean }> {
-  if (!API_KEY) throw new NarrationError("Narration is not configured on this server.", 501);
+/** When each character of a line is spoken, in seconds: what a talking portrait moves its mouth to. */
+export interface Timing {
+  characters: string[];
+  starts: number[];
+  ends: number[];
+}
+
+/** Where a line's audio lives in the cache (and its timing, beside it). */
+function cachePath(cacheKey: string, text: string, voice?: VoiceOptions) {
   const voiceId = voice?.voiceId ?? VOICE_ID;
   const settings = voice?.settings ? `|${JSON.stringify(voice.settings)}` : "";
   // Evidence narration keeps its original key format so existing recordings stay valid.
   const hash = createHash("sha256").update(`${voiceId}|${MODEL_ID}|${text}${settings}`).digest("hex").slice(0, 20);
-  const path = `${cacheKey}-${hash}.mp3`;
+  return `${cacheKey}-${hash}.mp3`;
+}
+
+/**
+ * The timing saved with a line when it was spoken, if any. Never generates:
+ * lines spoken before timing was kept simply have none, and the portrait
+ * paces its mouth from the text instead.
+ */
+export async function cachedTiming(cacheKey: string, text: string, voice?: VoiceOptions): Promise<Timing | null> {
+  const db = createAdminClient();
+  if (!db) return null;
+  const { data } = await db.storage.from(BUCKET).download(cachePath(cacheKey, text, voice).replace(/\.mp3$/, ".json"));
+  if (!data) return null;
+  try {
+    return JSON.parse(await data.text()) as Timing;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Speaks `text` once and caches it. With `timing`, the same request also
+ * returns when each character is spoken (ElevenLabs' with-timestamps
+ * endpoint), saved beside the audio for a talking portrait.
+ */
+export async function narrate(cacheKey: string, text: string, voice?: VoiceOptions, opts: { timing?: boolean } = {}): Promise<{ audio: ArrayBuffer; cached: boolean }> {
+  if (!API_KEY) throw new NarrationError("Narration is not configured on this server.", 501);
+  const voiceId = voice?.voiceId ?? VOICE_ID;
+  const path = cachePath(cacheKey, text, voice);
   const db = createAdminClient();
 
   if (db) {
@@ -56,9 +91,10 @@ export async function narrate(cacheKey: string, text: string, voice?: VoiceOptio
     if (data) return { audio: await data.arrayBuffer(), cached: true };
   }
 
-  const res = await fetch(`${API_BASE}/v1/text-to-speech/${encodeURIComponent(voiceId)}?output_format=mp3_44100_128`, {
+  const endpoint = opts.timing ? "/with-timestamps" : "";
+  const res = await fetch(`${API_BASE}/v1/text-to-speech/${encodeURIComponent(voiceId)}${endpoint}?output_format=mp3_44100_128`, {
     method: "POST",
-    headers: { "xi-api-key": API_KEY, "Content-Type": "application/json", Accept: "audio/mpeg" },
+    headers: { "xi-api-key": API_KEY, "Content-Type": "application/json", Accept: opts.timing ? "application/json" : "audio/mpeg" },
     body: JSON.stringify({ text, model_id: MODEL_ID, ...(voice?.settings ? { voice_settings: voice.settings } : {}) }),
     signal: AbortSignal.timeout(30000),
   });
@@ -73,12 +109,29 @@ export async function narrate(cacheKey: string, text: string, voice?: VoiceOptio
           : "The voice service is unavailable right now.";
     throw new NarrationError(message, 502);
   }
-  const audio = await res.arrayBuffer();
+  let audio: ArrayBuffer;
+  let timing: Timing | null = null;
+  if (opts.timing) {
+    const body = (await res.json()) as {
+      audio_base64: string;
+      alignment?: { characters: string[]; character_start_times_seconds: number[]; character_end_times_seconds: number[] } | null;
+    };
+    const bytes = Buffer.from(body.audio_base64, "base64");
+    audio = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+    const a = body.alignment;
+    if (a?.characters?.length) timing = { characters: a.characters, starts: a.character_start_times_seconds, ends: a.character_end_times_seconds };
+  } else {
+    audio = await res.arrayBuffer();
+  }
 
   if (db) {
     // Caching is best effort; a failed upload just means generating again next time.
     const { error } = await db.storage.from(BUCKET).upload(path, new Blob([audio], { type: "audio/mpeg" }), { contentType: "audio/mpeg", upsert: true });
     if (error) console.error("Narration cache upload failed", error.message);
+    if (timing) {
+      const t = await db.storage.from(BUCKET).upload(path.replace(/\.mp3$/, ".json"), new Blob([JSON.stringify(timing)], { type: "application/json" }), { contentType: "application/json", upsert: true });
+      if (t.error) console.error("Timing cache upload failed", t.error.message);
+    }
   }
   return { audio, cached: false };
 }

@@ -5,6 +5,7 @@ import type { ActionOutcome, ActionResponse, ClientLine, ClientView, GameAction 
 import { useBackdropClose } from "./overlay";
 import { QuestionBar } from "./question-bar";
 import { useLinePlayer } from "./use-line-player";
+import { TalkingPortrait } from "./talking-portrait";
 
 type Conversation = Extract<ActionOutcome, { kind: "conversation" }>;
 
@@ -66,6 +67,10 @@ export function InterviewScreen({
   const lastAsk = findLastIndex(data.history, (l) => l.kind === "question" || l.kind === "present");
   const stage = lastAsk >= 0 ? data.history.slice(lastAsk) : data.history.filter((l) => l.kind === "cue");
   const speaking = player.status === "playing" || player.status === "loading";
+  // The line being spoken, for a talking portrait to move its mouth to.
+  const speakingSrc = player.status === "playing" && player.current !== null ? srcs[player.current] : null;
+  const speakingText = player.current !== null ? data.history[player.current]?.text ?? "" : "";
+  const speakingLine = useMemo(() => (speakingSrc ? { src: speakingSrc, text: speakingText } : null), [speakingSrc, speakingText]);
 
   const ask = async (a: GameAction) => {
     stop();
@@ -103,14 +108,24 @@ export function InterviewScreen({
         {/* The witness */}
         <section className="relative overflow-hidden border-b border-white/5 md:border-b-0 md:border-r">
           <div className="flex items-center gap-4 p-4 md:block md:h-full md:p-0">
-            <div className="relative h-24 w-20 shrink-0 overflow-hidden md:absolute md:inset-0 md:h-auto md:w-auto">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={data.portrait}
-                alt={`Portrait of ${data.name}`}
-                className={`h-full w-full object-cover sepia-[0.35] transition-[filter] duration-700 ${speaking ? "brightness-105" : "brightness-[0.82]"}`}
-                draggable={false}
-              />
+            {/* A talking portrait gets a larger frame on a phone, so the face can be seen moving. */}
+            <div className={`relative shrink-0 overflow-hidden md:absolute md:inset-0 md:h-auto md:w-auto ${data.face ? "h-44 w-32 sm:h-52 sm:w-40" : "h-24 w-20"}`}>
+              {data.face ? (
+                <TalkingPortrait
+                  face={data.face}
+                  alt={`Portrait of ${data.name}`}
+                  line={speakingLine}
+                  className={`h-full w-full object-cover object-[50%_30%] sepia-[0.35] transition-[filter] duration-700 ${speaking ? "brightness-105" : "brightness-[0.82]"}`}
+                />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={data.portrait}
+                  alt={`Portrait of ${data.name}`}
+                  className={`h-full w-full object-cover sepia-[0.35] transition-[filter] duration-700 ${speaking ? "brightness-105" : "brightness-[0.82]"}`}
+                  draggable={false}
+                />
+              )}
               <div aria-hidden className="pointer-events-none absolute inset-0 hidden bg-[radial-gradient(ellipse_at_40%_35%,transparent_35%,rgba(0,0,0,0.85)_100%)] md:block" />
               <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-2/3 bg-gradient-to-t from-black via-black/70 to-transparent md:block" />
             </div>

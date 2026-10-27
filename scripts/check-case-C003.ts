@@ -160,6 +160,13 @@ export function checkC003(def: CaseDefinition, problems: string[]) {
   // ---- Rachel and Ethan's notes ----
   go("kowalski_house");
   ask("rachel_hire");
+  {
+    // Rachel has a talking portrait; someone without the frames keeps the still one.
+    const o = talk("rachel");
+    expect(o.kind === "conversation" && o.face && ["rest", "slight", "ah", "ee", "oh", "oo", "blink"].every((k) => o.face![k as "rest"]), "Rachel's talking portrait missing");
+    const lena = reduce(def, { ...s, location: "harts" }, { type: "talk", characterId: "lena" }, t).outcome;
+    expect(lena.kind === "conversation" && lena.face === null, "a person without face frames got a talking portrait");
+  }
   ask("rachel_worried");
   ask("rachel_bag");
   look("kh_box");

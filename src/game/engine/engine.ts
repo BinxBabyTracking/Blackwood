@@ -15,7 +15,10 @@ import {
 } from "./questions";
 import { apply, check, collectEvidence, demeanorOf, runContradictions, runDemeanor, runEvents } from "./rules";
 import { wordsFor } from "../words";
+import { FACE_SHAPES } from "./types";
 import type {
+  FaceShape,
+  TalkingFace,
   CharacterDef,
   ComparisonDef,
   SequenceDef,
@@ -347,6 +350,17 @@ function clientLines(def: CaseDefinition, s: InvestigationState, characterId: st
   }));
 }
 
+/**
+ * A person's talking portrait, when the case has every frame for them
+ * (asset keys face.<id>.<shape>). Otherwise null and the still portrait is used.
+ */
+export function talkingFace(def: CaseDefinition, characterId: string): TalkingFace | null {
+  const url = (shape: FaceShape) => def.assets.images[`face.${characterId}.${shape}`];
+  const needed: FaceShape[] = ["rest", "slight", "ah", "ee", "oh", "oo", "blink"];
+  if (needed.some((sh) => !url(sh))) return null;
+  return Object.fromEntries(FACE_SHAPES.flatMap((sh) => (url(sh) ? [[sh, url(sh)]] : []))) as TalkingFace;
+}
+
 function conversationOutcome(def: CaseDefinition, s: InvestigationState, characterId: string, latest: number[] = []): ActionOutcome {
   const c = char(def, characterId)!;
   const d = demeanorOf(def, s, characterId);
@@ -367,6 +381,7 @@ function conversationOutcome(def: CaseDefinition, s: InvestigationState, charact
     available: characterHere(def, s, characterId),
     voiced: voiced(c),
     questions: questionsView(def, s, c),
+    face: talkingFace(def, c.id),
   };
 }
 

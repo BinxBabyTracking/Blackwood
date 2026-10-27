@@ -78,7 +78,8 @@
     "c002_nora": "Nora Pruitt, an African American newspaper crime reporter in her mid forties, close-cropped natural hair, reading glasses pushed up on her head, rolled-up shirtsleeves, a pencil behind one ear, dry and skeptical",
     "c002_howard": "Howard Lisk, a 70-year-old white retired machinist, bald on top with a white fringe, bushy eyebrows, reading glasses, a brown zip cardigan over a checked shirt, leaning on a wooden cane, friendly and precise",
     "c002_diane": "Diane Moss, a 41-year-old white woman with auburn hair in a loose clip, a florist, a green canvas apron over a cream sweater, shaken but angry and determined",
-    "c002_gordon": "Gordon Pell, a 38-year-old white man, slight build, thinning light brown hair combed neatly, wire-rimmed glasses, a soft polite face, brown corduroy shirt with a pocket protector holding small screwdrivers, faint solder burns on his fingertips"
+    "c002_gordon": "Gordon Pell, a 38-year-old white man, slight build, thinning light brown hair combed neatly, wire-rimmed glasses, a soft polite face, brown corduroy shirt with a pocket protector holding small screwdrivers, faint solder burns on his fingertips",
+    "c003_rachel": "Rachel Kowalski, a 37-year-old white woman, a public librarian, dark blonde hair pulled back in a loose low ponytail with a few strands falling free at her temples, an oval face, light freckles, gray-green eyes, no glasses, wearing a soft gray-green cardigan over a navy and white striped top and a small silver pendant on a thin chain, tired, grieving but composed"
   },
   "images": [
     {
@@ -818,6 +819,13 @@
       "kind": "map",
       "style": "c002",
       "subject": "Southern California in 1988. Along the left edge and the bottom, the Pacific coastline in pale blue: a small coastal town on the coast at the far left a third of the way down, and a harbor city on the bottom coast just right of center. A large city grid fills the center, slightly below the middle. To the right of the city, a broad valley of small towns. Across the top right corner, green pine-covered mountains with a small lake near the top right. Highways in ochre link the coast town, the city, the valley and the mountains."
+    },
+    {
+      "id": "c003_portrait_rachel",
+      "kind": "portrait",
+      "style": "c003",
+      "person": "c003_rachel",
+      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. The mouth and blink variants are edits of this image (see scripts/build-faces.py)."
     }
   ],
   "styles": {

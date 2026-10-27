@@ -1349,6 +1349,8 @@ export type ActionOutcome =
       available: boolean;
       voiced: boolean;
       questions: ClientQuestions;
+      /** A talking portrait: one frame per mouth shape plus a blink, or null for a still portrait. */
+      face: TalkingFace | null;
     }
   | {
       kind: "document";
@@ -1385,6 +1387,12 @@ export type ActionOutcome =
       record?: { first: boolean; awarded: string[]; rank: string | null };
     }
   | { kind: "error"; message: string };
+
+/** The mouth shapes a talking portrait is painted in. "rest" is the portrait itself, mouth closed. */
+export const FACE_SHAPES = ["rest", "slight", "ah", "ee", "oh", "oo", "f", "blink"] as const;
+export type FaceShape = (typeof FACE_SHAPES)[number];
+/** Image URL per shape. rest, slight, ah, ee, oh, oo and blink are always present; f is optional. */
+export type TalkingFace = Partial<Record<FaceShape, string>> & { rest: string };
 
 export interface ActionResponse {
   view: ClientView;
