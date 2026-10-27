@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { BoardPan } from "@/components/series/board-pan";
 import { useEffect, useMemo, useState } from "react";
 import type { ActionOutcome, ClientView } from "../engine/types";
 import { ReviewForm } from "./feedback-forms";
@@ -193,9 +194,8 @@ export function CaseResolution({
                   {para}
                 </p>
               ))}
-              <p className="mt-4 text-sm text-smoke">
-                A second cork board, on wheels, has been brought into the office. Nothing is on it yet: it carries whatever you choose to keep from this case into the next.
-              </p>
+              {closure.series.board ? <p className="mt-4 text-sm text-smoke">{closure.series.board}</p> : null}
+              {closure.series.finale && !asGuest ? <BoardPan seriesId={closure.series.seriesId} reducedMotion={reducedMotion} /> : null}
               {asGuest ? null : (
                 <Link href={`/agency/series/${closure.series.seriesId}`} className="mt-4 inline-block rounded-[2px] bg-brass px-4 py-2 text-sm font-semibold text-ink hover:bg-[#d4b585]">
                   Go to the rolling board

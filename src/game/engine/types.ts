@@ -577,7 +577,12 @@ export interface SolutionDef {
     /** Who makes the closing call, when it is not Det. Bennett of the LAPD. */
     caller?: { characterId: string; name: string; tag: string };
     /** A case in a series: the series notebook entry written as it closes, and where the rolling board is. */
-    series?: { seriesId: string; title: string; text: string };
+    /**
+     * A series case: the notebook entry written when the report is accepted.
+     * `board` is the line about the rolling board under it (C01 wheels it in);
+     * `finale` ends the series with a slow pass across the player's own rolling board.
+     */
+    series?: { seriesId: string; title: string; text: string; board?: string; finale?: boolean };
   };
 }
 

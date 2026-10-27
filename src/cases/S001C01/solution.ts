@@ -305,6 +305,11 @@ export const solution: CaseDefinition["solution"] = {
       "Hannah came by. She asked me to tell you her dad would have liked you. I think he would have. Thank you.",
     ],
     caller: { characterId: "bowman", name: "Det. Curtis Bowman", tag: "Carroway PD" },
-    series: { seriesId: "S001", title: SERIES_DEFS.S001.notebook.S001C01.title, text: SERIES_DEFS.S001.notebook.S001C01.text },
+    series: {
+      seriesId: "S001",
+      title: SERIES_DEFS.S001.notebook.S001C01.title,
+      text: SERIES_DEFS.S001.notebook.S001C01.text,
+      board: "A second cork board, on wheels, has been brought into the office. Nothing is on it yet: it carries whatever you choose to keep from this case into the next.",
+    },
   },
 };

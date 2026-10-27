@@ -339,3 +339,10 @@ html[data-vision="tritanopia"] {
     linear-gradient(135deg, #3a3f44, #1d2124 40%, #33383d 60%, #15181a 85%, #2c3135);
   box-shadow: inset 0 0 0 2px rgba(200, 210, 220, 0.14), 0 10px 40px rgba(0, 0, 0, 0.6);
 }
+
+/* The series finale: start close on the first card pinned, pull back across the whole rolling board. */
+@keyframes board-pan {
+  from { transform: scale(var(--pan-start, 2.5)); }
+  to { transform: scale(1); }
+}
+.board-pan { animation: board-pan 16s cubic-bezier(0.25, 0.1, 0.25, 1) both; }
