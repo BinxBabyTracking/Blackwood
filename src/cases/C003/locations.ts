@@ -165,7 +165,8 @@ export const locations: LocationDef[] = [
     area: "alder",
     name: "The Marsh House",
     subtitle: "409 Alder Street, Bellwether",
-    background: "loc.marsh_house",
+    // The same room: at home before Vivian's call; the door open and the lamp down from that night on.
+    background: { env: "marsh_house", states: { A: "loc.marsh_house", B: "loc.marsh_house_after", C: "loc.marsh_house_after" } },
     ambience: "amb.marsh_house",
     available: briefed,
     onMap: false,

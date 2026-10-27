@@ -33,6 +33,17 @@ Generated and uploaded pictures are finished the same way as `import-art.mjs`: f
 2. **Text that matters is spelled out in the prompt.** For a headline, sign, label or name on a door, quote the exact words line by line and say they must be printed exactly as written. Everything else stays soft and unreadable; the full wording lives in the evidence text.
 3. **Every image has a manifest entry**, so it appears on Admin. A picture added only as a file in `public/art` can't be regenerated there.
 
+## Talking portraits (kind "face")
+
+A person who talks on screen has a front-facing portrait (`<case>_portrait_<person>`, with a front-facing `suffix`) and six frames: `<case>_<person>_mouth_open_slight`, `_mouth_ah`, `_mouth_ee`, `_mouth_oh`, `_mouth_oo` and `_blink` (optional `_mouth_f`). Each frame is kind `face` with `reference` set to the portrait, so it is made as an edit of the portrait that changes only the mouth (or the eyes).
+
+When a frame is generated or uploaded, the studio blends it onto the person's current portrait (`src/lib/face-blend.ts`, the same method as `scripts/build-faces.py`): only the area that changed is kept, feathered, so nothing else in the face shimmers when frames switch. So:
+
+- **Make the portrait live before its frames.** "Generate all missing" goes in manifest order (portraits first), so with "Make missing images live straight away" ticked this happens by itself.
+- **If a portrait is replaced, make its six frames again**, or the mouth will come from the old face.
+
+The case's `assets.ts` maps them to `face.<person>.<shape>`; with every frame present, interviews show the talking portrait (`src/game/ui/talking-portrait.tsx`). See the project doc "character-animation-plan".
+
 ## The OpenAI key
 
 The server setting `OPENAI_API_KEY` (Vercel). Until that is set, a temporary key saved in `site_settings` (`openai_api_key`) is used, and Admin shows a note saying so. Never put a key in the code or a doc.

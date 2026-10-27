@@ -11,7 +11,8 @@ import { SOUNDTRACK } from "./soundtrack";
  */
 const base = "/cases/C003";
 
-const locations = ["office", "alder_street", "police", "harts", "kowalski_house", "marsh_house", "voss_office", "bell_garage", "shaw_yard", "annex", "riverside", "lab"];
+/** Scene paintings. The Marsh house has a second painting for the night of October 29 (door open, lamp down). */
+const locations = ["office", "alder_street", "police", "harts", "kowalski_house", "marsh_house", "marsh_house_after", "voss_office", "bell_garage", "shaw_yard", "annex", "riverside", "lab"];
 const characters = ["rachel", "vivian", "graham", "lena", "cross", "reed", "voss", "bell", "shaw", "owen", "bennett", "jenna", "ethan", "caller"];
 /** Scene objects that appear or change with events, drawn over the background. */
 const objects = ["labfolder", "report_folder", "unit4"];
@@ -49,8 +50,22 @@ const PAINTED: Record<string, string> = {
 const OVERLAYS = [
   "obj_casefile", "obj_laptop", "obj_notebook", "obj_mailtray", "obj_deskphone",
   "figure_rachel", "figure_vivian", "figure_graham", "figure_lena", "figure_cross", "figure_reed", "figure_voss", "figure_bell", "figure_bell_custody", "figure_shaw", "figure_owen",
-  "obj_hall_lamp", "obj_glasses_floor", "obj_police_tape", "obj_envelope",
+  "obj_envelope",
 ];
+
+/** People with a talking portrait: their portrait plus six frames (see docs/artwork-studio.md). */
+const TALKERS = ["rachel", "vivian", "graham", "lena", "cross", "reed", "voss", "bell", "shaw", "owen", "bennett"];
+/** Which image is each mouth shape. The portrait itself is the closed mouth. */
+const FRAME: Record<string, (p: string) => string> = {
+  rest: (p) => `c003_portrait_${p}`,
+  slight: (p) => `c003_${p}_mouth_open_slight`,
+  ah: (p) => `c003_${p}_mouth_ah`,
+  ee: (p) => `c003_${p}_mouth_ee`,
+  oh: (p) => `c003_${p}_mouth_oh`,
+  oo: (p) => `c003_${p}_mouth_oo`,
+  f: (p) => `c003_${p}_mouth_f`,
+  blink: (p) => `c003_${p}_blink`,
+};
 
 /** Built again when Admin makes a new painting live (see refreshArt in the registry). */
 export const buildAssets = (): AssetManifest => ({
@@ -59,7 +74,7 @@ export const buildAssets = (): AssetManifest => ({
     ...Object.fromEntries(Object.entries(PAINTED).flatMap(([key, id]) => (art(id) ? [[key, art(id)!]] : []))),
     ...Object.fromEntries(OVERLAYS.flatMap((k) => (art(`c003_${k}`) ? [[`art.${k}`, art(`c003_${k}`)!]] : []))),
     // Talking portraits (scripts/build-faces.py): face.<person>.<shape>, present only once painted.
-    ...Object.fromEntries(characters.flatMap((c) => FACE_SHAPES.flatMap((sh) => (art(`c003_face_${c}_${sh}`) ? [[`face.${c}.${sh}`, art(`c003_face_${c}_${sh}`)!]] : [])))),
+    ...Object.fromEntries(TALKERS.flatMap((c) => FACE_SHAPES.flatMap((sh) => (art(FRAME[sh](c)) ? [[`face.${c}.${sh}`, art(FRAME[sh](c))!]] : [])))),
   },
   audio: placeholders.audio,
 });

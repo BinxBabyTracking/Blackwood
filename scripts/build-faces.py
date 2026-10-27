@@ -22,7 +22,9 @@ Each frame is therefore the base portrait with only the changed area blended
 in: the mouth from each mouth image, the eyes from the blink. The area is
 found from where the edits differ from the base, then feathered.
 
-Writes public/art/<case>_face_<person>_<shape>.webp and lists them in
+Writes public/art/<case>_<person>_mouth_<shape>.webp and <case>_<person>_blink.webp
+(the same ids as the art prompts and the Admin artwork studio, which blends
+the same way when a frame is generated or uploaded there) and lists them in
 src/art/generated.json. The base itself is imported as the portrait the usual
 way (art/inbox and scripts/import-art.mjs).
 """
@@ -35,7 +37,7 @@ import numpy as np
 from PIL import Image, ImageFilter
 
 ROOT = Path(__file__).resolve().parent.parent
-SIZE = (768, 1152)
+SIZE = (1024, 1536)
 SHAPES = ["slight", "ah", "ee", "oh", "oo", "f"]
 FILES = {"slight": "mouth_open_slight", "ah": "mouth_ah", "ee": "mouth_ee", "oh": "mouth_oh", "oo": "mouth_oo", "f": "mouth_f"}
 
@@ -92,22 +94,21 @@ def main() -> None:
     mouth_mask = mask_for(base_img.size, mouth_box, 0.35)
     eye_mask = mask_for(base_img.size, eye_box, 0.25)
 
-    frames = {"rest": base_img}
+    frames = {}
     for s, m in mouths.items():
-        frames[s] = Image.composite(m, base_img, mouth_mask)
-    frames["blink"] = Image.composite(blink, base_img, eye_mask)
+        frames[f"{case}_{person}_{FILES[s]}"] = Image.composite(m, base_img, mouth_mask)
+    frames[f"{case}_{person}_blink"] = Image.composite(blink, base_img, eye_mask)
 
     out = ROOT / "public" / "art"
     out.mkdir(parents=True, exist_ok=True)
     reg_path = ROOT / "src" / "art" / "generated.json"
     reg = json.loads(reg_path.read_text())
     now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-    for shape, im in frames.items():
-        key = f"{case}_face_{person}_{shape}"
-        im.resize(SIZE, Image.LANCZOS).save(out / f"{key}.webp", "WEBP", quality=82, method=6)
+    for key, im in frames.items():
+        im.resize(SIZE, Image.LANCZOS).save(out / f"{key}.webp", "WEBP", quality=86, method=6)
         reg["images"][key] = {"url": f"/art/{key}.webp", "kind": "face", "model": "hand-imported", "generatedAt": now}
     reg_path.write_text(json.dumps(reg, indent=2) + "\n")
-    print(f"{person}: mouth area {mouth_box}, eye area {eye_box}; frames {', '.join(frames)}")
+    print(f"{person}: mouth area {mouth_box}, eye area {eye_box}; wrote {', '.join(frames)}")
 
 
 if __name__ == "__main__":
