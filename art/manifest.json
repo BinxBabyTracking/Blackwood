@@ -5399,6 +5399,12 @@
       "subject": "The inside of a corporate records archive the morning after a fire, late December. Long rows of metal shelving blackened by smoke, cardboard file boxes charred and collapsed, ash on the concrete floor, pale winter sunlight cutting through haze from a broken high window with snow on the sill. In the middle-right, one shelf stands untouched by the fire, and on it a single clean gap where one box was taken away before the flames, its dust outline still visible. The left third of the image is quiet smoke and shadow. No people. No readable text. Keep the main subject between the center and the right side of the frame so it still reads when cropped to a square."
     },
     {
+      "id": "s001_obj_rolling_board",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A freestanding cork board on a wheeled frame, seen straight on: a brushed steel frame with bolted corners, two upright legs ending in black rubber casters, the cork a paler, cooler tan than an office wall board. A few pushpins and one short loop of red string on an otherwise bare surface, so whatever the player pins later reads clearly. No readable text."
+    },
+    {
       "id": "s001c01_portrait_martin",
       "kind": "portrait",
       "style": "s001",

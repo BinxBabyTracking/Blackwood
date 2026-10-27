@@ -1357,6 +1357,8 @@ function projectState(def: CaseDefinition, s: InvestigationState, now: number, c
         pending: Boolean(h.art && painted && !def.assets.images[h.art] && !h.sprite?.some((x) => check(x.when, s))),
         attention: h.attention ? check(h.attention, s) : false,
         callout: h.callout && check(h.callout.when, s) ? h.callout.text : null,
+        // The rolling board belongs to the series, not the case: the screen opens it itself, even in a closed case.
+        local: h.interaction.type === "panel" && h.interaction.panel === "rolling" ? ("rolling" as const) : null,
       })),
     },
     map: def.locations

@@ -318,7 +318,8 @@ export interface HotspotDef {
   callout?: { text: string; when: Condition };
 }
 
-export type PanelId = "casefile" | "board" | "notebook" | "map" | "phone" | "statements" | "delivery" | "conclusion" | "sequence" | "comparison";
+/** "rolling" is a series' rolling board (S001 and later), opened from the office in a series case. */
+export type PanelId = "casefile" | "board" | "notebook" | "map" | "phone" | "statements" | "delivery" | "conclusion" | "sequence" | "comparison" | "rolling";
 
 export interface LocationDef {
   id: string;
@@ -361,6 +362,12 @@ export interface EvidenceDef {
    * narrator. Without it the whole inspection text is narrated.
    */
   readAloud?: { speakerId?: string; text: string }[];
+  /**
+   * Series cases only: the record this item is, when it is a copy of evidence
+   * from an earlier case (a finale recovery route), e.g. "S001-C01-E029". The
+   * rolling board then treats it as that record, so it is never pinned twice.
+   */
+  canonical?: string;
 }
 
 export interface CallDef {
@@ -1290,7 +1297,7 @@ export interface ClientView {
     subtitle: string;
     background: string;
     ambience: string | null;
-    hotspots: { id: string; label: string; rect: HotspotDef["rect"]; inspected: boolean; collected: boolean; sprite: string | null; figure: boolean; pending: boolean; attention: boolean; callout: string | null }[];
+    hotspots: { id: string; label: string; rect: HotspotDef["rect"]; inspected: boolean; collected: boolean; sprite: string | null; figure: boolean; pending: boolean; attention: boolean; callout: string | null; local: "rolling" | null }[];
   };
   map: { id: string; name: string; subtitle: string; area: string | null; available: boolean; visited: boolean; current: boolean; pin: { x: number; y: number } | null; tag: string | null }[];
   /** Optional recordings for travel scenes; when null the game synthesizes the sound. */

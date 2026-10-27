@@ -17,7 +17,7 @@ const base = "/cases/S001C01";
 const locations = ["office", "foundation", "martin_office", "keller_home", "hannah_apt", "reddick_shop", "police", "ames_office", "meridian", "rear_lot"];
 const characters = ["martin", "hannah", "whitfield", "holt", "reddick", "lockhart", "ames", "avery", "morris", "bowman", "foster", "bennett"];
 /** Scene objects that appear with events, drawn over the background. */
-const objects = ["labfolder", "report_folder", "envelope_sealed", "envelope_open", "schedule_envelope"];
+const objects = ["labfolder", "report_folder", "envelope_sealed", "envelope_open", "schedule_envelope", "rolling_board"];
 const evidence = Array.from({ length: 30 }, (_, i) => `E${String(i + 1).padStart(3, "0")}`);
 
 /** Painted artwork written by scripts/import-art.mjs. Anything not painted yet keeps its placeholder. */
@@ -42,6 +42,8 @@ const placeholders: AssetManifest = {
 const SHARED: Record<string, string> = {
   "loc.office": "c003_loc_office",
   "char.bennett": "c003_portrait_bennett",
+  // The series' rolling board: one painting for every S001 case.
+  "obj.rolling_board": "s001_obj_rolling_board",
 };
 
 /** Which generated image replaces which asset key, once painted. */

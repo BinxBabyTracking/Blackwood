@@ -139,6 +139,11 @@ export const locations: LocationDef[] = [
         ...panel("office_report", "Final report", "sprite", { x: 82, y: 72, w: 16, h: 24 }, "conclusion", reportAvailable),
         sprite: [{ image: "obj.report_folder" }],
       },
+      {
+        // Wheeled in when the report is accepted; it stays in the office for the rest of the series.
+        ...panel("office_rolling", "Rolling board", "sprite", { x: 56, y: 44, w: 13, h: 26 }, "rolling", { flag: "case_closed" }),
+        sprite: [{ image: "obj.rolling_board" }],
+      },
     ],
   },
 

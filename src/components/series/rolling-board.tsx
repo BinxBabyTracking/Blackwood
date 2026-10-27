@@ -15,7 +15,7 @@ import type { SeriesView } from "@/series/server";
  * the case board's own component, fed from the series' save instead of a
  * case's. Nothing is pinned or strung for the player.
  */
-export function RollingBoard({ initial, closeHref }: { initial: SeriesView; closeHref: string }) {
+export function RollingBoard({ initial, closeHref, onClose }: { initial: SeriesView; closeHref?: string; onClose?: () => void }) {
   const router = useRouter();
   const [view, setView] = useState(initial);
   const [notice, setNotice] = useState<{ kind: "deduction" | "error"; title: string; text: string } | null>(null);
@@ -87,7 +87,7 @@ export function RollingBoard({ initial, closeHref }: { initial: SeriesView; clos
       <MurderBoard
         view={boardView}
         dispatch={dispatch}
-        onClose={() => router.push(closeHref)}
+        onClose={() => (onClose ? onClose() : router.push(closeHref ?? "/agency/assignments"))}
         onLocalBoard={onLocalBoard}
         title={`Rolling board · ${view.title}`}
         rolling

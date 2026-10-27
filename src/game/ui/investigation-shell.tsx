@@ -7,6 +7,8 @@ import { saveGameVolumes } from "@/app/actions/settings";
 import { paintedArt } from "@/lib/art";
 import type { ActionOutcome, ActionResponse, ClientEvidence, ClientView, GameAction, PanelId } from "../engine/types";
 import { MurderBoard } from "./board";
+import { RollingBoardPanel } from "@/components/series/rolling-board-panel";
+import { SERIES } from "@/series";
 import { GameButton } from "./overlay";
 import { DetectiveNotebook } from "./detective-notebook";
 import { EvidenceInspection } from "./evidence-inspection";
@@ -646,6 +648,10 @@ export function InvestigationShell({
         stack={stack}
         onHotspot={(id) => {
           handled(id);
+          if (view.location.hotspots.find((h) => h.id === id)?.local === "rolling") {
+            setLayer({ k: "panel", panel: "rolling" });
+            return Promise.resolve(null);
+          }
           return dispatch({ type: "hotspot", hotspotId: id });
         }}
       />
@@ -913,6 +919,7 @@ export function InvestigationShell({
       ) : null}
       {panel === "sequence" ? <SequencePanel view={view} dispatch={dispatch} onClose={close} pending={pending} /> : null}
       {panel === "comparison" ? <ComparisonPanel view={view} dispatch={dispatch} onClose={close} pending={pending} /> : null}
+      {panel === "rolling" ? <RollingBoardPanel seriesId={SERIES.find((x) => x.cases.some((c) => c.caseId === caseId))?.id ?? ""} guest={guest} onClose={close} /> : null}
       {panel === "board" ? <MurderBoard view={view} dispatch={dispatch} onClose={close} onLocalBoard={(board) => setViewState((v) => ({ ...v, board }))} /> : null}
 
       {layer?.k === "closure" && view.closure ? (

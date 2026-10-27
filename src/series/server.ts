@@ -86,13 +86,17 @@ function pinnable(def: SeriesDef, saves: { caseId: string; state: InvestigationS
     const view = project(c, s);
     for (const ev of view.evidence) {
       if (ev.photo) continue;
-      const id = canonicalEvidence(caseId, ev.id);
+      // A recovered copy of an earlier case's record is that record.
+      const canonical = c.evidence.find((e) => e.id === ev.id)?.canonical;
+      const id = canonical ?? canonicalEvidence(caseId, ev.id);
       if (items.has(id)) continue;
+      const origin = canonical ? /^S(\d{3})-C(\d{2})-(E\d{3})$/.exec(canonical) : null;
+      const fromCase = origin ? `S${origin[1]}C${origin[2]}` : caseId;
       items.set(id, {
         id,
         kind: "evidence",
-        from: label(caseId),
-        tag: `${short(caseId)} · ${ev.label}`,
+        from: label(fromCase),
+        tag: `${short(fromCase)} · ${origin ? origin[3] : ev.label}`,
         title: ev.title,
         description: ev.description,
         text: ev.inspection,
