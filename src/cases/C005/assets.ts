@@ -59,8 +59,17 @@ export const buildAssets = (): AssetManifest => ({
     ...Object.fromEntries(Object.entries(PAINTED).flatMap(([key, id]) => (art(id) ? [[key, art(id)!]] : []))),
     ...Object.fromEntries(OVERLAYS.flatMap((k) => (art(`c005_${k}`) ? [[`art.${k}`, art(`c005_${k}`)!]] : []))),
     ...Object.fromEntries(comparison.flatMap((k) => (art(`c005_cmp_${k}`) ? [[`cmp.${k}`, art(`c005_cmp_${k}`)!]] : []))),
-    // Talking portraits: face.<person>.<shape>, present only once painted.
-    ...Object.fromEntries(characters.flatMap((c) => FACE_SHAPES.flatMap((sh) => (art(`c005_face_${c}_${sh}`) ? [[`face.${c}.${sh}`, art(`c005_face_${c}_${sh}`)!]] : [])))),
+    // Talking portraits: face.<person>.<shape>, made on Admin as edits of the portrait, present only once painted.
+    // The resting frame is the portrait itself.
+    ...Object.fromEntries(
+      characters.flatMap((c) => {
+        const frames = FACE_SHAPES.flatMap((sh) => (art(`c005_face_${c}_${sh}`) ? [[`face.${c}.${sh}`, art(`c005_face_${c}_${sh}`)!]] : []));
+        const portrait = art(`c005_portrait_${c}`);
+        return frames.length && portrait ? [[`face.${c}.rest`, portrait], ...frames] : frames;
+      }),
+    ),
+    // The case's own interface paintings: the map, the journal and satchel in the corner, the walk between places.
+    ...Object.fromEntries(["map", "obj_notebook", "obj_evidence_bag", "travel_walk"].flatMap((k) => (art(`c005_${k}`) ? [[`ui.${k}`, art(`c005_${k}`)!]] : []))),
   },
   audio: placeholders.audio,
 });

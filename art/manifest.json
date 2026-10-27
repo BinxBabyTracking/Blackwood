@@ -98,7 +98,21 @@
     "c004_frankie": "Frankie Moretti, a 24-year-old Italian-American warehouse clerk, curly black hair under a gray tweed flat cap, a thin anxious face, dark eyes, a day's stubble, a stub of pencil behind one ear, a heavy brown wool work jacket over a collarless shirt, jumpy and ashamed",
     "c004_arthur": "Arthur Vale, a 41-year-old white man, a famous 1920s radio announcer, handsome, wavy dark-blond hair, warm hazel eyes, a broad easy smile, clean-shaven, a tweed jacket, a white shirt and a polka-dot bow tie",
     "c004_sal": "Sal, a heavy-set white man in his forties, a Chicago hoodlum, a broken nose, small hard eyes, a dark overcoat with the collar up and a black flat cap",
-    "c004_augie": "Augie, a thin white man in his thirties, a warehouse heavy, a pockmarked narrow face, a long nose, a gray flat cap and a rough wool sweater"
+    "c004_augie": "Augie, a thin white man in his thirties, a warehouse heavy, a pockmarked narrow face, a long nose, a gray flat cap and a rough wool sweater",
+    "c005_edmund": "Brother Edmund, a 52-year-old Benedictine monk and scholar, thin, stooped, tonsured with a fringe of white hair, a long gentle face, deep-set tired eyes, ink stains on his fingers, black habit",
+    "c005_abbot": "Abbot Benedict, a 61-year-old Benedictine abbot, heavyset and soft-faced, tonsured gray hair, worried kindly brown eyes, black habit with a fine wool cowl, a plain silver pectoral cross, an abbot's ring",
+    "c005_matthias": "Brother Matthias, a 46-year-old Benedictine cellarer, lean and upright, clean-shaven, tonsured dark hair going gray, sharp gray eyes, thin lips, a composed watchful face, black habit and scapular, a heavy ring of iron keys at his belt",
+    "c005_thomas": "Brother Thomas, a 34-year-old Benedictine librarian, slight build, tonsured brown hair, a gentle clever face with red-rimmed grieving eyes, a quill tucked behind one ear, black habit",
+    "c005_peter": "Peter, a 17-year-old novice, thin and pale, untidy fair hair newly tonsured, wide frightened blue eyes, a plain black novice's habit a little too big for him",
+    "c005_anselm": "Brother Anselm, a 57-year-old Benedictine sacristan, round and bustling, tonsured white hair, rosy cheeks, fussy pursed mouth, black habit with a sacristan's bunch of small keys and a taper at his belt",
+    "c005_agnes": "Sister Agnes, a 43-year-old nun and infirmarian, a calm strong face, steady hazel eyes, black veil over a white wimple, black habit with a linen apron, capable hands",
+    "c005_simon": "Brother Simon, a 25-year-old Benedictine bell ringer, broad-shouldered and cheerful, freckled, tonsured red hair, quick to blush, black habit with sleeves pushed up, rope-calloused hands",
+    "c005_william": "William Carter, a 42-year-old lay gatekeeper, weathered and steady, short brown beard, plain brown wool tunic and hood, a leather belt with a big iron gate key",
+    "c005_margery": "Margery, a 50-year-old cook, sturdy and red-faced from the fire, gray hair under a white linen kerchief, a brown wool kirtle with a stained apron, forearms dusted with flour",
+    "c005_roland": "Lord Roland Ashcombe, a 55-year-old English country lord, broad and florid, a short gray beard, a proud heavy face, a fur-trimmed deep red houppelande, a gold chain, a hunting glove in one hand",
+    "c005_geoffrey": "Geoffrey Hale, a 49-year-old manor steward, neat and smooth, clean-shaven, thinning dark hair, a sly agreeable face, a well-cut dark green gown, a pen case and a small seal ring",
+    "c005_alice": "Alice Miller, a 38-year-old miller's wife, strong and wary, brown hair under a plain linen coif, a sensible face dusted with flour, a blue-gray wool kirtle and a homespun apron",
+    "c005_archdeacon": "Master Hugh Selwood, a senior churchman in his fifties, lean and dry, clean-shaven, keen gray eyes, a black cassock under a fur-lined academic hood, a lawyer's patient half smile"
   },
   "images": [
     {
@@ -1834,6 +1848,1281 @@
       "kind": "site",
       "style": "c005",
       "subject": "A Benedictine abbey in a rain-dark Yorkshire dale at dusk, painted as a manuscript miniature: a squat bell tower against a gold-leaf sky, a cloister walk lit by one lamp, and in the foreground a small vaulted room whose oak door stands forced open, a single bronze candlestick missing from the ring of wax on the desk inside. Down the hillside a boy in a black novice's cloak wades a swollen beck toward a watermill. The left third of the image is quiet sky and moor."
+    },
+    {
+      "style": "c005",
+      "id": "c005_loc_chamber",
+      "kind": "background",
+      "subject": "The investigator's chamber in an abbey guest-house, 1327: whitewashed stone walls, a small hearth with a fire, a shuttered window on the upper left with rain on green glass looking out on a bell tower. Along the back wall a sturdy oak table cleared for laying out papers, with a ball of red thread on it; on the left a heavy oak door; on the right a tall wooden reading lectern by a candle stand; a narrow bed and a chest in the corner. A painted map of the dale hangs on the wall to the upper right. The tabletop and the floor in front of it are left clear."
+    },
+    {
+      "style": "c005",
+      "id": "c005_loc_book_room",
+      "kind": "background",
+      "subject": "A small vaulted stone book room off a cloister: an oak writing desk under a narrow window, ink spilled across an open great book on it, an iron-bound charter chest with its lid up on the right, a stool knocked over between them. On the left an oak door standing open on its hinges, its heavy swing bar down and an iron bracket hanging crooked from the wall beside it, and just below the bracket a small wooden cupboard door set into the wall. A ring of candle wax on the desk with nothing in it. The floor between desk and chest left clear."
+    },
+    {
+      "style": "c005",
+      "id": "c005_loc_scriptorium",
+      "kind": "background",
+      "subject": "A medieval scriptorium in a cloister walk: a row of wooden writing carrels facing open arches onto a rainy grass garth, sloping desks with quills, ink horns and parchment, a reading stand with an open book, wax tablets on a bench. Soft gray daylight. The middle floor left clear."
+    },
+    {
+      "style": "c005",
+      "id": "c005_loc_church",
+      "kind": "background",
+      "subject": "The interior of a Romanesque and early Gothic abbey church: two facing rows of oak choir stalls with small lamps, the high altar beyond, and on the left a small side altar under a painted Virgin with two bronze pricket candlesticks; on the right a low door to the sacristy with a board of writing hanging inside it. Candlelight and gold. The floor between the stalls left clear."
+    },
+    {
+      "style": "c005",
+      "id": "c005_loc_cloister",
+      "kind": "background",
+      "subject": "A medieval cloister on a rainy day: roofed stone walks on four sides around a square of wet grass with a stone well in the middle; on the left the west walk with an oak door and, a few paces along, a lower iron-banded door; on the right the arched entrance of the chapter house; a long stone bench along the near walk. The walk floor left clear."
+    },
+    {
+      "style": "c005",
+      "id": "c005_loc_passage",
+      "kind": "background",
+      "subject": "A narrow vaulted stone passage lit by one candle: on the left wall halfway along, at chest height, a small wooden door set into the wall; a long iron hook hanging on a peg nearby; bundles of candles, a cask of lamp oil and rolled parchment along the right wall; low oak doors at each end. Damp stone, close and dark. The floor left clear."
+    },
+    {
+      "style": "c005",
+      "id": "c005_loc_abbot_chamber",
+      "kind": "background",
+      "subject": "An abbot's private chamber: a good fire in a hooded fireplace on the left with a small carved seated saint on the mantel, a carved oak chair, a table on the left of center with a long parchment roll half unwound and weighted with an inkpot, a side table with sealed letters on the right, a crucifix, a window of small panes. Warm and comfortable. The floor in front of the table left clear."
+    },
+    {
+      "style": "c005",
+      "id": "c005_loc_cellar",
+      "kind": "background",
+      "subject": "The kitchen court of an abbey's cellarer's range: a muddy cobbled court in rain with a lamp over a door; on the left a little office with tally sticks and a peg with a black habit on it, a desk with a ledger; beyond, the vaulted cellar with casks; in the corner a low iron-banded door; on the right the lit doorway and window of a guest kitchen with a fire inside; a salt store with a wooden bin. The court floor in the middle left clear."
+    },
+    {
+      "style": "c005",
+      "id": "c005_loc_gatehouse",
+      "kind": "background",
+      "subject": "An abbey gatehouse: a stone archway with two great oak gate leaves and a wicket, a porter's window with a board and a long parchment roll beside it, rain on the cobbles, the precinct wall running off either side, the moor road beyond. The ground in front of the window left clear."
+    },
+    {
+      "style": "c005",
+      "id": "c005_loc_mill",
+      "kind": "background",
+      "subject": "A small medieval watermill at Hollin Bridge beside a swollen brown beck: a turning wooden wheel on the right, the mill house of stone and timber with its door open, sacks of grain, a ladder up to a loft on the left, alder trees, rain. The yard in front of the door left clear."
+    },
+    {
+      "style": "c005",
+      "id": "c005_loc_manor",
+      "kind": "background",
+      "subject": "The hall of a medieval manor house: a long timber-roofed hall with a fire burning on a central hearth, a hound asleep by it, the lord's table on a dais, painted heraldic shields on the wall, an open door to a yard where hedge stakes are stacked. The floor between the hearth and the dais left clear."
+    },
+    {
+      "style": "c005",
+      "id": "c005_loc_muniments",
+      "kind": "background",
+      "subject": "A small locked record room above a chapter house: iron-bound chests along the walls, a shallow drawer of wax seal impressions pulled out on the left, a thick book open on a stand, an oak door with three keyholes. Dusty light from one narrow window. The floor left clear."
+    },
+    {
+      "style": "c005",
+      "id": "c005_loc_infirmary",
+      "kind": "background",
+      "subject": "A medieval monastic infirmary: a long whitewashed room, a body laid out under a linen sheet on a board with candles at head and foot on the left, an old monk asleep under blankets on a bed on the right, a small fire, shelves of pots and herbs. Quiet and gentle. The floor in the middle left clear."
+    },
+    {
+      "style": "c005",
+      "id": "c005_loc_tower",
+      "kind": "background",
+      "subject": "The inside of a medieval bell tower: heavy oak bell frame and beams, a great bronze bell above, a new pale rope hanging beside an old frayed rope coiled on the floor, a thick book chained to a shelf on the left, wind through the louvers, a gap behind one beam on the right. The floor left clear."
+    },
+    {
+      "style": "c005",
+      "id": "c005_portrait_edmund",
+      "kind": "portrait",
+      "person": "c005_edmund",
+      "suffix": "Half-length talking portrait base inside a pointed Gothic arch on a gold patterned ground: facing the viewer directly, looking straight out, head centered and level, mouth gently closed, nothing covering the mouth or eyes, even light from the front. Opaque background.",
+      "subject": "Talking portrait base of Brother Edmund."
+    },
+    {
+      "style": "c005",
+      "id": "c005_portrait_abbot",
+      "kind": "portrait",
+      "person": "c005_abbot",
+      "suffix": "Half-length talking portrait base inside a pointed Gothic arch on a gold patterned ground: facing the viewer directly, looking straight out, head centered and level, mouth gently closed, nothing covering the mouth or eyes, even light from the front. Opaque background.",
+      "subject": "Talking portrait base of Abbot Benedict."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_abbot_slight",
+      "kind": "face",
+      "person": "c005_abbot",
+      "reference": "c005_portrait_abbot",
+      "subject": "The same portrait with the mouth only slightly open, lips just parted, as between words."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_abbot_ah",
+      "kind": "face",
+      "person": "c005_abbot",
+      "reference": "c005_portrait_abbot",
+      "subject": "The same portrait with the mouth open as when saying 'ah', jaw dropped, teeth a little visible."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_abbot_ee",
+      "kind": "face",
+      "person": "c005_abbot",
+      "reference": "c005_portrait_abbot",
+      "subject": "The same portrait with the mouth wide and stretched as when saying 'ee', teeth showing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_abbot_oh",
+      "kind": "face",
+      "person": "c005_abbot",
+      "reference": "c005_portrait_abbot",
+      "subject": "The same portrait with the lips rounded into an open 'oh'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_abbot_oo",
+      "kind": "face",
+      "person": "c005_abbot",
+      "reference": "c005_portrait_abbot",
+      "subject": "The same portrait with the lips pushed forward in a small round 'oo'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_abbot_blink",
+      "kind": "face",
+      "person": "c005_abbot",
+      "reference": "c005_portrait_abbot",
+      "subject": "The same portrait with the eyes closed in a blink, the mouth exactly as in the reference."
+    },
+    {
+      "style": "c005",
+      "id": "c005_figure_abbot",
+      "kind": "figure",
+      "person": "c005_abbot",
+      "reference": "c005_portrait_abbot",
+      "subject": "Abbot Benedict, standing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_portrait_matthias",
+      "kind": "portrait",
+      "person": "c005_matthias",
+      "suffix": "Half-length talking portrait base inside a pointed Gothic arch on a gold patterned ground: facing the viewer directly, looking straight out, head centered and level, mouth gently closed, nothing covering the mouth or eyes, even light from the front. Opaque background.",
+      "subject": "Talking portrait base of Brother Matthias."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_matthias_slight",
+      "kind": "face",
+      "person": "c005_matthias",
+      "reference": "c005_portrait_matthias",
+      "subject": "The same portrait with the mouth only slightly open, lips just parted, as between words."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_matthias_ah",
+      "kind": "face",
+      "person": "c005_matthias",
+      "reference": "c005_portrait_matthias",
+      "subject": "The same portrait with the mouth open as when saying 'ah', jaw dropped, teeth a little visible."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_matthias_ee",
+      "kind": "face",
+      "person": "c005_matthias",
+      "reference": "c005_portrait_matthias",
+      "subject": "The same portrait with the mouth wide and stretched as when saying 'ee', teeth showing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_matthias_oh",
+      "kind": "face",
+      "person": "c005_matthias",
+      "reference": "c005_portrait_matthias",
+      "subject": "The same portrait with the lips rounded into an open 'oh'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_matthias_oo",
+      "kind": "face",
+      "person": "c005_matthias",
+      "reference": "c005_portrait_matthias",
+      "subject": "The same portrait with the lips pushed forward in a small round 'oo'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_matthias_blink",
+      "kind": "face",
+      "person": "c005_matthias",
+      "reference": "c005_portrait_matthias",
+      "subject": "The same portrait with the eyes closed in a blink, the mouth exactly as in the reference."
+    },
+    {
+      "style": "c005",
+      "id": "c005_figure_matthias",
+      "kind": "figure",
+      "person": "c005_matthias",
+      "reference": "c005_portrait_matthias",
+      "subject": "Brother Matthias, standing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_portrait_thomas",
+      "kind": "portrait",
+      "person": "c005_thomas",
+      "suffix": "Half-length talking portrait base inside a pointed Gothic arch on a gold patterned ground: facing the viewer directly, looking straight out, head centered and level, mouth gently closed, nothing covering the mouth or eyes, even light from the front. Opaque background.",
+      "subject": "Talking portrait base of Brother Thomas."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_thomas_slight",
+      "kind": "face",
+      "person": "c005_thomas",
+      "reference": "c005_portrait_thomas",
+      "subject": "The same portrait with the mouth only slightly open, lips just parted, as between words."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_thomas_ah",
+      "kind": "face",
+      "person": "c005_thomas",
+      "reference": "c005_portrait_thomas",
+      "subject": "The same portrait with the mouth open as when saying 'ah', jaw dropped, teeth a little visible."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_thomas_ee",
+      "kind": "face",
+      "person": "c005_thomas",
+      "reference": "c005_portrait_thomas",
+      "subject": "The same portrait with the mouth wide and stretched as when saying 'ee', teeth showing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_thomas_oh",
+      "kind": "face",
+      "person": "c005_thomas",
+      "reference": "c005_portrait_thomas",
+      "subject": "The same portrait with the lips rounded into an open 'oh'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_thomas_oo",
+      "kind": "face",
+      "person": "c005_thomas",
+      "reference": "c005_portrait_thomas",
+      "subject": "The same portrait with the lips pushed forward in a small round 'oo'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_thomas_blink",
+      "kind": "face",
+      "person": "c005_thomas",
+      "reference": "c005_portrait_thomas",
+      "subject": "The same portrait with the eyes closed in a blink, the mouth exactly as in the reference."
+    },
+    {
+      "style": "c005",
+      "id": "c005_figure_thomas",
+      "kind": "figure",
+      "person": "c005_thomas",
+      "reference": "c005_portrait_thomas",
+      "subject": "Brother Thomas, standing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_portrait_peter",
+      "kind": "portrait",
+      "person": "c005_peter",
+      "suffix": "Half-length talking portrait base inside a pointed Gothic arch on a gold patterned ground: facing the viewer directly, looking straight out, head centered and level, mouth gently closed, nothing covering the mouth or eyes, even light from the front. Opaque background.",
+      "subject": "Talking portrait base of Peter."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_peter_slight",
+      "kind": "face",
+      "person": "c005_peter",
+      "reference": "c005_portrait_peter",
+      "subject": "The same portrait with the mouth only slightly open, lips just parted, as between words."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_peter_ah",
+      "kind": "face",
+      "person": "c005_peter",
+      "reference": "c005_portrait_peter",
+      "subject": "The same portrait with the mouth open as when saying 'ah', jaw dropped, teeth a little visible."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_peter_ee",
+      "kind": "face",
+      "person": "c005_peter",
+      "reference": "c005_portrait_peter",
+      "subject": "The same portrait with the mouth wide and stretched as when saying 'ee', teeth showing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_peter_oh",
+      "kind": "face",
+      "person": "c005_peter",
+      "reference": "c005_portrait_peter",
+      "subject": "The same portrait with the lips rounded into an open 'oh'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_peter_oo",
+      "kind": "face",
+      "person": "c005_peter",
+      "reference": "c005_portrait_peter",
+      "subject": "The same portrait with the lips pushed forward in a small round 'oo'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_peter_blink",
+      "kind": "face",
+      "person": "c005_peter",
+      "reference": "c005_portrait_peter",
+      "subject": "The same portrait with the eyes closed in a blink, the mouth exactly as in the reference."
+    },
+    {
+      "style": "c005",
+      "id": "c005_figure_peter",
+      "kind": "figure",
+      "person": "c005_peter",
+      "reference": "c005_portrait_peter",
+      "subject": "Peter, standing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_portrait_anselm",
+      "kind": "portrait",
+      "person": "c005_anselm",
+      "suffix": "Half-length talking portrait base inside a pointed Gothic arch on a gold patterned ground: facing the viewer directly, looking straight out, head centered and level, mouth gently closed, nothing covering the mouth or eyes, even light from the front. Opaque background.",
+      "subject": "Talking portrait base of Brother Anselm."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_anselm_slight",
+      "kind": "face",
+      "person": "c005_anselm",
+      "reference": "c005_portrait_anselm",
+      "subject": "The same portrait with the mouth only slightly open, lips just parted, as between words."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_anselm_ah",
+      "kind": "face",
+      "person": "c005_anselm",
+      "reference": "c005_portrait_anselm",
+      "subject": "The same portrait with the mouth open as when saying 'ah', jaw dropped, teeth a little visible."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_anselm_ee",
+      "kind": "face",
+      "person": "c005_anselm",
+      "reference": "c005_portrait_anselm",
+      "subject": "The same portrait with the mouth wide and stretched as when saying 'ee', teeth showing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_anselm_oh",
+      "kind": "face",
+      "person": "c005_anselm",
+      "reference": "c005_portrait_anselm",
+      "subject": "The same portrait with the lips rounded into an open 'oh'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_anselm_oo",
+      "kind": "face",
+      "person": "c005_anselm",
+      "reference": "c005_portrait_anselm",
+      "subject": "The same portrait with the lips pushed forward in a small round 'oo'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_anselm_blink",
+      "kind": "face",
+      "person": "c005_anselm",
+      "reference": "c005_portrait_anselm",
+      "subject": "The same portrait with the eyes closed in a blink, the mouth exactly as in the reference."
+    },
+    {
+      "style": "c005",
+      "id": "c005_figure_anselm",
+      "kind": "figure",
+      "person": "c005_anselm",
+      "reference": "c005_portrait_anselm",
+      "subject": "Brother Anselm, standing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_portrait_agnes",
+      "kind": "portrait",
+      "person": "c005_agnes",
+      "suffix": "Half-length talking portrait base inside a pointed Gothic arch on a gold patterned ground: facing the viewer directly, looking straight out, head centered and level, mouth gently closed, nothing covering the mouth or eyes, even light from the front. Opaque background.",
+      "subject": "Talking portrait base of Sister Agnes."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_agnes_slight",
+      "kind": "face",
+      "person": "c005_agnes",
+      "reference": "c005_portrait_agnes",
+      "subject": "The same portrait with the mouth only slightly open, lips just parted, as between words."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_agnes_ah",
+      "kind": "face",
+      "person": "c005_agnes",
+      "reference": "c005_portrait_agnes",
+      "subject": "The same portrait with the mouth open as when saying 'ah', jaw dropped, teeth a little visible."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_agnes_ee",
+      "kind": "face",
+      "person": "c005_agnes",
+      "reference": "c005_portrait_agnes",
+      "subject": "The same portrait with the mouth wide and stretched as when saying 'ee', teeth showing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_agnes_oh",
+      "kind": "face",
+      "person": "c005_agnes",
+      "reference": "c005_portrait_agnes",
+      "subject": "The same portrait with the lips rounded into an open 'oh'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_agnes_oo",
+      "kind": "face",
+      "person": "c005_agnes",
+      "reference": "c005_portrait_agnes",
+      "subject": "The same portrait with the lips pushed forward in a small round 'oo'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_agnes_blink",
+      "kind": "face",
+      "person": "c005_agnes",
+      "reference": "c005_portrait_agnes",
+      "subject": "The same portrait with the eyes closed in a blink, the mouth exactly as in the reference."
+    },
+    {
+      "style": "c005",
+      "id": "c005_figure_agnes",
+      "kind": "figure",
+      "person": "c005_agnes",
+      "reference": "c005_portrait_agnes",
+      "subject": "Sister Agnes, standing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_portrait_simon",
+      "kind": "portrait",
+      "person": "c005_simon",
+      "suffix": "Half-length talking portrait base inside a pointed Gothic arch on a gold patterned ground: facing the viewer directly, looking straight out, head centered and level, mouth gently closed, nothing covering the mouth or eyes, even light from the front. Opaque background.",
+      "subject": "Talking portrait base of Brother Simon."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_simon_slight",
+      "kind": "face",
+      "person": "c005_simon",
+      "reference": "c005_portrait_simon",
+      "subject": "The same portrait with the mouth only slightly open, lips just parted, as between words."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_simon_ah",
+      "kind": "face",
+      "person": "c005_simon",
+      "reference": "c005_portrait_simon",
+      "subject": "The same portrait with the mouth open as when saying 'ah', jaw dropped, teeth a little visible."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_simon_ee",
+      "kind": "face",
+      "person": "c005_simon",
+      "reference": "c005_portrait_simon",
+      "subject": "The same portrait with the mouth wide and stretched as when saying 'ee', teeth showing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_simon_oh",
+      "kind": "face",
+      "person": "c005_simon",
+      "reference": "c005_portrait_simon",
+      "subject": "The same portrait with the lips rounded into an open 'oh'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_simon_oo",
+      "kind": "face",
+      "person": "c005_simon",
+      "reference": "c005_portrait_simon",
+      "subject": "The same portrait with the lips pushed forward in a small round 'oo'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_simon_blink",
+      "kind": "face",
+      "person": "c005_simon",
+      "reference": "c005_portrait_simon",
+      "subject": "The same portrait with the eyes closed in a blink, the mouth exactly as in the reference."
+    },
+    {
+      "style": "c005",
+      "id": "c005_figure_simon",
+      "kind": "figure",
+      "person": "c005_simon",
+      "reference": "c005_portrait_simon",
+      "subject": "Brother Simon, standing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_portrait_william",
+      "kind": "portrait",
+      "person": "c005_william",
+      "suffix": "Half-length talking portrait base inside a pointed Gothic arch on a gold patterned ground: facing the viewer directly, looking straight out, head centered and level, mouth gently closed, nothing covering the mouth or eyes, even light from the front. Opaque background.",
+      "subject": "Talking portrait base of William Carter."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_william_slight",
+      "kind": "face",
+      "person": "c005_william",
+      "reference": "c005_portrait_william",
+      "subject": "The same portrait with the mouth only slightly open, lips just parted, as between words."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_william_ah",
+      "kind": "face",
+      "person": "c005_william",
+      "reference": "c005_portrait_william",
+      "subject": "The same portrait with the mouth open as when saying 'ah', jaw dropped, teeth a little visible."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_william_ee",
+      "kind": "face",
+      "person": "c005_william",
+      "reference": "c005_portrait_william",
+      "subject": "The same portrait with the mouth wide and stretched as when saying 'ee', teeth showing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_william_oh",
+      "kind": "face",
+      "person": "c005_william",
+      "reference": "c005_portrait_william",
+      "subject": "The same portrait with the lips rounded into an open 'oh'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_william_oo",
+      "kind": "face",
+      "person": "c005_william",
+      "reference": "c005_portrait_william",
+      "subject": "The same portrait with the lips pushed forward in a small round 'oo'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_william_blink",
+      "kind": "face",
+      "person": "c005_william",
+      "reference": "c005_portrait_william",
+      "subject": "The same portrait with the eyes closed in a blink, the mouth exactly as in the reference."
+    },
+    {
+      "style": "c005",
+      "id": "c005_figure_william",
+      "kind": "figure",
+      "person": "c005_william",
+      "reference": "c005_portrait_william",
+      "subject": "William Carter, standing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_portrait_margery",
+      "kind": "portrait",
+      "person": "c005_margery",
+      "suffix": "Half-length talking portrait base inside a pointed Gothic arch on a gold patterned ground: facing the viewer directly, looking straight out, head centered and level, mouth gently closed, nothing covering the mouth or eyes, even light from the front. Opaque background.",
+      "subject": "Talking portrait base of Margery."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_margery_slight",
+      "kind": "face",
+      "person": "c005_margery",
+      "reference": "c005_portrait_margery",
+      "subject": "The same portrait with the mouth only slightly open, lips just parted, as between words."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_margery_ah",
+      "kind": "face",
+      "person": "c005_margery",
+      "reference": "c005_portrait_margery",
+      "subject": "The same portrait with the mouth open as when saying 'ah', jaw dropped, teeth a little visible."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_margery_ee",
+      "kind": "face",
+      "person": "c005_margery",
+      "reference": "c005_portrait_margery",
+      "subject": "The same portrait with the mouth wide and stretched as when saying 'ee', teeth showing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_margery_oh",
+      "kind": "face",
+      "person": "c005_margery",
+      "reference": "c005_portrait_margery",
+      "subject": "The same portrait with the lips rounded into an open 'oh'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_margery_oo",
+      "kind": "face",
+      "person": "c005_margery",
+      "reference": "c005_portrait_margery",
+      "subject": "The same portrait with the lips pushed forward in a small round 'oo'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_margery_blink",
+      "kind": "face",
+      "person": "c005_margery",
+      "reference": "c005_portrait_margery",
+      "subject": "The same portrait with the eyes closed in a blink, the mouth exactly as in the reference."
+    },
+    {
+      "style": "c005",
+      "id": "c005_figure_margery",
+      "kind": "figure",
+      "person": "c005_margery",
+      "reference": "c005_portrait_margery",
+      "subject": "Margery, standing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_portrait_roland",
+      "kind": "portrait",
+      "person": "c005_roland",
+      "suffix": "Half-length talking portrait base inside a pointed Gothic arch on a gold patterned ground: facing the viewer directly, looking straight out, head centered and level, mouth gently closed, nothing covering the mouth or eyes, even light from the front. Opaque background.",
+      "subject": "Talking portrait base of Lord Roland Ashcombe."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_roland_slight",
+      "kind": "face",
+      "person": "c005_roland",
+      "reference": "c005_portrait_roland",
+      "subject": "The same portrait with the mouth only slightly open, lips just parted, as between words."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_roland_ah",
+      "kind": "face",
+      "person": "c005_roland",
+      "reference": "c005_portrait_roland",
+      "subject": "The same portrait with the mouth open as when saying 'ah', jaw dropped, teeth a little visible."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_roland_ee",
+      "kind": "face",
+      "person": "c005_roland",
+      "reference": "c005_portrait_roland",
+      "subject": "The same portrait with the mouth wide and stretched as when saying 'ee', teeth showing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_roland_oh",
+      "kind": "face",
+      "person": "c005_roland",
+      "reference": "c005_portrait_roland",
+      "subject": "The same portrait with the lips rounded into an open 'oh'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_roland_oo",
+      "kind": "face",
+      "person": "c005_roland",
+      "reference": "c005_portrait_roland",
+      "subject": "The same portrait with the lips pushed forward in a small round 'oo'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_roland_blink",
+      "kind": "face",
+      "person": "c005_roland",
+      "reference": "c005_portrait_roland",
+      "subject": "The same portrait with the eyes closed in a blink, the mouth exactly as in the reference."
+    },
+    {
+      "style": "c005",
+      "id": "c005_figure_roland",
+      "kind": "figure",
+      "person": "c005_roland",
+      "reference": "c005_portrait_roland",
+      "subject": "Lord Roland Ashcombe, standing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_portrait_geoffrey",
+      "kind": "portrait",
+      "person": "c005_geoffrey",
+      "suffix": "Half-length talking portrait base inside a pointed Gothic arch on a gold patterned ground: facing the viewer directly, looking straight out, head centered and level, mouth gently closed, nothing covering the mouth or eyes, even light from the front. Opaque background.",
+      "subject": "Talking portrait base of Geoffrey Hale."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_geoffrey_slight",
+      "kind": "face",
+      "person": "c005_geoffrey",
+      "reference": "c005_portrait_geoffrey",
+      "subject": "The same portrait with the mouth only slightly open, lips just parted, as between words."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_geoffrey_ah",
+      "kind": "face",
+      "person": "c005_geoffrey",
+      "reference": "c005_portrait_geoffrey",
+      "subject": "The same portrait with the mouth open as when saying 'ah', jaw dropped, teeth a little visible."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_geoffrey_ee",
+      "kind": "face",
+      "person": "c005_geoffrey",
+      "reference": "c005_portrait_geoffrey",
+      "subject": "The same portrait with the mouth wide and stretched as when saying 'ee', teeth showing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_geoffrey_oh",
+      "kind": "face",
+      "person": "c005_geoffrey",
+      "reference": "c005_portrait_geoffrey",
+      "subject": "The same portrait with the lips rounded into an open 'oh'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_geoffrey_oo",
+      "kind": "face",
+      "person": "c005_geoffrey",
+      "reference": "c005_portrait_geoffrey",
+      "subject": "The same portrait with the lips pushed forward in a small round 'oo'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_geoffrey_blink",
+      "kind": "face",
+      "person": "c005_geoffrey",
+      "reference": "c005_portrait_geoffrey",
+      "subject": "The same portrait with the eyes closed in a blink, the mouth exactly as in the reference."
+    },
+    {
+      "style": "c005",
+      "id": "c005_figure_geoffrey",
+      "kind": "figure",
+      "person": "c005_geoffrey",
+      "reference": "c005_portrait_geoffrey",
+      "subject": "Geoffrey Hale, standing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_portrait_alice",
+      "kind": "portrait",
+      "person": "c005_alice",
+      "suffix": "Half-length talking portrait base inside a pointed Gothic arch on a gold patterned ground: facing the viewer directly, looking straight out, head centered and level, mouth gently closed, nothing covering the mouth or eyes, even light from the front. Opaque background.",
+      "subject": "Talking portrait base of Alice Miller."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_alice_slight",
+      "kind": "face",
+      "person": "c005_alice",
+      "reference": "c005_portrait_alice",
+      "subject": "The same portrait with the mouth only slightly open, lips just parted, as between words."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_alice_ah",
+      "kind": "face",
+      "person": "c005_alice",
+      "reference": "c005_portrait_alice",
+      "subject": "The same portrait with the mouth open as when saying 'ah', jaw dropped, teeth a little visible."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_alice_ee",
+      "kind": "face",
+      "person": "c005_alice",
+      "reference": "c005_portrait_alice",
+      "subject": "The same portrait with the mouth wide and stretched as when saying 'ee', teeth showing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_alice_oh",
+      "kind": "face",
+      "person": "c005_alice",
+      "reference": "c005_portrait_alice",
+      "subject": "The same portrait with the lips rounded into an open 'oh'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_alice_oo",
+      "kind": "face",
+      "person": "c005_alice",
+      "reference": "c005_portrait_alice",
+      "subject": "The same portrait with the lips pushed forward in a small round 'oo'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_alice_blink",
+      "kind": "face",
+      "person": "c005_alice",
+      "reference": "c005_portrait_alice",
+      "subject": "The same portrait with the eyes closed in a blink, the mouth exactly as in the reference."
+    },
+    {
+      "style": "c005",
+      "id": "c005_figure_alice",
+      "kind": "figure",
+      "person": "c005_alice",
+      "reference": "c005_portrait_alice",
+      "subject": "Alice Miller, standing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_portrait_archdeacon",
+      "kind": "portrait",
+      "person": "c005_archdeacon",
+      "suffix": "Half-length talking portrait base inside a pointed Gothic arch on a gold patterned ground: facing the viewer directly, looking straight out, head centered and level, mouth gently closed, nothing covering the mouth or eyes, even light from the front. Opaque background.",
+      "subject": "Talking portrait base of Master Hugh Selwood."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_archdeacon_slight",
+      "kind": "face",
+      "person": "c005_archdeacon",
+      "reference": "c005_portrait_archdeacon",
+      "subject": "The same portrait with the mouth only slightly open, lips just parted, as between words."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_archdeacon_ah",
+      "kind": "face",
+      "person": "c005_archdeacon",
+      "reference": "c005_portrait_archdeacon",
+      "subject": "The same portrait with the mouth open as when saying 'ah', jaw dropped, teeth a little visible."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_archdeacon_ee",
+      "kind": "face",
+      "person": "c005_archdeacon",
+      "reference": "c005_portrait_archdeacon",
+      "subject": "The same portrait with the mouth wide and stretched as when saying 'ee', teeth showing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_archdeacon_oh",
+      "kind": "face",
+      "person": "c005_archdeacon",
+      "reference": "c005_portrait_archdeacon",
+      "subject": "The same portrait with the lips rounded into an open 'oh'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_archdeacon_oo",
+      "kind": "face",
+      "person": "c005_archdeacon",
+      "reference": "c005_portrait_archdeacon",
+      "subject": "The same portrait with the lips pushed forward in a small round 'oo'."
+    },
+    {
+      "style": "c005",
+      "id": "c005_face_archdeacon_blink",
+      "kind": "face",
+      "person": "c005_archdeacon",
+      "reference": "c005_portrait_archdeacon",
+      "subject": "The same portrait with the eyes closed in a blink, the mouth exactly as in the reference."
+    },
+    {
+      "style": "c005",
+      "id": "c005_obj_commission",
+      "kind": "sprite",
+      "subject": "A folded letter of commission on parchment with a red wax seal hanging on a tag, lying on a table."
+    },
+    {
+      "style": "c005",
+      "id": "c005_obj_journal",
+      "kind": "sprite",
+      "subject": "A small leather-bound journal of parchment leaves with a quill laid across it."
+    },
+    {
+      "style": "c005",
+      "id": "c005_obj_lectern",
+      "kind": "sprite",
+      "subject": "A tall wooden reading lectern with two documents laid side by side on its slope and a candle beside them."
+    },
+    {
+      "style": "c005",
+      "id": "c005_obj_bellstrip",
+      "kind": "sprite",
+      "subject": "A long strip of parchment pinned to a board, ruled into seven spaces, with small cards of parchment pinned along it."
+    },
+    {
+      "style": "c005",
+      "id": "c005_obj_door",
+      "kind": "sprite",
+      "subject": "A heavy arched oak door with iron studs and a ring handle, closed."
+    },
+    {
+      "style": "c005",
+      "id": "c005_obj_cloak",
+      "kind": "sprite",
+      "subject": "A black wool novice's cloak folded square on a stone bench with a small psalter on top of it."
+    },
+    {
+      "style": "c005",
+      "id": "c005_obj_saltbin",
+      "kind": "sprite",
+      "subject": "A great wooden salt bin with its lid propped open, full of gray salt."
+    },
+    {
+      "style": "c005",
+      "id": "c005_obj_folded_letter",
+      "kind": "sprite",
+      "subject": "A folded letter sealed with a blob of plain red wax."
+    },
+    {
+      "style": "c005",
+      "id": "c005_obj_finding",
+      "kind": "sprite",
+      "subject": "A sheet of parchment written in a neat hand with a red wax seal hanging from it on a ribbon."
+    },
+    {
+      "style": "c005",
+      "id": "c005_obj_notebook",
+      "kind": "sprite",
+      "subject": "A small leather-bound journal tied shut with a thong, a quill tucked under the tie."
+    },
+    {
+      "style": "c005",
+      "id": "c005_obj_evidence_bag",
+      "kind": "sprite",
+      "subject": "A worn leather satchel with a buckled flap."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e01",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A sheet of scrap parchment with a brown ink sketch of a small room seen from above: a desk, a chest, a stool on its side and a figure lying between them, with notes around it in soft unreadable script."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e02",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A folded sheet of parchment with a few lines of soft unreadable writing and a small ink sketch of a head with a curved mark above the ear."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e03",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "The front edge of an oak desk with a fresh crushed dent, a bright smear of yellow metal pressed into it, and drops of candle wax beside it."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e04",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A heavy oak door bar resting in place with two fresh bright scores across the grain on its top face, and an iron hook bracket hanging from the wall by one nail, plaster crumbs below."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e05",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A small wooden door open in a stone wall showing a cupboard through to another room, drips of tallow on the floor below, and a long iron cellar hook with a bright point hanging on a peg."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e06",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A small three-cornered scrap of black wool caught on a nail head standing out of a rough wooden frame."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e07",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "The sleeve of a black wool habit hanging on a peg, with a fresh three-cornered tear neatly mended in new gray thread."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e08",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A narrow book bound in limp leather, open, with columns of soft unreadable entries."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e09",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A broad old charter on yellowed parchment in a round upright hand, with a green wax seal of a knight on horseback hanging on a leather tag."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e10",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "Several sheets of fair copy in a careful hand with small crosses in the margin and an ink drawing of a seal showing a saint standing under a pointed canopy."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e11",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A shallow drawer of red and green wax seal impressions, some showing a seated saint with a book and some a saint standing under a canopy, each with a little slip, and a thick chronicle open beside it."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e12",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A thick book of the dead open at a page of names written in many hands, a ribbon marking the place."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e13",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A teaching book open at two pages of written letters side by side, old round letters on the left and newer pointed letters on the right, a thread marking the page."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e14",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A small slip of parchment covered in a quick small hand, a numbered list, tucked into the binding of a great book."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e15",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A long parchment account roll half unwound with columns of soft unreadable entries and a note squeezed into the margin."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e16",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A cellarer's day book open at a page of small neat entries and sums, with a balance and tally sticks beside it."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e17",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A short folded letter with a broken wax seal showing a stag's head, under a heap of notched tally sticks in a wooden box."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e18",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A manor account roll on a table, with soft unreadable entries and a small sketch of sheep in the margin."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e19",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A wooden board hanging inside a sacristy door listing furnishings in soft unreadable writing, with a strip of parchment pinned beneath it."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e20",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "Two bronze pricket candlesticks engraved round the foot, one with a tall beeswax candle and one with a short stubby burnt-down candle, its foot dented and scratched bright with something dark caked in the engraving."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e21",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A waxed cord laid along the curved dented foot of a bronze candlestick on a linen cloth, beside a folded sheet of notes."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e22",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A thick book chained to a wooden shelf, open at a page of writing with a small drawing of a bell and a hand bell in the margin."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e23",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A wooden board with chalk tally marks and a few chalked words, a frayed bell rope end beside it."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e24",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A folded sheet of parchment with a few lines of soft unreadable writing and a tiny sketch of two rows of choir stalls."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e25",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A long gatekeeper's roll of parchment on a board, a line of soft unreadable writing for each comer."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e26",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A folded sheet of parchment with a few lines of soft unreadable writing and a cook's floury thumbprint in the corner."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e27",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A black wool cloak folded square on a stone bench with a small psalter and a wooden spoon on top."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e28",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A small two-leaved wooden writing tablet lined with wax, open, a few uneven scratched lines of writing in the wax."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e29",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A folded sheet of parchment with a few lines of soft unreadable writing, dusted with flour."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e30",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A sheet of parchment with lines of soft unreadable writing and a simple cross made as a mark at the bottom."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e31",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A thin sealed charter wrapped half out of oiled cloth, gray salt clinging to it, a red-brown wax seal of a standing saint under a canopy on two silk cords."
+    },
+    {
+      "style": "c005",
+      "id": "c005_ev_e32",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "Several sheets of parchment in a neat hand, numbered points, signed at the bottom, a small red wax seal."
+    },
+    {
+      "style": "c005",
+      "id": "c005_cmp_seal_old",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A worn wax seal impression showing a saint seated on a bench with a book on his knee, a Latin legend round the edge."
+    },
+    {
+      "style": "c005",
+      "id": "c005_cmp_seal_forged",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "A soft, slightly small red-brown wax seal showing a saint standing under a pointed canopy holding a staff, on two silk cords."
+    },
+    {
+      "style": "c005",
+      "id": "c005_cmp_leaf_old",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "Thick yellowed parchment, the same on both sides, soft at the folds."
+    },
+    {
+      "style": "c005",
+      "id": "c005_cmp_leaf_forged",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "Thin parchment held low to a candle so the raking light shows faint scraped-away older letters beneath fresh writing."
+    },
+    {
+      "style": "c005",
+      "id": "c005_cmp_ink_old",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "Very close view of old brown ink sunk into parchment, faded at the edges of each stroke."
+    },
+    {
+      "style": "c005",
+      "id": "c005_cmp_ink_forged",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "Very close view of dark crisp black ink lying on a scraped parchment surface."
+    },
+    {
+      "style": "c005",
+      "id": "c005_cmp_hand_old",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "Very close view of an old round book hand with single-bowl letter a and tall s."
+    },
+    {
+      "style": "c005",
+      "id": "c005_cmp_hand_forged",
+      "kind": "evidence",
+      "suffix": "The real object or document as an illuminated manuscript would paint it, close up, on a warm vellum-colored ground with soft shadow, crisp ink outlines and tempera color, the subject filling most of the frame. Opaque background.",
+      "subject": "Very close view of an imitation old hand where some letters a have two bowls and the d loops back."
+    },
+    {
+      "style": "c005",
+      "id": "c005_map",
+      "kind": "map",
+      "suffix": "A medieval map painted on parchment in the manner of the Gough Map, seen flat from directly above, filling the whole image edge to edge: buildings, trees and hills drawn as small pictures, red and green inks, touches of gold. Absolutely no words, letters, numbers or labels anywhere.",
+      "subject": "A Yorkshire dale in 1327. In the upper middle an abbey church with a bell tower; just below it a square cloister with buildings around it (chapter house and infirmary to the right of the cloister, the cellarer's range and a kitchen court to its left, an abbot's lodging below right); a guest-house and a gatehouse in the wall at lower left; a precinct wall around it all. A beck flows from the top right down the right side, with a small watermill on it at the right a little below the middle. A manor house with a hall on the moor in the upper right. Brown moorland, green fields, a road from the gate down the lower left."
+    },
+    {
+      "style": "c005",
+      "id": "c005_travel_walk",
+      "kind": "pov",
+      "subject": "A muddy track across a rain-dark Yorkshire moor in 1327, painted as a manuscript miniature, looking ahead: stone walls, sheep, the abbey's bell tower in the valley below, a gold-leaf sky with stylized clouds, a footbridge over a swollen beck in the distance. No people."
     }
   ],
   "styles": {

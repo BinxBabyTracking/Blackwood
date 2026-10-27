@@ -1389,6 +1389,7 @@ function projectState(def: CaseDefinition, s: InvestigationState, now: number, c
     caseStatus: [...(def.status ?? [])].reverse().find((x) => check(x.when, s))?.label ?? null,
     theme: def.theme ?? "noir",
     words: wordsFor(def),
+    caseArt: Object.fromEntries(Object.entries(def.assets.images).flatMap(([k, v]) => (k.startsWith("ui.") && v ? [[k.slice(3), v]] : []))),
     sequences: (def.sequences ?? [])
       .filter((q) => check(q.available, s))
       .map((q) => {

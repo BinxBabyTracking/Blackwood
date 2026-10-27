@@ -25,7 +25,7 @@ export function TravelMap({
 }) {
   const [focus, setFocus] = useState<string | null>(null);
   const places = view.map;
-  const painting = paintedArt(`${view.caseId.toLowerCase()}_map`);
+  const painting = view.caseArt.map ?? paintedArt(`${view.caseId.toLowerCase()}_map`);
 
   return (
     <Overlay title={view.mapTitle} onClose={onClose} wide closeLabel="Close map">

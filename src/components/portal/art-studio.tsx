@@ -29,10 +29,11 @@ const KIND: Record<string, string> = {
   panorama: "Panorama",
   pov: "Point of view",
   map: "Map",
+  face: "Talking frame",
 };
 
 /** Rough price of one image of this kind, matching the server's estimate. */
-const price = (kind: string) => ({ sprite: 0.042, evidence: 0.042, portrait: 0.25, figure: 0.25 } as Record<string, number>)[kind] ?? 0.25;
+const price = (kind: string) => ({ sprite: 0.042, evidence: 0.042, portrait: 0.25, figure: 0.25, face: 0.063 } as Record<string, number>)[kind] ?? 0.25;
 
 /**
  * One case's artwork: every image's picture and prompt. Make one, make all the

@@ -647,14 +647,14 @@ export function InvestigationShell({
           <>
             {/* Someone being held has no map to follow: the way out is in the scenes. */}
             {view.captivity?.role === "captive" ? null : (
-              <HudObject label={words.map} image={hudArt(caseId, "map", view.theme)} fallback="map" onClick={() => setLayer({ k: "panel", panel: "map" })} />
+              <HudObject label={words.map} image={hudArt(caseId, "map", view.theme, view.caseArt)} fallback="map" onClick={() => setLayer({ k: "panel", panel: "map" })} />
             )}
-            <HudObject label={words.notebook} image={hudArt(caseId, "obj_notebook", view.theme)} fallback="notebook" onClick={() => setLayer({ k: "panel", panel: "notebook" })} />
+            <HudObject label={words.notebook} image={hudArt(caseId, "obj_notebook", view.theme, view.caseArt)} fallback="notebook" onClick={() => setLayer({ k: "panel", panel: "notebook" })} />
           </>
         )}
         <HudObject
           label={words.evidence}
-          image={hudArt(caseId, "obj_evidence_bag", view.theme)}
+          image={hudArt(caseId, "obj_evidence_bag", view.theme, view.caseArt)}
           fallback="evidence"
           count={view.evidence.length}
           glow={newEvidence}
@@ -665,7 +665,7 @@ export function InvestigationShell({
         {view.phone.mobile ? (
           <HudObject
             label="Phone"
-            image={hudArt(caseId, "obj_phone", view.theme)}
+            image={hudArt(caseId, "obj_phone", view.theme, view.caseArt)}
             fallback="phone"
             alert={Boolean(view.phone.ringing)}
             onClick={() => setLayer({ k: "panel", panel: "phone" })}
@@ -840,7 +840,7 @@ export function InvestigationShell({
         <EvidenceInventory items={view.evidence} onOpen={(id) => setLayer({ k: "evidence", id, back: "inventory" })} onClose={close} />
       ) : null}
       {panel === "map" ? <TravelMap view={view} onTravel={(id) => travelTo(id)} onClose={close} pending={pending} /> : null}
-      {trip ? <TravelScene caseId={caseId} theme={view.theme} mode={trip.mode} to={trip.to} subtitle={trip.subtitle} reducedMotion={prefs.reducedMotion} onSkip={() => skipTrip.current?.()} /> : null}
+      {trip ? <TravelScene caseId={caseId} theme={view.theme} walkArt={view.caseArt.travel_walk ?? null} mode={trip.mode} to={trip.to} subtitle={trip.subtitle} reducedMotion={prefs.reducedMotion} onSkip={() => skipTrip.current?.()} /> : null}
       {stamps.length && !trip ? (
         <EvidenceStamp key={`stamp-${stamps[0].id}`} item={stamps[0]} words={words} volume={(prefs.masterVolume / 100) * (prefs.sfxVolume / 100)} reducedMotion={prefs.reducedMotion} onDone={nextStamp} />
       ) : null}
@@ -1087,9 +1087,9 @@ function SaveIndicator({ status }: { status: SaveStatus }) {
 
 /** A painted object in the corner of the scene that opens a panel (the map, the notebook, the evidence). */
 /** The agency's own things (map, notebook, evidence bag, phone): the case's painting if it has one, otherwise the agency's usual one. */
-function hudArt(caseId: string, name: string, theme: ClientView["theme"] = "noir") {
+function hudArt(caseId: string, name: string, theme: ClientView["theme"] = "noir", caseArt: Record<string, string> = {}) {
   // A medieval case never borrows the agency's modern things: until its own are painted, a drawn icon stands in.
-  return paintedArt(`${caseId.toLowerCase()}_${name}`) ?? (theme === "medieval" ? null : paintedArt(`c001_${name}`));
+  return caseArt[name] ?? paintedArt(`${caseId.toLowerCase()}_${name}`) ?? (theme === "medieval" ? null : paintedArt(`c001_${name}`));
 }
 
 function HudObject({

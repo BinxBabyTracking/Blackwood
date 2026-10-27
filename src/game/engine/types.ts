@@ -1240,6 +1240,8 @@ export interface ClientView {
   /** The case's look and its words for things. */
   theme: "noir" | "medieval";
   words: CaseWords;
+  /** Paintings the case supplies for the interface (ui.<name> asset keys: map, obj_notebook, travel_walk...), live versions included. */
+  caseArt: Record<string, string>;
   /** Timelines open to the player: the cards they have, where they put them, the findings so far. */
   sequences: {
     id: string;

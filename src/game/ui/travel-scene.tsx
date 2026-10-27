@@ -336,6 +336,7 @@ function MedievalWalk({ still }: { still: boolean }) {
 export function TravelScene({
   caseId,
   theme = "noir",
+  walkArt = null,
   mode,
   to,
   subtitle,
@@ -344,6 +345,8 @@ export function TravelScene({
 }: {
   caseId?: string;
   theme?: "noir" | "medieval";
+  /** The case's own walk painting, live versions included. */
+  walkArt?: string | null;
   mode: TravelMode;
   to: string;
   subtitle: string;
@@ -360,7 +363,7 @@ export function TravelScene({
 
   const medieval = theme === "medieval";
   // A medieval case walks everywhere, on its own painting when there is one, never the agency's city.
-  const ownWalk = medieval && caseId ? paintedArt(`${caseId.toLowerCase()}_travel_walk`) : null;
+  const ownWalk = medieval ? walkArt ?? (caseId ? paintedArt(`${caseId.toLowerCase()}_travel_walk`) : null) : null;
   const paintedReady = medieval ? Boolean(ownWalk) : mode === "drive" ? Boolean(ART.far && ART.near && ART.car) : Boolean(ART.walk);
   return (
     <div
