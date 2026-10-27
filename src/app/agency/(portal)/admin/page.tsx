@@ -20,7 +20,7 @@ import { adminRemoveEntry } from "@/app/actions/leaderboard";
 import { NameCheck } from "@/components/portal/name-check";
 import { AdminSection } from "@/components/portal/admin-section";
 import { ArtStudio } from "@/components/portal/art-studio";
-import { artKeyStatus, artRows, fullPrompt } from "@/lib/art-studio";
+import { artKeyStatus, artRows, fullPrompt, pricesFor } from "@/lib/art-studio";
 
 export const metadata: Metadata = { title: "Admin", robots: { index: false, follow: false } };
 
@@ -499,10 +499,10 @@ async function Artwork() {
         return (
           <AdminSection key={g} id={`art-${g}`} title={`Artwork: ${title}${missing ? ` (${missing} missing)` : ""}`} className="max-w-4xl">
             <p className="mt-2 text-sm text-smoke">
-              Every picture in this case, made with OpenAI ({key.model}). A new version waits for you to choose it; players only see the version marked live.
+              Every picture in this case, made with OpenAI at the quality you choose. A new version waits for you to choose it; players only see the version marked live.
               {g === "Shared" ? " The site and travel pictures change after the next site update, not straight away." : ""}
             </p>
-            <ArtStudio keyNote={keyNote} rows={list.map((r) => ({ ...r, prompt: fullPrompt(r.id, r.subject) }))} />
+            <ArtStudio keyNote={keyNote} rows={list.map((r) => ({ ...r, prompt: fullPrompt(r.id, r.subject), prices: pricesFor(r.id) }))} />
           </AdminSection>
         );
       })}

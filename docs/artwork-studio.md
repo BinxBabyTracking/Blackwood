@@ -48,6 +48,14 @@ The case's `assets.ts` maps them to `face.<person>.<shape>`; with every frame pr
 
 The server setting `OPENAI_API_KEY` (Vercel). Until that is set, a temporary key saved in `site_settings` (`openai_api_key`) is used, and Admin shows a note saying so. Never put a key in the code or a doc.
 
-## Costs
+## Quality and costs
 
-Each version records an estimate (`art_versions.cost_usd`): about $0.04 for evidence and objects at medium quality, $0.25 for scenes, portraits and figures at high quality. Admin shows the running total per case.
+Each case's section has a **Quality** setting, shared by every section and remembered on the device:
+
+| Setting | Model and quality | Square picture (evidence, objects) | Wide or tall (scenes, portraits, figures) |
+| --- | --- | --- | --- |
+| Draft | gpt-image-1-mini, low | about $0.005 | about $0.008 |
+| Standard (default) | gpt-image-1.5, medium | about $0.034 | about $0.05 |
+| Best | gpt-image-1.5, high | about $0.13 | about $0.20 |
+
+Edits from a reference image (figures, talking-portrait frames) cost about a fifth more. A whole case at Standard is roughly $2 to $5. The estimate shows before every run and each version records its cost (`art_versions.cost_usd`, model and quality in `model`); Admin shows the running total per case. If gpt-image-1.5 isn't available on the account, the site falls back to gpt-image-1-mini (gpt-image-1 was retired on Oct 23, 2026). `OPENAI_IMAGE_MODEL`, if set on the server, replaces the model for every setting.

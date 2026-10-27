@@ -20,8 +20,25 @@ const committed = (generated as { images: Record<string, { url: string }> }).ima
 
 const BUCKET = "art";
 const API_BASE = (process.env.OPENAI_API_BASE ?? "https://api.openai.com").replace(/\/$/, "");
-const MODELS = process.env.OPENAI_IMAGE_MODEL ? [process.env.OPENAI_IMAGE_MODEL] : ["gpt-image-1.5", "gpt-image-1"];
-let modelIndex = 0;
+
+/**
+ * Quality settings chosen on Admin. Draft is for trying ideas cheaply; Standard
+ * is the everyday setting; Best is for the few pictures that matter most.
+ * OPENAI_IMAGE_MODEL, if set on the server, replaces the model for every setting.
+ */
+export type Tier = "draft" | "standard" | "best";
+const TIERS: Record<Tier, { model: string; quality: "low" | "medium" | "high" }> = {
+  draft: { model: "gpt-image-1-mini", quality: "low" },
+  standard: { model: "gpt-image-1.5", quality: "medium" },
+  best: { model: "gpt-image-1.5", quality: "high" },
+};
+/** Used when a model isn't available on the account (gpt-image-1.5 can need a verified organization). */
+const FALLBACK = "gpt-image-1-mini";
+const unavailable = new Set<string>();
+const modelFor = (tier: Tier) => {
+  const want = process.env.OPENAI_IMAGE_MODEL || TIERS[tier].model;
+  return unavailable.has(want) ? FALLBACK : want;
+};
 
 function db() {
   const a = createAdminClient();
@@ -39,13 +56,29 @@ async function apiKey() {
 
 export async function artKeyStatus() {
   const k = await apiKey().catch(() => null);
-  return { configured: Boolean(k), from: k?.from ?? null, model: MODELS[modelIndex] };
+  return { configured: Boolean(k), from: k?.from ?? null, model: modelFor("standard") };
 }
 
-/** Rough OpenAI price per image, in dollars, by quality and size. Shown as an estimate. */
-function costOf(k: Kind) {
-  const square = k.size === "1024x1024";
-  return { low: square ? 0.011 : 0.016, medium: square ? 0.042 : 0.063, high: square ? 0.167 : 0.25 }[k.quality];
+/** OpenAI's list price per square image, by model and quality (Oct 2026). Wide and tall pictures cost about half as much again. */
+const PRICE: Record<string, Record<"low" | "medium" | "high", number>> = {
+  "gpt-image-1.5": { low: 0.009, medium: 0.034, high: 0.133 },
+  "gpt-image-1-mini": { low: 0.005, medium: 0.011, high: 0.036 },
+};
+
+/** Rough price of one image of a kind at a quality setting, in dollars. Edits from a reference image cost a little more. */
+function costOf(k: Kind, model: string, quality: "low" | "medium" | "high", edit = false) {
+  const base = (PRICE[model] ?? PRICE["gpt-image-1.5"])[quality] * (k.size === "1024x1024" ? 1 : 1.5);
+  return Math.round(base * (edit ? 1.2 : 1) * 1000) / 1000;
+}
+
+/** What one image costs at each setting, for the estimate shown before a run. */
+export function pricesFor(id: string): Record<Tier, number> {
+  const img = manifest.images.find((i) => i.id === id);
+  const k = img ? manifest.kinds[img.kind] : undefined;
+  const out = { draft: 0, standard: 0, best: 0 };
+  if (!k) return out;
+  for (const t of Object.keys(TIERS) as Tier[]) out[t] = costOf(k, process.env.OPENAI_IMAGE_MODEL || TIERS[t].model, TIERS[t].quality, Boolean(img?.reference));
+  return out;
 }
 
 /** Which case an image belongs to, from its id: c002_ev_e11 is C002; site and travel art is shared. */
@@ -267,7 +300,7 @@ async function currentBytes(id: string, origin: string) {
 }
 
 /** Makes one image with OpenAI, finishes it for its kind and keeps it as a new version (not live until chosen). */
-export async function generateImage(id: string, origin: string) {
+export async function generateImage(id: string, origin: string, tier: Tier = "standard") {
   const img = manifest.images.find((i) => i.id === id);
   if (!img) throw new Error("Unknown image.");
   const k = manifest.kinds[img.kind];
@@ -279,9 +312,10 @@ export async function generateImage(id: string, origin: string) {
   // A talking-portrait frame is only ever an edit of the portrait; made from nothing it would be someone else.
   if (img.kind === "face" && !ref) throw new Error(`Make the portrait (${img.reference}) first.`);
 
+  const quality = TIERS[tier]?.quality ?? "medium";
   for (let attempt = 0; attempt < 4; attempt++) {
-    const model = MODELS[modelIndex];
-    const common = { model, prompt, size: k.size, quality: k.quality, background: k.background, output_format: "webp", output_compression: 88, n: 1 };
+    const model = modelFor(tier);
+    const common = { model, prompt, size: k.size, quality, background: k.background, output_format: "webp", output_compression: 88, n: 1 };
     let res: Response;
     if (ref) {
       const form = new FormData();
@@ -299,8 +333,8 @@ export async function generateImage(id: string, origin: string) {
     if (!res.ok) {
       const text = (await res.text().catch(() => "")).replace(/sk-[A-Za-z0-9_-]{8,}/g, "[key]");
       const unknownModel = res.status === 404 || /model[^\n]{0,80}(not found|does not exist|invalid|not supported|do not have access|not available|must be verified)/i.test(text);
-      if (unknownModel && modelIndex < MODELS.length - 1) {
-        modelIndex++;
+      if (unknownModel && model !== FALLBACK) {
+        unavailable.add(model);
         continue;
       }
       if (res.status === 401) throw new Error("OpenAI rejected the API key.");
@@ -317,8 +351,9 @@ export async function generateImage(id: string, origin: string) {
     if (!b64) throw new Error("OpenAI returned no image.");
     const webp = img.kind === "face" ? await blendFace(id, Buffer.from(b64, "base64"), ref!) : await finish(img.kind, Buffer.from(b64, "base64"));
     const version = await nextVersion(id);
-    const saved = await store(id, version, webp, { source: "generated", model, prompt, cost: costOf(k) });
-    return { ...saved, model, cost: costOf(k) };
+    const cost = costOf(k, model, quality, Boolean(ref));
+    const saved = await store(id, version, webp, { source: "generated", model: `${model} (${quality})`, prompt, cost });
+    return { ...saved, model: `${model}, ${quality}`, cost };
   }
   throw new Error("OpenAI is busy. Try again in a minute.");
 }

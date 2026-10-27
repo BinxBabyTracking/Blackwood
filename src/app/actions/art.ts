@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { refreshArt } from "@/game/registry";
 import { hasAdminAccess } from "@/lib/admin-gate";
-import { generateImage, setLive, setSubject, uploadImage } from "@/lib/art-studio";
+import { generateImage, setLive, setSubject, uploadImage, type Tier } from "@/lib/art-studio";
 import { requireInvestigator } from "@/lib/investigator";
 
 type Result<T> = ({ ok: true } & T) | { error: string };
@@ -22,10 +22,10 @@ async function origin() {
 }
 
 /** Admin: makes one image with OpenAI. With `goLive`, it goes live straight away. */
-export async function generateArt(id: string, goLive = false): Promise<Result<{ version: number; url: string; model: string; cost: number }>> {
+export async function generateArt(id: string, goLive = false, tier: Tier = "standard"): Promise<Result<{ version: number; url: string; model: string; cost: number }>> {
   if (!(await admin())) return { error: "Not allowed." };
   try {
-    const r = await generateImage(id, await origin());
+    const r = await generateImage(id, await origin(), tier === "draft" || tier === "best" ? tier : "standard");
     if (goLive) {
       await setLive(id, r.version);
       await refreshArt(true);

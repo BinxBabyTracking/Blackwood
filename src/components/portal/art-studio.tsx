@@ -1,7 +1,15 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { generateArt, saveArtSubject, setArtLive, uploadArt } from "@/app/actions/art";
+
+export type Tier = "draft" | "standard" | "best";
+const TIERS: { id: Tier; label: string; note: string }[] = [
+  { id: "draft", label: "Draft", note: "gpt-image-1-mini, low quality. Cheapest; for trying ideas." },
+  { id: "standard", label: "Standard", note: "gpt-image-1.5, medium quality. The everyday setting." },
+  { id: "best", label: "Best", note: "gpt-image-1.5, high quality. For the pictures that matter most." },
+];
+const TIER_KEY = "bw-art-tier";
 
 export type StudioRow = {
   id: string;
@@ -14,6 +22,8 @@ export type StudioRow = {
   live: number | null;
   versions: { version: number; url: string; createdAt: string; source: string; model: string | null; cost: number }[];
   prompt: string;
+  /** Rough cost of one image at each quality setting. */
+  prices: Record<Tier, number>;
 };
 
 type Status = { state: "idle" | "busy" | "done" | "error"; note?: string };
@@ -32,8 +42,6 @@ const KIND: Record<string, string> = {
   face: "Talking frame",
 };
 
-/** Rough price of one image of this kind, matching the server's estimate. */
-const price = (kind: string) => ({ sprite: 0.042, evidence: 0.042, portrait: 0.25, figure: 0.25, face: 0.25 } as Record<string, number>)[kind] ?? 0.25;
 
 /**
  * One case's artwork: every image's picture and prompt. Make one, make all the
@@ -48,6 +56,30 @@ export function ArtStudio({ rows: initial, keyNote }: { rows: StudioRow[]; keyNo
   const stopNow = useRef<(() => void) | null>(null);
   const [filter, setFilter] = useState<"all" | "missing" | "review">("all");
   const [autoLive, setAutoLive] = useState(true);
+  // The quality setting is shared by every case's section and remembered on this device.
+  const [tier, setTierState] = useState<Tier>("standard");
+  useEffect(() => {
+    try {
+      const v = localStorage.getItem(TIER_KEY);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (v === "draft" || v === "standard" || v === "best") setTierState(v);
+    } catch {
+      /* not remembered */
+    }
+    const on = (e: Event) => setTierState((e as CustomEvent<Tier>).detail);
+    window.addEventListener("bw-art-tier", on);
+    return () => window.removeEventListener("bw-art-tier", on);
+  }, []);
+  const setTier = (t: Tier) => {
+    setTierState(t);
+    try {
+      localStorage.setItem(TIER_KEY, t);
+    } catch {
+      /* not remembered */
+    }
+    window.dispatchEvent(new CustomEvent("bw-art-tier", { detail: t }));
+  };
+  const cost = (list: StudioRow[]) => list.reduce((n, r) => n + (r.prices?.[tier] ?? 0), 0);
   const stop = useRef(false);
 
   const missing = rows.filter((r) => !r.current);
@@ -60,7 +92,7 @@ export function ArtStudio({ rows: initial, keyNote }: { rows: StudioRow[]; keyNo
 
   const make = async (r: StudioRow, live: boolean) => {
     say(r.id, { state: "busy", note: "Painting… (30 to 90 seconds)" });
-    const res = await generateArt(r.id, live).catch(() => ({ error: "The connection dropped. Try again." }));
+    const res = await generateArt(r.id, live, tier).catch(() => ({ error: "The connection dropped. Try again." }));
     if ("error" in res) {
       say(r.id, { state: "error", note: res.error });
       return false;
@@ -127,12 +159,33 @@ export function ArtStudio({ rows: initial, keyNote }: { rows: StudioRow[]; keyNo
           </button>
         </div>
       ) : null}
+      <fieldset className="mb-4">
+        <legend className="text-xs uppercase tracking-[0.12em] text-smoke">Quality</legend>
+        <div className="mt-1.5 flex flex-wrap gap-2">
+          {TIERS.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              aria-pressed={tier === t.id}
+              disabled={Boolean(running)}
+              onClick={() => setTier(t.id)}
+              className={`rounded-[2px] border px-3 py-1.5 text-left text-sm disabled:opacity-50 ${tier === t.id ? "border-brass bg-brass text-ink" : "border-white/15 text-paper hover:border-brass"}`}
+            >
+              <span className="font-semibold">{t.label}</span>
+              <span className={`ml-2 font-mono text-xs ${tier === t.id ? "text-ink/80" : "text-smoke"}`}>{rows.length ? `about $${(rows.reduce((n, r) => n + (r.prices?.[t.id] ?? 0), 0) / rows.length).toFixed(3)} each` : ""}</span>
+            </button>
+          ))}
+        </div>
+        <p className="mt-1.5 text-xs text-smoke">
+          {TIERS.find((t) => t.id === tier)!.note} This case at this setting: about ${cost(rows).toFixed(2)} for everything, ${cost(missing).toFixed(2)} for what&apos;s missing.
+        </p>
+      </fieldset>
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
           disabled={Boolean(running) || !missing.length}
           onClick={() => {
-            if (window.confirm(`Make ${missing.length} missing image(s)? About $${missing.reduce((n, r) => n + price(r.kind), 0).toFixed(2)} at OpenAI's prices.`)) void makeMany(missing, autoLive);
+            if (window.confirm(`Make ${missing.length} missing image(s)? At ${TIERS.find((t) => t.id === tier)!.label} quality, about $${cost(missing).toFixed(2)} at OpenAI's prices.`)) void makeMany(missing, autoLive);
           }}
           className="rounded-[2px] bg-brass px-4 py-2 text-sm font-semibold text-ink hover:bg-[#d4b585] disabled:opacity-50"
         >
@@ -142,7 +195,7 @@ export function ArtStudio({ rows: initial, keyNote }: { rows: StudioRow[]; keyNo
           type="button"
           disabled={Boolean(running)}
           onClick={() => {
-            if (window.confirm(`Make a new version of all ${rows.length} images? About $${rows.reduce((n, r) => n + price(r.kind), 0).toFixed(2)}. They wait for review; nothing players see changes until you choose one.`)) void makeMany(rows, false);
+            if (window.confirm(`Make a new version of all ${rows.length} images? At ${TIERS.find((t) => t.id === tier)!.label} quality, about $${cost(rows).toFixed(2)}. They wait for review; nothing players see changes until you choose one.`)) void makeMany(rows, false);
           }}
           className="rounded-[2px] border border-white/20 px-4 py-2 text-sm hover:border-brass disabled:opacity-50"
         >
