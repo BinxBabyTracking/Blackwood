@@ -1,4 +1,8 @@
+import manifest from "../../art/manifest.json";
 import { paintedArt } from "@/lib/art";
+
+/** Cases with a cover in the art manifest: those can be made on the Admin page. */
+const COVERS = new Set((manifest as { images: { id: string }[] }).images.map((i) => i.id).filter((id) => id.endsWith("_cover")));
 import type { CatalogCase } from "@/lib/types";
 
 type CoverCase = Pick<CatalogCase, "id" | "case_number" | "title" | "is_preview" | "cover_image_url">;
@@ -18,7 +22,8 @@ export function CaseCover({
   variant?: "card" | "hero";
   priority?: boolean;
 }) {
-  const cover = c.cover_image_url ?? paintedArt(`${c.id.toLowerCase()}_cover`);
+  // Covers go through /art/live, so one made live on the Admin page shows without a site update.
+  const cover = c.cover_image_url ?? (COVERS.has(`${c.id.toLowerCase()}_cover`) ? `/art/live/${c.id.toLowerCase()}_cover` : paintedArt(`${c.id.toLowerCase()}_cover`));
   if (cover) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
