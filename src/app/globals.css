@@ -309,3 +309,17 @@ html[data-vision="tritanopia"] {
   padding: 0.06em 0.12em 0 0;
   color: #a8281c;
 }
+
+/* The murder board: cork inside a wooden frame. */
+.board-cork {
+  background-color: #ac7e50;
+  /* A seamless cork tile (public/board-cork.webp), drawn at full size and scaled with the board. */
+  background-image: url("/board-cork.webp");
+  background-size: 512px 512px;
+  box-shadow: inset 0 0 160px rgba(40, 20, 5, 0.55), inset 0 0 0 2px rgba(0, 0, 0, 0.4);
+}
+.board-frame {
+  background: linear-gradient(135deg, #6b4423, #3b2412 35%, #5a381c 55%, #2f1c0e 80%, #4d2f17);
+  box-shadow: inset 0 0 0 2px rgba(255, 220, 170, 0.12), 0 10px 40px rgba(0, 0, 0, 0.6);
+}
+.board-scroll { scrollbar-width: thin; scrollbar-color: rgba(239, 232, 214, 0.35) transparent; }

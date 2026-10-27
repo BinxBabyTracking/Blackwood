@@ -1261,8 +1261,9 @@ function shuffled<T extends { id: string }>(items: T[], seed: string) {
   return [...items].sort((a, b) => h(a.id) - h(b.id));
 }
 
+/** Board positions: 0 to 100 is the board's first page; it runs to 200 both ways for room to spread out. */
 function clamp(n: number) {
-  return Number.isFinite(n) ? Math.min(96, Math.max(0, n)) : 50;
+  return Number.isFinite(n) ? Math.min(196, Math.max(0, n)) : 50;
 }
 
 /** Share of the investigation completed, for dashboards. Never reveals content. */
