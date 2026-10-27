@@ -6,6 +6,28 @@ import { loadCase } from "@/game/registry";
 import { castVoice, narrate, NarrationError } from "@/lib/narration/elevenlabs";
 import { actingUser, fromGuestScreen } from "@/lib/party";
 
+/** Allow time for a long document's pieces to be voiced. */
+export const maxDuration = 60;
+
+/** Splits text into pieces of at most `max` characters at paragraph, then sentence, boundaries. */
+function chunks(text: string, max = 900): string[] {
+  if (text.length <= max) return [text];
+  const out: string[] = [];
+  let cur = "";
+  const push = (piece: string, sep: string) => {
+    if (cur && cur.length + sep.length + piece.length > max) {
+      out.push(cur);
+      cur = piece;
+    } else cur = cur ? cur + sep + piece : piece;
+  };
+  for (const para of text.split(/\n\s*\n/)) {
+    if (para.length <= max) push(para, "\n\n");
+    else for (const sentence of para.match(/[^.!?]+[.!?]+["')]*\s*|[^.!?]+$/g) ?? [para]) push(sentence.trim(), " ");
+  }
+  if (cur) out.push(cur);
+  return out;
+}
+
 const recent = new Map<string, number[]>();
 const LIMIT = 30; // requests per user per minute
 
@@ -40,16 +62,26 @@ export async function GET(request: NextRequest) {
     if (!loaded || !canNarrate(def, normalizeState(def, loaded.state), ev.id)) return fail("You have not found that evidence yet.", 403);
     // Most items are one narrated read; a few (a voice on a tape) are read part by part in each speaker's own voice.
     const parts = ev.readAloud?.length ? ev.readAloud : [{ text: ev.inspection }];
-    const clips: ArrayBuffer[] = [];
-    let cached = true;
-    for (const [i, part] of parts.entries()) {
+    // Long documents are voiced in pieces at the same time, then joined: one long request runs past the voice service's time limit.
+    const jobs = parts.flatMap((part, i) => {
       const who = part.speakerId ? def.characters.find((c) => c.id === part.speakerId) : undefined;
       const voice = who?.voice ? castVoice(who.id, who.voice) : undefined;
-      const clip = await narrate(ev.readAloud?.length ? `${def.id}/${ev.id}-${i}` : `${def.id}/${ev.id}`, part.text, voice);
-      recordUsage({ userId: user.id, sessionId: loaded.sessionId, caseId: def.id, service: "tts", purpose: "narration", characters: part.text.length, saved: clip.cached });
+      const pieces = chunks(part.text);
+      return pieces.map((text, j) => ({
+        // A single short read keeps its original cache key, so recordings already made stay valid.
+        key: !ev.readAloud?.length && pieces.length === 1 ? `${def.id}/${ev.id}` : `${def.id}/${ev.id}-${i}${pieces.length > 1 ? `-${j}` : ""}`,
+        text,
+        voice,
+      }));
+    });
+    const results = await Promise.all(jobs.map((j) => narrate(j.key, j.text, j.voice)));
+    const clips: ArrayBuffer[] = [];
+    let cached = true;
+    results.forEach((clip, k) => {
+      recordUsage({ userId: user.id, sessionId: loaded.sessionId, caseId: def.id, service: "tts", purpose: "narration", characters: jobs[k].text.length, saved: clip.cached });
       clips.push(clip.audio);
       cached &&= clip.cached;
-    }
+    });
     // MP3 clips of the same format play back to back when joined.
     const audio = new Uint8Array(clips.reduce((n, c) => n + c.byteLength, 0));
     let at = 0;
