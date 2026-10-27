@@ -71,7 +71,10 @@ export interface Playthrough {
   caseId: string;
   player: string;
   startedAt: string;
+  /** closed (solved), active, archived or abandoned (restarted), or gone (deleted in an account reset). */
   status: string;
+  completedAt: string | null;
+  lastPlayedAt: string | null;
   money: Money;
 }
 
@@ -138,14 +141,22 @@ export async function getSpending() {
     }
   }
 
+  type SessionRow = { id: string; case_id: string; host_user_id: string | null; status: string; created_at: string; completed_at: string | null; last_activity_at: string | null };
+  const cols = "id, case_id, host_user_id, status, created_at, completed_at, last_activity_at";
   const sessionIds = [...bySession.keys()];
+  // Every recent investigation, including ones that haven't spent anything yet, plus the ones that have.
+  const [recent, spent] = await Promise.all([
+    db.from("investigation_sessions").select(cols).order("created_at", { ascending: false }).limit(60),
+    sessionIds.length ? db.from("investigation_sessions").select(cols).in("id", sessionIds) : Promise.resolve({ data: [] }),
+  ]);
+  const sessionInfo = new Map([...((recent.data ?? []) as SessionRow[]), ...((spent.data ?? []) as SessionRow[])].map((s) => [s.id, s]));
+  for (const s of sessionInfo.values())
+    if (!bySession.has(s.id)) bySession.set(s.id, { caseId: s.case_id, userId: s.host_user_id, money: zero(), first: s.created_at });
   const userIds = [...new Set([...bySession.values()].map((s) => s.userId).filter(Boolean))] as string[];
-  const [sessions, profiles, cases] = await Promise.all([
-    sessionIds.length ? db.from("investigation_sessions").select("id, status, created_at").in("id", sessionIds) : Promise.resolve({ data: [] }),
+  const [profiles, cases] = await Promise.all([
     userIds.length ? db.from("detective_profiles").select("id, display_name").in("id", userIds) : Promise.resolve({ data: [] }),
     db.from("cases").select("id, title"),
   ]);
-  const sessionInfo = new Map(((sessions.data ?? []) as { id: string; status: string; created_at: string }[]).map((s) => [s.id, s]));
   const names = new Map(((profiles.data ?? []) as { id: string; display_name: string | null }[]).map((p) => [p.id, p.display_name?.trim() || "Investigator"]));
   const titles = new Map(((cases.data ?? []) as { id: string; title: string }[]).map((c) => [c.id, c.title]));
 
@@ -155,7 +166,9 @@ export async function getSpending() {
       caseId: s.caseId,
       player: s.userId ? names.get(s.userId) ?? "Investigator" : "Unknown",
       startedAt: sessionInfo.get(id)?.created_at ?? s.first,
-      status: sessionInfo.get(id)?.status ?? "unknown",
+      status: sessionInfo.get(id)?.status ?? "gone",
+      completedAt: sessionInfo.get(id)?.completed_at ?? null,
+      lastPlayedAt: sessionInfo.get(id)?.last_activity_at ?? null,
       money: s.money,
     }))
     .sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1));

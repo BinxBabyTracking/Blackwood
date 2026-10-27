@@ -122,7 +122,10 @@ async function Spending() {
       </AdminSection>
 
       <AdminSection id="plays" title="Playthroughs">
-        <p className="mt-2 text-sm text-smoke">The latest {s.playthroughs.length}, newest first.</p>
+        <p className="mt-2 text-sm text-smoke">
+          The latest {s.playthroughs.length}, newest first: {s.playthroughs.filter((p) => p.status === "closed").length} solved,{" "}
+          {s.playthroughs.filter((p) => p.status === "active").length} in progress.
+        </p>
         {s.playthroughs.length ? (
           <div className="mt-5 overflow-x-auto">
             <table className="w-full min-w-[56rem] text-left text-sm">
@@ -146,7 +149,9 @@ async function Spending() {
                     <td className="py-2.5 pr-4">{formatDate(p.startedAt, { dateStyle: "medium", timeStyle: "short" })}</td>
                     <td className="py-2.5 pr-4">{p.player}</td>
                     <td className="py-2.5 pr-4 font-mono text-brass">{p.caseId}</td>
-                    <td className="py-2.5 pr-4">{p.status === "closed" ? "Solved" : "In progress"}</td>
+                    <td className="py-2.5 pr-4">
+                      <PlayStatus p={p} />
+                    </td>
                     <td className="py-2.5 pr-4 text-right">{p.money.questions}</td>
                     <td className="py-2.5 pr-4 text-right">{usd(p.money.claude)}</td>
                     <td className="py-2.5 pr-4 text-right">{usd(p.money.tts)}</td>
@@ -448,4 +453,25 @@ async function LeaderboardAdmin() {
       )}
     </AdminSection>
   );
+}
+
+/** Where a playthrough stands: solved (and when), in progress (and when last played), restarted, or removed in an account reset. */
+function PlayStatus({ p }: { p: { status: string; completedAt: string | null; lastPlayedAt: string | null } }) {
+  const when = (d: string | null) => (d ? formatDate(d, { dateStyle: "medium", timeStyle: "short" }) : null);
+  if (p.status === "closed")
+    return (
+      <span>
+        <span className="font-semibold text-[color:var(--color-ok)]">Solved</span>
+        {p.completedAt ? <span className="block text-xs text-smoke">{when(p.completedAt)}</span> : null}
+      </span>
+    );
+  if (p.status === "active" || p.status === "forming")
+    return (
+      <span>
+        In progress
+        {p.lastPlayedAt ? <span className="block text-xs text-smoke">Last played {when(p.lastPlayedAt)}</span> : null}
+      </span>
+    );
+  if (p.status === "archived" || p.status === "abandoned") return <span className="text-smoke">Restarted</span>;
+  return <span className="text-smoke">Reset (deleted)</span>;
 }
