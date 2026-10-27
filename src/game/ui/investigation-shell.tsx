@@ -595,6 +595,7 @@ export function InvestigationShell({
       </div>
 
       <ExplorationScene
+        introKey={`bw-swipe-${caseId}`}
         overlays={
           atHome
             ? waiting.map((l) => (

@@ -94,6 +94,7 @@ export function SceneHotspot({
       aria-label={label}
       data-hotspot={hotspot.id}
       data-attention={hotspot.attention || undefined}
+      data-seen={hotspot.inspected || hotspot.collected || undefined}
       disabled={disabled}
       onClick={() => onSelect(hotspot.id)}
       onMouseEnter={painted ? undefined : () => onHover(label)}
@@ -109,7 +110,11 @@ export function SceneHotspot({
     >
       {hotspot.sprite ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={hotspot.sprite} alt="" draggable={false} className={`pointer-events-none h-full w-full object-contain drop-shadow-[0_4px_6px_rgba(0,0,0,0.55)] ${hotspot.figure ? "object-bottom" : ""}`} />
+        <img src={hotspot.sprite} alt="" draggable={false} className={`hotspot-art pointer-events-none h-full w-full object-contain drop-shadow-[0_4px_6px_rgba(0,0,0,0.55)] ${hotspot.figure ? "object-bottom" : ""}`} />
+      ) : null}
+      {!painted && !hotspot.attention && !hotspot.pending ? (
+        // On a touch screen there is no hover, so every tappable spot carries a soft ring (fainter once examined).
+        <span aria-hidden className={`tap-ring pointer-events-none absolute inset-0 hidden rounded-[3px] pointer-coarse:block ${hotspot.inspected || hotspot.collected ? "tap-ring-seen" : ""}`} />
       ) : null}
       {hotspot.pending ? (
         // Stand-in until this object's painting is added: a faint outline with its name.
@@ -174,7 +179,10 @@ export function ExplorationScene({
   overlays,
   underlays,
   stack = [],
+  introKey,
 }: {
+  /** Remembers that this player has seen the "swipe to look around" card for this case (phones and tablets held upright). */
+  introKey?: string;
   /** Pinned to the scene surface, under any painted object placed on top (a grayed-out spot for lab results). */
   underlays?: React.ReactNode;
   /** Hotspot ids in the order they were last handled; later ones lie on top. */
@@ -231,6 +239,38 @@ export function ExplorationScene({
   /** Look-around mode: the screen is too narrow to show the whole room at a useful size. */
   const [pan, setPan] = useState(false);
   const [edges, setEdges] = useState({ left: false, right: false });
+  /** The first-time "swipe to look around" card: shown once per case, gone at the first swipe. */
+  const [intro, setIntro] = useState(false);
+  const introStart = useRef<number | null>(null);
+  /** The room the card was shown in: the small swipe hint is not repeated there right after it. */
+  const [introRoom, setIntroRoom] = useState<string | null>(null);
+  useEffect(() => {
+    if (!pan || !introKey) return;
+    let seen = true;
+    try {
+      seen = localStorage.getItem(introKey) === "1";
+    } catch {
+      /* storage blocked: show it */
+      seen = false;
+    }
+    if (seen) return;
+    // Next frame, once the room has opened at its starting view.
+    const f = requestAnimationFrame(() => {
+      introStart.current = scroller.current?.scrollLeft ?? null;
+      setIntroRoom(location.id);
+      setIntro(true);
+    });
+    return () => cancelAnimationFrame(f);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pan, introKey]);
+  const endIntro = () => {
+    setIntro(false);
+    try {
+      if (introKey) localStorage.setItem(introKey, "1");
+    } catch {
+      /* fine */
+    }
+  };
 
   useEffect(() => {
     const el = wrap.current;
@@ -246,6 +286,10 @@ export function ExplorationScene({
     const el = scroller.current;
     if (!el) return;
     setEdges({ left: el.scrollLeft > 8, right: el.scrollLeft < el.scrollWidth - el.clientWidth - 8 });
+    if (intro) {
+      if (introStart.current === null) introStart.current = el.scrollLeft;
+      else if (Math.abs(el.scrollLeft - introStart.current) > 40) endIntro();
+    }
   };
 
   // Each room opens looking at its middle.
@@ -367,11 +411,50 @@ export function ExplorationScene({
               <span aria-hidden className="font-mono text-2xl leading-none">{side === "left" ? "\u2039" : "\u203a"}</span>
             </button>
           ))}
-          <p key={`hint-${location.id}`} className="pointer-events-none absolute inset-x-0 bottom-28 text-center font-mono text-xs text-paper/80 look-hint">
-            <span className="rounded-[2px] bg-black/55 px-3 py-1">Swipe to look around</span>
-          </p>
+          {intro ? (
+            <SwipeIntro onDone={endIntro} reducedMotion={reducedMotion} />
+          ) : introRoom === location.id ? null : (
+            <p key={`hint-${location.id}`} className="pointer-events-none absolute inset-x-0 bottom-28 text-center font-mono text-xs text-paper/80 look-hint">
+              <span className="rounded-[2px] bg-black/55 px-3 py-1">Swipe to look around</span>
+            </p>
+          )}
         </>
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * First visit on a phone: a hand swiping across the room with arrows either side.
+ * The card lets swipes through to the room, so the first real swipe both looks
+ * around and dismisses it.
+ */
+function SwipeIntro({ onDone, reducedMotion }: { onDone: () => void; reducedMotion: boolean }) {
+  return (
+    <div className="pointer-events-none absolute inset-x-0 bottom-24 flex justify-center px-4 swipe-intro-in" role="status">
+      <div className="w-full max-w-xs rounded-[3px] border border-brass/50 bg-[#0d1013]/85 px-5 pb-4 pt-5 text-center shadow-[0_10px_30px_rgba(0,0,0,0.6)] backdrop-blur-[2px]">
+        <svg aria-hidden viewBox="0 0 200 90" className="mx-auto h-20 w-48">
+          <g fill="none" stroke="#c4a36b" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className={reducedMotion ? "" : "swipe-arrows"}>
+            <path d="M40 30 L18 30 M28 20 L18 30 L28 40" />
+            <path d="M160 30 L182 30 M172 20 L182 30 L172 40" />
+          </g>
+          <g className={reducedMotion ? "" : "swipe-hand"}>
+            {/* A pointing hand: index finger up, the rest curled. */}
+            <path
+              d="M96 14 a6 6 0 0 1 12 0 v30 l4-1 a6 6 0 0 1 7 4 l1 3 a6 6 0 0 1 8 3 v3 a6 6 0 0 1 8 4 v14 c0 10-8 18-18 18 h-10 c-8 0-13-4-17-10 l-11-17 a6 6 0 0 1 9-7 l7 7 z"
+              fill="#f3ede3"
+              stroke="#0d1013"
+              strokeWidth="2.5"
+              strokeLinejoin="round"
+            />
+          </g>
+        </svg>
+        <p className="mt-2 font-display text-xl leading-tight text-paper">Swipe left and right to look around</p>
+        <p className="mt-1.5 text-sm text-paper/75">Tap anything that glows to take a closer look.</p>
+        <button type="button" onClick={onDone} className="pointer-events-auto mt-3 rounded-[2px] bg-brass px-4 py-1.5 text-sm font-semibold text-ink">
+          Got it
+        </button>
+      </div>
     </div>
   );
 }
