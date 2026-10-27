@@ -329,7 +329,7 @@ export const characters: CharacterDef[] = [
     idleLine: "I have another client. You have my number.",
     noAnswer: ["I can't discuss that.", "I don't know.", "That's privileged, and it isn't mine to waive."],
     voice: {
-      voiceId: "pFZP5JQG7iQjIQuC4Bku",
+      voiceId: "ThT5KcBeYPX3keUQqHPh",
       direction: "Woman of forty-eight, a white-collar defense lawyer: precise, careful, reserved, protective of her client; warmer once she decides to help. American.",
       settings: { stability: 0.65, similarity_boost: 0.8, style: 0.1 },
     },

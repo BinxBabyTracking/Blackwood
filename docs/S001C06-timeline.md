@@ -17,7 +17,7 @@ Author-only. Series S001, The Judas Principle, case 6 of 6, the finale. Read wit
 
 ## The truth in brief
 
-Dr. Evelyn Lockhart, 52, founded Meridian Advisory Group in 2007. In 2009 she stepped out of every public role and put the company under a Delaware trust, the Meridian Holdings Trust, of which she is settlor and the only person with reserved powers. From then on she ran Meridian's criminal side through a paper system of her own design: every "reserved matter" (a payment routed through intermediaries, a program of coercive intelligence, pressure on a witness, a legal structure meant to hide ownership) had to be requested on a numbered two-part form, the EX-7, and approved in ink by the executive code with authority over it. The highest code, A-1, was hers. Operators knew her only as "the Architect," and her notes to them were typed and signed "A." The Records Administrator, Benjamin Sayer, logged every form and note in the Executive Authorization Register, scanned it, recorded a digest of the scan, and filed the original in a locked cage, Bay C, at the Meridian Records Center in Chantilly. The system made every operator's crimes a matter of record, which is how she controlled them and, in 2018, how she sacrificed them.
+Dr. Evelyn Lockhart, 52, founded Meridian Advisory Group in 2007. In 2009 she stepped out of every public role and put the company under a Delaware trust, the Cardinal Point Trust, of which she is settlor and the only person with reserved powers. From then on she ran Meridian's criminal side through a paper system of her own design: every "reserved matter" (a payment routed through intermediaries, a program of coercive intelligence, pressure on a witness, a legal structure meant to hide ownership) had to be requested on a numbered two-part form, the EX-7, and approved in ink by the executive code with authority over it. The highest code, A-1, was hers. Operators knew her only as "the Architect," and her notes to them were typed and signed "A." The Records Administrator, Benjamin Sayer, logged every form and note in the Executive Authorization Register, scanned it, recorded a digest of the scan, and filed the original in a locked cage, Bay C, at the Meridian Records Center in Chantilly. The system made every operator's crimes a matter of record, which is how she controlled them and, in 2018, how she sacrificed them.
 
 In August 2018 she decided Adrian Holt (F-2), Julian Rourke (I-3) and Gideon Kane (L-4) had become liabilities. She did not fabricate anything. Through Miriam Castell at the Clearwater Accountability Initiative, a nonprofit her foundation funds, she had Claire Donovan copy three genuine records and ship them by courier, the first to herself. Blackwood solved real crimes with them. Her own register, the only record pointing upward, never left Bay C. To let Claire's pulls through without question she instructed Benjamin, in writing, to approve them; that instruction is what showed him, in October, whose design the leaks were.
 
@@ -46,7 +46,7 @@ The archive, imaged at an independent laboratory, matched Benjamin's handwritten
 | Shredding contractor | Patuxent Secure Destruction LLC, Laurel, Maryland. Invoice PSD-18-1226-03 |
 | Lockhart Foundation | 1140 Fifth Avenue, New York (C01). Main line (212) 555-0100. Evelyn's cell (212) 555-0108. Executive assistant Beatrice Lam (innocent). Capital Courier account 18850, "Office of the President" |
 | Marchetti | Her law office, Midtown Manhattan (firm name and address as set in the S001C05 design). On bail since Dec 24: passport surrendered, ankle monitor, no contact with Lockhart Foundation or Meridian personnel. Interviewed with her defense counsel present |
-| The trust | Meridian Holdings Trust, a Delaware statutory trust established April 6, 2009; trustee Brandywine Fiduciary Trust Company, Rodney Square, Wilmington, Delaware. Settlor and Settlor's Representative: Evelyn R. Lockhart. Owns Meridian Holdings LLC, which owns Meridian Advisory Group LLC |
+| The trust | Cardinal Point Trust, a Delaware statutory trust formed June 30, 2009; trustee Brandywine Fiduciary Company, Rodney Square, Wilmington, Delaware. Settlor and Trust Protector: Evelyn R. Lockhart. Through Fifth Avenue Endowment GP LLC, Lockhart Endowment Partners LP and Halvard Holdings LLC it holds every voting (Class B) unit of Meridian Advisory Group LLC (the structure S01 C05 uncovers) |
 | Document laboratory | Solvang Document Laboratory, North Charles Street, Baltimore. Dr. Ingrid Solvang, forensic document examiner. FBI CART examiner present: Priya Natarajan |
 | Federal | FBI Washington Field Office, 601 4th Street NW (SA Teresa Quinlan). FBI New York Field Office, 26 Federal Plaza (final interview). Legal hold: preservation letter from the U.S. Attorney's Office for the District of Columbia, Monday, November 26, 2018, served on Meridian through its outside counsel (Marchetti) |
 | NYPD | Det. Anthony Caruso's squad (as set in S001C05) |
@@ -54,7 +54,7 @@ The archive, imaged at an independent laboratory, matched Benjamin's handwritten
 | Fire | Fairfax County Fire Marshal's Office, Investigator Samira Qureshi. Fire report FM-18-2261 |
 | Arlington | Arlington County Police, welfare check, Ptl. L. Ocampo |
 | Pennsylvania | Pennsylvania State Police, McConnellsburg station, Cpl. Neil Feeney |
-| Benjamin's counsel | Irene Chen (C02), Washington. Office (202) 555-0140 |
+| Benjamin's counsel | Irene Chen (C02), Washington. Office (202) 555-0161 |
 
 ## The mechanism: the Executive Register
 
@@ -69,7 +69,7 @@ This is the case's "money": the thing every document refers to.
 | The register | Executive Authorization Register (EX-AR): number, date, matter, requesting code, approving code, digest of the scan. 412 entries from 2009 to Dec 21, 2018 |
 | Digests | MD5 until 2013, SHA-256 from January 2014. Benjamin also wrote each week's digests by hand in a bound custody ledger from January 2014 |
 | EXVOL | The executive volume on Custodia RMS (the scans and register). Exported by Benjamin to the same encrypted drive (serial WX41A87H2210) every Friday since January 10, 2014. Wiped by account `cpike_admin` Sunday, Dec 23, 9:14 PM |
-| Funding | The trust distributes to Meridian's "reserved programs" account on the written direction of the Settlor's Representative. 2018: four quarterly directions of $1,100,000 ($4,400,000), matching the 2018 reserved budgets to the dollar |
+| Funding | The trust distributes to Meridian's "reserved programs" account on the written direction of the Trust Protector. 2018: four quarterly directions of $1,100,000 ($4,400,000), matching the 2018 reserved budgets to the dollar |
 
 **2018 reserved budgets** (E033): F-2 $1,550,000 (of which the Carroway program ceiling $450,000); I-3 $1,400,000; L-4 $860,000; C-5 $310,000; S-6 $280,000. Total $4,400,000. Each approved A-1, January 8, 2018.
 
@@ -134,7 +134,7 @@ Travel: Arlington to Chantilly about 30 minutes; Arlington to Silver Spring abou
 | --- | --- | --- |
 | About 2007 | Evelyn founds Meridian Advisory Group | E039, Lockhart |
 | 2008 (Sept) | Benjamin Sayer joins Meridian records | E028, Sayer |
-| Mon Apr 6, 2009 | Meridian Holdings Trust established; Operating Protocol No. 1 adopted; Evelyn signs the A-1 specimen card in front of Benjamin at 1140 Fifth Avenue | E043, E049, E038, E028 |
+| Mon Apr 6, 2009 | Operating Protocol No. 1 adopted (the Cardinal Point Trust follows on June 30); Evelyn signs the A-1 specimen card in front of Benjamin at 1140 Fifth Avenue | E043, E049, E038, E028 |
 | Mon May 16, 2011 | EX-2011-014: the client intelligence index (C02's Compromising Information Index) approved | E034, E031 |
 | 2012 | Claire Donovan joins; Benjamin is her supervisor | Donovan, Sayer |
 | Oct 2013 | Benjamin logs an EX-7 for surveillance of a congressional staffer and begins keeping a private duplicate of EXVOL | E028 |
@@ -291,13 +291,13 @@ Interviewable (15) plus Bennett. Everyone's knowledge is their own account; liar
 | Id | Person | Who | Role | Where and how | Demeanor stages |
 | --- | --- | --- | --- | --- | --- |
 | sayer | Benjamin Sayer, 58 | Former Records Administrator, Meridian (2008 to Dec 21, 2018) | The missing witness; kept the archive. Alive throughout | Unavailable until RE08; then FBI Washington Field Office (chapter 3), Solvang laboratory (chapter 4 on). Counsel Irene Chen present | Exhausted, Exact, Resolved |
-| lockhart | Dr. Evelyn Lockhart, 52 | Founder, the Lockhart Foundation; settlor of the Meridian Holdings Trust | The Architect. Never confesses | Telephone from chapter 2; in person at the Lockhart Foundation in chapter 5; at 26 Federal Plaza in chapter 6, with counsel | Gracious, Guarded, Cold, Composed |
+| lockhart | Dr. Evelyn Lockhart, 52 | Founder, the Lockhart Foundation; settlor of the Cardinal Point Trust | The Architect. Never confesses | Telephone from chapter 2; in person at the Lockhart Foundation in chapter 5; at 26 Federal Plaza in chapter 6, with counsel | Gracious, Guarded, Cold, Composed |
 | marchetti | Elena Marchetti, 50 | Attorney; Meridian's outside counsel; C-5 | Legal concealment. On bail; wants a cooperation deal; fears she is next | Her law office, after RE05, with her defense counsel | Controlled, Anxious, Defensive |
 | pike | Conrad Pike, 54 | Principal, Pike Risk Services; S-6 | Ran the destruction and the pursuit. Claims lawful corporate security work | His office in Tysons, once known (chapter 2); same place during the chapter 5 search, with counsel | Professional, Guarded, Hostile, Declining to answer |
 | donovan | Claire Donovan, 34 | Former Meridian records analyst | Cooperating witness (C04); copied the leaked records; received the threat | FBI Washington Field Office and telephone, after RE02 | Shaken, Steady, Angry |
 | holt | Adrian Holt, 49 | Formerly Holt Advisory LLC; F-2 | Held without bail (C01). Minimizes; seeks a deal | Recorded video from Carroway County Jail, with counsel, from Quinlan's office, chapter 2 on | Polished, Calculating |
-| rourke | Julian Rourke, 51 | Formerly Meridian's intelligence floor; I-3 | Federal detention (C02). Declines without a proffer agreement | Recorded video, with counsel, chapter 2 on | Contemptuous, Silent |
-| kane | Gideon Kane, 55 | Formerly Kane Logistics; L-4 | Federal detention (C03). Says he acted independently | Recorded video, with counsel, chapter 2 on | Blunt, Defensive |
+| rourke | Julian Rourke, 46 | Formerly Meridian's intelligence floor; I-3 | Federal detention (C02). Declines without a proffer agreement | Recorded video, with counsel, chapter 2 on | Contemptuous, Silent |
+| kane | Gideon Kane, 48 | Formerly Kane Logistics; L-4 | Federal detention (C03). Says he acted independently | Recorded video, with counsel, chapter 2 on | Blunt, Defensive |
 | chen | Irene Chen, 48 | Attorney, Washington (C02) | Benjamin's counsel since Dec 26. Advises on preservation and authentication; not an all-purpose legal authority | Telephone once known (E006); Solvang laboratory in chapter 4 | Precise, Protective |
 | ames | Walter Ames, 43 | Partner, Ames and Kiley CPAs, Pittsburgh (C01) | Forensic accountant to the federal prosecutors since C03 | Telephone from chapter 2; Brandywine Fiduciary records room in chapter 4 | Careful, Engaged |
 | wexler | Simon Wexler, 29 | Financial analyst (C05) | Keeps Nathaniel Ogden's research copies | Telephone from chapter 2 | Nervous, Earnest |
@@ -361,7 +361,7 @@ Not interviewable: Malcolm Pryor (abroad, represented), Miriam Castell (cooperat
 | L10 | lockhart_foundation | The Lockhart Foundation, 1140 Fifth Avenue, New York | Evelyn's office (Evelyn); boardroom: subpoena production laid out for the FBI (E044); the founding photograph "Meridian Advisory Group, 2007" (photo) | Chapter 5 |
 | L11 | marchetti_office | Elena Marchetti's law office, Midtown Manhattan | Marchetti and her counsel | RE05 |
 | L12 | pike_office | Pike Risk Services, Tysons | Pike; the whiteboard (E022). Chapter 5: FBI search; the "PITTSBURGH" file (E055) | Chapter 2, pike known |
-| L13 | financial_archive | Brandywine Fiduciary Trust Company records room, Wilmington | Walter Ames; the Meridian Holdings Trust file (E043) | Chapter 4 |
+| L13 | financial_archive | Brandywine Fiduciary Company records room, Wilmington | Walter Ames; the Cardinal Point Trust file (E043) | Chapter 4 |
 | L14 | exam_facility | Solvang Document Laboratory, Baltimore | Irene Chen and Benjamin (chapter 4); lab countdowns; after RE09, the light table with the printed archive exhibits (E031 to E038, E049) | Chapter 4 |
 | L15 | nypd | NYPD, Det. Caruso's squad room | Caruso | Chapter 2 |
 | L16 | fbi | FBI Washington Field Office | Quinlan; Claire (after RE02); the video interview room (Holt, Rourke, Kane, chapter 2 on); Benjamin (chapter 3, after RE08) | Start |
@@ -514,13 +514,13 @@ Classification: critical (needed for a report claim or a required deduction) E00
 > 5. Wed Dec 26, 4:40 PM. "Mr. Sayer, this is Irene Chen, returning your call. I've opened a file. Nothing further on this line, please. Call me from the number we discussed."
 > 6. Thu Dec 27, 1:14 AM. "Ben, it's Dale. Dale Merriman, at Chantilly. I know you're not with us anymore, but I thought you'd want to know. Bay C's on fire. The trucks were here till ten. I don't understand any of it. Call me."
 >
-> Caller ID, last five: 12/24 9:02 PM UNAVAILABLE. 12/25 10:47 PM UNAVAILABLE. 12/26 9:31 AM ODUYA RECORDS (703) 555-0186. 12/26 4:40 PM CHEN IRENE (202) 555-0140. 12/27 1:14 AM MERRIMAN D (571) 555-0195.
+> Caller ID, last five: 12/24 9:02 PM UNAVAILABLE. 12/25 10:47 PM UNAVAILABLE. 12/26 9:31 AM ODUYA RECORDS (703) 555-0186. 12/26 4:40 PM CHEN IRENE (202) 555-0161. 12/27 1:14 AM MERRIMAN D (571) 555-0195.
 >
 > In the mail, Benjamin's wireless statement, (703) 555-0151, Nov 22 to Dec 21, 2018. Outgoing calls, excerpt:
 > 11/23 11:20 AM (717) 555-0162 9 min
 > 11/24 2:02 PM (717) 555-0162 4 min
 > 12/14 7:48 PM (703) 555-0186 22 min
-> 12/21 4:30 PM (202) 555-0140 2 min
+> 12/21 4:30 PM (202) 555-0161 2 min
 > 12/21 4:41 PM (703) 555-0186 11 min
 > No other calls to the 717 number in the period.
 
@@ -817,7 +817,7 @@ Classification: critical (needed for a report claim or a required deduction) E00
 > S-6 (security) $280,000.
 > Total $4,400,000.
 >
-> Funding: four "Settlor's Representative directions" to the Meridian Holdings Trust (01/05, 04/06, 07/06, 10/05/2018), each releasing $1,100,000 from the trust to Meridian's "reserved programs" account. Each is signed "E. R. Lockhart, Settlor's Representative." The four distributions total $4,400,000, to the dollar.
+> Funding: four "Trust Protector directions" to the Cardinal Point Trust (01/05, 04/06, 07/06, 10/05/2018), each releasing $1,100,000 from the trust to Meridian's "reserved programs" account. Each is signed "E. R. Lockhart, Trust Protector." The four distributions total $4,400,000, to the dollar.
 >
 > A reviewer's note: "The money that paid for the reserved programs came from the trust, on the written direction of the same person who signed A-1."
 
@@ -884,7 +884,7 @@ Classification: critical (needed for a report claim or a required deduction) E00
 > SOLVANG DOCUMENT LABORATORY. Forensic document examination, signature comparison. Dr. I. Solvang.
 >
 > Questioned: the "A." signatures on the imaged A notes (EX-CORR) and the "A-1" approvals on the imaged EX-7 forms, and the two A-1 specimen signatures (E038).
-> Known: Evelyn R. Lockhart's signatures on documents not in dispute: the Meridian Holdings Trust instrument and the four Settlor's Representative directions (E043, E033), the Lockhart Foundation's filed instruments, and her signature witnessed by counsel at this examination.
+> Known: Evelyn R. Lockhart's signatures on documents not in dispute: the Cardinal Point Trust instrument and the four Trust Protector directions (E043, E033), the Lockhart Foundation's filed instruments, and her signature witnessed by counsel at this examination.
 >
 > Findings: the questioned "A-1" and "A." signatures and the known Lockhart signatures share the same construction, proportions and pen habits across the period 2009 to 2018, including individual features in the capital letters and the terminal stroke. No features suggest a different writer or a simulation.
 >
@@ -900,20 +900,20 @@ Classification: critical (needed for a report claim or a required deduction) E00
 > A reviewer's note: "The courier dates match the dates on the notes to Castell (E052). The calls to Pike begin the day the drive was discovered and run through the pursuit."
 
 **E043, Meridian control agreement (the trust file)** (L13, Brandywine Fiduciary).
-> MERIDIAN HOLDINGS TRUST. A Delaware statutory trust, established April 6, 2009. Produced from the trustee's file, Brandywine Fiduciary Trust Company.
+> CARDINAL POINT TRUST. A Delaware statutory trust, formed June 30, 2009. Beneficiary: the Lockhart Foundation. Produced from the trustee's file, Brandywine Fiduciary Company.
 >
-> Trustee: Brandywine Fiduciary Trust Company. Settlor and Settlor's Representative: Evelyn R. Lockhart. The trust owns Meridian Holdings LLC, which owns Meridian Advisory Group LLC.
+> Administrative trustee: Brandywine Fiduciary Company. Special trustee: Elena Marchetti. Settlor and Trust Protector: Evelyn R. Lockhart. Through Fifth Avenue Endowment GP LLC, Lockhart Endowment Partners LP and Halvard Holdings LLC, the trust holds every voting (Class B) unit of Meridian Advisory Group LLC.
 >
-> Reserved powers (Article VII): the Settlor's Representative may, in writing, direct distributions, appoint and remove the managers of the trust's companies, and "direct the business of the trust's holdings." "The trustee shall act on the written direction of the Settlor's Representative and shall not be required to inquire further."
+> Reserved powers (Article VII): the Trust Protector may, in writing, direct distributions, appoint and remove the managers of the trust's companies, and "direct the business of the trust's holdings." "The trustee shall act on the written direction of the Trust Protector and shall not be required to inquire further."
 >
-> Signature card: "E. R. Lockhart, Settlor's Representative," 04/06/2009, renewed 03/08/2016.
+> Signature card: "E. R. Lockhart, Trust Protector," 06/30/2009, renewed 03/08/2016.
 >
-> Walter Ames's note: "On paper the trustee owns Meridian and Ms. Lockhart owns nothing. In practice she can direct it all, and the four 2018 directions show she did. Control, cleanly hidden. Control is not a crime by itself; what she directed is the question."
+> Walter Ames's note: "On paper the trust and its companies own Meridian and Ms. Lockhart owns nothing. In practice she can direct it all, and the four 2018 directions show she did. Control, cleanly hidden. Control is not a crime by itself; what she directed is the question."
 
 **E044, Lockhart Foundation financial relationship** (L10, the boardroom).
 > Laid out for the FBI's subpoena in the foundation's boardroom: the Lockhart Foundation's grants and investments touching Meridian, 2014 to 2018.
 >
-> The foundation's "program-related investments" include positions in two holding companies that the trust file (E043) shows are owned, through the trust, by Meridian Holdings. The foundation is the founding donor of the Carroway fund (C01) and funds the Clearwater Accountability Initiative; a $250,000 "president's discretionary grant" went to Clearwater on 09/10/2018, the day the release program was approved.
+> The foundation's "program-related investments" include its 96 percent stake in Lockhart Endowment Partners LP, which the trust file (E043) shows sits under the same trust that holds Meridian's voting units. The foundation is the founding donor of the Carroway fund (C01) and funds the Clearwater Accountability Initiative; a $250,000 "president's discretionary grant" went to Clearwater on 09/10/2018, the day the release program was approved.
 >
 > A reviewer's note: "The foundation's real charity and Ms. Lockhart's hidden control run through some of the same companies and the same nonprofit. The overlap is the point: the legitimate work gave the structure its cover."
 

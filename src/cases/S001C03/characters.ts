@@ -187,7 +187,7 @@ export const characters: CharacterDef[] = [
     idleLine: "His lawyer, off camera: 'We're done for today.'",
     noAnswer: ["I have nothing to say about that.", "His lawyer, off camera: 'Next question.'", "That is not something I would know."],
     voice: {
-      voiceId: "JBFqnCBsd6RMkjVDRZzb",
+      voiceId: "SOYHLrjzK2X1ezoPC6cr",
       direction: "Man of forty-six, a corporate intelligence director on a video link from detention: precise, clipped, coldly contemptuous, every word chosen. Educated American.",
       settings: { stability: 0.7, similarity_boost: 0.8, style: 0.1 },
     },

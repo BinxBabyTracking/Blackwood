@@ -175,13 +175,17 @@ export function checkSeriesCase(id: string, def: CaseDefinition, problems: strin
   expect(report.available, "the report is not available at the end of a thorough playthrough");
   expect(report.choices.length === def.conclusionChoices.length, `the report shows ${report.choices.length} of ${def.conclusionChoices.length} questions`);
   const T = (over: Record<string, unknown>, evidence = cfg.key): Theory => ({ ...cfg.right, evidence, ...fileUnder(def, evidence), ...over }) as Theory;
+  // Each wrong report is tried on the same save, so one that is wrongly accepted can't hide the rest.
+  const ready = s;
   for (const [over, what] of cfg.wrong) {
     const o = run({ type: "submitConclusion", theory: T(over) });
     expect(o?.kind === "verdict" && !o.correct, `${what} was accepted`);
+    s = ready;
   }
   for (const [ev, what] of cfg.unsupported ?? []) {
     const o = run({ type: "submitConclusion", theory: T({}, ev) });
-    expect(o?.kind === "verdict" && !o.correct, `${what} was accepted`);
+    expect(o?.kind === "verdict" && !o.correct, `${what} was accepted${o?.kind === "verdict" ? "" : ` (${errors.at(-1)})`}`);
+    s = ready;
   }
   expect(s.status === "active", "a returned report closed the case");
   problems.push(...reportStandardProblems(def, s, cfg.right as Omit<Theory, "evidence">, cfg.key));

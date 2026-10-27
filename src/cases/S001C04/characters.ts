@@ -47,7 +47,7 @@ export const characters: CharacterDef[] = [
     idleLine: "I need to stop for a while. I haven't slept since Wednesday.",
     noAnswer: ["I don't know.", "I was never told that.", "That's above anything I could see."],
     voice: {
-      voiceId: "EXAVITQu4vr4xnSDxMaL",
+      voiceId: "FGY2WhTYpPnrIDTdsKH5",
       direction: "Woman of thirty-four, a records analyst: tired, precise, quiet, ashamed of having been fooled and angry about it underneath. Mid-Atlantic American.",
       settings: { stability: 0.6, similarity_boost: 0.8, style: 0.15 },
     },
@@ -111,7 +111,7 @@ export const characters: CharacterDef[] = [
     idleLine: "We're finished, detective. Mr. Fenwick bills by the hour.",
     noAnswer: ["I have nothing to say about that.", "Ask my lawyer.", "I'm in a cell. I don't know what goes on outside it."],
     voice: {
-      voiceId: "GBv7mTt0atIp3Br8iCZE",
+      voiceId: "SOYHLrjzK2X1ezoPC6cr",
       direction: "Man of forty-six on a detention center video link: polished, cold, precise, contemptuous of the question, never raising his voice. American.",
       settings: { stability: 0.65, similarity_boost: 0.8, style: 0.15 },
     },
@@ -258,7 +258,7 @@ export const characters: CharacterDef[] = [
     idleLine: "I've said what I can for today.",
     noAnswer: ["Compliance never saw that.", "I don't know, and I won't guess.", "That was above my pay grade, I was told."],
     voice: {
-      voiceId: "onwK4e9ZLuTAKqWW03F9",
+      voiceId: "iP95p4xoKVk53GoZ742B",
       direction: "Man of fifty-one, a former corporate compliance officer: careful, exact, dry, quietly bitter, then resolute. American.",
       settings: { stability: 0.65, similarity_boost: 0.8, style: 0.05 },
     },
@@ -290,7 +290,7 @@ export const characters: CharacterDef[] = [
     idleLine: "I've got a line at the counter. I'm so sorry.",
     noAnswer: ["I don't know.", "I didn't see that.", "I was in the back, I'm sorry."],
     voice: {
-      voiceId: "FGY2WhTYpPnrIDTdsKH5",
+      voiceId: "EXAVITQu4vr4xnSDxMaL",
       direction: "Woman of twenty-nine, a coffeehouse manager: quick, kind, apologetic, warm, a little breathless. Mid-Atlantic American.",
       settings: { stability: 0.5, similarity_boost: 0.8, style: 0.2 },
     },
@@ -317,7 +317,7 @@ export const characters: CharacterDef[] = [
     idleLine: "I've got a truck at the dock. We'll pick this up later.",
     noAnswer: ["I couldn't tell you.", "That's Meridian's business, not mine.", "I keep the boxes. I don't read them."],
     voice: {
-      voiceId: "iP95p4xoKVk53GoZ742B",
+      voiceId: "onwK4e9ZLuTAKqWW03F9",
       direction: "Man of forty-four, a small records-storage business owner: practical, reluctant, worried about his biggest client, then plainly cooperative. Mid-Atlantic American.",
       settings: { stability: 0.55, similarity_boost: 0.8, style: 0.15 },
     },
@@ -377,7 +377,7 @@ export const characters: CharacterDef[] = [
     idleLine: "I've got a task force meeting. Call me if something moves.",
     noAnswer: ["That's not mine to know.", "That's on the federal side. Ask Quinlan.", "I don't know yet."],
     voice: {
-      voiceId: "Xb7hH8MSUJpSbSDYk0k2",
+      voiceId: "21m00Tcm4TlvDq8ikWAM",
       direction: "Woman of forty-two, a big-city police detective on the phone: dry, quick, decent, no time wasted. Mid-Atlantic American.",
       settings: { stability: 0.6, similarity_boost: 0.8, style: 0.1 },
     },

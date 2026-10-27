@@ -115,6 +115,24 @@ step({ type: "disconnect", a: "S001-C01-E029", b: "S001-P-holt" });
   ok(go({ type: "connect", a: "S001-C04-E018", b: "S001-C04-E038" }) === "S001-D004", "S001-D004 not made with C02-E033 pinned");
 }
 
+// --- Voices: nobody in a case shares a voice; a recurring person keeps one voice ---
+for (const def of Object.values(SERIES_DEFS)) {
+  const voices: Record<string, Set<string>> = {};
+  for (const caseId of def.cases) {
+    const c = loadCase(caseId);
+    if (!c) continue;
+    const seen = new Map<string, string>();
+    for (const ch of c.characters) {
+      if (!ch.voice) continue;
+      const other = seen.get(ch.voice.voiceId);
+      ok(!other, `${caseId}: ${other} and ${ch.id} share a voice`);
+      seen.set(ch.voice.voiceId, ch.id);
+      (voices[ch.id] ??= new Set()).add(ch.voice.voiceId);
+    }
+  }
+  for (const [id, v] of Object.entries(voices)) ok(v.size === 1, `${def.id}: ${id} has ${v.size} different voices across the series`);
+}
+
 // --- End to end: every series deduction can be made from evidence the built cases hold ---
 {
   const all = new Set<string>();

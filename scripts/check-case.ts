@@ -21,10 +21,11 @@ import { S001C02_CHECK } from "./check-case-S001C02";
 import { S001C03_CHECK } from "./check-case-S001C03";
 import { S001C04_CHECK } from "./check-case-S001C04";
 import { S001C05_CHECK } from "./check-case-S001C05";
+import { S001C06_CHECK } from "./check-case-S001C06";
 import { checkSeriesCase, type SeriesCaseConfig } from "./series-case-check";
 
 /** Series cases after the first share one reference playthrough, configured per case. */
-const SERIES_CHECKS: Record<string, SeriesCaseConfig> = { S001C02: S001C02_CHECK, S001C03: S001C03_CHECK, S001C04: S001C04_CHECK, S001C05: S001C05_CHECK };
+const SERIES_CHECKS: Record<string, SeriesCaseConfig> = { S001C02: S001C02_CHECK, S001C03: S001C03_CHECK, S001C04: S001C04_CHECK, S001C05: S001C05_CHECK, S001C06: S001C06_CHECK };
 import { wordsFor } from "../src/game/words";
 import type { CaseDefinition, GameAction, InvestigationState, Theory } from "../src/game/engine/types";
 
@@ -92,6 +93,7 @@ const REVEALS: Record<string, RegExp> = {
   S001C03: /\b(i killed|i hit him|i struck|fisk killed|fisk struck|kane ordered|i swung (?:it|the bar))\b/i,
   S001C04: /\b(i locked her|i held her|tate held her|rourke ordered|i took her|we took her)\b/i,
   S001C05: /\b(i killed|i hit him|i struck|knox killed|knox struck|marchetti ordered|i swung (?:it|the bookend))\b/i,
+  S001C06: /\b(i ordered|i authorized the|i am the architect|i'm the architect|lockhart ordered|i set the fire|i burned)\b/i,
   S001C01: /\b(i killed|i hit him|i struck|reddick killed|reddick struck|holt ordered|i did it|i swung (?:it|the eagle)|i told him to kill)\b/i,
   C006: /\b(i killed|i hit her|i pushed her|i struck|wade killed|wade struck|trent killed|i ordered|stroud ordered|i did it|i beat him|i took him)\b/i,
 };

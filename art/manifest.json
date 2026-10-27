@@ -196,7 +196,10 @@
     "s001c04_corbett": "a 51-year-old white man, a former corporate compliance officer, thinning sandy-gray hair, wire-rimmed glasses, a lined, careful face, clean-shaven, wearing a pale blue oxford shirt under a brown V-neck sweater, cautious and principled",
     "s001c04_halvorsen": "a 29-year-old white woman, a coffeehouse manager, blond hair in a messy bun, blue eyes, a light sprinkle of freckles, a small nose ring, wearing a black apron over a rust-colored flannel shirt with rolled sleeves, apologetic and helpful",
     "s001c04_harris": "a 45-year-old Black man, a city police detective, close-cropped graying hair, a trimmed salt-and-pepper mustache, steady dark eyes, wearing a rumpled charcoal suit jacket over a light gray shirt and a loosened dark tie, a badge on his belt, skeptical and dry",
-    "s001c04_lang": "a 44-year-old white man, owner of a records storage company, a round face, receding dark blond hair, a reddish goatee, wearing a quilted navy work vest over a plaid flannel shirt and a company lanyard, reluctant and practical"
+    "s001c04_lang": "a 44-year-old white man, owner of a records storage company, a round face, receding dark blond hair, a reddish goatee, wearing a quilted navy work vest over a plaid flannel shirt and a company lanyard, reluctant and practical",
+    "s001c06_sayer": "a 58-year-old white man, a former corporate records administrator, thinning gray hair neatly combed, gray eyes behind wire-rimmed glasses, a lined, patient, careful face, clean-shaven, wearing a dark overcoat over a creased white oxford shirt and a gray cardigan, exhausted, exact and quietly resolved",
+    "s001c06_pike": "a 54-year-old white man, a private security consultant and former Army military police officer, close-cropped gray hair, a square jaw, pale blue eyes, a hard, controlled face, clean-shaven, wearing a dark gray suit with an open-collared white shirt, professional, short-spoken and unreadable",
+    "s001c06_oduya": "a 44-year-old Black woman, the owner of a small records-management consulting firm, shoulder-length braids tied back, small silver hoop earrings, reading glasses pushed up on her head, an intelligent, worried face, wearing a burgundy blazer over a black knit top, guarded at first and conscientious"
   },
   "images": [
     {
@@ -8073,6 +8076,620 @@
       "style": "s001",
       "subject": "Northern Virginia and Washington, D.C. from above. In the upper right, a broad pale blue river curves down from the top edge past a dense city grid with a circle of streets and a long green mall, and on its near bank a grid of high-rise blocks and suburban streets. Below them along the river's west bank, a compact old town of small blocks by the water, and further south a creek and an industrial park among woods. Highways in ochre run west from the city across the center: a big interstate out through suburbs and office parks to rolling farmland and wooded hills in the far left, where a small hamlet sits by a creek. A second road branches southwest to a new subdivision of curving cul-de-sacs. In the far upper left corner, a highway in ochre running off the edge of the sheet to the northwest, toward distant mountains.",
       "suffix": "A hand-painted street map, seen flat from directly above and filling the whole image edge to edge like a sheet laid on a table: no table, no border, no frame. Muted map colors: cream paper, ochre streets, sage green parkland, pale blue water, faint fold creases. Absolutely no words, letters, numbers, street names or symbols anywhere on the map."
+    },
+    {
+      "id": "s001c06_loc_sayer_home",
+      "kind": "background",
+      "style": "s001",
+      "subject": "The ground floor of a modest brick colonial house on a quiet street in Arlington, Virginia, on a gray late-December morning in 2018, seen as one open view from the study through to the kitchen. On the far left, a front window onto a street of bare oaks and porches with Christmas lights. Left of center, a tall bookshelf of cookbooks, bird guides and a gray binder. In the center, a small study desk cleared bare except for a lamp and a yellow legal pad, with a small open fire safe under it. Right of center, a kitchen counter with a beige answering machine, a caller ID box and a stack of opened mail. On the right, a refrigerator with a note under a magnet and, at the far right, an open bedroom doorway. On the floor in front of the desk, an automatic cat feeder. Tidy, quiet, recently left."
+    },
+    {
+      "id": "s001c06_loc_records_center",
+      "kind": "background",
+      "style": "s001",
+      "subject": "Inside a low industrial records warehouse in Chantilly, Virginia, the morning after a fire, December 2018. On the far left, a fire marshal's folding table under a pop-up canopy by the loading apron. Left of center, the glass front of a small security office with a card-system terminal and dark DVR monitors. In the center, a cramped dock office with a clipboard on a nail and a black binder on a shelf. Center right, folding tables under a white FBI evidence tent with sheets of glass laid in rows. In the upper center right, the doorway to a steel-mesh storage cage gone black and bowed, with tape across it. On the far right, aisles of bare steel shelving. Wet concrete, gray daylight from the dock door, haze still in the air."
+    },
+    {
+      "id": "s001c06_loc_meridian_hq",
+      "kind": "background",
+      "style": "s001",
+      "subject": "The executive floor of a polished consulting firm's headquarters in Washington, D.C., during an FBI search on a gray December morning in 2018. On the left, an executive assistant's desk with a lateral file drawer pulled open and tagged. Left of center, a credenza with a wire tray of invoices. In the upper center, the open door of a corner suite stripped bare, empty shelves and pale rectangles on the carpet, a brass plate on the door. Right of center, the steel doors of a service elevator with a clipboard beside them, and agents in navy windbreakers boxing files below. On the far right, a corridor door marked 611. Expensive and hushed."
+    },
+    {
+      "id": "s001c06_loc_sayer_office",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A small records administrator's office on the sixth floor of a Washington office building, December 2018. On the left, a shelf behind the desk with a worn blue binder and a spiral-bound manual. In the center, a plain desk with a paper desk blotter calendar and an open bottom drawer with an empty wooden tray. On the upper right, a window onto an interior courtyard with a bare tree. On the far right, the office door standing open to the corridor. Neat, spare, quietly abandoned."
+    },
+    {
+      "id": "s001c06_loc_oduya_office",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A small records-management consultancy in a glass office park in Reston, Virginia, December 2018. On the left, a waist-high fire-rated media safe with a typed list on its door. Left of center, open floor before a modest desk with two monitors. In the upper center right, a glass wall onto a server room with two racks of blinking hardware and a large tape library. On the far right, a window onto office parks and a frozen pond. Practical, tidy, fluorescent."
+    },
+    {
+      "id": "s001c06_loc_safe_apartment",
+      "kind": "background",
+      "style": "s001",
+      "subject": "The lobby of a modern short-stay apartment building in Silver Spring, Maryland, late at night in December 2018. On the left, a marble front desk with a bowl of mints and a monitor turned away. Left of center, a small glass business center with two computers and a printer. In the upper center right, an open elevator lobby leading up to a furnished apartment glimpsed with drawers pulled out and the mattress lifted. On the far right, a steel door with a push bar leading to a concrete garage ramp. Bland, clean, too quiet."
+    },
+    {
+      "id": "s001c06_loc_transit",
+      "kind": "background",
+      "style": "s001",
+      "subject": "The concourse of a small regional transit center in Frederick, Maryland, early on a winter morning in December 2018. On the left, the window of a windowless security office with a wall of camera feeds. Left of center, a customer service ticket window with a counter. Center right, through glass doors, a taxi stand canopy with white cabs marked MONOCACY CAB. On the far right, a bus bay door marked 4 with a schedule in a cracked plastic frame. Tile floor, vending machines, cold blue daylight."
+    },
+    {
+      "id": "s001c06_loc_ridge_property",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A remote farm on a wooded ridge in Fulton County, Pennsylvania, on an overcast winter day in December 2018, seen from the farmhouse. On the far left, a farmhouse kitchen window with an old laptop on an oilcloth table. Left of center, a long gravel lane climbing between bare trees with a dark gray full-size SUV parked crosswise. In the upper center right, a small white frame tenant house on the ridge, blinds drawn, no smoke from the chimney. Below it, the slanted wooden door of a root cellar set into the bank. On the far right, the farmhouse porch rail. Snow in the furrows, gray sky, utterly still."
+    },
+    {
+      "id": "s001c06_loc_lockhart_foundation",
+      "kind": "background",
+      "style": "s001",
+      "subject": "The president's floor of a private foundation in a grand Fifth Avenue building in New York, December 2018. On the far left, a hallway wall of award plaques and a small framed photograph. Left of center, a long boardroom table laid with rows of tabbed binders. In the center, open floor before a tall window onto a snowy park across the avenue. On the right, an executive assistant's desk with a courier envelope in an out tray. Cream walls, fine moldings, polished, cold elegance."
+    },
+    {
+      "id": "s001c06_loc_marchetti_office",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A corner law office high in a Midtown Manhattan tower on a short December afternoon in 2018. On the left, bookshelves of corporate law treatises and bound minute books with gaps. In the center, open floor before a wide desk. Right of center, a second chair beside the desk for counsel. On the right, a tall window onto Midtown towers going gold, a dead orchid on the sill. Expensive, tense, half emptied."
+    },
+    {
+      "id": "s001c06_loc_pike_office",
+      "kind": "background",
+      "style": "s001",
+      "subject": "The office of a private security consultancy in a Tysons, Virginia office tower, December 2018. On the left, through a half-open door, a back office wall whiteboard half wiped. In the center, open floor before a steel desk. On the upper right, a window onto a highway and a parking deck. Lower right, a desk drawer open with a red folder, and FBI agents with evidence boxes at the far right. Spare, military-neat, flags and framed service plaques."
+    },
+    {
+      "id": "s001c06_loc_financial_archive",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A windowless trust company records room in Wilmington, Delaware, December 2018. On the left, rolling shelves of red-rope files. Lower left, a reading table with a red-rope file open under a green-shaded lamp. In the center, open floor. On the right, a long reading table with a calculator printing a paper tape and a legal pad of columns. Quiet, old, carefully lit."
+    },
+    {
+      "id": "s001c06_loc_exam_facility",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A forensic document laboratory in Baltimore at night, December 2018. On the far left, two chairs by the wall. In the upper center, an imaging bench with a write-blocker, two workstations and an evidence bag under a lamp, and a comparison microscope. Across the lower half, a long glowing light table laid with rows of printed documents, forms, small signature cards and stacks of typed notes. Clinical white light, dark windows, concentrated calm."
+    },
+    {
+      "id": "s001c06_loc_nypd",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A Manhattan NYPD detective squad room in December 2018. On the left, a whiteboard with a victim's photograph, a map and a booking photo. In the center, open floor before a cluttered desk. On the upper right, a wire-glass window onto a fire escape and a brick wall. Fluorescent light, old radiators, coffee cups."
+    },
+    {
+      "id": "s001c06_loc_fbi",
+      "kind": "background",
+      "style": "s001",
+      "subject": "The FBI Washington Field Office, a modern federal office floor, December 2018. On the far left, a window onto a square with red brick buildings and black SUVs at the curb. Across the center, open floor before a long conference table. On the upper right, a large wall screen split in three for recorded video interviews. Lower right, the door to a small video interview room with a camera on a tripod. Navy carpet, glass walls, institutional and calm."
+    },
+    {
+      "id": "s001c06_loc_storage_office",
+      "kind": "background",
+      "style": "s001",
+      "subject": "The fourth floor of a converted printing plant in Long Island City, Queens, used as a closed office, on a gray December morning in 2018. On the far left, open floor. In the upper center, tall steel-framed factory windows, half painted over, with the Manhattan skyline beyond the rail yards. Below them, pallets stacked with thirty-one new cartons marked CHAIR, and apart from them one older, softer carton. On the right, a door with a work ticket taped to it. Concrete floor, old ink stains, cold."
+    },
+    {
+      "id": "s001c06_loc_interview_room",
+      "kind": "background",
+      "style": "s001",
+      "subject": "A windowless FBI interview room at 26 Federal Plaza, New York, in December 2018. A long gray table across the room. On the left, two chairs for counsel. In the center, the chair at the head of the table. Right of center, a chair at the end of the table with a single closed folder. On the upper right, a long mirrored window. Low fluorescent light, institutional silence."
+    },
+    {
+      "id": "s001c06_portrait_sayer",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Tired but steady, at a retirement lunch for a colleague.",
+      "person": "s001c06_sayer",
+      "suffix": "A painted head-and-shoulders portrait in the manner of a family snapshot used in a police case file: facing the viewer, warm natural daylight, softly blurred outdoor background. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c06_portrait_pike",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Unsmiling, at a corporate security conference.",
+      "person": "s001c06_pike",
+      "suffix": "A painted head-and-shoulders portrait in the manner of a family snapshot used in a police case file: facing the viewer, warm natural daylight, softly blurred outdoor background. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c06_portrait_oduya",
+      "kind": "portrait",
+      "style": "s001",
+      "subject": "Pleasant and businesslike, at a trade association dinner.",
+      "person": "s001c06_oduya",
+      "suffix": "A painted head-and-shoulders portrait in the manner of a family snapshot used in a police case file: facing the viewer, warm natural daylight, softly blurred outdoor background. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "s001c06_figure_sayer",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing a little stooped in a borrowed FBI fleece over a creased oxford shirt, hands folded in front of him, exhausted but upright.",
+      "person": "s001c06_sayer",
+      "reference": "s001c06_portrait_sayer"
+    },
+    {
+      "id": "s001c06_figure_pike",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing very straight behind a desk, arms folded, a phone clipped to his belt.",
+      "person": "s001c06_pike",
+      "reference": "s001c06_portrait_pike"
+    },
+    {
+      "id": "s001c06_figure_oduya",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing beside her desk with a backup tape case held against her chest.",
+      "person": "s001c06_oduya",
+      "reference": "s001c06_portrait_oduya"
+    },
+    {
+      "id": "s001c06_figure_lockhart",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing composed in a dark tailored suit, hands lightly clasped in front of her, a single strand of pearls.",
+      "person": "s001c01_lockhart",
+      "reference": "s001c01_portrait_lockhart"
+    },
+    {
+      "id": "s001c06_figure_ames",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing over a reading table with a pencil in one hand and a page of figures in the other.",
+      "person": "s001c01_ames",
+      "reference": "s001c01_portrait_ames"
+    },
+    {
+      "id": "s001c06_figure_quinlan",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing with a closed folder under one arm, an FBI badge on a lanyard.",
+      "person": "s001c02_quinlan",
+      "reference": "s001c02_portrait_quinlan"
+    },
+    {
+      "id": "s001c06_figure_chen",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing with a leather portfolio held in both hands, watching carefully.",
+      "person": "s001c02_chen",
+      "reference": "s001c02_portrait_chen"
+    },
+    {
+      "id": "s001c06_figure_donovan",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing with her arms wrapped around herself in a gray cardigan, a phone in one hand.",
+      "person": "s001c04_claire",
+      "reference": "s001c04_portrait_donovan"
+    },
+    {
+      "id": "s001c06_figure_marchetti",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing behind her desk in a charcoal suit, one hand resting on the back of her chair, an ankle monitor just visible above her shoe.",
+      "person": "s001c05_marchetti",
+      "reference": "s001c05_portrait_marchetti"
+    },
+    {
+      "id": "s001c06_figure_caruso",
+      "kind": "figure",
+      "style": "s001",
+      "subject": "Standing with his overcoat open and his hands in his pockets, a notebook sticking out of one.",
+      "person": "s001c05_caruso",
+      "reference": "s001c05_portrait_caruso"
+    },
+    {
+      "id": "s001c06_obj_casefile",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A manila private investigator's case folder, closed, with a printed label on the tab reading exactly: SAYER, B., a printed email and a single register page sticking out of the side."
+    },
+    {
+      "id": "s001c06_obj_labfolder",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A plain laboratory report folder in pale gray card with a typed label and a red evidence seal across the flap."
+    },
+    {
+      "id": "s001c06_obj_report_folder",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A blue final report binder with a white printed label, lying closed on a desk."
+    },
+    {
+      "id": "s001c06_obj_letter",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A plain white hand-addressed envelope with a postmark and a stamp, slightly creased, lying on a desk."
+    },
+    {
+      "id": "s001c06_obj_recovery_folder",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A buff FBI envelope with a typed routing label and a strip of red evidence tape across the flap."
+    },
+    {
+      "id": "s001c06_obj_subpoena_box",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A white banker's box of documents with a typed summary sheet clipped to the lid."
+    },
+    {
+      "id": "s001c06_obj_reconstruction",
+      "kind": "sprite",
+      "style": "s001",
+      "subject": "A thick bound report with a dark cover and an embossed agency seal, a routing slip clipped to the top."
+    },
+    {
+      "id": "s001c06_ev_e001",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A printed email on plain paper, a short message under a header block with a webmail address, signed at the bottom with a title instead of a name."
+    },
+    {
+      "id": "s001c06_ev_e002",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A single printed register page with a restricted banner across the top, a table of three entries with code columns and digest strings, and a line of blue ink handwriting across the bottom."
+    },
+    {
+      "id": "s001c06_ev_e003",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A police welfare check report on a clipboard with six small photographs clipped to it: a closet with a gap, a dresser, a bathroom shelf, a phone in a drawer, a refrigerator note, an empty fire safe."
+    },
+    {
+      "id": "s001c06_ev_e004",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A yellow legal pad with the top sheet torn away, the next sheet shaded lightly with pencil to reveal pale handwritten lines."
+    },
+    {
+      "id": "s001c06_ev_e005",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A typed police canvass statement form with a neighbor's signature, and a small handwritten grocery list clipped to it with four digits circled."
+    },
+    {
+      "id": "s001c06_ev_e006",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A beige answering machine with a red blinking digit beside a caller ID box and an opened wireless phone statement with highlighted lines."
+    },
+    {
+      "id": "s001c06_ev_e007",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A records transmittal form filled in by hand in small upright writing, behind a gray binder tab marked PERMANENT."
+    },
+    {
+      "id": "s001c06_ev_e008",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A printed apartment booking confirmation with a building logo and a handwritten note in the margin."
+    },
+    {
+      "id": "s001c06_ev_e009",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Three printed security camera stills of a gray-haired man with a satchel and a small rolling case at a bus bay and a cab stand, with a photocopied dispatch sheet clipped behind."
+    },
+    {
+      "id": "s001c06_ev_e010",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Three handwritten pages on lined paper, folded once, beside a plain white envelope with a Maryland postmark."
+    },
+    {
+      "id": "s001c06_ev_e011",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A fire marshal's preliminary origin and cause report on a county letterhead, with a diagram of a caged storage bay."
+    },
+    {
+      "id": "s001c06_ev_e012",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A dot-matrix access control printout listing card swipes with times, one card number recurring."
+    },
+    {
+      "id": "s001c06_ev_e013",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A records disposal work order on a clipboard with a typed scope and handwriting crammed along the bottom."
+    },
+    {
+      "id": "s001c06_ev_e014",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A typed corporate records retention policy page with a handwritten note in blue ink in the margin."
+    },
+    {
+      "id": "s001c06_ev_e015",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Two versions of a typed retention schedule in one binder, the newer on top with a signature line and a missing clause."
+    },
+    {
+      "id": "s001c06_ev_e016",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A sheaf of printed DVR stills: box trucks at a loading dock, a dark SUV in a lot, two figures at a door, a frame marked VIDEO LOSS."
+    },
+    {
+      "id": "s001c06_ev_e017",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A vendor engagement letter on corporate letterhead with a small routing slip clipped to it, initialed with a single letter."
+    },
+    {
+      "id": "s001c06_ev_e018",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A shredding company invoice with a crew note and a bank wire confirmation stapled behind it."
+    },
+    {
+      "id": "s001c06_ev_e019",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Charred paper fragments flattened between sheets of glass on a folding table, a few typed words surviving at the edges."
+    },
+    {
+      "id": "s001c06_ev_e020",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "An FBI extraction report printout listing text messages with times, beside two cheap prepaid phones in evidence bags."
+    },
+    {
+      "id": "s001c06_ev_e021",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A typed note on a records sheet with a state DMV abstract attached, a license plate number circled."
+    },
+    {
+      "id": "s001c06_ev_e022",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A photograph of a half-wiped office whiteboard with handwritten names, an address and an arrow."
+    },
+    {
+      "id": "s001c06_ev_e023",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A printed building door access log with a concierge's handwritten note clipped to it."
+    },
+    {
+      "id": "s001c06_ev_e024",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A handwritten witness statement on a transit agency form, signed."
+    },
+    {
+      "id": "s001c06_ev_e025",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A faxed rural property lease with a typed cover note from a records man."
+    },
+    {
+      "id": "s001c06_ev_e026",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A row of grainy trail camera stills with time stamps: an SUV at a lane mouth, two men by a tree line, a man at a back door holding a pry bar."
+    },
+    {
+      "id": "s001c06_ev_e027",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "An FBI operation summary report on federal letterhead, typed, several pages stapled."
+    },
+    {
+      "id": "s001c06_ev_e028",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A typed sworn statement with a signature and a counsel's initials on each page."
+    },
+    {
+      "id": "s001c06_ev_e029",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A ruggedized external drive in a sealed FBI evidence bag beside a small bound notebook of handwritten columns."
+    },
+    {
+      "id": "s001c06_ev_e030",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A laboratory imaging and integrity report on letterhead, with a table of matching digest strings."
+    },
+    {
+      "id": "s001c06_ev_e031",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A thick printed register with red tabs along the edge, open to columns of entries and codes."
+    },
+    {
+      "id": "s001c06_ev_e032",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A stack of copies of short typed notes on plain paper, each signed with a single inked letter."
+    },
+    {
+      "id": "s001c06_ev_e033",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A printed budget table beside four short typed trust directions, each with the same signature."
+    },
+    {
+      "id": "s001c06_ev_e034",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Two scanned two-part authorization forms with approval boxes signed in ink."
+    },
+    {
+      "id": "s001c06_ev_e035",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Three scanned authorization forms, each with a short limiting phrase handwritten on it."
+    },
+    {
+      "id": "s001c06_ev_e036",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A typed note on plain paper signed with one letter, with a typed list of companies filed behind it."
+    },
+    {
+      "id": "s001c06_ev_e037",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "An authorization form with a typed schedule and an amendment stapled to it."
+    },
+    {
+      "id": "s001c06_ev_e038",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Six small specimen signature cards laid in a row, each with a code, a name and a signature."
+    },
+    {
+      "id": "s001c06_ev_e039",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A spiral-bound governance manual open to a diagram of three stacked boxes, the top box empty."
+    },
+    {
+      "id": "s001c06_ev_e040",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A printed system audit log with highlighted lines and a handwritten note at the bottom."
+    },
+    {
+      "id": "s001c06_ev_e041",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A forensic document examiner's report with enlarged signature details side by side."
+    },
+    {
+      "id": "s001c06_ev_e042",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A summary sheet of courier pickups and phone calls on top of a stack of subpoena returns."
+    },
+    {
+      "id": "s001c06_ev_e043",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A trust instrument with a signature card clipped to the front, in a red-rope file."
+    },
+    {
+      "id": "s001c06_ev_e044",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Rows of tabbed binders of grant records on a boardroom table."
+    },
+    {
+      "id": "s001c06_ev_e045",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A lawyer's file: a short typed instruction, an email printout and a handwritten note to file."
+    },
+    {
+      "id": "s001c06_ev_e046",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A yellow carbonless copy of an authorization form, stamped REQUESTER'S COPY, an approval inked in the box."
+    },
+    {
+      "id": "s001c06_ev_e047",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A yellow carbonless authorization form in an FBI exhibit sleeve with an inventory tag."
+    },
+    {
+      "id": "s001c06_ev_e048",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A yellow carbonless authorization form in an FBI exhibit sleeve with a different inventory tag."
+    },
+    {
+      "id": "s001c06_ev_e049",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Two typed pages of an operating protocol dated 2009, signed at the foot in ink with a code."
+    },
+    {
+      "id": "s001c06_ev_e050",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A handwritten index table on ruled paper, columns of numbers and dates with notes beside them."
+    },
+    {
+      "id": "s001c06_ev_e051",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A written personal account on lined paper, signed, in an FBI folder."
+    },
+    {
+      "id": "s001c06_ev_e052",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "Four short typed notes on foundation letterhead, each initialed by hand."
+    },
+    {
+      "id": "s001c06_ev_e053",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A single typed sheet headed with a restricted marking, signed with one letter."
+    },
+    {
+      "id": "s001c06_ev_e054",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A short typed memorandum of several pages headed with a restricted marking, signed with one letter."
+    },
+    {
+      "id": "s001c06_ev_e055",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A red file folder labeled with a city name, open to typed dated reports."
+    },
+    {
+      "id": "s001c06_ev_e056",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A typed log sheet in four columns, the last column headed offered but withheld."
+    },
+    {
+      "id": "s001c06_ev_e057",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A certified reconstruction binder open to a table of records side by side, an FBI certification sheet on top."
+    },
+    {
+      "id": "s001c06_ev_e058",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A typed FBI corroboration summary, one paragraph per witness."
+    },
+    {
+      "id": "s001c06_ev_e059",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A single typed sheet signed with one inked letter, lying in an old soft carton marked by hand."
+    },
+    {
+      "id": "s001c06_ev_e060",
+      "kind": "evidence",
+      "style": "s001",
+      "subject": "A bound investigation report with a dark cover and an agency seal, open to a page of numbered points."
+    },
+    {
+      "id": "s001c06_map",
+      "kind": "map",
+      "style": "s001",
+      "subject": "The mid-Atlantic United States from western Pennsylvania to New York City, as a single illustrated travel map. On the far left, the city of Pittsburgh where three rivers meet. A turnpike in ochre runs east across wooded ridges and valleys; on a ridge in south central Pennsylvania, a small farm and a lane. Lower center, the Potomac River with Washington, D.C. on its north bank and the Virginia suburbs to the west and south, a small town of Frederick to the north, Silver Spring just above Washington, and Baltimore on the Chesapeake Bay to the northeast. Center right, Wilmington on the Delaware River. On the far right, the island of Manhattan and the edge of Queens across the East River. Pale blue water, soft green and tan land, fine roads, no readable text."
     }
   ],
   "styles": {
