@@ -76,10 +76,10 @@ Calendar checked: Nov 1, 2018 is a Thursday; Nov 4 Sunday, Nov 5 Monday, Nov 6 T
 | Jul to Oct 2018 | Martin notices fund payments to the three intermediaries; begins the hidden ledger (first entry July 23) | E11 |
 | Mon Oct 22 | Martin emails Susan Whitfield his concerns; she replies to hold off until after the Lockhart donor dinner in December | E27, Whitfield |
 | Mon Oct 29 | Courier delivery of the copied Tri-County invoice to the Lockhart Foundation, New York | E30 (author: the leak) |
-| Mon Nov 5, about 2 PM | Warren Foster argues loudly with Martin at the foundation over a $12,000 clawback letter | E28, Morris, Foster |
 | Sun Nov 4 | Martin writes a letter to Hannah, sealed, left in his home desk | E14 |
-| Tue Nov 6, 10:14 PM | Martin emails Walter Ames asking for an urgent confidential meeting | E10 |
+| Mon Nov 5, about 2 PM | Warren Foster argues loudly with Martin at the foundation over a $12,000 clawback letter | E28, Morris, Foster |
 | Tue Nov 6, 4:10 PM and 6:35 PM | Holt calls Reddick twice (Holt has heard from Whitfield's office that Martin booked an outside auditor) | E25 |
+| Tue Nov 6, 10:14 PM | Martin emails Walter Ames asking for an urgent confidential meeting | E10 |
 | Wed Nov 7 | Martin copies the payment records at home; sets meeting: Fri Nov 9, 9:00 AM, Ames and Kiley | E09, E12 |
 | Wed Nov 7, 8:52 PM | Holt calls Reddick, 6 minutes | E25 |
 
@@ -111,6 +111,7 @@ Calendar checked: Nov 1, 2018 is a Thursday; Nov 4 Sunday, Nov 5 Monday, Nov 6 T
 | Fri Nov 9, 6:40 AM | The cleaner, starting her early shift, finds Martin. 911 at 6:43 AM | E01 |
 | Fri Nov 9, 9:00 AM | Ames waits for Martin; calls his cell twice, no answer | Ames |
 | Fri Nov 9, 10:14 AM | Tri-County pays Reddick Maintenance $9,500, "HVAC retrofit, Mercantile Bldg" (approved online under Holt's login) | E19, E24 |
+| Fri Nov 9, 10:31 AM | Holt calls Reddick, 1 minute, to tell him the money is in | E25 |
 | Fri Nov 9 | ME: death by blunt force injury to the head, between about 8:00 and 10:00 PM Thursday | E03 |
 | Sat Nov 10 | Police treat it as a burglary that turned violent; Det. Bowman releases the scene Sunday | E01, Bowman |
 | Mon Nov 12, 9:30 AM | Hannah Keller hires Blackwood. **The game begins** | Intro |
@@ -163,7 +164,7 @@ Not interviewable: **Martin Keller** (46, victim; on the board).
 
 **Dr. Evelyn Lockhart** (phone, after RE02). Gracious and precise. The envelope arrived at her office "weeks ago with no name on it"; she didn't know what to make of it and put it aside; after reading about Martin she felt Blackwood should have it. Tri-County "deserves a closer look." She has funded the Carroway fund since 2014; Holt was the administrator the foundation chose. She has "heard of" Meridian as a consulting firm. Never claims to know anything further. Never says anything about the waybill or footer. If asked who sent the envelope: she doesn't know.
 
-**Walter Ames.** Martin called him in late October and emailed on Nov 6 (E10). Martin waited at nothing; Ames waited at 9:00 Friday. Explains pass-through payments and split engagements in plain words. After RE05 he prepares E29 from the subpoenaed bank records.
+**Walter Ames.** Martin called him in late October and emailed on Nov 6 (E10). Martin never arrived; Ames waited for him at 9:00 Friday. Explains pass-through payments and split engagements in plain words. After RE05 he prepares E29 from the subpoenaed bank records.
 
 **Stanley Avery.** Card system: front doors lock at 6:00; rear door logs card entries and every opening. Hands over E06 (rear door and front door, Nov 8) when asked about access that night, and E22 (card 0447) when asked whose card or about maintenance access. Thinks it's irrelevant because maintenance "comes and goes at all hours."
 
@@ -487,7 +488,6 @@ Every item is reached exactly one way. "Bowman" or a person's name means a hando
 > 11/6 4:10 PM Incoming (412) 555-0193 7 min
 > 11/6 6:35 PM Incoming (412) 555-0193 3 min
 > 11/7 8:52 PM Incoming (412) 555-0193 6 min
-> 11/8 7:51 PM Outgoing (724) 555-0160 2 min
 > 11/8 9:02 PM Outgoing (412) 555-0193 4 min
 > 11/8 9:20 PM Incoming (412) 555-0193 2 min
 > 11/9 10:31 AM Incoming (412) 555-0193 1 min
