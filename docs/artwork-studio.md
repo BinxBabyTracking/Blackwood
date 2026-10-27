@@ -37,7 +37,7 @@ Generated and uploaded pictures are finished the same way as `import-art.mjs`: f
 
 A person who talks on screen has a front-facing portrait (`<case>_portrait_<person>`, with a front-facing `suffix`) and six frames: `<case>_<person>_mouth_open_slight`, `_mouth_ah`, `_mouth_ee`, `_mouth_oh`, `_mouth_oo` and `_blink` (optional `_mouth_f`). Each frame is kind `face` with `reference` set to the portrait, so it is made as an edit of the portrait that changes only the mouth (or the eyes).
 
-When a frame is generated or uploaded, the studio blends it onto the person's current portrait (`src/lib/face-blend.ts`, the same method as `scripts/build-faces.py`): only the area that changed is kept, feathered, so nothing else in the face shimmers when frames switch. So:
+When a frame is generated or uploaded, the studio blends it onto the person's current portrait (`blendFace` in `src/lib/art-studio.ts`, the same method as `scripts/build-faces.py`): only the area that changed is kept, feathered, so nothing else in the face shimmers when frames switch. So:
 
 - **Make the portrait live before its frames.** "Generate all missing" goes in manifest order (portraits first), so with "Make missing images live straight away" ticked this happens by itself.
 - **If a portrait is replaced, make its six frames again**, or the mouth will come from the old face.
