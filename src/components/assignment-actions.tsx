@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { acceptAssignment } from "@/app/actions/game";
+import { openParty } from "@/app/actions/party";
+import { hostLobby } from "@/lib/party";
 import { isPlayable } from "@/game/registry";
 import { resolveAssignmentAction } from "@/lib/assignment";
 import { formatPrice } from "@/lib/format";
@@ -14,6 +16,7 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
   let entitled = false;
   let earlyAccess = false;
   let session: "active" | "closed" | null = null;
+  let teamOpen = false;
 
   if (supabase) {
     const { data } = await supabase.auth.getUser();
@@ -30,6 +33,8 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
           .in("session.status", ["active", "closed"]),
       ]);
       entitled = Boolean(ent);
+      const lobby = await hostLobby(data.user.id).catch(() => null);
+      teamOpen = lobby?.case_id === c.id;
       earlyAccess = (ent as { source?: string } | null)?.source === "grant";
       const statuses = ((rows ?? []) as unknown as { session: { status: string } }[]).map((r) => r.session.status);
       session = statuses.includes("active") ? "active" : statuses.includes("closed") ? "closed" : null;
@@ -77,9 +82,15 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
       );
     case "resume":
       return (
-        <Link href={`/play/${c.id}`} className={buttonClass("primary")}>
-          Resume Investigation
-        </Link>
+        <div>
+          <div className="flex flex-wrap gap-3">
+            <Link href={`/play/${c.id}`} className={buttonClass("primary")}>
+              Resume Investigation
+            </Link>
+            <TeamButton caseId={c.id} open={teamOpen} />
+          </div>
+          <p className="mt-3 max-w-[48ch] text-sm text-smoke">As a team, friends join your investigation from their phones and pick up where you are.</p>
+        </div>
       );
     case "review_closed":
       return (
@@ -92,13 +103,20 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
       );
     case "accept":
       return (
-        <form action={acceptAssignment}>
-          <input type="hidden" name="caseId" value={c.id} />
-          <button type="submit" className={buttonClass("primary")}>
-            Accept Assignment
-          </button>
-          <p className="mt-3 max-w-[44ch] text-sm text-smoke">Accepting opens the investigation. Your progress is saved as you go.</p>
-        </form>
+        <div>
+          <div className="flex flex-wrap gap-3">
+            <form action={acceptAssignment}>
+              <input type="hidden" name="caseId" value={c.id} />
+              <button type="submit" className={buttonClass("primary")}>
+                Accept Assignment
+              </button>
+            </form>
+            <TeamButton caseId={c.id} open={teamOpen} />
+          </div>
+          <p className="mt-3 max-w-[48ch] text-sm text-smoke">
+            Accepting opens the investigation. Your progress is saved as you go. To investigate as a team, you host and show a code; up to five friends join from their phones, no accounts needed.
+          </p>
+        </div>
       );
     case "purchase":
       return (
@@ -118,5 +136,30 @@ function Notice({ title, children }: { title: string; children: React.ReactNode 
       <p className="text-sm font-semibold text-paper">{title}</p>
       <p className="mt-1 text-sm text-smoke">{children}</p>
     </div>
+  );
+}
+
+/** Opens a joint investigation of this case (you host and show a QR code), or goes back to the one already open. */
+function TeamButton({ caseId, open }: { caseId: string; open: boolean }) {
+  const icon = (
+    <svg aria-hidden viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 11a3 3 0 100-6 3 3 0 000 6zM16 11a3 3 0 100-6 3 3 0 000 6zM2 20c0-3 3-5 6-5s6 2 6 5M14 15.5c3 0 8 1 8 4.5" />
+    </svg>
+  );
+  if (open)
+    return (
+      <Link href="/agency/joint-investigations" className={buttonClass("secondary", "inline-flex items-center gap-2")}>
+        {icon}
+        Back to the Team Lobby
+      </Link>
+    );
+  return (
+    <form action={openParty}>
+      <input type="hidden" name="caseId" value={caseId} />
+      <button type="submit" className={buttonClass("secondary", "inline-flex items-center gap-2")}>
+        {icon}
+        Investigate as a Team
+      </button>
+    </form>
   );
 }

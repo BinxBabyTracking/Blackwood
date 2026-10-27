@@ -1,38 +1,29 @@
 import type { Metadata } from "next";
 import QRCode from "qrcode";
+import Link from "next/link";
 import { Suspense } from "react";
-import { closeParty, openParty } from "@/app/actions/party";
+import { closeParty } from "@/app/actions/party";
 import { PortalHeading } from "@/components/portal/heading";
 import { LoadingFile, Panel, buttonClass } from "@/components/ui";
 import { loadCase } from "@/game/registry";
 import { requireInvestigator } from "@/lib/investigator";
 import { hostLobby, lobbyGuests, MAX_PARTY } from "@/lib/party";
 import { siteOrigin } from "@/lib/site";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { CopyLink, HostLobby } from "./joint-forms";
 
-export const metadata: Metadata = { title: "Joint Investigations" };
+export const metadata: Metadata = { title: "Investigate as a Team" };
 
 export default function JointInvestigationsPage({ searchParams }: PageProps<"/agency/joint-investigations">) {
   return (
     <>
-      <PortalHeading title="Joint Investigations">
+      <PortalHeading title="Investigate as a Team">
         Work a case together in the same room. You host and show a QR code; everyone else scans it with their phone, gives a name,
         and joins your investigation. No accounts needed for them.
       </PortalHeading>
-      <Suspense fallback={<LoadingFile label="Opening the joint investigation" />}>
+      <Suspense fallback={<LoadingFile label="Opening the team lobby" />}>
         <Joint searchParams={searchParams} />
       </Suspense>
     </>
-  );
-}
-
-async function playableCases() {
-  const db = createAdminClient();
-  if (!db) return [];
-  const { data } = await db.from("cases").select("id, title, status, is_preview").order("id");
-  return ((data ?? []) as { id: string; title: string; status: string; is_preview: boolean }[]).filter(
-    (c) => c.status === "available" && !c.is_preview && loadCase(c.id),
   );
 }
 
@@ -42,34 +33,20 @@ async function Joint({ searchParams }: { searchParams: Promise<Record<string, st
   const lobby = await hostLobby(me.id).catch(() => null);
 
   if (!lobby) {
-    const cases = await playableCases();
     return (
       <Panel className="max-w-xl p-6">
-        <h2 className="font-serif text-xl">Open a Joint Investigation</h2>
-        <p className="mt-1 mb-5 text-sm text-smoke">
-          Everyone plays your investigation of the case, on their own screen. Anyone can look around, collect evidence, ask questions and
-          work on the report. Only you can file it. Questions are limited the same as playing alone.
-        </p>
+        <h2 className="font-serif text-xl">No team investigation is open</h2>
         {error ? (
-          <p role="alert" className="mb-4 border border-fault bg-fault/15 px-4 py-3 text-sm">
-            {error === "case" ? "That case is not open for investigation." : "The joint investigation could not be opened. Try again."}
+          <p role="alert" className="mt-4 border border-fault bg-fault/15 px-4 py-3 text-sm">
+            {error === "case" ? "That case is not open for investigation." : "The team investigation could not be opened. Try again."}
           </p>
         ) : null}
-        <form action={openParty} className="space-y-4">
-          <label className="block text-sm">
-            Case
-            <select name="caseId" className="field mt-1.5" defaultValue={cases[0]?.id ?? ""} required disabled={!cases.length}>
-              {cases.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.id}: {c.title}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button type="submit" className={buttonClass("primary")} disabled={!cases.length}>
-            Open Joint Investigation
-          </button>
-        </form>
+        <p className="mt-2 text-sm text-smoke">
+          Open a case under Available Assignments or My Case Files and choose Investigate as a Team. You get a QR code here for everyone to scan.
+        </p>
+        <Link href="/agency/assignments" className={buttonClass("primary", "mt-5")}>
+          Available Assignments
+        </Link>
       </Panel>
     );
   }

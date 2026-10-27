@@ -20,7 +20,6 @@ export const PORTAL_NAV = [
   { href: "/agency", label: "Agency Headquarters", icon: "hq" },
   { href: "/agency/assignments", label: "Available Assignments", icon: "assignments" },
   { href: "/agency/cases", label: "My Case Files", icon: "cases" },
-  { href: "/agency/joint-investigations", label: "Joint Investigations", icon: "joint" },
   { href: "/agency/service-record", label: "Service Record", icon: "record" },
   { href: "/agency/personnel", label: "Personnel File", icon: "personnel" },
   { href: "/agency/settings", label: "Agency Settings", icon: "settings" },

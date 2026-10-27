@@ -28,7 +28,9 @@ export async function openParty(fd: FormData) {
   try {
     // Everyone plays the host's investigation: continue theirs, or open one.
     await startInvestigation(me.id, def);
-    await openLobby(me.id, def.id);
+    // Already hosting this case: keep that table (and its code) rather than sending everyone out.
+    const open = await hostLobby(me.id).catch(() => null);
+    if (open?.case_id !== def.id) await openLobby(me.id, def.id);
   } catch (e) {
     console.error("openParty", e);
     redirect(`/agency/joint-investigations?error=${e instanceof PersistenceError ? "case" : "open"}`);
