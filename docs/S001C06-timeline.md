@@ -85,7 +85,7 @@ This is the case's "money": the thing every document refers to.
 | EX-2016-044 | Mon Nov 7, 2016 | S-6 appointed: C. Pike | A-1 | E038 |
 | EX-2017-022 | Tue Jun 13, 2017 | Leverage program: J. Ellery (Eastbridge Systems) | I-3 | E034, E047, C02 |
 | EX-2018-007 | Mon Jan 8, 2018 | Carroway program, FY2018, ceiling $450,000 | F-2 | E046, C01 |
-| EX-2018-019 | Mon Mar 12, 2018 | Harbor program: compliance of terminal staff (R. Briggs) per I-3 file 0412 | L-4 | E035, E048, C03 |
+| EX-2018-019 | Mon Mar 12, 2018 | Harbor program: compliance of terminal staff (R. Gaffney) per file CI-2017-0384 | L-4 | E035, E048, C03 |
 | EX-2018-052 | Mon Sep 10, 2018 | Release program (Clearwater), with amendment of Nov 16 | A-1 | E037 |
 | EX-2018-071 | Mon Dec 17, 2018 | Ogden research: recover materials, persuade silence. "No physical harm" | C-5 | E035, C05 |
 | EX-CORR-2018-061 | Fri Dec 21, 2018 | A note to C-5: clear the Records Center, end the EX series | A-1 | E032, E045 |
@@ -145,7 +145,7 @@ Travel: Arlington to Chantilly about 30 minutes; Arlington to Silver Spring abou
 | Mon Nov 7, 2016 | Pike appointed S-6 | E038, E031 |
 | Tue Jun 13, 2017 | EX-2017-022: leverage program on Jonathan Ellery | E034, E047 |
 | Mon Jan 8, 2018 | 2018 reserved budgets approved; EX-2018-007 Carroway ceiling $450,000 | E033, E046 |
-| Mon Mar 12, 2018 | EX-2018-019: pressure on Russell Briggs at East Harbor | E035, E048 |
+| Mon Mar 12, 2018 | EX-2018-019: pressure on Russell Gaffney at East Harbor | E035, E048 |
 | Mon Aug 20, 2018 | A-1's risk review: Holt, Rourke, Kane are liabilities | E054 |
 | Fri Sep 7, 2018 | The Exposure Sequence Directive | E053 |
 | Mon Sep 10, 2018 | EX-2018-052, the release program. Same day: $250,000 president's discretionary grant to Clearwater | E037, E044 |
@@ -466,7 +466,7 @@ Classification: critical (needed for a report claim or a required deduction) E00
 >
 > No. | Date | Matter | Req. | Appr. | Digest (SHA-256, first and last 6)
 > EX-2018-007 | 01/08/2018 | Carroway program: intermediary engagements, FY2018. Ceiling $450,000 | F-2 | A-1 | 3f9c07...a1e44b
-> EX-2018-019 | 03/12/2018 | Harbor program: East Harbor terminal. Compliance of terminal staff per I-3 file 0412 | L-4 | A-1 | 77d2be...0c91f3
+> EX-2018-019 | 03/12/2018 | Harbor program: East Harbor terminal. Compliance of terminal staff per file CI-2017-0384 | L-4 | A-1 | 77d2be...0c91f3
 > EX-2017-022 (carried forward) | 06/13/2017 | Leverage program: J. Ellery (Eastbridge Systems). Continuing | I-3 | A-1 | c40a19...e8d270
 >
 > Footer, printed by the records system: "Custodia RMS, EXVOL, printed 12/21/2018 15:47, user bsayer."
@@ -833,7 +833,7 @@ Classification: critical (needed for a report claim or a required deduction) E00
 > Scans of the EX-7 forms for the logistics program (L-4) and the Ogden matter (C-5).
 >
 > EX-2016-031 (02/22/2016): "Harbor program: move and conceal designated freight through cooperating terminals." Requested L-4 (G. Kane), approved A-1.
-> EX-2018-019 (03/12/2018): "Compliance of terminal staff (R. Briggs) by application of I-3 file 0412. Pressure only." Requested L-4, approved A-1.
+> EX-2018-019 (03/12/2018): "Compliance of terminal staff (R. Gaffney) by application of file CI-2017-0384. Pressure only." Requested L-4, approved A-1.
 > EX-2018-071 (12/17/2018): "Ogden research: recover materials, persuade silence. No physical harm." Requested C-5 (E. Marchetti), approved A-1.
 >
 > A reviewer's note: "These approve intimidation, concealment and pressure on named people. Each limits itself ('pressure only,' 'no physical harm'). None authorizes a killing. The deaths of Hector Navarro and Nathaniel Ogden have no authorization in this archive."
@@ -943,7 +943,7 @@ Classification: critical (needed for a report claim or a required deduction) E00
 **E048, Gideon Kane authorization reference** (Quinlan, chapter 4, after E035).
 > FBI exhibit, from the search of Gideon Kane's office safe at the Riverside Freight Transfer Yard (Dec 5). Inventory item 9.
 >
-> A yellow carbonless EX-7: requester L-4 (G. Kane), matter "Harbor program: compliance of terminal staff per I-3 file 0412," "APPROVED A-1," dated 03/12/2018. Stamped "REQUESTER'S COPY."
+> A yellow carbonless EX-7: requester L-4 (G. Kane), matter "Harbor program: compliance of terminal staff per file CI-2017-0384," "APPROVED A-1," dated 03/12/2018. Stamped "REQUESTER'S COPY."
 >
 > Quinlan's note: "Kane's copy of the same authorization that sits in the register as EX-2018-019. 'Pressure only' is written on both. It does not reach the killing of Hector Navarro, and Kane says so himself."
 
@@ -1062,7 +1062,7 @@ The finale's required chain reaches back to records the player may never have fo
 | R01 | S001-C01-E029 | Meridian Payment Pattern (Ames's schedule) | Walter Ames | chapter ≥ 2, canonical not held | the Carroway money, the intermediaries' onward payments, his schedule from C01 | "Copy retained by Walter Ames from the Carroway audit; provided to the series investigation, December 2018." |
 | R02 | S001-C01-E030 | Dr. Lockhart's referral note and enclosure | Bennett | chapter ≥ 2, canonical not held | the envelope Lockhart sent in the Keller case, the first delivery, the Keller file | "Recovered December 2018 from the sealed Keller case file held by Blackwood records (Bennett)." |
 | R03 | S001-C02-E035 | Compromising Information Index | SA Quinlan | chapter ≥ 2, canonical not held | Meridian's blackmail index, the intelligence exhibits in the Rourke case | "Exhibit in the federal case against J. Rourke; released to the series investigation, December 2018." |
-| R04 | S001-C03-E033 | Marcus (Rourke) Intelligence Reference on Briggs | SA Quinlan | chapter ≥ 2, canonical not held | how Briggs was pressured, the Baltimore intelligence link | "Folded into the federal case; copy released to the series investigation, December 2018." |
+| R04 | S001-C03-E033 | Meridian Subject Profile on Gaffney | SA Quinlan | chapter ≥ 2, canonical not held | how Gaffgs was pressured, the Baltimore intelligence link | "Folded into the federal case; copy released to the series investigation, December 2018." |
 | R05 | S001-C03-E037 | Shared Meridian Client Reference | Benjamin Sayer | chapter ≥ 2 (after RE08), canonical not held | the shared client register, the clients common to the cases | "Copy recovered December 2018 from the archive kept by B. Sayer." |
 | R06 | S001-C03-E038 | Intermediary Payment Network | Walter Ames | chapter ≥ 2, canonical not held | how the freight money connects to the finance network | "Traced by Walter Ames for the prosecutors after the Baltimore case; provided December 2018." |
 | R07 | S001-C04-E017 | Archive checkout log | Benjamin Sayer | chapter ≥ 2 (after RE08), canonical not held | who pulled the leaked originals, the checkout log, Claire's pulls | "Copy recovered December 2018 from the archive kept by B. Sayer, who approved the transfers." |
