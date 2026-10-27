@@ -66,7 +66,7 @@
       "size": "1024x1536",
       "quality": "high",
       "background": "opaque",
-      "suffix": "An edit of the reference portrait: the same painting of the same person, at the same size, framing, pose, lighting, colors and brushwork. Change nothing except what the subject asks for. Do not move the head, change the expression elsewhere, or redraw the hair, clothing or background."
+      "suffix": "An edit of the reference portrait: the same painting of the same person, at the same size, framing, pose, lighting, colors and brushwork. Change nothing except what the subject asks for. Do not move the head, change the expression elsewhere, or redraw the hair, clothing or background. Return one single image, never a sheet of several faces."
     }
   },
   "people": {
@@ -506,70 +506,70 @@
       "kind": "portrait",
       "style": "c004",
       "person": "c004_louise",
-      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. One single portrait only: one person, one picture, no grid, no extra panels or small copies."
+      "subject": "One single painted portrait of this one person, filling the whole frame: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. Only one image of one face: no panels, no inset pictures, no grid, no strip of extra faces, no other expressions."
     },
     {
       "id": "c004_portrait_victor",
       "kind": "portrait",
       "style": "c004",
       "person": "c004_victor",
-      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. One single portrait only: one person, one picture, no grid, no extra panels or small copies."
+      "subject": "One single painted portrait of this one person, filling the whole frame: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. Only one image of one face: no panels, no inset pictures, no grid, no strip of extra faces, no other expressions."
     },
     {
       "id": "c004_portrait_henry",
       "kind": "portrait",
       "style": "c004",
       "person": "c004_henry",
-      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. One single portrait only: one person, one picture, no grid, no extra panels or small copies."
+      "subject": "One single painted portrait of this one person, filling the whole frame: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. Only one image of one face: no panels, no inset pictures, no grid, no strip of extra faces, no other expressions."
     },
     {
       "id": "c004_portrait_samuel",
       "kind": "portrait",
       "style": "c004",
       "person": "c004_samuel",
-      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. One single portrait only: one person, one picture, no grid, no extra panels or small copies."
+      "subject": "One single painted portrait of this one person, filling the whole frame: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. Only one image of one face: no panels, no inset pictures, no grid, no strip of extra faces, no other expressions."
     },
     {
       "id": "c004_portrait_clara",
       "kind": "portrait",
       "style": "c004",
       "person": "c004_clara",
-      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. One single portrait only: one person, one picture, no grid, no extra panels or small copies."
+      "subject": "One single painted portrait of this one person, filling the whole frame: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. Only one image of one face: no panels, no inset pictures, no grid, no strip of extra faces, no other expressions."
     },
     {
       "id": "c004_portrait_russo",
       "kind": "portrait",
       "style": "c004",
       "person": "c004_russo",
-      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. One single portrait only: one person, one picture, no grid, no extra panels or small copies."
+      "subject": "One single painted portrait of this one person, filling the whole frame: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. Only one image of one face: no panels, no inset pictures, no grid, no strip of extra faces, no other expressions."
     },
     {
       "id": "c004_portrait_rose",
       "kind": "portrait",
       "style": "c004",
       "person": "c004_rose",
-      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. One single portrait only: one person, one picture, no grid, no extra panels or small copies."
+      "subject": "One single painted portrait of this one person, filling the whole frame: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. Only one image of one face: no panels, no inset pictures, no grid, no strip of extra faces, no other expressions."
     },
     {
       "id": "c004_portrait_keene",
       "kind": "portrait",
       "style": "c004",
       "person": "c004_keene",
-      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. One single portrait only: one person, one picture, no grid, no extra panels or small copies."
+      "subject": "One single painted portrait of this one person, filling the whole frame: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. Only one image of one face: no panels, no inset pictures, no grid, no strip of extra faces, no other expressions."
     },
     {
       "id": "c004_portrait_agnes",
       "kind": "portrait",
       "style": "c004",
       "person": "c004_agnes",
-      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. One single portrait only: one person, one picture, no grid, no extra panels or small copies."
+      "subject": "One single painted portrait of this one person, filling the whole frame: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. Only one image of one face: no panels, no inset pictures, no grid, no strip of extra faces, no other expressions."
     },
     {
       "id": "c004_portrait_frankie",
       "kind": "portrait",
       "style": "c004",
       "person": "c004_frankie",
-      "subject": "Talking portrait base: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. One single portrait only: one person, one picture, no grid, no extra panels or small copies."
+      "subject": "One single painted portrait of this one person, filling the whole frame: facing the viewer directly, looking straight into the camera, mouth gently closed, head centered, nothing covering the mouth or eyes, even soft lamplight from the front. Only one image of one face: no panels, no inset pictures, no grid, no strip of extra faces, no other expressions."
     },
     {
       "id": "c004_portrait_arthur",
@@ -598,7 +598,7 @@
       "style": "c004",
       "person": "c004_louise",
       "reference": "c004_portrait_louise",
-      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_louise_ah",
@@ -606,7 +606,7 @@
       "style": "c004",
       "person": "c004_louise",
       "reference": "c004_portrait_louise",
-      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_louise_ee",
@@ -614,7 +614,7 @@
       "style": "c004",
       "person": "c004_louise",
       "reference": "c004_portrait_louise",
-      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_louise_oh",
@@ -622,7 +622,7 @@
       "style": "c004",
       "person": "c004_louise",
       "reference": "c004_portrait_louise",
-      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_louise_oo",
@@ -630,7 +630,7 @@
       "style": "c004",
       "person": "c004_louise",
       "reference": "c004_portrait_louise",
-      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_louise_blink",
@@ -638,7 +638,7 @@
       "style": "c004",
       "person": "c004_louise",
       "reference": "c004_portrait_louise",
-      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_victor_slight",
@@ -646,7 +646,7 @@
       "style": "c004",
       "person": "c004_victor",
       "reference": "c004_portrait_victor",
-      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_victor_ah",
@@ -654,7 +654,7 @@
       "style": "c004",
       "person": "c004_victor",
       "reference": "c004_portrait_victor",
-      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_victor_ee",
@@ -662,7 +662,7 @@
       "style": "c004",
       "person": "c004_victor",
       "reference": "c004_portrait_victor",
-      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_victor_oh",
@@ -670,7 +670,7 @@
       "style": "c004",
       "person": "c004_victor",
       "reference": "c004_portrait_victor",
-      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_victor_oo",
@@ -678,7 +678,7 @@
       "style": "c004",
       "person": "c004_victor",
       "reference": "c004_portrait_victor",
-      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_victor_blink",
@@ -686,7 +686,7 @@
       "style": "c004",
       "person": "c004_victor",
       "reference": "c004_portrait_victor",
-      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_henry_slight",
@@ -694,7 +694,7 @@
       "style": "c004",
       "person": "c004_henry",
       "reference": "c004_portrait_henry",
-      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_henry_ah",
@@ -702,7 +702,7 @@
       "style": "c004",
       "person": "c004_henry",
       "reference": "c004_portrait_henry",
-      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_henry_ee",
@@ -710,7 +710,7 @@
       "style": "c004",
       "person": "c004_henry",
       "reference": "c004_portrait_henry",
-      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_henry_oh",
@@ -718,7 +718,7 @@
       "style": "c004",
       "person": "c004_henry",
       "reference": "c004_portrait_henry",
-      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_henry_oo",
@@ -726,7 +726,7 @@
       "style": "c004",
       "person": "c004_henry",
       "reference": "c004_portrait_henry",
-      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_henry_blink",
@@ -734,7 +734,7 @@
       "style": "c004",
       "person": "c004_henry",
       "reference": "c004_portrait_henry",
-      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_samuel_slight",
@@ -742,7 +742,7 @@
       "style": "c004",
       "person": "c004_samuel",
       "reference": "c004_portrait_samuel",
-      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_samuel_ah",
@@ -750,7 +750,7 @@
       "style": "c004",
       "person": "c004_samuel",
       "reference": "c004_portrait_samuel",
-      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_samuel_ee",
@@ -758,7 +758,7 @@
       "style": "c004",
       "person": "c004_samuel",
       "reference": "c004_portrait_samuel",
-      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_samuel_oh",
@@ -766,7 +766,7 @@
       "style": "c004",
       "person": "c004_samuel",
       "reference": "c004_portrait_samuel",
-      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_samuel_oo",
@@ -774,7 +774,7 @@
       "style": "c004",
       "person": "c004_samuel",
       "reference": "c004_portrait_samuel",
-      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_samuel_blink",
@@ -782,7 +782,7 @@
       "style": "c004",
       "person": "c004_samuel",
       "reference": "c004_portrait_samuel",
-      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_clara_slight",
@@ -790,7 +790,7 @@
       "style": "c004",
       "person": "c004_clara",
       "reference": "c004_portrait_clara",
-      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_clara_ah",
@@ -798,7 +798,7 @@
       "style": "c004",
       "person": "c004_clara",
       "reference": "c004_portrait_clara",
-      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_clara_ee",
@@ -806,7 +806,7 @@
       "style": "c004",
       "person": "c004_clara",
       "reference": "c004_portrait_clara",
-      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_clara_oh",
@@ -814,7 +814,7 @@
       "style": "c004",
       "person": "c004_clara",
       "reference": "c004_portrait_clara",
-      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_clara_oo",
@@ -822,7 +822,7 @@
       "style": "c004",
       "person": "c004_clara",
       "reference": "c004_portrait_clara",
-      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_clara_blink",
@@ -830,7 +830,7 @@
       "style": "c004",
       "person": "c004_clara",
       "reference": "c004_portrait_clara",
-      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_russo_slight",
@@ -838,7 +838,7 @@
       "style": "c004",
       "person": "c004_russo",
       "reference": "c004_portrait_russo",
-      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_russo_ah",
@@ -846,7 +846,7 @@
       "style": "c004",
       "person": "c004_russo",
       "reference": "c004_portrait_russo",
-      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_russo_ee",
@@ -854,7 +854,7 @@
       "style": "c004",
       "person": "c004_russo",
       "reference": "c004_portrait_russo",
-      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_russo_oh",
@@ -862,7 +862,7 @@
       "style": "c004",
       "person": "c004_russo",
       "reference": "c004_portrait_russo",
-      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_russo_oo",
@@ -870,7 +870,7 @@
       "style": "c004",
       "person": "c004_russo",
       "reference": "c004_portrait_russo",
-      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_russo_blink",
@@ -878,7 +878,7 @@
       "style": "c004",
       "person": "c004_russo",
       "reference": "c004_portrait_russo",
-      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_rose_slight",
@@ -886,7 +886,7 @@
       "style": "c004",
       "person": "c004_rose",
       "reference": "c004_portrait_rose",
-      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_rose_ah",
@@ -894,7 +894,7 @@
       "style": "c004",
       "person": "c004_rose",
       "reference": "c004_portrait_rose",
-      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_rose_ee",
@@ -902,7 +902,7 @@
       "style": "c004",
       "person": "c004_rose",
       "reference": "c004_portrait_rose",
-      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_rose_oh",
@@ -910,7 +910,7 @@
       "style": "c004",
       "person": "c004_rose",
       "reference": "c004_portrait_rose",
-      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_rose_oo",
@@ -918,7 +918,7 @@
       "style": "c004",
       "person": "c004_rose",
       "reference": "c004_portrait_rose",
-      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_rose_blink",
@@ -926,7 +926,7 @@
       "style": "c004",
       "person": "c004_rose",
       "reference": "c004_portrait_rose",
-      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_keene_slight",
@@ -934,7 +934,7 @@
       "style": "c004",
       "person": "c004_keene",
       "reference": "c004_portrait_keene",
-      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_keene_ah",
@@ -942,7 +942,7 @@
       "style": "c004",
       "person": "c004_keene",
       "reference": "c004_portrait_keene",
-      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_keene_ee",
@@ -950,7 +950,7 @@
       "style": "c004",
       "person": "c004_keene",
       "reference": "c004_portrait_keene",
-      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_keene_oh",
@@ -958,7 +958,7 @@
       "style": "c004",
       "person": "c004_keene",
       "reference": "c004_portrait_keene",
-      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_keene_oo",
@@ -966,7 +966,7 @@
       "style": "c004",
       "person": "c004_keene",
       "reference": "c004_portrait_keene",
-      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_keene_blink",
@@ -974,7 +974,7 @@
       "style": "c004",
       "person": "c004_keene",
       "reference": "c004_portrait_keene",
-      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_agnes_slight",
@@ -982,7 +982,7 @@
       "style": "c004",
       "person": "c004_agnes",
       "reference": "c004_portrait_agnes",
-      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_agnes_ah",
@@ -990,7 +990,7 @@
       "style": "c004",
       "person": "c004_agnes",
       "reference": "c004_portrait_agnes",
-      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_agnes_ee",
@@ -998,7 +998,7 @@
       "style": "c004",
       "person": "c004_agnes",
       "reference": "c004_portrait_agnes",
-      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_agnes_oh",
@@ -1006,7 +1006,7 @@
       "style": "c004",
       "person": "c004_agnes",
       "reference": "c004_portrait_agnes",
-      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_agnes_oo",
@@ -1014,7 +1014,7 @@
       "style": "c004",
       "person": "c004_agnes",
       "reference": "c004_portrait_agnes",
-      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_agnes_blink",
@@ -1022,7 +1022,7 @@
       "style": "c004",
       "person": "c004_agnes",
       "reference": "c004_portrait_agnes",
-      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_frankie_slight",
@@ -1030,7 +1030,7 @@
       "style": "c004",
       "person": "c004_frankie",
       "reference": "c004_portrait_frankie",
-      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips parted slightly, as if between words, a hint of the upper teeth showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_frankie_ah",
@@ -1038,7 +1038,7 @@
       "style": "c004",
       "person": "c004_frankie",
       "reference": "c004_portrait_frankie",
-      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: open wide on an 'ah' sound, the jaw dropped, the upper teeth and a little of the tongue showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_frankie_ee",
@@ -1046,7 +1046,7 @@
       "style": "c004",
       "person": "c004_frankie",
       "reference": "c004_portrait_frankie",
-      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips stretched wide on an 'ee' sound, the teeth close together and showing. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_frankie_oh",
@@ -1054,7 +1054,7 @@
       "style": "c004",
       "person": "c004_frankie",
       "reference": "c004_portrait_frankie",
-      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips rounded into an open 'oh' shape, the jaw half open. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_frankie_oo",
@@ -1062,7 +1062,7 @@
       "style": "c004",
       "person": "c004_frankie",
       "reference": "c004_portrait_frankie",
-      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the mouth: the lips pushed forward into a small, tight, round 'oo' shape. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_face_frankie_blink",
@@ -1070,7 +1070,7 @@
       "style": "c004",
       "person": "c004_frankie",
       "reference": "c004_portrait_frankie",
-      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical."
+      "subject": "Edit this exact painting. Change only the eyes: both eyes fully closed in a natural blink, the lids relaxed. The mouth stays exactly as it is. Keep everything else identical. One single image of one face, filling the frame: no panels, no inset pictures, no other expressions."
     },
     {
       "id": "c004_loc_office",
