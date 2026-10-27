@@ -345,3 +345,30 @@ So a player who missed something in C01 is never stuck in C06.
 - New for the series: the series title image, six case squares, the rolling board (an object sprite for the office, plus a board surface in the same style as the wall board but visibly distinct: metal frame, casters, a different cork tone).
 - The archive copier footer and courier waybills are readable in the evidence text, never in the paintings.
 - **Done Oct 27:** the series is live as Coming Soon. Art ids `s001_cover` and `s001_c01_cover` to `s001_c06_cover` (style `s001` in `art/manifest.json`, Admin section "S001"). The series and its spoiler-safe teasers are defined in `src/series/index.ts` and shown by `src/components/series-shelf.tsx` above the catalog on Available Investigations and Available Assignments. The S01 C01 chat replaces this static listing with real series progress and `cases` rows.
+
+## 11. Build record (Oct 27, 2026)
+
+All six cases are built and registered (`src/cases/S001C01` to `S001C06`), each from its canonical design doc (`docs/S001C0N-timeline.md`), which wins over the brief and agrees with this bible. Every case passes its reference playthrough (`npm run check:case -- S001C0N`); `npm run check:series` makes all 16 series deductions end to end from the cases' own evidence and checks the closing notebook text, the office rolling board and the voices.
+
+Renames made while building, beyond section 2:
+
+| Case | Was | Now | Why |
+| --- | --- | --- | --- |
+| C03 | Russell Briggs | Russell Gaffney | C004 has a Briggs |
+| C03 | Frank Sullivan | Vince Sullivan | Bennett is Frank |
+| C03 | Dr. Y. Prentiss (ME) | Dr. Y. Ashworth | C04's Tyler Prentiss |
+| C04 | Nina Albright | Nina Halvorsen | C001 has an Albright |
+| C04 | Tyler Brandt | Tyler Prentiss | C006 has an Ofc. Brandt |
+| C06 | Travis Mabry | Travis Dunleavy | C03's Otis Mabry |
+| C06 | Priya Raman | Priya Natarajan | C05's Raman |
+| C06 | Samira Haddad | Samira Qureshi | C05's Joyce Haddad |
+
+Continuity settled while building:
+
+- The courier records agree in C01 to C04: Oct 29 delivered 11:05 AM to the Lockhart Foundation; Nov 19 picked up 6:40 PM, delivered Nov 20 10:42 AM; Dec 3 picked up 6:30 PM, delivered Dec 4 10:20 AM; all on account 20417.
+- Gaffney's Meridian file is CI-2017-0384 in C02, C03 and C06.
+- The ownership structure is C05's in C06 too: Cardinal Point Trust (formed June 30, 2009; administrative trustee Brandywine Fiduciary Company; special trustee Elena Marchetti; Evelyn Lockhart settlor and Trust Protector) over Fifth Avenue Endowment GP, Lockhart Endowment Partners and Halvard Holdings, which holds every Class B (voting) unit of Meridian.
+- Claire met Evelyn once, at the Clearwater donor breakfast on Oct 18: Evelyn asked what she did and never mentioned Meridian (C04 and C05).
+- Claire's character id is `donovan` in every case. Each recurring person keeps one voice across the series.
+- C04 starts at the cafe; the office and the rolling board are reachable from it.
+- Recovered records in C06 are local ids R01 to R17 with a `canonical` id, so the rolling board treats each as the original.
