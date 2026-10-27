@@ -132,7 +132,8 @@ function reachOf(def: CaseDefinition, s: InvestigationState, c: CharacterDef): "
   const here = characterLocation(c, s) === s.location;
   if (c.medium === "telephone") return here || mobile(def) ? "telephone" : null;
   if (here) return "in person";
-  if (mobile(def) && c.phone && check(c.phone, s)) return "telephone";
+  // A person with a telephone can be rung from anywhere with a mobile phone, or from the office telephone.
+  if (c.phone && check(c.phone, s) && phoneInReach(def, s)) return "telephone";
   return null;
 }
 
@@ -630,7 +631,13 @@ function step(
       if (!locationAvailable(def, s, l)) fail("That location is not available yet.");
       const held = heldNow(s);
       const scenes = def.captivity?.captiveScenes ?? [];
-      if (held && held.seat === (ctx.seat ?? "host") && !scenes.includes(l.id)) fail("There's no way out of here yet.");
+      if (held && held.seat === (ctx.seat ?? "host")) {
+        // Held: no map, only the ways out the scene itself offers.
+        if (!scenes.includes(l.id)) fail("There's no way out of here yet.");
+        const here = loc(def, s.location);
+        const way = here && visibleHotspots(def, s, here).some((h) => h.interaction.type === "travel" && h.interaction.locationId === l.id);
+        if (!way) fail("There's no way through from here.");
+      }
       if ((!held || held.seat !== (ctx.seat ?? "host")) && scenes.includes(l.id)) fail("That location is not available yet.");
       s.location = l.id;
       if (!s.visited.includes(l.id)) s.visited.push(l.id);
@@ -1420,7 +1427,11 @@ function projectState(def: CaseDefinition, s: InvestigationState, now: number, c
             recordedAt: st.recordedAt,
             officer: st.officer,
             tape: st.tape,
-            status: audio ? "Original recording on file" : canVoice ? "Cassette on file. Transcript verified" : "Transcript only. Tape not yet digitized",
+            status: audio
+              ? "Original recording on file"
+              : def.year < 1950
+                ? canVoice ? "Dictaphone cylinder on file. Transcript verified" : "Stenographer's transcript only"
+                : canVoice ? "Cassette on file. Transcript verified" : "Transcript only. Tape not yet digitized",
             audio,
             voiced: !audio && canVoice,
             transcript: st.transcript,
@@ -1478,7 +1489,7 @@ export function conversationFor(def: CaseDefinition, s: InvestigationState, char
 function phoneContacts(def: CaseDefinition, s: InvestigationState) {
   if (!phoneInReach(def, s)) return [];
   return def.characters
-    .filter((c) => (c.medium === "telephone" || (mobile(def) && c.phone && check(c.phone, s))) && reachOf(def, s, c) === "telephone")
+    .filter((c) => (c.medium === "telephone" || (c.phone && check(c.phone, s))) && reachOf(def, s, c) === "telephone")
     .map((c) => ({
       id: c.id,
       name: c.name,

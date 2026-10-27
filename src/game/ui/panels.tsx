@@ -403,10 +403,12 @@ export function StatementsPanel({ caseId, view, onClose, volume }: { caseId: str
   const voiced = Boolean(st?.voiced && view.voices);
   const srcs = useMemo(() => (st && voiced ? st.transcript.map((_, i) => voiceSrc(caseId, "statement", st.characterId, i)) : []), [st, voiced, caseId]);
   const playing = player.status === "playing" || player.status === "loading";
+  // Before tape, a police statement was cut on a dictating machine's wax cylinder.
+  const media = view.year < 1950 ? "cylinder" : "tape";
   return (
     <Overlay title="Recorded police statements" onClose={onClose} wide>
       {view.statements.length === 0 ? (
-        <p className="p-6 text-smoke">Read the case file first; the tapes are listed in it.</p>
+        <p className="p-6 text-smoke">Read the case file first; the {media}s are listed in it.</p>
       ) : (
         <div className="grid md:grid-cols-[15rem_1fr]">
           <ul className="flex gap-2 overflow-x-auto border-b border-white/10 p-3 md:flex-col md:border-b-0 md:border-r">
@@ -430,7 +432,7 @@ export function StatementsPanel({ caseId, view, onClose, volume }: { caseId: str
           {st ? (
             <div className="p-5 sm:p-6">
               <div className="flex flex-wrap items-start gap-5">
-                <Cassette label={st.name} spinning={player.status === "playing"} />
+                {media === "cylinder" ? <Cylinder label={st.name} spinning={player.status === "playing"} /> : <Cassette label={st.name} spinning={player.status === "playing"} />}
                 <dl className="grid min-w-0 flex-1 grid-cols-[auto_1fr] gap-x-4 gap-y-1 font-mono text-xs">
                   <dt className="text-smoke">Statement of</dt>
                   <dd>{st.name}</dd>
@@ -438,7 +440,7 @@ export function StatementsPanel({ caseId, view, onClose, volume }: { caseId: str
                   <dd>{st.recordedAt}</dd>
                   <dt className="text-smoke">Interviewing officer</dt>
                   <dd>{st.officer}</dd>
-                  <dt className="text-smoke">Tape</dt>
+                  <dt className="text-smoke">{media === "cylinder" ? "Cylinder" : "Tape"}</dt>
                   <dd>{st.tape}</dd>
                   <dt className="text-smoke">Recording status</dt>
                   <dd className="text-brass">{st.status}</dd>
@@ -450,12 +452,12 @@ export function StatementsPanel({ caseId, view, onClose, volume }: { caseId: str
                 ) : voiced ? (
                   <>
                     {player.status === "playing" ? (
-                      <GameButton variant="ghost" onClick={player.pause}>Pause tape</GameButton>
+                      <GameButton variant="ghost" onClick={player.pause}>Pause {media}</GameButton>
                     ) : player.status === "paused" ? (
                       <GameButton variant="ghost" onClick={player.resume}>Resume</GameButton>
                     ) : (
                       <GameButton onClick={() => player.play(0, srcs)} disabled={player.status === "loading"}>
-                        {player.status === "loading" ? "Loading tape" : "Play tape"}
+                        {player.status === "loading" ? `Loading ${media}` : `Play ${media}`}
                       </GameButton>
                     )}
                     {playing || player.status === "paused" ? (
@@ -491,6 +493,17 @@ export function StatementsPanel({ caseId, view, onClose, volume }: { caseId: str
         </div>
       )}
     </Overlay>
+  );
+}
+
+function Cylinder({ label, spinning }: { label: string; spinning: boolean }) {
+  return (
+    <div aria-hidden className="relative h-[4.5rem] w-28 shrink-0">
+      <div className="mx-auto mt-3 h-10 w-24 overflow-hidden rounded-[10px] border border-[#5a4524] bg-gradient-to-b from-[#7a5a2c] via-[#c49a52] to-[#6a4b22] shadow-inner">
+        <div className={`h-full w-[200%] bg-[repeating-linear-gradient(90deg,transparent_0_3px,rgba(0,0,0,0.18)_3px_4px)] ${spinning ? "animate-[pulse_1.2s_ease-in-out_infinite]" : ""}`} />
+      </div>
+      <div className="mt-1 truncate text-center font-mono text-[0.55rem] text-smoke">{label}</div>
+    </div>
   );
 }
 

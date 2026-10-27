@@ -139,8 +139,9 @@ export interface CharacterDef {
    */
   medium?: "in person" | "telephone";
   /**
-   * In a case with a mobile phone: while this holds, the person can also be
-   * called from anywhere (a detective you can see at the station or ring).
+   * While this holds, the person can also be telephoned: from anywhere in a
+   * case with a mobile phone, otherwise from the office telephone (a detective
+   * you can see at the station or ring).
    */
   phone?: Condition;
   /** A line under the person's name in the phone's contacts. */
