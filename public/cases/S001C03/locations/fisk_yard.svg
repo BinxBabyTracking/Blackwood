@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+  <defs>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d2328"/><stop offset="1" stop-color="#2b3238"/></linearGradient>
+    <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a2a1f"/><stop offset="1" stop-color="#21170f"/></linearGradient>
+    <radialGradient id="pool" cx="0.5" cy="0.35" r="0.7"><stop offset="0" stop-color="#e9c98c" stop-opacity="0.35"/><stop offset="1" stop-color="#e9c98c" stop-opacity="0"/></radialGradient>
+    <radialGradient id="vig" cx="0.5" cy="0.5" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.65"/></radialGradient>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0.12 0"/></filter>
+  </defs>
+  <rect width="1600" height="558" fill="url(#wall)"/>
+  <rect y="558" width="1600" height="342" fill="url(#floor)"/>
+  <rect y="552" width="1600" height="10" fill="#141a1f"/><line x1="0" y1="588" x2="1600" y2="588" stroke="#000" stroke-opacity="0.18"/><line x1="0" y1="622" x2="1600" y2="622" stroke="#000" stroke-opacity="0.18"/><line x1="0" y1="656" x2="1600" y2="656" stroke="#000" stroke-opacity="0.18"/><line x1="0" y1="690" x2="1600" y2="690" stroke="#000" stroke-opacity="0.18"/><line x1="0" y1="724" x2="1600" y2="724" stroke="#000" stroke-opacity="0.18"/><line x1="0" y1="758" x2="1600" y2="758" stroke="#000" stroke-opacity="0.18"/><line x1="0" y1="792" x2="1600" y2="792" stroke="#000" stroke-opacity="0.18"/><line x1="0" y1="826" x2="1600" y2="826" stroke="#000" stroke-opacity="0.18"/><line x1="0" y1="860" x2="1600" y2="860" stroke="#000" stroke-opacity="0.18"/><line x1="0" y1="894" x2="1600" y2="894" stroke="#000" stroke-opacity="0.18"/><rect x="32" y="126.00000000000001" width="288" height="270" fill="#888" opacity="0.4"/><rect x="384" y="525.6" width="256" height="126.4" fill="#4a3526"/><path d="M384 531 Q512 450.00000000000006 640 531" fill="#2c2018"/><rect x="422.4" y="541.8000000000001" width="179.2" height="37.8" fill="#e8dcc4" opacity="0.85"/><line x1="435.2" y1="549.36" x2="588.8" y2="549.36" stroke="#6b5a40" stroke-width="2"/><line x1="435.2" y1="556.9200000000001" x2="588.8" y2="556.9200000000001" stroke="#6b5a40" stroke-width="2"/><line x1="435.2" y1="564.48" x2="588.8" y2="564.48" stroke="#6b5a40" stroke-width="2"/><line x1="435.2" y1="572.0400000000001" x2="588.8" y2="572.0400000000001" stroke="#6b5a40" stroke-width="2"/><rect x="1024" y="180" width="544" height="360" fill="#888" opacity="0.4"/><g><ellipse cx="800" cy="774" rx="115.19999999999999" ry="14" fill="#000" opacity="0.3"/>
+  <path d="M713.6 774 L719.36 355.776 Q800 323.52 880.64 355.776 L886.4 774 Z" fill="#e9e3d3"/>
+  <rect x="781.184" y="307.392" width="37.632" height="32.256" fill="#c69673"/>
+  <ellipse cx="800" cy="280.512" rx="40.32000000000001" ry="48.38400000000001" fill="#c69673"/>
+  <path d="M756.992 275.136 Q762.368 221.376 800 226.752 Q843.008 221.376 843.008 275.136 Q800 245.568 756.992 275.136" fill="#2b1b14"/>
+  
+  </g><rect width="1600" height="900" fill="url(#pool)"/><rect width="1600" height="900" fill="url(#vig)"/><rect width="1600" height="900" filter="url(#grain)"/><text x="1576" y="880" text-anchor="end" font-family="Courier New, monospace" font-size="16" fill="#fff" opacity="0.35">PLACEHOLDER ART S001C03</text></svg>

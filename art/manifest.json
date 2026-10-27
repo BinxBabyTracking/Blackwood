@@ -153,7 +153,17 @@
     "s001c01_avery": "a 61-year-old white man, a building security supervisor and retired small-town cop, a gray crew cut, a heavy gray mustache, a lined, ruddy face, wearing a navy security uniform sweater with shoulder patches and no readable words, gruff",
     "s001c01_morris": "a 35-year-old white woman, an office administrative assistant, curly auburn hair held back with a clip, freckles, a cardigan in dusty rose over a patterned blouse, a lanyard with a key card, nervous and kind",
     "s001c01_bowman": "a 47-year-old white man, a small-town police detective, short dark hair thinning at the crown, a tired, steady face, a five o'clock shadow, wearing a brown corduroy sport coat over a blue button-down shirt with an open collar and a badge on his belt out of frame, professional and dry",
-    "s001c01_foster": "a 42-year-old white man, a small-town hardware store owner, a reddish-brown beard, a receding hairline, wearing a green fleece vest over a plaid flannel shirt, flushed, embarrassed"
+    "s001c01_foster": "a 42-year-old white man, a small-town hardware store owner, a reddish-brown beard, a receding hairline, wearing a green fleece vest over a plaid flannel shirt, flushed, embarrassed",
+    "s001c03_hector": "a 39-year-old Latino man, a container terminal cargo checker, short black hair, a trimmed black mustache, warm brown eyes, a broad friendly face weathered by outdoor work, wearing a navy hooded work jacket over a gray T-shirt",
+    "s001c03_marisol": "a 37-year-old Latina woman, a medical office administrator, long dark brown hair pulled back in a low ponytail, brown eyes red-rimmed from crying, small gold hoop earrings, no makeup, wearing a gray cardigan over a burgundy blouse, grieving but determined",
+    "s001c03_gaffney": "a 55-year-old white man, a port terminal operations supervisor, thinning sandy-gray hair combed back, a heavy jaw, a ruddy face with broken veins on the nose, reading glasses pushed up on his forehead, wearing a tan quarter-zip pullover over a white collared shirt with a terminal ID badge on a lanyard, defensive",
+    "s001c03_kane": "a 48-year-old white man, the president of a logistics and security company, close-cropped dark hair graying at the sides, clean-shaven, a lean hard face, pale gray eyes, wearing a charcoal wool overcoat over a navy suit and an open-collared white shirt, controlled and faintly amused",
+    "s001c03_fisk": "a 34-year-old white man, a private security company owner, a shaved head, a short brown beard, a thick neck and heavy shoulders, flat watchful eyes, wearing a black soft-shell security jacket with no readable words over a gray thermal shirt",
+    "s001c03_lindqvist": "a 31-year-old white woman, a cargo documentation clerk, straight light blonde hair to the shoulders, a pale narrow face, thin silver-rimmed glasses, wearing a navy fleece jacket over a pale blue blouse and a terminal ID badge, careful and frightened",
+    "s001c03_malone": "a 43-year-old white man, an owner-operator truck driver, a round face, short reddish-brown hair under a faded green trucker cap with no logo, a few days of stubble, wearing a brown canvas work jacket over a plaid flannel shirt, wary",
+    "s001c03_sullivan": "a 62-year-old Irish-American man, a retired dockworker and union steward, a full head of white hair cut short, bushy white eyebrows, a deeply lined weathered face, big scarred hands, wearing a navy peacoat over a gray union hooded sweatshirt with no readable words, blunt and grieving",
+    "s001c03_whitaker": "a 45-year-old Black woman, a big-city homicide detective, close-cropped natural hair with a little gray at the temples, an alert steady face, small stud earrings, wearing a dark gray blazer over a black turtleneck with a gold badge clipped at the belt out of frame, professional and dry",
+    "s001c03_walsh": "a 40-year-old white man, a corporate accounts manager and CPA, neat short brown hair, a soft clean-shaven face, rimless glasses, wearing a light blue button-down shirt with a navy tie and a gray V-neck sweater, nervous"
   },
   "images": [
     {
@@ -5838,6 +5848,549 @@
       "style": "s001",
       "subject": "Western Pennsylvania from the edge of Pittsburgh to a small county seat an hour to the east. On the left third, a dense city grid where two broad pale blue rivers meet to form a third, with bridges and a wooded neighborhood of small blocks just east of downtown. A highway in ochre runs from the city across the center through green rolling hills and farmland to the right third, where a small town sits: a compact downtown grid of a few blocks with a courthouse square, a residential grid of small streets below it, and a state highway running out east past a few commercial lots. Wooded hillsides and creeks fill the gaps.",
       "suffix": "A hand-painted street map, seen flat from directly above and filling the whole image edge to edge like a sheet laid on a table: no table, no border, no frame. Muted map colors: cream paper, ochre streets, sage green parkland, pale blue water, faint fold creases. Absolutely no words, letters, numbers, street names or symbols anywhere on the map."
+    },
+    {
+      "id": "s001c03_portrait_hector",
+      "kind": "portrait",
+      "subject": "Grinning, squinting a little into the sun at a family cookout, a cap pushed back on his head.",
+      "person": "s001c03_hector",
+      "suffix": "A painted head-and-shoulders portrait in the manner of a family snapshot used in a police case file: facing the viewer, warm natural daylight, softly blurred outdoor background. Natural, believable face; not a caricature.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_portrait_marisol",
+      "kind": "portrait",
+      "subject": "Grieving but holding together; a steady, determined look.",
+      "person": "s001c03_marisol",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_portrait_gaffney",
+      "kind": "portrait",
+      "subject": "Impatient and heavy-lidded, a man who expects to be believed.",
+      "person": "s001c03_gaffney",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_portrait_kane",
+      "kind": "portrait",
+      "subject": "Calm and courteous, the faintest smile, giving nothing away.",
+      "person": "s001c03_kane",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_portrait_fisk",
+      "kind": "portrait",
+      "subject": "Flat, polite, watchful; nothing moves in his face.",
+      "person": "s001c03_fisk",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_portrait_lindqvist",
+      "kind": "portrait",
+      "subject": "Careful and tense, a clerk who has not slept.",
+      "person": "s001c03_lindqvist",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_portrait_malone",
+      "kind": "portrait",
+      "subject": "Wary, tired, a man who would rather be in his cab.",
+      "person": "s001c03_malone",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_portrait_sullivan",
+      "kind": "portrait",
+      "subject": "Blunt and grieving, angry under it.",
+      "person": "s001c03_sullivan",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_portrait_whitaker",
+      "kind": "portrait",
+      "subject": "Level and patient, sizing you up.",
+      "person": "s001c03_whitaker",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_portrait_walsh",
+      "kind": "portrait",
+      "subject": "Nervous, eager to be seen as careful.",
+      "person": "s001c03_walsh",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_figure_marisol",
+      "kind": "figure",
+      "subject": "Standing with her arms wrapped around herself, a phone held in one hand.",
+      "person": "s001c03_marisol",
+      "reference": "s001c03_portrait_marisol",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_figure_gaffney",
+      "kind": "figure",
+      "subject": "Standing with his hands on his hips, a coffee mug hooked on one finger.",
+      "person": "s001c03_gaffney",
+      "reference": "s001c03_portrait_gaffney",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_figure_kane",
+      "kind": "figure",
+      "subject": "Standing with his hands loosely clasped in front of him, overcoat open.",
+      "person": "s001c03_kane",
+      "reference": "s001c03_portrait_kane",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_figure_fisk",
+      "kind": "figure",
+      "subject": "Standing with his arms folded, feet planted, work boots.",
+      "person": "s001c03_fisk",
+      "reference": "s001c03_portrait_fisk",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_figure_lindqvist",
+      "kind": "figure",
+      "subject": "Standing holding a sheaf of printouts against her chest with both arms.",
+      "person": "s001c03_lindqvist",
+      "reference": "s001c03_portrait_lindqvist",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_figure_malone",
+      "kind": "figure",
+      "subject": "Standing with one hand on the strap of a clipboard, the other in his jacket pocket.",
+      "person": "s001c03_malone",
+      "reference": "s001c03_portrait_malone",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_figure_sullivan",
+      "kind": "figure",
+      "subject": "Standing with his hands jammed in his peacoat pockets, shoulders hunched against the cold.",
+      "person": "s001c03_sullivan",
+      "reference": "s001c03_portrait_sullivan",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_figure_whitaker",
+      "kind": "figure",
+      "subject": "Standing with a case file under one arm and a phone in her other hand.",
+      "person": "s001c03_whitaker",
+      "reference": "s001c03_portrait_whitaker",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_figure_walsh",
+      "kind": "figure",
+      "subject": "Standing holding a ledger binder open across his forearm.",
+      "person": "s001c03_walsh",
+      "reference": "s001c03_portrait_walsh",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_loc_terminal_gate",
+      "kind": "background",
+      "subject": "The main truck gate of a Baltimore container terminal off Broening Highway, a cold rainy December morning in 2018. On the left, a steel and glass guard booth between inbound lanes with barrier arms. Left of center, a newer green sign on a pole by the gate with soft, unreadable lettering and an arrow pointing down a long fence line. In the center, open wet asphalt in front of a queue of semi-truck day cabs pulling container chassis, idling back along a service road. On the right, across the road, a double-wide trailer used as a union hall, a black ribbon on its porch rail. Floodlight poles, gantry cranes faint in the mist behind, puddles. No readable signs.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_loc_staging",
+      "kind": "background",
+      "subject": "A fenced export container staging area on a Baltimore port terminal, a wet gray December afternoon in 2018. On the left, a chain-link pedestrian gate with a badge reader on a post, and a chained vehicle gate beyond. Left of center, a narrow asphalt lane between two rows of stacked shipping containers, with a dark stain on the asphalt and yellow police tape strung across the end of the lane between container corners. In the center, a tall stack of six folded steel flat racks against the north fence, and a concrete pad in front of it with a black grease smear under a small clear plastic tent and a yellow evidence marker. On the right, a chain-link lashing gear cage at the end of a container row, a wall rack of identical steel bars visible inside. Sodium floodlights, rain-wet steel, cranes in the mist. No people.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_loc_verification",
+      "kind": "background",
+      "subject": "A small cargo verification office on the second floor of a port gate building, a gray December morning in 2018. On the left, a tall window looking down on truck lanes and a guard booth, with a cleared desk below it holding only a wire tray. In the center, open floor space before a second desk with a computer and stacks of shipping paperwork. Right of center, a plastic out tray at the end of that desk. On the right, a shared desk with a monitor showing a gray grid of numbers. Fluorescent lights, a wall calendar, safety posters, hi-vis vests on hooks. No readable text.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_loc_gear_building",
+      "kind": "background",
+      "subject": "Inside a steel lashing gear shed beside a container staging area, a cold wet December day in 2018. On the left, a steel door with a badge reader and a clipboard hanging on a hook beside it. Left of center, a scarred steel workbench with a vise, a grease gun and a radio. In the center, tall racks of coiled chain, crates of container twistlocks and hanging load binders. On the right, a row of gray steel gear lockers with stenciled names, one of them, left of the rest, with its own combination padlock. Corrugated walls, a single caged work light, wet concrete floor. No people. No readable text.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_loc_security",
+      "kind": "background",
+      "subject": "A port terminal security office beside the main gate, a rainy December day in 2018. On the left, a workstation with a computer and a small printer. Left of center, a shelf holding thick black binders. In the center and right, a desk under a wall of security monitors showing camera views of gates, container stacks and lanes, a folder of printed stills on the desk. At the far right, a narrow window looking out on a guard booth and a truck queue in the rain. Fluorescent lights, a coffee maker, radios charging. No people. No readable text.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_loc_navarro_home",
+      "kind": "background",
+      "subject": "The front room and kitchen of a small brick rowhouse in Highlandtown, East Baltimore, a gray December afternoon in 2018. On the left, a wall of framed family photographs above a radiator. Left of center, open floor space before a worn couch with a child's backpack on it. In the center, a doorway into a narrow kitchen with a refrigerator covered in a child's drawings. On the right, through an open doorway into a small back room, a little desk wedged beside a washing machine, with a home printer and a coffee mug on a folded sheet of paper. Lace curtains, a crucifix, warm lamplight against gray daylight. No people.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_loc_gaffney_office",
+      "kind": "background",
+      "subject": "A port terminal operations supervisor's office in an administration building, a gray December day in 2018. On the left, a shelf of blue ring binders. In the center, open floor space before a large desk with a desk phone, a monitor and a closed drawer. On the wall above the desk, framed photographs including an aerial view of a container terminal. Right of center, a two-drawer steel file cabinet behind the desk. On the far right, a window looking out over cranes on a quay and container stacks in the rain. Fluorescent lights, a hard hat on a filing cabinet. No people. No readable text.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_loc_kane_office",
+      "kind": "background",
+      "subject": "The president's office of a logistics and security company in a converted brick warehouse in Canton, Baltimore, a gray December afternoon in 2018. On the left, a lateral file cabinet by the door. In the center, open floor space before a large walnut desk, framed photographs of green semi-trucks on the brick wall behind it. Right of center, a low walnut credenza with closed locked doors behind the desk. On the right, open floor space below a wide warehouse window looking out on Clinton Street and the harbor cranes beyond. Exposed beams, leather chairs, expensive and quiet. No people. No readable text.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_loc_kane_office_searched",
+      "kind": "background",
+      "subject": "The same converted brick warehouse office in Canton, Baltimore, during a police search on a December evening in 2018. On the left, a lateral file cabinet by the door with its drawers open and evidence tape across them. In the center, open floor space before a large walnut desk cleared of papers, framed photographs of green semi-trucks on the brick wall behind it. Right of center, a walnut credenza with its doors open and its lock drilled out, folders inside. On the right, a hand truck stacked with cardboard evidence boxes below a wide warehouse window, harbor lights beyond. Harsh overhead light. No people. No readable text.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_loc_fisk_yard",
+      "kind": "background",
+      "subject": "Inside an office trailer at a small private security company's fenced yard in Curtis Bay, Baltimore, a raw gray December day in 2018. On the left, a whiteboard on the paneled wall with a printed weekly schedule taped to it and a clipboard beside it. Left of center, a metal desk with two-way radios charging and a stack of forms. In the center, open floor space. On the right, an open trailer door looking out on a gravel yard behind a chain-link fence, where a gray heavy-duty pickup truck is parked nose-out. A space heater, a coffee maker, a calendar. No people. No readable text.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_loc_accounting",
+      "kind": "background",
+      "subject": "An accounts payable office on the first floor of a port terminal administration building, a rainy December afternoon in 2018. On the left, a shelf of thick contract binders behind a counter. In the center, open floor space before a tidy desk with a printed ledger and a calculator. On the wall center, a framed certificate. On the right, a window looking out on a wet employee parking lot and container stacks beyond. Fluorescent lights, gray cubicle panels, a copier. No people. No readable text.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_loc_police",
+      "kind": "background",
+      "subject": "A big-city police homicide unit squad room in Baltimore, December 2018. On the left, a whiteboard with a case number, a terminal map and photos. In the center, open floor space in front of a row of cluttered detective desks. Center right, a desk with case files stacked crosswise and a coffee cup. On the right, the wired-glass window of an interview room, lit inside, and at the far right a window with blinds over a downtown street in the rain. Fluorescent lights, filing cabinets. No people. No readable text.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_loc_riverside",
+      "kind": "background",
+      "subject": "A freight transload yard on the south shore of Baltimore's harbor in Fairfield, a raw gray December morning in 2018, with a police search under way. On the left, a small plywood gate shack with a window and a binder hanging on a nail. Left of center, a long corrugated steel shed with three numbered roll-up bay doors, the third one open on a loading dock. On the right, the open door of a cramped site office: a gray steel file cabinet with its drawers drilled open, a plain steel desk with a radio, and a rubber desk mat rolled back from a steel floor safe set flush into the concrete floor. Puddles, a forklift, police tape, the harbor and cranes beyond. No people. No readable signs.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_obj_casefile",
+      "kind": "sprite",
+      "subject": "A manila private investigator's case folder, closed, with a printed label on the tab reading exactly: NAVARRO, H., a police photograph and a few typed fax pages sticking out of the side.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_obj_fisk_truck",
+      "kind": "sprite",
+      "subject": "A gray 2016 Ford F-250 Super Duty crew cab pickup seen from the side three-quarter angle, an amber LED light bar across the roof, white vinyl lettering on the front door reading exactly: FISK FREIGHT SECURITY. A Maryland license plate with soft, unreadable characters.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_obj_labfolder",
+      "kind": "sprite",
+      "subject": "A slate blue police laboratory folder, closed, with a white label on the front reading exactly: LAB REPORT.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_obj_report_folder",
+      "kind": "sprite",
+      "subject": "A plain buff file folder with a typed white label on the front reading exactly: FINAL REPORT.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_obj_envelope_sealed",
+      "kind": "sprite",
+      "subject": "A stiff white and red courier envelope, sealed, with a printed address label and a clear plastic waybill pocket, the writing soft and unreadable, no return address, lying flat at a slight angle.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_obj_envelope_open",
+      "kind": "sprite",
+      "subject": "The same courier envelope, opened along the top, a thick sheaf of photocopied pages and a thin courier waybill slip sliding out, the writing soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_obj_police_envelope",
+      "kind": "sprite",
+      "subject": "A tan interoffice envelope with a string-and-button closure and a yellow sticky note on the front, a few typed pages showing at the top, the writing soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_obj_search_team",
+      "kind": "sprite",
+      "subject": "Two plainclothes police detectives in dark jackets and an agent in a navy windbreaker with no readable words, standing beside a hand truck stacked with cardboard evidence boxes, one photographing an open folder.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_obj_safe_open",
+      "kind": "sprite",
+      "subject": "A steel floor safe set into a concrete floor, its heavy door standing open, bundles of banded cash, a passport and a clear plastic sleeve with a single typed page inside.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_obj_locker_door_open",
+      "kind": "sprite",
+      "subject": "A gray steel gear locker standing open: a spare hi-vis vest and a hard hat on a hook, a coil of chain on the shelf, and a paper drugstore photo envelope tucked into the vent slots on the inside of the door, an open combination padlock hanging from the hasp.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_obj_notebook_rag",
+      "kind": "sprite",
+      "subject": "A black hardback notebook half wrapped in a greasy blue shop rag, lying under a coil of steel lashing chain.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e001",
+      "kind": "evidence",
+      "subject": "A police incident report on a clipboard: several typed pages with a Baltimore Police Department header, a case number and soft, unreadable text, with a handwritten note in blue ink at the bottom of the last page.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e002",
+      "kind": "evidence",
+      "subject": "Five glossy color crime scene photographs fanned out on a gray desk: a north fence behind a stack of folded steel flat racks, a dark stain on wet asphalt between container rows, an open wallet and an upended lunch cooler, a chain-link cage with a rack of steel bars, and a black grease smear with a yellow marker. No body is visible in any photograph.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e003",
+      "kind": "evidence",
+      "subject": "A medical examiner's summary of findings: two typed pages with a state seal at the top and soft, unreadable text, and a simple outline diagram of a human head with a small marked area on one side.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e004",
+      "kind": "evidence",
+      "subject": "A heavy steel binder bar about three feet long with one end bent into a hook, lying in a clear evidence bag with a red evidence tag, beside a typed laboratory report with soft, unreadable text.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e005",
+      "kind": "evidence",
+      "subject": "A close photograph of a black grease smear on concrete with the front half of a lugged work boot sole print in it, a yellow evidence marker and a photo scale beside it.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e006",
+      "kind": "evidence",
+      "subject": "A smartphone screen showing a message thread and a call log with soft, unreadable text, beside a printed screenshot of a map with a single gray location dot near a harbor.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e007",
+      "kind": "evidence",
+      "subject": "A printed access control report on plain paper: a short list of time stamps and badge numbers in columns, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e008",
+      "kind": "evidence",
+      "subject": "A typed police canvass statement, two pages stapled, with a signature at the bottom and soft, unreadable text.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e009",
+      "kind": "evidence",
+      "subject": "A black hardback notebook lying open, pages of handwritten block capitals and numbers, soft and unreadable, a greasy blue shop rag beside it.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e010",
+      "kind": "evidence",
+      "subject": "A paper drugstore photo envelope with a stack of glossy prints spilling out: close photographs of numbered steel container seals, a digital load display, and a night photograph of a semi-truck under gate floodlights, handwriting on the backs of some prints.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e011",
+      "kind": "evidence",
+      "subject": "A paper dock receipt form in a red folder, filled in by hand and signed, with a yellow sticky note clipped to the top, the writing soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e012",
+      "kind": "evidence",
+      "subject": "A printout from a terminal computer system, a dense grid of fields and numbers, face down, with a small sticky note in handwriting on it, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e013",
+      "kind": "evidence",
+      "subject": "A blue ring binder lying open to printed daily schedule sheets with columns of times and numbers, a line of handwriting in blue ink at the foot of a sheet, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e014",
+      "kind": "evidence",
+      "subject": "A printed email folded in thirds and opened flat, a coffee ring on one corner, a short handwritten note across the top, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e015",
+      "kind": "evidence",
+      "subject": "A manila personnel folder lying open to a printed email with a red rubber stamp and initials, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e016",
+      "kind": "evidence",
+      "subject": "A clipboard holding two printed sheets: a door reader printout of times and a gear locker roster, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e017",
+      "kind": "evidence",
+      "subject": "A printed weekly schedule grid taped to a whiteboard, with a sign-in sheet on a bulldog clip beside it, names and times in handwriting, soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e018",
+      "kind": "evidence",
+      "subject": "A contractor credential record page in a plastic sleeve, typed fields and a small ID photo, with a handwritten margin note, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e019",
+      "kind": "evidence",
+      "subject": "A motor vehicle registration printout beside an insurer's photograph of a gray heavy-duty pickup truck with an amber light bar on its roof and lettering on its door, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e020",
+      "kind": "evidence",
+      "subject": "An online banking printout of a business checking account, columns of dates and amounts, under a black stapler, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e021",
+      "kind": "evidence",
+      "subject": "Several pages of telephone call detail records with columns of numbers, times and cell site codes, a few lines highlighted in yellow and a handwritten note in the margin, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e022",
+      "kind": "evidence",
+      "subject": "A thick sheaf of photocopied contract pages, slightly gray from the copier, with a thin courier waybill slip on top, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e023",
+      "kind": "evidence",
+      "subject": "A smartphone held out across a desk, its screen showing a text message conversation, the words soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e024",
+      "kind": "evidence",
+      "subject": "A two-page annual ethics and financial disclosure form with checkboxes and a signature, a pension statement clipped behind it, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e025",
+      "kind": "evidence",
+      "subject": "A typed witness statement, two pages, signed at the bottom, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e026",
+      "kind": "evidence",
+      "subject": "A trucker's paper log book lying open, grid pages filled in by hand with handwritten notes in the margins, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e027",
+      "kind": "evidence",
+      "subject": "Four grainy black and white security camera stills of a gate lane at night in the rain: a box truck, a heavy-duty pickup with a roof light bar, a patrol SUV, and the same pickup leaving.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e028",
+      "kind": "evidence",
+      "subject": "A typed police search warrant return and digital extraction summary, several pages, beside an iPhone with a cracked corner sealed in a clear evidence bag with a red tag.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e029",
+      "kind": "evidence",
+      "subject": "A single-page company invoice with a letterhead, line items and a total, a remit-to box and an approval initial, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e030",
+      "kind": "evidence",
+      "subject": "State articles of organization for a limited liability company, an official form with a filing stamp, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e031",
+      "kind": "evidence",
+      "subject": "A printed accounting ledger page with one line highlighted in yellow and a pencil note beside it, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e032",
+      "kind": "evidence",
+      "subject": "A one-page business letter on a consultant's letterhead, signed in blue ink, with a tax form attached behind it, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e033",
+      "kind": "evidence",
+      "subject": "A manila folder lying open to a typed five-page report with a restricted header, and a note scrawled across the top in black felt pen, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e034",
+      "kind": "evidence",
+      "subject": "A contract amendment, several typed pages stapled at the corner, signatures at the bottom, a yellow sticky tab on one page, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e035",
+      "kind": "evidence",
+      "subject": "A swollen three-ring binder lying open to handwritten log pages in several different hands, columns of times and numbers with initials, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e036",
+      "kind": "evidence",
+      "subject": "A printed spreadsheet table of eight rows with columns of numbers and a handwritten note at the bottom, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e037",
+      "kind": "evidence",
+      "subject": "Two printed pages of a client register, a line circled in pen with a handwritten note beside it, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e038",
+      "kind": "evidence",
+      "subject": "A typed police financial schedule, columns of receipts and payments with totals, a handwritten note at the foot, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e039",
+      "kind": "evidence",
+      "subject": "A single typed page with no letterhead and a short handwritten line at the bottom, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_ev_e040",
+      "kind": "evidence",
+      "subject": "A single typed sheet in a clear plastic sleeve with no letterhead and no signature, a yellow sticky note stuck to the sleeve, the text soft and unreadable.",
+      "style": "s001"
+    },
+    {
+      "id": "s001c03_map",
+      "kind": "map",
+      "subject": "Baltimore's harbor seen from above, the broad pale blue Patapsco River running from the inner harbor at the top center out to the right toward the bay. On the north shore, a dense downtown grid at the top center, rowhouse neighborhoods of small blocks to its east, an old waterfront warehouse district along the water, and further east and south along the north shore a large container terminal: long piers, cranes, rows of stacked containers and a fenced staging area. On the south shore, an industrial district of rail yards, a transload yard by the water and fenced lots in a bay further south. In the far upper left corner, a highway in ochre running off the edge of the sheet to the west, toward distant green hills.",
+      "suffix": "A hand-painted street map, seen flat from directly above and filling the whole image edge to edge like a sheet laid on a table: no table, no border, no frame. Muted map colors: cream paper, ochre streets, sage green parkland, pale blue water, faint fold creases. Absolutely no words, letters, numbers, street names or symbols anywhere on the map.",
+      "style": "s001"
     }
   ],
   "styles": {

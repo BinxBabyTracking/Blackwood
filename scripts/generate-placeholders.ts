@@ -385,6 +385,12 @@ for (const [k, body] of Object.entries(OBJECTS)) {
   const key = `obj.${k}`;
   if (def.assets.images[key]) write(def.assets.images[key].replace(`/cases/${caseId}/`, ""), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">${body}</svg>`);
 }
+// Any other scene object the case uses gets a plain labeled card until it is painted.
+for (const [key, path] of Object.entries(def.assets.images)) {
+  if (!key.startsWith("obj.") || OBJECTS[key.slice(4)] || !path?.startsWith(`/cases/${caseId}/objects/`)) continue;
+  const name = esc(key.slice(4).replace(/_/g, " "));
+  write(path.replace(`/cases/${caseId}/`, ""), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200"><rect x="20" y="30" width="160" height="140" rx="4" fill="#5f6a73" opacity="0.85"/><rect x="30" y="40" width="140" height="120" rx="2" fill="none" stroke="#c6a472" stroke-width="2" stroke-dasharray="6 5"/><text x="100" y="106" text-anchor="middle" font-family="Courier New, monospace" font-size="15" fill="#e8dcc4">${name}</text></svg>`);
+}
 for (const e of def.evidence) write(def.assets.images[e.image].replace(`/cases/${caseId}/`, ""), evidenceArt(e));
 mkdirSync(join(out, "audio"), { recursive: true });
 writeFileSync(

@@ -204,7 +204,7 @@ No dialogue, knowledge or evidence reveals these:
 - **Russell Briggs is now Russell Gaffney** (id `gaffney`). C004 already has a Mr. Briggs (a boarder who plays rummy with Kowal in its alibi, `src/cases/C004/characters.ts`, `evidence.ts`, `knowledge.ts`), and no surname may be reused in the catalog. The bible's section 7 row "C03-E033 Rourke reference on Briggs" now reads "Rourke reference on Gaffney"; same id, same content.
 - **Frank Sullivan is now Vincent "Vince" Sullivan** (id `sullivan`). Bennett's first name is Frank (`src/cases/S001C01/characters.ts`, "Frank Bennett"), and Bennett is in every S001 case, so "Frank" would repeat a first name inside the series.
 - The brief's "Bell Freight Security Yard" is the Fisk Freight Security yard (follows the Bell to Fisk rename).
-- Minor names introduced here, all checked against the repo (docs, `src/cases`, `src/series`, `art/manifest.json`): Sofia Navarro, Otis Mabry, L. Benitez, L. Pagano, Dr. Y. Prentiss, K. Sorensen, Ofc. M. Ferrante, Det. Sgt. F. Ibarra, Carol Dunmore (carried over from C01 on purpose). Companies: Kane Logistics, Fisk Freight Security, Patapsco Freight Services, Malone Hauling, Harborside Export Trading, Tidemark Container Lines, Elizabeth River Stevedoring, East Harbor Terminal Operating Company.
+- Minor names introduced here, all checked against the repo (docs, `src/cases`, `src/series`, `art/manifest.json`): Sofia Navarro, Otis Mabry, L. Benitez, L. Pagano, Dr. Y. Ashworth, K. Sorensen, Ofc. M. Ferrante, Det. Sgt. F. Ibarra, Carol Dunmore (carried over from C01 on purpose). Companies: Kane Logistics, Fisk Freight Security, Patapsco Freight Services, Malone Hauling, Harborside Export Trading, Tidemark Container Lines, Elizabeth River Stevedoring, East Harbor Terminal Operating Company.
 
 **Bible and brief against each other.**
 - *E039 and E040 both "from Kane's office safe" (bible) versus RE08 needing E039 to open the way to E040 (brief).* If both were in the safe, RE08 would be circular. Fixed: both come from Kane's site office at the Riverside yard, under warrant. E039 (and E037) are in the office's file cabinet, opened in the RE07 search; E040 is in the floor safe, opened at RE08. Neither comes through the leak, which is the bible's point.
@@ -437,7 +437,7 @@ Every item is reached exactly one way. A person's name means a handover in conve
 > Photo 15: A black grease smear on the concrete pad in front of the flat racks, with a partial shoe print in it (see marker 7).
 
 **E003, medical examiner's summary** (Whitaker).
-> OFFICE OF THE CHIEF MEDICAL EXAMINER, State of Maryland. Summary of findings. Case ME-18-4417. Dr. Y. Prentiss. December 3, 2018.
+> OFFICE OF THE CHIEF MEDICAL EXAMINER, State of Maryland. Summary of findings. Case ME-18-4417. Dr. Y. Ashworth. December 3, 2018.
 >
 > NAVARRO, Hector, 39.
 >
@@ -609,7 +609,7 @@ Every item is reached exactly one way. A person's name means a handover in conve
 > Zones: Gate 4 contractor lane; Riverside transfer escort; Staging Area A; Staging Area B. Added October 15, 2018: Staging Area C, "per R. Gaffney, Ops, for special handling escorts."
 > Hours: 24 hours, 7 days.
 >
-> The security manager's margin note: "C zone add came by phone from Ops. Paperwork followed. L.B."
+> The security manager's margin note: "C zone add came by phone from Ops. Paperwork followed. R.D."
 
 **E019, Fisk's truck: MVA registration and insurer's photo** (Bennett, once Fisk is known).
 > MARYLAND MOTOR VEHICLE ADMINISTRATION. Registration record, plate 7FK4417.
@@ -713,7 +713,7 @@ Every item is reached exactly one way. A person's name means a handover in conve
 > 6:48:15 PM Inbound: terminal security SUV (patrol). Out 6:50 PM.
 > 7:03:15 PM Outbound: the same gray pickup with the amber light bar.
 >
-> The security manager's note: "Contractor lane readers log badge swipes at the booth; the booth log for Sunday was not retained (system fault since 12/1, ticket open). L.B."
+> The security manager's note: "Contractor lane readers log badge swipes at the booth; the booth log for Sunday was not retained (system fault since 12/1, ticket open). R.D."
 
 **E028, phone search and extraction report** (delivery, RE06).
 > BPD Homicide. Search warrant return and digital extraction summary. Case 18-1202-118. Prepared by Det. A. Whitaker. December 4, 2018.
