@@ -61,7 +61,7 @@ Kept: Claire Donovan, Gabriel Knox, Meridian Advisory Group, Martin Keller, Paul
 | C02 | David Ellis | David Okoye |
 | C02 | Det. Sarah Collins | Det. Nadia Collins |
 | C03 | Samuel and Elena Ortiz | Hector and Marisol Navarro |
-| C03 | Leonard Briggs | Russell Briggs |
+| C03 | Leonard Briggs | Russell Gaffney (Briggs is in C004) |
 | C03 | Thomas Bell | Dwayne Fisk |
 | C03 | Rachel Bennett | Joanne Lindqvist |
 | C03 | David Mercer | Eddie Malone |
@@ -84,7 +84,7 @@ Kept: Claire Donovan, Gabriel Knox, Meridian Advisory Group, Martin Keller, Paul
 | C06 | Special Agent Rebecca Stone | Special Agent Teresa Quinlan |
 | C06 | Caroline Mercer | Caroline Oduya |
 
-Unchanged: Susan Whitfield, Angela Morris, Frank Sullivan, Victoria Lane, James Porter. Characters who return in later cases carry their new names (Irene Chen, Walter Ames, Simon Wexler, Alan Corbett, Det. Caruso). Names were checked against the C001 to C006 design docs; search the repo for each surname before building, since C001's and C004's full casts live there.
+Unchanged: Susan Whitfield, Angela Morris, Vince Sullivan (renamed from Frank in the C03 design: Bennett is Frank), Victoria Lane, James Porter. Characters who return in later cases carry their new names (Irene Chen, Walter Ames, Simon Wexler, Alan Corbett, Det. Caruso). Names were checked against the C001 to C006 design docs; search the repo for each surname before building, since C001's and C004's full casts live there.
 
 **"A" stays "A".** No principal's name starts with A except Adrian Holt, which is now a deliberate red herring: the first "A" message (C02) is dated after Holt's arrest, so a careful player can rule him out.
 
@@ -112,7 +112,7 @@ The hub for all six cases is **Blackwood's Pittsburgh field office**, the same r
 | Paul Reddick | C01 | Arrested Thu Nov 15. Held, homicide |
 | Adrian Holt | C01 | Arrested Thu Nov 15, held without bail (offshore accounts, flight risk). Later interviews are recorded jail interviews with counsel. Every record of his work for Kane predates Nov 15 |
 | Julian Rourke, Garrett Lyons, Kevin Hurst | C02 | Arrested Wed Nov 21. Kidnapping crossed state lines, so the FBI joins at the rescue; Rourke is in federal detention |
-| Dwayne Fisk, Gideon Kane | C03 | Arrested Wed Dec 5. Russell Briggs charged and cooperating |
+| Dwayne Fisk, Gideon Kane | C03 | Arrested Wed Dec 5. Russell Gaffney charged and cooperating |
 | Brandon Tate | C04 | Arrested Fri Dec 14 |
 | Claire Donovan | C04 | Not charged; cooperating witness |
 | Gabriel Knox, Elena Marchetti | C05 | Arrested Sat Dec 22. Marchetti released on bail Mon Dec 24 with conditions; seeking a cooperation deal by C06 |
@@ -258,7 +258,7 @@ So a player who missed something in C01 is never stuck in C06.
 | C01-E029 Meridian Payment Pattern | Walter Ames | His working copy from the Carroway audit |
 | C01-E030 Lockhart referral note | Bennett | It was delivered to the agency in C01; if never opened, it is still sealed in the Keller file |
 | C02-E035 Compromising Information Index | Agent Quinlan | Exhibit in the federal case against Rourke |
-| C03-E033 Rourke reference on Briggs | Agent Quinlan | The Baltimore case was folded into the federal case |
+| C03-E033 Rourke reference on Gaffney | Agent Quinlan | The Baltimore case was folded into the federal case |
 | C03-E037 Shared Meridian Client Reference | Benjamin Sayer | His archive holds the client register |
 | C03-E038 Intermediary Payment Network | Walter Ames | He traced it for the prosecutors after C03 |
 | C04-E017 Archive checkout log | Benjamin Sayer | He approved the archive's transfers |
@@ -299,7 +299,7 @@ So a player who missed something in C01 is never stuck in C06.
 
 ### S01 C03: Dead Freight
 
-- **RE01 was circular** in the same way as C01. Now fires on D01 or once E014 (Hector's report to Briggs) is collected.
+- **RE01 was circular** in the same way as C01. Now fires on D01 or once E014 (Hector's report to Gaffney) is collected.
 - E022 arrives only by Capital Courier on Tue Dec 4, triggered by D06, with footer `MAG-RM 31-0056-044`.
 - Weapon: Fisk wiped the bar and returned it to the lashing-gear cage among identical bars; a lab test finds trace on one. Hector's phone is recovered from Fisk's truck (RE06).
 - E040 comes from Kane's office safe at the Riverside yard.
