@@ -1125,7 +1125,7 @@ export const questions: DialogueQuestion[] = [
     "Crime Scene Unit. Four that matter. Look at the credenza in eleven and the tray in seven.",
   ], { reveals: "Det. Caruso handed over the Suite C photographs.", effects: [{ giveEvidence: "E002" }] }),
   q("caruso", "Reports", "caruso_me", "What did the medical examiner find?", [
-    "Dr. Raman did the post first thing this morning. Here's her summary.",
+    "Dr. Raman came out to the hotel and examined him herself. Her preliminary findings. The post is Friday morning.",
     "Read it yourself. I'll tell you she wrote 'homicide' at the bottom.",
   ], { requires: { visited: "suite" }, reveals: "Det. Caruso handed over the medical examiner's summary.", effects: [{ giveEvidence: "E003" }] }),
   q("caruso", "The case", "caruso_robbery", "Was this a robbery?", [

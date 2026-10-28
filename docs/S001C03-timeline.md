@@ -317,7 +317,7 @@ Nothing resets between chapters. Locations open by chapter as listed; people and
 | 1 | The Body at the Dock | "A cargo checker was found dead behind a stack of flat racks at East Harbor Terminal on Sunday night. The police say robbery. His wife says he was killed for something he found." | o1_file, o1_scene, o1_marisol, o1_police, o1_concerns, o1_robbery | o1_opt_vince | "Hector Navarro was not killed for sixty dollars. Somebody wanted what he knew. But what had he found?" |
 | 2 | The Altered Manifest | "Tuesday morning. Hector's report named containers, seals and weights. The terminal says the paperwork is in order. Somebody at East Harbor is about to make sure of it." | o2_notebook, o2_hector, o2_manifests, o2_moves, o2_supervisor, o2_access | | "The records were changed, the night moves were real, and the gate that should have kept everyone out let one contractor in. Who does he work for?" |
 | 3 | The Enforcement Network | "The contractor's name leads off the terminal: to a security yard in Curtis Bay, a logistics office in Canton, and an accounts ledger that pays a company with no trucks." | o3_alibi, o3_vehicle, o3_direct, o3_after, o3_coercion, o3_money | o3_opt_holt, o3_opt_rourke | "Someone sent him, someone paid him, and the money came from further away than Baltimore. The warrants are out. What's in the yard across the river?" |
-| 4 | The Architect's Shadow | "Wednesday. The police are at the Riverside yard with a warrant and a locksmith. Everything that moved at night went through those gates." | o4_killer, o4_yard, o4_network, o4_authority, o4_report | | "Case closed." |
+| 4 | The Architect's Shadow | "Wednesday. The police are at the Riverside yard with a warrant, and a locksmith is standing by for Kane's safe, waiting on a judge. Everything that moved at night went through those gates." | o4_killer, o4_yard, o4_network, o4_authority, o4_report | | "Case closed." |
 
 Chapter summaries (checkpoint screen and notebook): 1 "The robbery was staged. Hector had been documenting something at work, and his supervisor knew it." 2 "Containers left the terminal at night and came back changed. The records were rewritten to match. A contractor's badge opened Staging Area C on Sunday evening." 3 "The man who was there, the man who sent him, the money that paid him, and the file that kept his supervisor quiet." 4 "Hector's killer is named. The people who ran the freight answer to someone the records never name."
 
@@ -506,7 +506,7 @@ Every item is reached exactly one way. A person's name means a handover in conve
 >
 > 11/15: "TMCU 390154-2. Gated in Tue 13th, seal 2271160 (my photo). Today seal 3300847. No Customs hold, no exam record. Nobody on C-row knows why."
 > 11/19: "Kane's security guy, gray pickup with the yellow bar, asked what I'm always writing. Said grocery list. Keeping the book in the locker from now on."
-> 11/21: "517730-9 same thing. Gate 4 log shows OUT 0118 IN 0436 Wed. Not on the move plan. No checker on it."
+> 11/21: "517730-9 same thing. Gate 4 log shows OUT 0112 IN 0430 Wed. Not on the move plan. No checker on it."
 > 11/25: "Talked to Vince at the hall. He says nobody re-keys a seal. Write it up. If they ignore you, come back to him."
 > 11/28: "4827 (482771-6). Gated Mon 26th, seal 2287415, 9,640 kg, tires. This morning seal 3301962. Stacker readout 14.2 t. Four and a half tons of tires nobody delivered. Out Gate 4 last night, back before 5."
 > 11/29: "Watched Gate 4 from Broening last night. 0105 a tractor with MALONE HAULING on the door took 448216-0 out. Pictures. Wrote it all up for Gaffney tonight. Copy at home."
@@ -542,8 +542,6 @@ Every item is reached exactly one way. A person's name means a handover in conve
 > EAST HARBOR TERMINAL OPERATING SYSTEM. Dock receipt record, TMCU 482771-6. Status: LOADED (vessel *Tidemark Halcyon*, Mon 12/03 07:10).
 > Gate-in: Mon 11/26/2018 10:14. Seal at gate-in: 3301962. VGM at gate-in: 14,220 kg. Declared cargo: used tires and used auto parts.
 > Record history: Original 11/26/2018 10:16 (user HNAVARRO). Re-issued 12/04/2018 07:52 (user RGAFFNEY). Reason: "Clerical correction, seal and weight keyed in error at gate-in."
->
-> The signed paper receipt for the same gate-in, same minute, shows a different seal and five tons less.
 
 **E013, Staging Area C move plan** (L08, the move plan binder).
 > EAST HARBOR TERMINAL. Daily move plan, Staging Area C. Monday, November 26 to Sunday, December 2, 2018. Seven printed sheets, one per day, each listing planned moves by time, container, from and to, and the checker assigned.
@@ -642,7 +640,7 @@ Every item is reached exactly one way. A person's name means a handover in conve
 >
 > Data sessions Sun 12/2, 6:05 PM to 7:05 PM: all on cell site BA-2214, sector 2.
 >
-> Det. Whitaker's note: "The Riverside yard is on BA-1187. From six to seven Sunday his phone wasn't anywhere near it. A.W."
+> Det. Whitaker's note: "The Riverside yard is on BA-1187. A.W."
 
 **E022, Meridian and Kane Logistics security services agreement** (delivery, on D06).
 > A photocopy, eleven pages, no letter. LOGISTICS SECURITY SERVICES AGREEMENT between Meridian Advisory Group LLC, Washington, D.C. ("Meridian") and Kane Logistics Inc., 1900 Clinton Street, Baltimore, Maryland ("Contractor"). Effective March 1, 2017.
@@ -730,7 +728,7 @@ Every item is reached exactly one way. A person's name means a handover in conve
 > 7:40 PM, K: "Keep it off. Keep it with you. I'll send for it."
 > Mon 12/3 8:02 AM, K: "Paid. Stay home today. You were on the Riverside gate all night."
 >
-> Det. Whitaker's note: "The blue rag matches the fibers on the bar. A.W."
+> Det. Whitaker's note: "Blue cotton shop rag. Set it beside the lab report on the bar. A.W."
 
 **E029, Kane Logistics invoice KL-1130-18** (L09, the invoice file).
 > KANE LOGISTICS INC., 1900 Clinton Street, Baltimore MD 21224. Office (410) 555-0100.
@@ -754,7 +752,7 @@ Every item is reached exactly one way. A person's name means a handover in conve
 > Organizer: Carol Dunmore, 600 Grant Street, Suite 2210, Pittsburgh.
 > Manager (2018 annual report): Holt Advisory LLC.
 >
-> Bennett's note: "A Baltimore freight company run out of a Pittsburgh office suite by a financial adviser's office manager. If you worked the Carroway file, you've seen that address. If you didn't, it's the same suite as Holt Advisory, and the same suite as Meridian's Pittsburgh office. B."
+> Bennett's note: "A Baltimore freight company run out of a Pittsburgh office suite by a financial adviser's office manager. If you worked the Carroway file, you've seen that address. Check it against the other Pittsburgh paperwork. B."
 
 **E031, EHTOC deposits ledger: the Meridian performance security** (L11, the deposits ledger, visible once talked to Walsh).
 > EAST HARBOR TERMINAL OPERATING COMPANY. Contractor deposits and performance security ledger, 2018. One line highlighted in yellow by Walsh.

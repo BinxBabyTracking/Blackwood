@@ -267,7 +267,7 @@ export const KNOWLEDGE: Record<string, Fact[]> = {
     f("I'm Det. Caruso, Manhattan South Homicide. Hotel security wrote it up as a fall or a robbery. I don't buy it.", undefined, "caruso_case"),
     f("Here's the complaint report and the property list.", undefined, "caruso_report", [{ giveEvidence: "E001" }]),
     f("Here are the scene photographs. Look at the credenza and the tray.", undefined, "caruso_photos", [{ giveEvidence: "E002" }]),
-    f("Dr. Raman did the post first thing this morning. One blow to the head with something heavy and square-edged, no fall. Homicide. Here's the summary.", { visited: "suite" }, "caruso_me", [{ giveEvidence: "E003" }]),
+    f("Dr. Raman examined him at the scene herself. One blow to the head with something heavy and square-edged, no fall. Homicide, preliminary; the post is Friday morning. Here are her findings.", { visited: "suite" }, "caruso_me", [{ giveEvidence: "E003" }]),
     f("A robber who leaves a gold watch on the wrist and takes a briefcase.", undefined, "caruso_robbery"),
     f("I'll send the whiskey glass and the decanter to the lab. Toxicology and prints.", { inspected: "suite_glass" }, "caruso_glass", [{ startLab: "glass" }, { setFlag: "glass_requested" }]),
     f("I'll send the bookend and the briefcase to the lab.", ev("E031"), "caruso_bookend", [{ startLab: "bookend" }, { setFlag: "bookend_requested" }]),

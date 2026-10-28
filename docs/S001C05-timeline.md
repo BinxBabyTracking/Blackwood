@@ -181,7 +181,8 @@ Distances: the Belgrave Grand to the Queens-Midtown Tunnel about 8 minutes at ni
 | --- | --- | --- |
 | Fri Dec 21, 1:15 AM | Claudia reports the briefcase missing to Det. Caruso | E010 |
 | Fri Dec 21, 7:02 AM | Marchetti calls Knox, 6 minutes | E026 |
-| Fri Dec 21, 7:30 AM | Autopsy, OCME, Dr. Raman: homicide | E003 |
+| Thu Dec 20, 11:40 PM | Dr. Raman (OCME, on call) examines the body at the scene: preliminary findings, homicide | E003 |
+| Fri Dec 21, 7:30 AM | Autopsy, OCME, Dr. Raman | |
 | Fri Dec 21, morning | Marchetti tells foundation staff to cooperate visibly and release nothing on Halvard without her | E037 |
 | Fri Dec 21, 9:04 AM | Marchetti Law Group wires $40,000 to Stratford Risk Consulting | E028 |
 | Fri Dec 21, 9:11 AM | Stratford wires $40,000 to Knox Protective, "Incident response 12/20" | E025, E028 |
@@ -207,7 +208,7 @@ No dialogue, knowledge or evidence reveals these:
 ### Contradictions found and fixed
 
 - **Hub versus setting.** The bible makes the Pittsburgh field office the hub for every case; this case is in Manhattan. The office stays the hub (board, desk, labs, report) as its own map area, drawn as an inset at the map's edge. Any trip to it is an ordinary between-area trip; no text times it.
-- **The case opens at night, the autopsy is in the morning.** The brief wants Act 1 at the gala and D01 (E002 + E003) in Act 1. Chapter 1 is written as "Thursday night into Friday morning," and Caruso's line handing over E003 says the post was done first thing this morning.
+- **The case opens at night, the autopsy is in the morning.** The brief wants Act 1 at the gala and D01 (E002 + E003) in Act 1. E003 is Dr. Raman's preliminary findings at the scene, Thursday 11:40 PM, so it can be handed over on gala night; the autopsy itself is Friday 7:30 AM and nothing in Chapter 1 claims it has been done.
 - **The brief has the suite "missing desk accessory" and also a recovered weapon; the bible puts the weapon in the briefcase.** Fixed as one object: bookend 114 is missing from the credenza (E004), its pair 115 is still there, and 114 comes back inside the briefcase (E031) and goes to the lab (E032).
 - **Where Knox took the briefcase.** If Knox delivered it to Marchetti, the bible's recovery of both together from Knox makes no sense. Fixed: Marchetti refused it at 10:01 PM ("Not to me"), so he left it in his own storage unit; his 9:55 PM excuse to the dock officer ("radio batteries") becomes his lie to the investigator, and the unit holds two unopened cartons of radio batteries.
 - **Knox's alibi needs a document that agrees with it.** The brief's E021 (official assignment) and E023 (work schedule) conflict; fixed by making E021 the sheet on the hotel's file, which is Marchetti's 11:40 PM replacement (its file footer shows the time), and E023 Knox's own internal sheet, which matches the original 2:04 PM version. RE03 is Porter finding the replacement in his email.
@@ -376,21 +377,21 @@ Counts: 20 scene items, 21 handovers, 5 delivered, 2 lab results.
 > Photo 16: By the door: the wallet, open, face down. The side table drawer pulled out, holding only a hotel notepad and pen. No papers anywhere in the room.
 
 **E003, medical examiner's summary** (Caruso, once the suite has been visited).
-> OFFICE OF CHIEF MEDICAL EXAMINER, City of New York. Summary of findings, case M-18-21907. Autopsy Friday, December 21, 2018, 7:30 AM. Dr. Meera Raman.
+> OFFICE OF CHIEF MEDICAL EXAMINER, City of New York. Preliminary findings at the scene, case M-18-21907. Belgrave Grand Hotel, Conference Suite C, Thursday, December 20, 2018, 11:40 PM. Dr. Meera Raman, on call. Autopsy scheduled for Friday, December 21, 7:30 AM.
 >
 > OGDEN, Nathaniel H., 57.
 >
-> Cause of death: blunt force injury of the head. A depressed fracture of the right side of the skull with one straight margin about 2 1/4 inches long meeting a second at a right angle: the impression of a heavy object with square-cut edges and a corner. Probably a single blow.
+> Probable cause of death: blunt force injury of the head. A depressed fracture of the right side of the skull, felt through the scalp wound, with one straight margin about 2 1/4 inches long meeting a second at a right angle: the impression of a heavy object with square-cut edges and a corner. Probably a single blow.
 >
 > Other injuries: a fresh bruise on the inside of the right wrist in a pattern consistent with a grip. No other defense injuries.
 >
-> Natural disease: mild coronary artery disease, not a cause of death. No evidence of a fall: the injury is not on a point of the head that strikes a table edge in falling, and no table edge matches it.
+> No evidence of a fall: the injury is not on a point of the head that strikes a table edge in falling, and no table edge in the room matches it. Natural disease to be assessed at autopsy.
 >
-> Blood alcohol 0.04%. Comprehensive toxicology: negative.
+> Blood alcohol and toxicology: samples taken, results to follow.
 >
 > Time of death: consistent with between 9:30 and 10:12 PM on December 20.
 >
-> Manner of death: homicide.
+> Manner of death (preliminary): homicide.
 
 **E004, the missing marble bookend** (L04, the credenza).
 > The walnut credenza along the wall holds a row of hotel display books: a history of Park Avenue, a book of Manhattan bridges, others. At the right end, a green marble bookend, cut square, about six inches by five, polished, with gray felt on its base. You lift it. It is heavier than it looks, seven pounds or so, and every edge is sharp.
@@ -444,7 +445,7 @@ Counts: 20 scene items, 21 handovers, 5 delivered, 2 lab results.
 > BELGRAVE GRAND HOTEL. Camera log and stills, mezzanine conference corridor, Thursday, December 20, 2018. Reviewed by J. Porter.
 >
 > Camera M-1 (at the mezzanine landing, looking down the corridor):
-> 21:30:38 Male, tall, shaved head, dark suit, earpiece coil, enters the corridor from the landing and walks toward Suites C and D.
+> 21:30:38 Male, tall, shaved head, dark suit, earpiece coil, enters the corridor from the landing and walks toward Suites C and D. (Matches the credential photograph for EVT-SEC-07.)
 > 21:36:09 Male, about 60, gray hair, dinner jacket, carrying a brown briefcase, enters the corridor. (Identified from the still by Mrs. Ogden as Nathaniel Ogden.)
 > 21:36 to 22:11 No one enters or leaves the corridor at this end.
 > 22:11:47 Female (V. Lane) enters. 22:13:02 She runs out toward the landing.
@@ -452,7 +453,7 @@ Counts: 20 scene items, 21 handovers, 5 delivered, 2 lab results.
 >
 > Camera M-2 (mid-corridor): facing the window bay at the far end from 18:10 (see work log). The doors of Suites C and D are out of frame. 21:51:35 A figure in a dark suit crosses the right edge of the frame toward the staff door, about two seconds, head out of frame, something dark carried at the left side.
 >
-> J.P.'s note: "The 21:30 man matches the credential photo for EVT-SEC-07 (G. Knox). Nobody came back out past M-1 between Mr. Ogden going in and Ms. Lane."
+> J.P.'s note: "Stills attached. Set M-2 beside the door access report."
 
 **E009, Loading Dock B security log** (L07, the dock desk).
 > A clipboard on the dock desk, the hotel's form "LOADING DOCK B: VENDOR AND STAFF MOVEMENT," Thursday 12/20, in the dock officer's block capitals. Officer on desk: M. Delacroix.
@@ -540,7 +541,7 @@ Counts: 20 scene items, 21 handovers, 5 delivered, 2 lab results.
 >
 > No member, owner or unitholder is listed in either.
 >
-> Bennett's note: "Delaware won't tell you who owns an LLC, and neither will D.C. That's what they're for. The lawyer who formed it in 2007 is the same lawyer who certifies Halvard to its bank in 2018. B."
+> Bennett's note: "Delaware won't tell you who owns an LLC, and neither will D.C. That's what they're for. Note who formed it. B."
 
 **E017, Halvard schedule of holdings** (L13, the GP annual report).
 > Attached to "Fifth Avenue Endowment GP LLC: Annual Report to Limited Partners, 2017": Schedule 3, Underlying holdings of Halvard Holdings LLC, at December 31, 2017.
@@ -620,7 +621,7 @@ Counts: 20 scene items, 21 handovers, 5 delivered, 2 lab results.
 > MTA Bridges and Tunnels, E-ZPass tag registered to Knox Protective Services: Queens-Midtown Tunnel, Queens-bound 22:09; Manhattan-bound 22:44.
 > Bridgeview Self Storage, 21st Street, Long Island City, gate keypad: code assigned to unit 3C-27 (renter: Knox Protective Services LLC, since 2016): 22:21 in; 22:33 out.
 >
-> Det. Caruso's note: "Fifty-three minutes off a post he says he never left. Twelve of them inside a storage gate. A.C."
+> Det. Caruso's note: "Times are from the gate reader, the tag and the keypad. Set them beside his account. A.C."
 
 **E025, wire advice** (L12, the desk).
 > A printed page on the desk, under a radio charger. EMPIRE COMMERCE BANK, Business Online. Incoming wire advice.
@@ -809,7 +810,7 @@ Counts: 20 scene items, 21 handovers, 5 delivered, 2 lab results.
 > 3. Halvard's bank certification lists Lockhart Endowment Partners as its 62% owner and Ms. Marchetti as its control person (August 2018).
 > 4. The foundation's register shows it owns 96% of Lockhart Endowment Partners (November 2018), which bought its 62% of Halvard for $18 million in 2009 (subscription agreement).
 >
-> So: the foundation's endowment, through two companies, owns most of the company that holds every vote in Meridian. That is lawful in itself. What these documents do not show is who directs those votes. That is in the general partner's governance documents, not here."
+> Each point is taken from the document named beside it. Ownership chains of this kind are lawful in themselves. What these documents do not show is who directs those votes. That is in the general partner's governance documents, not here."
 
 **E042, investment committee minutes, June 23, 2009** (L13, the minutes binder).
 > THE LOCKHART FOUNDATION. Investment Committee. Minutes of the meeting of Tuesday, June 23, 2009. Present: Dr. E. Lockhart (chair), Ms. H. Quarles, Mr. M. Tolliver. Also present: E. Marchetti, counsel.
@@ -951,7 +952,7 @@ Evelyn after D13, after D14, after E042, after RE10; Marchetti after E027, after
 
 | # | Title | Intro (spoiler-safe) | Primary objectives (id: text, done) | Optional | Conclusion |
 | --- | --- | --- | --- | --- | --- |
-| 1 | The Gala | "Thursday, December 20. Four hundred guests, a string quartet, and at 10:12 PM a man dead on the carpet of a conference room upstairs. The host wants to know how, and she has asked you." | o1_file: Read the case file (`casefile_read`); o1_scene: Examine Conference Suite C (visited suite); o1_people: Talk to Dr. Lockhart, Claudia Ogden and Det. Caruso (talkedTo all three); o1_cause: Establish how Nathaniel died (D01); o1_robbery: Decide whether this was a robbery (D02); o1_meeting: Find out why he went upstairs (D03) | o1_opt_glass: Have the whiskey glass examined (E005) | "Nathaniel Ogden was not robbed by chance and did not fall. He went upstairs to meet someone. Who was waiting?" |
+| 1 | The Gala | "Thursday, December 20. Four hundred guests, a string quartet, and at 10:12 PM a man dead on the carpet of a conference room upstairs. The host wants to know how, and she has asked you." | o1_file: Read the case file (`casefile_read`); o1_scene: Examine Conference Suite C (visited suite); o1_people: Talk to Dr. Lockhart and Claudia Ogden, and to Det. Caruso by phone (talkedTo all three); o1_cause: Establish how Nathaniel died (D01); o1_robbery: Decide whether this was a robbery (D02); o1_meeting: Find out why he went upstairs (D03) | o1_opt_glass: Have the whiskey glass examined (E005) | "Nathaniel Ogden was not robbed by chance and did not fall. He went upstairs to meet someone. Who was waiting?" |
 | 2 | The Private Meeting | "Friday, December 21. The hotel's cameras, its doors and its staff remember more than its guests do." | o2_access: Find out who could reach the suite (D04); o2_alibi: Test the security lead's account (D05); o2_briefcase: Find out where the briefcase went (D06); o2_knox: Question Gabriel Knox (talkedTo knox); o2_back: Walk the back-of-house route (visited service_corridor) | | "The security lead was not where he said he was, and someone left the mezzanine with Nathaniel's briefcase. But a contractor does not choose his own targets." |
 | 3 | The Hidden Accounts | "Nathaniel was not a gambler or a thief. He was an investment adviser, and he had found something in the foundation's books." | o3_research: Find out what Nathaniel was investigating (D10); o3_layers: Work out the ownership (D11); o3_meridian: Find where Meridian fits (D12); o3_foundation: Find what the foundation holds (D13); o3_shared: Put the ownership together (D16) | o3_opt_simon: Hear what Simon Wexler knows (E038) | "The foundation's money and Meridian's votes are the same chain. Who holds the top of it?" |
 | 4 | The Benefactor | "The structure has a lawyer at every level. One of them arranged a meeting." | o4_arranged: Find out who arranged the meeting (D08); o4_after: Find out what was done after (D09); o4_control: Find out who directs the structure (D14); o4_claire: Compare the research with Claire Donovan's records (E044); o4_candidate: Weigh what the records say about the Architect (D18) | o4_opt_records: Read the lawyer's own files (E045 or E046) | "There is a name at the top of the structure. There is no record of an order with that name on it." |

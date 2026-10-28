@@ -306,7 +306,7 @@ export const events: ReactiveEventDef[] = [
     notebook: {
       learned: [
         { text: "Joanne Lindqvist texted: the terminal's record for 4827 changed on Tuesday morning, and she left a printout of it in her tray." },
-        { text: "The re-issued record shows a different seal and five tons more at gate-in than the paper receipt Hector signed.", requires: { hasEvidence: "E012" } },
+        { text: "The re-issued record lists seal 3301962 and 14,220 kg at gate-in, re-issued Tuesday at 7:52 AM under user RGAFFNEY. Worth setting beside the paper receipt Hector signed.", requires: { hasEvidence: "E012" } },
       ],
     },
   },
@@ -496,7 +496,7 @@ export const chapters: ChapterDef[] = [
   {
     number: 4,
     title: "The Architect's Shadow",
-    intro: "Wednesday. The police are at the Riverside yard with a warrant and a locksmith. Everything that moved at night went through those gates.",
+    intro: "Wednesday. The police are at the Riverside yard with a warrant, and a locksmith is standing by for Kane's safe, waiting on a judge. Everything that moved at night went through those gates.",
     objectives: ["o4_killer", "o4_yard", "o4_network", "o4_authority", "o4_report"],
     conclusion: "Case closed.",
     summary: "Hector's killer is named. The people who ran the freight answer to someone the records never name.",

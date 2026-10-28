@@ -211,7 +211,7 @@ export const calls: CallDef[] = [
     title: "Call from Det. Collins",
     lines: [
       "Nadia Collins. Det. Harris sent me a photograph of the note from Tate's desk.",
-      "I know that handwriting. I spent a month reading it out of Julian Rourke's safe.",
+      "I know that handwriting. I spent a month reading his handwriting in the files we took from his office.",
       "Agent Quinlan is pulling the legal visit log at the detention center now. I'll send you both together.",
     ],
     effects: [{ delivery: "rourke_packet" }, { text: "t_collins_packet" }],

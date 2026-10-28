@@ -1219,7 +1219,7 @@ export const reactions: EvidenceReaction[] = [
   r("walsh", "E030", ["Organized in Pittsburgh, managed by a Pittsburgh consultant. And I paid it because a letter said to."]),
   r("walsh", "E038", ["Forty-one thousand in cash withdrawals. No payroll, no fuel. That's not a freight company."]),
   // Bennett
-  r("bennett", "E001", ["Took the cash and the phone, left the ring and the cards. That's a retrieval dressed as a robbery."]),
+  r("bennett", "E001", ["Took sixty dollars and the phone, left the ring, the watch and the cards. Worth asking why."]),
   r("bennett", "E022", ["Came by courier. No name, no note. The contract's real enough."]),
   r("bennett", "E030", ["A Baltimore freight company with a Pittsburgh front desk. Hang on to that."]),
   r("bennett", "E019", ["Not a rare truck in a port. But it's his."]),

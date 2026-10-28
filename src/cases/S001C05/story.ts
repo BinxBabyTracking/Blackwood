@@ -583,7 +583,7 @@ export const objectives: ObjectiveDef[] = [
   // Chapter 1: The Gala
   { id: "o1_file", text: "Read the case file on your phone.", visible: { always: true }, done: briefed },
   { id: "o1_scene", text: "Examine Conference Suite C.", visible: { always: true }, done: { visited: "suite" } },
-  { id: "o1_people", text: "Talk to Dr. Lockhart, Claudia Ogden and Det. Caruso.", visible: { always: true }, done: { all: [{ talkedTo: "lockhart" }, { talkedTo: "claudia" }, { talkedTo: "caruso" }] } },
+  { id: "o1_people", text: "Talk to Dr. Lockhart and Claudia Ogden, and to Det. Caruso by phone.", visible: { always: true }, done: { all: [{ talkedTo: "lockhart" }, { talkedTo: "claudia" }, { talkedTo: "caruso" }] } },
   { id: "o1_cause", text: "Establish how Nathaniel died.", visible: { always: true }, done: { deduction: "D01" } },
   { id: "o1_robbery", text: "Decide whether this was a robbery.", visible: { always: true }, done: { deduction: "D02" } },
   { id: "o1_meeting", text: "Find out why he went upstairs.", visible: { always: true }, done: { deduction: "D03" } },

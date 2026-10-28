@@ -387,11 +387,11 @@ export const locations: LocationDef[] = [
     hotspots: [
       inspect(
         "rc_supervisor",
-        "Gina Varga, the duty supervisor",
+        "Gina Ostrander, the duty supervisor",
         "person",
         { x: 2, y: 24, w: 12, h: 60 },
-        "Gina Varga",
-        "The duty supervisor, Gina Varga, a lanyard of keys and a cardigan with the sleeves pushed up. \"Mr. Sayer is out this week. I can't let you into the stacks, and I can't talk about Claire. The register and the copy room are front of house; you can look at those.\" She glances at the empty desk in the second aisle. \"She was the best of us.\"",
+        "Gina Ostrander",
+        "The duty supervisor, Gina Ostrander, a lanyard of keys and a cardigan with the sleeves pushed up. \"Mr. Sayer is out this week. I can't let you into the stacks, and I can't talk about Claire. The register and the copy room are front of house; you can look at those.\" She glances at the empty desk in the second aisle. \"She was the best of us.\"",
       ),
       inspect(
         "rc_register",

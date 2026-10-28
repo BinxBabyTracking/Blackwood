@@ -84,7 +84,7 @@ export const documents: DocumentDef[] = [
       {
         heading: "Who he is (SA Quinlan)",
         spoken:
-          "A page from Special Agent Teresa Quinlan, FBI Washington Field Office. Meridian's Records Administrator until last Friday, December twenty-first, was Benjamin Sayer, fifty-eight. His signature is on the archive transfers in the Donovan matter. He resigned that afternoon. He lives alone at forty-four seventeen North Nineteenth Street, Arlington, Virginia. Home phone seven oh three, five five five, oh one two nine. Cell seven oh three, five five five, oh one five one: switched off since Friday. No car registered to him. I have asked Arlington County Police for a welfare check this morning. Do not call the house. He asked you not to, and if someone else is listening, I would rather they did not hear us.",
+          "A page from Special Agent Teresa Quinlan, FBI Washington Field Office. Meridian's Records Administrator until last Friday, December twenty-first, was Benjamin Sayer, fifty-eight. His signature is on the archive transfers in the Donovan matter. He resigned that afternoon. He lives alone at forty-four seventeen North Nineteenth Street, Arlington, Virginia. Home phone seven oh three, five five five, oh one six eight. Cell seven oh three, five five five, oh one five one: switched off since Friday. No car registered to him. I have asked Arlington County Police for a welfare check this morning. Do not call the house. He asked you not to, and if someone else is listening, I would rather they did not hear us.",
         body: "From SA Teresa Quinlan, FBI Washington Field Office: \"Meridian's Records Administrator until Friday, December 21 was Benjamin Sayer, 58. His signature is on the archive transfers in the Donovan matter. He resigned that afternoon. He lives alone at 4417 North 19th Street, Arlington, Virginia. Home (703) 555-0168. Cell (703) 555-0151, off since Friday. No car registered to him. I have asked Arlington County Police for a welfare check this morning. Don't call the house: he asked you not to, and if anyone else is listening, I'd rather they didn't hear us. T.Q.\"",
       },
       {
@@ -96,8 +96,8 @@ export const documents: DocumentDef[] = [
       {
         heading: "Where things stand",
         spoken:
-          "Where things stand. Adrian Holt is held without bail in Carroway County. Julian Rourke is in federal detention. Gideon Kane has been held in Baltimore since December fifth; the federal case against him is pending. Elena Marchetti was arrested in New York on Saturday and released on bail on Monday: passport surrendered, an ankle monitor, and no contact with Lockhart Foundation or Meridian personnel. Claire Donovan is cooperating with the FBI in Washington. Malcolm Pryor, Meridian's managing director, has been abroad since Saturday and is represented. Irene Chen, Walter Kiley, Simon Wexler and Detective Anthony Caruso of the NYPD all know these cases. Dr. Evelyn Lockhart, who founded Meridian in two thousand seven and left it in two thousand nine, heads the Lockhart Foundation in New York, which is announcing a restructuring this morning.",
-        body: "Adrian Holt: held without bail, Carroway County. Julian Rourke: federal detention. Gideon Kane: held in Baltimore since December 5; HSI's federal case is pending. Elena Marchetti: arrested in New York Saturday, December 22; on bail since Monday, December 24 (passport surrendered, ankle monitor, no contact with Lockhart Foundation or Meridian personnel). Claire Donovan: cooperating with the FBI, Washington. Malcolm Pryor, Meridian's managing director: abroad since December 22, represented. Also on these cases: Irene Chen (attorney, Washington), Walter Kiley (forensic accountant to the federal prosecutors), Simon Wexler (New York), Det. Anthony Caruso (NYPD). Dr. Evelyn Lockhart, who founded Meridian in 2007 and left it in 2009, heads the Lockhart Foundation, New York, which announces a restructuring at 10:00 this morning.",
+          "Where things stand. Adrian Holt is held without bail in Carroway County. Julian Rourke is in federal detention. Gideon Kane has been held in Baltimore since December fifth; the federal case against him is pending. Elena Marchetti was arrested in New York on Saturday and released on bail on Monday: passport surrendered, an ankle monitor, and no contact with Lockhart Foundation or Meridian personnel. Claire Donovan is cooperating with the FBI in Washington. Malcolm Pryor, Meridian's managing director, has been abroad since Saturday and is represented. Irene Chen; Walter Kiley, the Pittsburgh forensic accountant on the Keller case, now working for the prosecutors; Simon Wexler; and Detective Anthony Caruso of the NYPD all know these cases. Dr. Evelyn Lockhart, who founded Meridian in two thousand seven and left it in two thousand nine, heads the Lockhart Foundation in New York, which is announcing a restructuring this morning.",
+        body: "Adrian Holt: held without bail, Carroway County. Julian Rourke: federal detention. Gideon Kane: held in Baltimore since December 5; HSI's federal case is pending. Elena Marchetti: arrested in New York Saturday, December 22; on bail since Monday, December 24 (passport surrendered, ankle monitor, no contact with Lockhart Foundation or Meridian personnel). Claire Donovan: cooperating with the FBI, Washington. Malcolm Pryor, Meridian's managing director: abroad since December 22, represented. Also on these cases: Irene Chen (attorney, Washington), Walter Kiley (the Pittsburgh forensic accountant on the Keller case, now working for the prosecutors), Simon Wexler (New York), Det. Anthony Caruso (NYPD). Dr. Evelyn Lockhart, who founded Meridian in 2007 and left it in 2009, heads the Lockhart Foundation, New York, which announces a restructuring at 10:00 this morning.",
       },
       {
         heading: "Note (Bennett)",
@@ -120,7 +120,7 @@ export const calls: CallDef[] = [
     lines: [
       "Quinlan. You've read his email. Here's the rest of it.",
       "The Meridian Records Center in Chantilly burned last night. Bay C, the caged storage. Fairfax County Fire and Rescue had it under control by 1:40 this morning. Those records were under our hold, so the scene is ours now, and the fire marshal is still on site.",
-      "Arlington is going to his house this morning. I'll send you what they find.",
+      "Arlington is going to his house this morning. Ask me for what they find.",
       "Go and look at the Records Center. Bring me facts, not adjectives.",
     ],
     effects: [
@@ -354,9 +354,10 @@ export const outgoingCalls: OutgoingCallDef[] = [
 ];
 
 export const texts: TextDef[] = [
-  { id: "t_quinlan_welfare", from: "quinlan", body: "Arlington's doing the welfare check. I'll send you what they find. T.Q." },
+  { id: "t_quinlan_welfare", from: "quinlan", body: "Arlington's doing the welfare check. Ask me for what they find. T.Q." },
   { id: "t_donovan_warning", from: "donovan", body: "Someone texted me. 'Some records burn.' I'm scared. Call me." },
   { id: "t_recovery", from: "quinlan", body: "We have him. He's safe. Drive's sealed. Come to the field office. T.Q." },
+  { id: "t_quinlan_pike_search", from: "quinlan", body: "We served the warrant on Pike Risk Services this morning. His office is yours to walk through. T.Q." },
   { id: "t_lab_phones", from: "quinlan", body: "CART's done with the two phones. Extraction report is on your desk. Read who 'CP' is. T.Q." },
   { id: "t_lab_imaging", from: "quinlan", body: "The drive is imaged and the integrity report is on your desk. Dr. Solvang says 'consistent.' T.Q." },
   { id: "t_lab_signatures", from: "quinlan", body: "Dr. Solvang's signature comparison is back. On your desk. She chose her words carefully; read them the same way. T.Q." },
@@ -799,6 +800,7 @@ export const chapters: ChapterDef[] = [
     intro: "Ten years of approvals, every one in ink, every one logged. The drive has to prove itself before it can prove anything else.",
     objectives: ["o4_authentic", "o4_structure", "o4_funding", "o4_directives", "o4_identity"],
     complete: { deduction: "D16" },
+    onComplete: [{ text: "t_quinlan_pike_search" }],
     conclusion: "The code at the top of the register has a name. The question now is what that name did with it, and why the autumn went the way it did.",
     summary: "The register has a name at the top, and it is not the name on any of the earlier cases.",
   },
@@ -807,7 +809,18 @@ export const chapters: ChapterDef[] = [
     title: "The Betrayal",
     intro: "Every case this autumn began with a record that reached the agency at the right moment. Time to ask who chose the moment.",
     objectives: ["o5_disclosures", "o5_watched", "o5_targets", "o5_command", "o5_concealment", "o5_destruction"],
-    complete: { deduction: "D21" },
+    // Every chapter 5 line must be done before the checkpoint: RE11 opens the storage office only at D21, and D18 and D20 need what is found there.
+    complete: {
+      all: [
+        { deduction: "D17" },
+        { deduction: "D18" },
+        { deduction: "D19" },
+        { deduction: "D20" },
+        { deduction: "D21" },
+        { event: "RE11" },
+        { hasEvidence: "E059" },
+      ],
+    },
     conclusion: "The truth was handed over in an order, by a hand, for a reason. What is left is to put it in front of her.",
     summary: "She gave us the truth, in the order that served her, and watched us carry it.",
   },

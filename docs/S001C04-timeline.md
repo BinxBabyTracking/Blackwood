@@ -37,7 +37,7 @@ Author-only, never in this case, not even in the closing: the source is Dr. Evel
 
 | | |
 | --- | --- |
-| Meridian Records Center | 3900 Brookfield Corporate Drive, Chantilly, Virginia. Meridian's inactive records, about 40,000 boxes. The same site that burns in C06. Records Administrator: Benjamin Sayer (named on documents only; not met in this case). Duty supervisor: Gina Varga (not interviewable) |
+| Meridian Records Center | 3900 Brookfield Corporate Drive, Chantilly, Virginia. Meridian's inactive records, about 40,000 boxes. The same site that burns in C06. Records Administrator: Benjamin Sayer (named on documents only; not met in this case). Duty supervisor: Gina Ostrander (not interviewable) |
 | The copier | Copier RM-C2 in the Records Center copy room. Runs only on a badge; logs every job; prints `COPY · MAG-RM` + collection, box, item on every copy |
 | Collections | 08 Corporate Secretary; 14 Finance (client, affiliate and vendor accounts); 22 Client Services (including Intelligence Services); 31 Logistics Services; 40 Facilities and Human Resources; 52 Executive Office. "EO" items in any collection are executive authorization records; file copies show a reference (EO-01), never a signature (Policy 7) |
 | Claire's badge | 2214 (access R3 with Records Administrator approval). Returned Fri Dec 7 |
@@ -209,7 +209,7 @@ No dialogue, knowledge or evidence reveals these:
 
 ### Contradictions found and fixed
 
-1. **Name clashes beyond the bible.** The bible's C04 rename "Nina Albright" clashes with Mr. Albright, the attorney in C001 (`src/cases/C001`); she is **Nina Halvorsen**. "Tyler Brandt" clashes with Ofc. K. Brandt in C006 (`src/cases/C006/evidence/e-final.ts`); he is **Tyler Prentiss**. Det. Sarah Collins is Det. **Nadia** Collins (the bible's C02 rename). New names checked against `docs/` and `src/cases/`: Halvorsen, Prentiss, Whitlock, Fenwick, Varga, Ridley, Haskins (Ashby, Kowalski, Okafor and Sandoval were taken and avoided).
+1. **Name clashes beyond the bible.** The bible's C04 rename "Nina Albright" clashes with Mr. Albright, the attorney in C001 (`src/cases/C001`); she is **Nina Halvorsen**. "Tyler Brandt" clashes with Ofc. K. Brandt in C006 (`src/cases/C006/evidence/e-final.ts`); he is **Tyler Prentiss**. Det. Sarah Collins is Det. **Nadia** Collins (the bible's C02 rename). New names checked against `docs/` and `src/cases/`: Halvorsen, Prentiss, Whitlock, Fenwick, Ostrander, Ridley, Haskins (Varga was dropped: it echoed C02's Investigator P. Varga) (Ashby, Kowalski, Okafor and Sandoval were taken and avoided).
 2. **The source and Castell.** The brief has Castell relay Evelyn's messages. If Castell knew they were Evelyn's, any good interview would reveal Evelyn in C04. Fixed: the instructions reach Castell unsigned, by hand, and once by a man's voice on the phone. She believes they come from a senior Meridian insider and destroyed the notes. C06 holds the source's side (E052).
 3. **Report option.** Offering "Dr. Evelyn Lockhart" as a wrong answer to "who chose the leads" would make the report reject the series' true answer. She is not offered on that question. She is offered on "who directed the detention," where she is canonically wrong (she did not order it).
 4. **The "A" red herring.** E041 is dated Fri Nov 16, after Holt's arrest, keeping the bible's rule that every "A" record postdates Nov 15.
@@ -245,7 +245,7 @@ Twelve interviewable people plus Bennett. Knowledge is each person's own account
 | lang | Gerald Lang, 44 | Owner, Lang Records Systems and Dominion Secure Records | The checkout backups; the carton. Reluctant: Meridian is most of his business | Reluctant, Cooperative |
 | bennett | Bennett | Blackwood's records man, by phone, unlimited | Board hint; RE05; RE09; fallback for the drive | (none) |
 
-Not interviewable, named: Benjamin Sayer (documents only), Gina Varga (Records Center duty supervisor, scene text only), Dean Whitlock, Lewis Fenwick, Garrett Lyons, Agent Teresa Quinlan, R. Haskins, Ofc. P. Ridley.
+Not interviewable, named: Benjamin Sayer (documents only), Gina Ostrander (Records Center duty supervisor, scene text only), Dean Whitlock, Lewis Fenwick, Garrett Lyons, Agent Teresa Quinlan, R. Haskins, Ofc. P. Ridley.
 
 ### What each person says
 
@@ -283,7 +283,7 @@ Not interviewable, named: Benjamin Sayer (documents only), Gina Varga (Records C
 | L02 | cafe | The Wren Coffeehouse, King Street | Nina; booth book (E002); the reserved booth; the note (E003, after RE01); the camera monitor; the case file on your phone | Start (start location) |
 | L03 | apt_building | Cameron Mews, 1015 Cameron Street | Lobby; management window (E006); Gwen in the third-floor hall; garage gate; door to 3C | Start |
 | L04 | claire_apt | Claire's apartment, 3C (sub-scene) | The searched rooms; desk file (E009); desk tray (E010); fridge (E024); bathroom panel; closet shelf; bookcase kick plate (E012, after RE02) | Door from apt_building |
-| L05 | records_center | Meridian Records Center, Chantilly | Front desk stack register (E016); copy room guide (E015); copier RM-C2; Claire's cleared desk; Gina Varga (scene text) | E009 or E010 |
+| L05 | records_center | Meridian Records Center, Chantilly | Front desk stack register (E016); copy room guide (E015); copier RM-C2; Claire's cleared desk; Gina Ostrander (scene text) | E009 or E010 |
 | L06 | corbett_home | Alan Corbett's house, Falls Church | Corbett; his compliance boxes | Corbett known |
 | L07 | clearwater | Clearwater Accountability Initiative, D.C. | Castell; donor wall; outgoing courier tray | Castell known |
 | L08 | prentiss_apt | Tyler Prentiss's apartment, Clarendon | Tyler; his desk and home server | Prentiss known |
@@ -641,7 +641,7 @@ Every item is reached exactly one way. A person's name means a handover in conve
 > 045 Contract authorization cover sheet. Class EO. Not released
 > 046 Payment schedule, 2018. Not released
 >
-> Corbett's note at the bottom: "In each box the page that went out is the one that names the division man. The page filed directly behind it, the one that says who authorized him, is an EO item every time, and none of the three left the building. Whoever chose these knew those boxes as well as I do. A.C."
+> Corbett's note at the bottom: "Each box as filed, in order. A.C."
 
 **E023, Corbett's internal review memorandum** (Corbett, after E022).
 > MERIDIAN ADVISORY GROUP. Compliance. Internal review memorandum. CONFIDENTIAL.
@@ -715,7 +715,7 @@ Every item is reached exactly one way. A person's name means a handover in conve
 >
 > No activity since. The back door has a key deadbolt and does not log.
 >
-> Det. Harris's note: "She let herself in at 9:46 with the code she was sent. At 9:02 that night somebody came to the front door and she opened it from inside. At 1:06 somebody locked it from outside, and nobody has opened it since. R.H."
+> Det. Harris's note: "Code 2580 is the guest code on the booking. Front door only. R.H."
 
 **E029, signs of a struggle at the cottage** (L10, the kitchen).
 > The cottage kitchen. A ladder-back chair on its side by the table. A broken mug on the tile, the coffee in it long dried to a ring. The back door's deadbolt is thrown, but the wood around the strike plate is freshly split, pale against the paint, as if the door was yanked hard against a bolt that would not give.
@@ -724,7 +724,6 @@ Every item is reached exactly one way. A person's name means a handover in conve
 >
 > On a peg by the front door, Claire's green coat. Her car keys on the hook beside it. Her blue Subaru in the gravel drive, frost on the windshield.
 >
-> In December, in the country, nobody walks out of a house without a coat.
 
 **E030, vehicle record: Tahoe UXR-4419** (Harris, once E004 is in hand and safe_house has been visited).
 > ALEXANDRIA POLICE DEPARTMENT. Vehicle inquiry, case 18-034417. From a partial plate ("UXR-4"), make and fleet decal on the Wren camera.
@@ -739,7 +738,7 @@ Every item is reached exactly one way. A person's name means a handover in conve
 > Thu 12/13 1:27 AM I-66 eastbound at US 29, Gainesville
 > No further hits through 6:00 AM Thursday.
 >
-> Det. Harris's note: "It followed her out there in the morning, came back to town in time for that lobby entry, and went back out at night. It didn't go home afterward. R.H."
+> Det. Harris's note: "Every hit, Wednesday into Thursday, in time order. R.H."
 
 **E031, Tate's prepaid phone and invoice book** (L11, after the warrant).
 > In the top drawer of Tate's desk, under a box of pens: a prepaid flip phone, switched off, and a TPS invoice book. Photographed under the warrant.
@@ -794,7 +793,7 @@ Every item is reached exactly one way. A person's name means a handover in conve
 > Thu 12/13 7:51 AM The SUV leaves. One figure.
 > Thu 12/13 6:34 PM The SUV returns. One figure, carrying grocery bags.
 >
-> Det. Harris's note: "Armed all day with someone inside it, and the basement isn't on the motion zone. That's not a house people come and go from. R.H."
+> Det. Harris's note: "The basement isn't on the motion zone. R.H."
 
 **E035, the basement room** (L12, after RE08).
 > The basement of 12 Saddle Ridge Lane, after the entry. A storage room under the stairs, about eight feet by ten, no window. On the outside of its door, a new steel hasp and padlock, the screws still bright, sawdust on the floor beneath. Inside: a camping mattress, a blanket, a case of water, a plastic bucket, a battery lantern. Two cut zip ties, heavy black, the same kind as at the cottage.
@@ -823,7 +822,7 @@ Every item is reached exactly one way. A person's name means a handover in conve
 > Folder 2, Not asked for (3 items). 14-0412-118, 22-0187-010, 31-0056-045: the Executive Office cover sheets and routing slip filed behind the released pages.
 > Folder 3, Same boxes (41 items). Photographed with her phone during the same three visits: other invoices and remittance schedules from 14-0412; client-service exceptions and two further Executive Office routing slips under ref. EO-01, both signed "A," both to J. Rourke, from 22-0187; payment schedules and due diligence from 31-0056. Several name other Meridian staff beside and above the three division heads. Claire's note: "Nobody asked for any of these. Not one."
 > Folder 4, M.C. (12 screenshots). The requests, matching Miriam Castell's printed thread.
-> Folder 5, What it means. Claire's one-page comparison: "Forty-seven pages from three boxes. Three were requested, one per program, each naming the man at the bottom of the chain and nobody else. Every page that would have shown who authorized him stayed in the building. Whoever chose the three knew what was in the other forty-four."
+> Folder 5, Questions. Claire's one-page tally: "Forty-seven pages from three boxes. Three requested, one per program. Why those three? Did whoever chose them know what was in the other forty-four?"
 
 **E038, Claire's copy register** (L09, the carton).
 > A narrow ledger notebook, "COPY REGISTER, C.D." on the cover. Columns ruled in pencil: Footer · Copied · Where it went.
@@ -847,7 +846,7 @@ Every item is reached exactly one way. A person's name means a handover in conve
 > Rourke (Client Services) · in Alan's memo 7/30 · asked for 11/19 · copied 11/19 · to M.C. 11/19 · went to the investigators · arrested 11/21
 > Kane (Logistics, Baltimore) · in Alan's memo 7/30 · asked for 12/3 · copied 12/3 · to M.C. 12/3 · went to the investigators · arrested 12/5
 >
-> Under the table: "Three names in Alan's memo. Three names gone in six weeks, in the memo's order. Nobody else in the memo, and nobody above them touched. The memo went to the Executive Office. EO-01 is on every page M.C. never asked for. Who read Alan's memo?"
+> Under the table: "Three names in Alan's memo. Three gone in six weeks. Same order? Who read Alan's memo?"
 
 **E040, unidentified authorization record** (delivery, the wallet).
 > Two photocopied cover sheets, each with Claire's footer.
@@ -951,7 +950,7 @@ Board hint: Bennett, once, at 5 evidence with nothing connected (`call_bennett_b
 
 **call_harris_moved** (RE07, from harris). "Harris. That Tahoe. Plate readers have it on 66 eastbound at Route 29, Gainesville, at 1:27 Thursday morning, and nowhere after. It never went back to Arlington." / "Whatever left that cottage at one in the morning went somewhere in western Prince William County and stayed there." / "A judge signed a warrant for Tate's office and vehicles twenty minutes ago. Tate's not answering and he's not at the office. Meet me there." Effects: `setFlag: tate_warrant`.
 
-**call_collins_note** (from the tate_office desk hotspot, from collins). "Nadia Collins. Det. Harris sent me a photograph of the note from Tate's desk." / "I know that handwriting. I spent a month reading it out of Julian Rourke's safe." / "Agent Quinlan is pulling the legal visit log at the detention center now. I'll send you both together." Effects: delivery `rourke_packet`, text `t_collins_packet`.
+**call_collins_note** (from the tate_office desk hotspot, from collins). "Nadia Collins. Det. Harris sent me a photograph of the note from Tate's desk." / "I know that handwriting. I spent a month reading his handwriting in the files we took from his office." / "Agent Quinlan is pulling the legal visit log at the detention center now. I'll send you both together." Effects: delivery `rourke_packet`, text `t_collins_packet`.
 
 **call_harris_rescue** (RE08, from harris). "Harris. We went in at 6:10. She's alive." / "Basement room, padlocked from the outside. Tate was in the kitchen making coffee. He didn't run." / "She's at the hospital in Manassas getting looked at, then she's coming to us. She asked for you by name." / "One more thing. There was a document wallet in a duffel in the kitchen. Her papers. She wants you to have copies."
 

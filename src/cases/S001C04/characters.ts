@@ -967,11 +967,11 @@ export const questions: DialogueQuestion[] = [
   ], { requires: { visited: "safe_house" }, reveals: "Det. Harris handed over the cottage's smart lock log.", effects: [{ giveEvidence: "E028" }] }),
   q("harris", "The SUV", "harris_vehicle", "Can you get plate-reader hits on the Tahoe?", [
     "Already did. Registration and the regional plate readers, Wednesday into Thursday.",
-    "It followed her out there in the morning, came back to town for that lobby entry, and went back out at night. Here.",
+    "Every hit is on it, in time order. Here.",
   ], { requires: { all: [ev("E004"), { visited: "safe_house" }] }, reveals: "Det. Harris handed over the Tahoe's vehicle record and plate-reader hits.", effects: [{ giveEvidence: "E030" }, ...EFFECTS.tateKnown] }),
   q("harris", "Saddle Ridge", "harris_alarm", "Can you get the alarm records for Saddle Ridge Lane?", [
     "Shenandoah Alarm, and the doorbell camera across the road. I had both by eleven.",
-    "Armed all day with someone inside, and the basement isn't on the motion zone.",
+    "The basement isn't on the motion zone. Here.",
   ], { requires: ev("E033"), reveals: "Det. Harris obtained the Saddle Ridge Lane alarm history and the neighbor's doorbell camera clips.", effects: [{ giveEvidence: "E034" }] }),
   q("harris", "Claire", "harris_statement", "Can I see Claire's statement?", [
     "I took it at 11:30, after the hospital. She's as precise as you'd think. Here.",
@@ -1165,7 +1165,7 @@ export const reactions: EvidenceReaction[] = [
   r("harris", "E007", ["She left on her own feet. Somebody went in behind her."]),
   r("harris", "E012", ["A storage receipt. Missing person, possible indication of whereabouts. That's a court order."]),
   r("harris", "E027", ["A cottage in Fauquier, and a door code. I'll have the sheriff's office meet you."]),
-  r("harris", "E029", ["Nobody walks out of a house in December without a coat."]),
+  r("harris", "E029", ["Her coat's still on the peg. In December."]),
   r("harris", "E033", ["Staff lodging, first and last in cash. Get me the alarm and we'll know if anyone's home."]),
   r("harris", "E031", ["Lyons's old cell, and a W. I'm running W."]),
   // Collins

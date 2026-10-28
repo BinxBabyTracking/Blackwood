@@ -42,7 +42,7 @@ export const intro: CaseDefinition["intro"] = [
     text: "Her brother Jonathan didn't turn up for a 9:30 appointment in Washington this morning. Hotel security found his room empty, his phone on the bedside table. \"The police say grown men walk away. Jon doesn't walk away. He had his suit hanging up for Monday.\"",
   },
   {
-    text: "She writes his phone code on the back of a business card and slides it across the desk: 0411, their mother's birthday. You drive down to Washington together. The file is on your desk.",
+    text: "She writes his phone code on the back of a business card and slides it across the desk: 0411, their mother's birthday. You drive down to Washington together. By 5:15 PM the file Bennett pulled from MPD is on your desk.",
   },
 ];
 
@@ -256,7 +256,7 @@ export const outgoingCalls: OutgoingCallDef[] = [
 export const texts: TextDef[] = [
   { id: "t_natalie_call", from: "natalie", body: "Call me when you can. I remembered something Jon said. N." },
   { id: "t_bennett_courier", from: "bennett", body: "A courier envelope came here for you this morning. No sender. It's on your desk, and I've scanned it to your phone. B." },
-  { id: "t_collins_carrier", from: "collins", body: "The carrier came back on Jonathan's phone. Copy on your phone and your desk. Look at who the 9:12 caller called next. N.C." },
+  { id: "t_collins_carrier", from: "collins", body: "The carrier came back on Jonathan's phone. Copy on your phone and your desk. Worth lining up against his own phone records. N.C." },
   { id: "t_collins_phone", from: "collins", body: "Digital Evidence pulled the deleted texts off Hurst's phone. Copy on your phone and your desk. Read them in order. N.C." },
   { id: "t_quinlan_drive", from: "quinlan", body: "The drive opened on his code. Summary on your phone and your desk. T.Q." },
   { id: "t_collins_move", from: "collins", body: "Van at the farmhouse. We're going in. End of the lane, Sawmill Hollow Road. Now. N.C." },
@@ -528,7 +528,7 @@ export const objectives: ObjectiveDef[] = [
   { id: "o3_motive", text: "Find out who had reason to stop him.", visible: { chapter: 3 }, done: { deduction: "D10" } },
   { id: "o3_lyons", text: "Find out who arranged Sunday night.", visible: { chapter: 3 }, done: { deduction: "D11" } },
   { id: "o3_property", text: "Find where Jonathan is being held.", visible: { chapter: 3 }, done: { deduction: "D12" } },
-  { id: "o3_opt_envelope", text: "Optional: recover what Jonathan left with his lawyer.", visible: { chapter: 3 }, done: { hasEvidence: "E022" } },
+  { id: "o3_opt_envelope", text: "Recover what Jonathan left with his lawyer.", visible: { chapter: 3 }, done: { hasEvidence: "E022" } },
   { id: "o3_opt_courier", text: "Optional: open the envelope that came to the office.", visible: { chapter: 3 }, done: { hasEvidence: "E033" } },
 
   // Chapter 4: Room Without a Number
@@ -564,8 +564,8 @@ export const chapters: ChapterDef[] = [
     number: 3,
     title: "The Price of Silence",
     intro: "Jonathan's employer, his lawyer and a consulting firm on K Street each know a piece of why he was in that room. None of them wants to be first to say it.",
-    objectives: ["o3_pressure", "o3_testimony", "o3_motive", "o3_lyons", "o3_property"],
-    optional: ["o3_opt_envelope", "o3_opt_courier"],
+    objectives: ["o3_pressure", "o3_testimony", "o3_motive", "o3_lyons", "o3_property", "o3_opt_envelope"],
+    optional: ["o3_opt_courier"],
     conclusion: "You know where he is. So, now, does the man who took him.",
     summary: "Jonathan had been selling secrets and was about to confess it. The people he sold them to had reason to stop him, and a place to keep him.",
   },
@@ -579,7 +579,7 @@ export const chapters: ChapterDef[] = [
   },
 ];
 
-/* The report opens once Jonathan is recovered, the kidnapping is established, and the investigation has substance. */
+/* The report opens once Jonathan is recovered, the kidnapping is established, the card from Rourke's safe (E036, RE08) is in hand for section J, and the investigation has substance. */
 export const reportAvailable: CaseDefinition["reportAvailable"] = {
-  all: [{ event: "RE07" }, { deduction: "D13" }, { evidenceCount: 24 }],
+  all: [{ event: "RE07" }, { event: "RE08" }, { hasEvidence: "E036" }, { deduction: "D13" }, { evidenceCount: 24 }],
 };

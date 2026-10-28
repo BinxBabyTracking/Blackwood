@@ -359,7 +359,7 @@ export const locations: LocationDef[] = [
         "suitcase",
         { x: 82, y: 56, w: 16, h: 20 },
         "The suitcase",
-        "Open on the luggage rack, half unpacked, packed for two nights: shirts, a sweater, socks rolled in pairs, a phone charger. Nothing obviously missing. But the sneakers he arrived in, on the lobby camera, are not anywhere in the room. He left in them.",
+        "Open on the luggage rack, half unpacked, packed for two nights: shirts, a sweater, socks rolled in pairs, a phone charger. Nothing obviously missing. The only shoes in the room are the dress shoes in the closet.",
       ),
       inspect(
         "r6_bathroom",

@@ -605,14 +605,14 @@ export const questions: DialogueQuestion[] = [
       { requires: { labReady: "chain" }, reply: ["The certified chain is on your desk, limits and all."] },
     ],
   }),
-  q("quinlan", "Exhibits", "quinlan_rourke_safe", "What was in Julian Rourke's safe?", [
-    "Item fourteen. We had it since November and couldn't read it: a yellow carbon form with codes and no names.",
+  q("quinlan", "Exhibits", "quinlan_rourke_safe", "What else came out of Julian Rourke's office?", [
+    "Not the safe. A box of his office papers nobody inventoried in November. It turned up in the property room this month, filed with the rest. Item fourteen: a yellow carbon form with codes and no names.",
     "Against the register it reads fine now. Here.",
-  ], { requires: G.rourkeSafe, reveals: "SA Quinlan handed over item 14 from Rourke's safe: his yellow copy of EX-2017-022.", effects: [{ giveEvidence: "E047" }] }),
-  q("quinlan", "Exhibits", "quinlan_kane_safe", "What was in Gideon Kane's safe?", [
-    "Item nine, from the safe at Riverside on December 5. Another yellow carbon. 'Pressure only,' in the same words as the register.",
+  ], { requires: G.rourkeSafe, reveals: "SA Quinlan handed over item 14, found later among the papers taken from Rourke's office: his yellow copy of EX-2017-022.", effects: [{ giveEvidence: "E047" }] }),
+  q("quinlan", "Exhibits", "quinlan_kane_safe", "What else came out of Gideon Kane's office?", [
+    "Not the safe. Item nine, in the Riverside evidence boxes from December 5, filed under miscellaneous. Another yellow carbon. 'Pressure only,' in the same words as the register.",
     "It doesn't reach the killing of Hector Navarro, and Kane says so himself. Here.",
-  ], { requires: G.kaneSafe, reveals: "SA Quinlan handed over item 9 from Kane's safe: his yellow copy of EX-2018-019.", effects: [{ giveEvidence: "E048" }] }),
+  ], { requires: G.kaneSafe, reveals: "SA Quinlan handed over item 9, from the Riverside evidence boxes: Kane's yellow copy of EX-2018-019.", effects: [{ giveEvidence: "E048" }] }),
   q("quinlan", "Exhibits", "quinlan_castell", "How were the leaks run through Miriam Castell and Clearwater?", [
     "Miriam Castell has been cooperating since she came in. She burned every note her source sent her, as the first one told her to. What she kept is Clearwater's own log of what Claire handed over and what was held back. It's yours now.",
     "Read it in date order.",
@@ -1731,8 +1731,8 @@ const KEYWORDS: Record<string, string> = {
   quinlan_signatures: "compare signatures signature comparison handwriting examiner solvang a-1 approvals known signature",
   quinlan_chain: "certify chain of authority command chain reconstruction certified certification",
   quinlan_lab: "lab laboratory results back yet status anything back report",
-  quinlan_rourke_safe: "rourke's safe rourke safe item fourteen intelligence exhibit yellow form seized seizure",
-  quinlan_kane_safe: "kane's safe kane safe riverside item nine yellow form seized seizure",
+  quinlan_rourke_safe: "rourke's safe rourke safe rourke's office papers property room item fourteen intelligence exhibit yellow form seized seizure",
+  quinlan_kane_safe: "kane's safe kane safe kane's office evidence boxes riverside item nine yellow form seized seizure",
   quinlan_castell: "castell miriam clearwater leaks leaked how were the leaks run her file cooperating notes release log",
   quinlan_witnesses: "witnesses hold up corroboration corroborated credible believable testimony summary",
   quinlan_index: "blackmail index compromising information index rourke case intelligence exhibits dirt leverage file",
