@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { buttonClass } from "@/components/ui";
 import { Seal } from "@/components/wordmark";
 import { normalizeState, respond } from "@/game/engine/engine";
-import { findInvestigation, recordClosedCase } from "@/game/persistence";
+import { archiveLostCase, findInvestigation, isLost, recordClosedCase } from "@/game/persistence";
 import { loadCase, refreshArt } from "@/game/registry";
 import { InvestigationShell } from "@/game/ui/investigation-shell";
 import { hasReviewed } from "@/lib/feedback";
@@ -71,6 +71,11 @@ async function Desk({ params }: { params: Promise<{ caseId: string }> }) {
   if (!loaded) redirect(`/agency/assignments/${def.id}`);
 
   const state = normalizeState(def, loaded.state);
+  if (isLost(state)) {
+    // A lost investigation that was not put aside yet (the connection dropped): put it aside and start afresh.
+    await archiveLostCase(loaded).catch((e) => console.error("archiveLostCase", e));
+    redirect(`/agency/assignments/${def.id}`);
+  }
   if (state.status === "closed" && loaded.sessionStatus !== "closed") {
     // The report was accepted but the service record was not written (for example the connection dropped).
     // Recording is idempotent, so finishing it here can never count the case twice.

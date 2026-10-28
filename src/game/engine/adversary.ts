@@ -88,7 +88,7 @@ export function pickEnding(def: CaseDefinition, s: InvestigationState): EndingDe
 }
 
 /** The closing as this investigation ended: the resolution, with its ending's own lines. */
-export function resolutionFor(def: CaseDefinition, s: InvestigationState): SolutionDef["resolution"] & { ending?: string } {
+export function resolutionFor(def: CaseDefinition, s: InvestigationState): SolutionDef["resolution"] & { ending?: string; lost?: boolean } {
   const r = def.solution.resolution;
   const e = s.ending ? def.solution.endings?.find((x) => x.id === s.ending) : undefined;
   if (!e) return r;
@@ -98,5 +98,6 @@ export function resolutionFor(def: CaseDefinition, s: InvestigationState): Solut
     reconstruction: [...r.reconstruction, ...(e.reconstruction ?? [])],
     bennett: e.bennett ?? r.bennett,
     ending: e.title,
+    lost: Boolean(e.loss),
   };
 }

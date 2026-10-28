@@ -321,6 +321,7 @@ export const solution: CaseDefinition["solution"] = {
     {
       id: "empty_chair_two",
       title: "The Empty Chair",
+      loss: true,
       when: { all: [{ flag: "crane_escaped" }, { flag: "second_murder" }] },
       accepted:
         "Your findings have been accepted. The agency has forwarded your report to Det. Lt. Joan Mahoney, Massachusetts State Police. A warrant has been issued for Desmond Crane for two murders. He left the estate during the investigation and has not been found.",
@@ -340,6 +341,7 @@ export const solution: CaseDefinition["solution"] = {
     {
       id: "empty_chair",
       title: "The Empty Chair",
+      loss: true,
       when: { flag: "crane_escaped" },
       accepted:
         "Your findings have been accepted. The agency has forwarded your report to Det. Lt. Joan Mahoney, Massachusetts State Police. A warrant has been issued for Desmond Crane, who left the estate during the investigation and has not been found.",
@@ -360,6 +362,7 @@ export const solution: CaseDefinition["solution"] = {
       (w): EndingDef => ({
         id: `second_body_${w.id}`,
         title: "A Second Body",
+        loss: true,
         when: dead(w.id),
         accepted:
           "Your findings have been accepted. The agency has forwarded your report to Det. Lt. Joan Mahoney, Massachusetts State Police. Desmond Crane is charged with two murders.",

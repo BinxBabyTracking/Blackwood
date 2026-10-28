@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { GameError, normalizeState, reduce, respond } from "@/game/engine/engine";
 import { questionsLeft } from "@/game/engine/questions";
 import type { ActionResponse, CaseDefinition, GameAction, SeatContext } from "@/game/engine/types";
-import { findInvestigation, investigatorName, PersistenceError, recordClosedCase, restartInvestigation, saveState, startInvestigation } from "@/game/persistence";
+import { archiveLostCase, findInvestigation, investigatorName, isLost, PersistenceError, recordClosedCase, restartInvestigation, saveState, startInvestigation } from "@/game/persistence";
 import { loadCase, refreshArt } from "@/game/registry";
 import { interpretQuestion } from "@/lib/interview/understand";
 import { actingUser, hostParty, lobbyGuests, tablePresence, touchSeat } from "@/lib/party";
@@ -130,7 +130,10 @@ export async function playAction(caseId: string, action: GameAction, asGuest = f
       const { state, outcome } = reduce(def, current, step, Date.now(), ctx);
       const saved = await saveState(def, loaded, state);
       if (!saved) continue; // another tab or partner saved first; reload and apply again
-      if (outcome.kind === "verdict" && outcome.correct) {
+      if (outcome.kind === "verdict" && outcome.correct && isLost(state)) {
+        // A losing ending: the closing plays, nothing is recorded, and the case starts afresh next time.
+        await archiveLostCase(loaded).catch((e) => console.error("archiveLostCase", e));
+      } else if (outcome.kind === "verdict" && outcome.correct) {
         // The case is closed and saved either way. If the service record can't be written right now,
         // the closing still plays, and the record is completed the next time the case is opened.
         const record = await recordClosedCase(userId, def, loaded, state).catch((e) => {

@@ -187,6 +187,18 @@ function filedReport(def: CaseDefinition, state: InvestigationState) {
   };
 }
 
+/** Whether a closed investigation ended in a losing ending (it is not a solve). */
+export const isLost = (state: InvestigationState) => state.status === "closed" && state.flags.includes("case_lost");
+
+/**
+ * A losing ending: nothing goes on the investigator's record and the
+ * investigation is put aside, so the case page offers a fresh start.
+ */
+export async function archiveLostCase(loaded: Loaded) {
+  const { error } = await admin().from("investigation_sessions").update({ status: "archived", last_activity_at: new Date().toISOString() }).eq("id", loaded.sessionId);
+  if (error) throw new PersistenceError(error.message);
+}
+
 /**
  * Records a closed case against the investigator's career in one database
  * transaction (record_case_completion). Safe to call any number of times for
@@ -194,7 +206,7 @@ function filedReport(def: CaseDefinition, state: InvestigationState) {
  * of a case already closed adds time spent but never a second closed case.
  */
 export async function recordClosedCase(userId: string, def: CaseDefinition, loaded: Loaded, state: InvestigationState) {
-  if (state.status !== "closed" || !state.report?.final) return null;
+  if (state.status !== "closed" || !state.report?.final || isLost(state)) return null;
   const db = admin();
   const attempts = state.report.final.attempts;
   const accuracy = Math.max(40, 100 - 20 * (attempts - 1));

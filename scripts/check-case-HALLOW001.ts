@@ -295,6 +295,7 @@ export function checkHALLOW001(def: CaseDefinition, problems: string[]) {
     expect(r?.kind === "verdict" && r.correct, `the competent report was returned: ${r?.kind === "verdict" ? r.note : g.errors.at(-1)}`);
     expect(g.s.ending === "truth_before_midnight", `the competent run ended "${g.s.ending}", not The Truth Before Midnight`);
     expect(project(def, g.s).closure?.ending === "The Truth Before Midnight", "the closing screen does not name the ending");
+    expect(!g.s.flags.includes("case_lost") && !project(def, g.s).closure?.lost, "The Truth Before Midnight was counted as a loss");
     console.log(`competent run: detained at ${project(def, g.s).clock}, ${g.s.evidence.length} evidence, ending ${g.s.ending}`);
   }
 
@@ -315,6 +316,10 @@ export function checkHALLOW001(def: CaseDefinition, problems: string[]) {
         expect(!(s.flags.includes("crane_escaped") && s.flags.includes("crane_arrested")), `${p.name}/${n}: Crane both escaped and was arrested`);
         if (s.status !== "closed") problems.push(`${p.name}/${n}: the right report was not accepted (${s.report.submissions.at(-1)?.note ?? "never filed"})`);
         endings.set(s.ending ?? "none", (endings.get(s.ending ?? "none") ?? 0) + 1);
+        // Losing endings: Crane got away, or someone else died. Everything else is a solve.
+        const losing = /^(empty_chair|second_body_)/.test(s.ending ?? "");
+        expect(losing === s.flags.includes("case_lost"), `${p.name}/${n}: ending ${s.ending} counted ${s.flags.includes("case_lost") ? "as a loss" : "as a solve"}`);
+        expect(losing === Boolean(project(def, s).closure?.lost), `${p.name}/${n}: the closing screen gets the loss wrong for ${s.ending}`);
       }
     }
     const seen = [...endings.keys()];

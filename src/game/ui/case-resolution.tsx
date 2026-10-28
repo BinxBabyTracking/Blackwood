@@ -167,7 +167,7 @@ export function CaseResolution({
           <div className="relative mx-auto border border-white/15 bg-[#14171a] px-8 py-12">
             <p className="font-mono text-sm tracking-[0.3em] text-smoke">{/^S\d{3}C\d{2}$/.test(view.caseId) ? view.caseId.replace(/^S\d(\d\d)C(\d\d)$/, "S$1 C$2") : `CASE ${view.caseId}`}</p>
             <p className="mt-3 font-display text-4xl text-paper sm:text-5xl">{view.title.toUpperCase()}</p>
-            <p className="mt-6 font-mono text-sm tracking-[0.24em] text-paper/90">STATUS: CLOSED</p>
+            <p className="mt-6 font-mono text-sm tracking-[0.24em] text-paper/90">{closure.lost ? "STATUS: NOT SOLVED" : "STATUS: CLOSED"}</p>
             <p className="mt-2 font-mono text-xs tracking-[0.16em] text-smoke">
               Investigator: <span className="text-paper">{name}</span>
             </p>
@@ -175,8 +175,19 @@ export function CaseResolution({
               aria-hidden
               className={`pointer-events-none absolute -top-5 right-4 bg-[#14171a] border-[3px] border-[#a5281f]/80 px-3 py-1 font-mono text-lg font-bold tracking-[0.2em] text-[#a5281f]/85 ${reducedMotion ? "rotate-[-10deg]" : "game-stamp"}`}
             >
-              CASE CLOSED
+              {closure.lost ? "CASE LOST" : "CASE CLOSED"}
             </span>
+            {closure.lost ? (
+              <div className="mt-8 border-t border-white/10 pt-5 font-serif leading-relaxed text-paper/90">
+                <p>Your report was right, but this ending is a loss. It does not count as solved, and nothing goes on your record or the leaderboard.</p>
+                <p className="mt-3 text-smoke">Try again with a fresh investigation. The people in that house won&rsquo;t do things the same way twice.</p>
+                {onReplay ? (
+                  <div className="mt-6">
+                    <StageButton onClick={onReplay}>Try again</StageButton>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
             {record ? (
               <div className="mt-8 border-t border-white/10 pt-5 font-mono text-xs leading-relaxed text-smoke">
                 <p>Your service record has been updated.</p>
@@ -204,7 +215,7 @@ export function CaseResolution({
               )}
             </div>
           ) : null}
-          {asGuest ? null : <LeaderboardResult caseId={caseId} title={view.title} />}
+          {asGuest || closure.lost ? null : <LeaderboardResult caseId={caseId} title={view.title} />}
           {review === "ask" ? (
             <div className="mt-8 border border-brass/40 bg-[#14171a] px-6 py-6 text-left">
               <p className="font-display text-2xl text-paper">File your case review</p>
@@ -223,7 +234,7 @@ export function CaseResolution({
             <StageButton onClick={onEvidence} ghost>
               Review the evidence
             </StageButton>
-            {onReplay ? (
+            {onReplay && !closure.lost ? (
               <>
                 <Link href="/agency/service-record" className="rounded-[2px] border border-white/20 px-4 py-2 text-paper hover:border-brass hover:text-brass">
                   Service record

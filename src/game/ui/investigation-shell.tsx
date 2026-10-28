@@ -465,7 +465,9 @@ export function InvestigationShell({
   /** A replay is a new investigation; a closed case and its report stay on file and keep their credit. */
   const replay = useCallback(async () => {
     const closedCase = view.status === "closed";
-    const msg = closedCase
+    const msg = view.closure?.lost
+      ? "Start a fresh investigation of this case? This one ended in a loss and doesn't count."
+      : closedCase
       ? "Start a new investigation of this case? Your closed case and its final report stay on file, and you keep the credit. The replay starts with a clean file."
       : "Restart the investigation from the beginning? Your current progress will be archived.";
     if (!window.confirm(msg)) return;
@@ -477,7 +479,7 @@ export function InvestigationShell({
       setLayer(null);
       setSave({ state: "saved", at: Date.now() });
     }
-  }, [caseId, show, setView, view.status]);
+  }, [caseId, show, setView, view.status, view.closure?.lost]);
 
   // Background music for the case and room sound for each scene. Music dips while someone is speaking.
   const musicOn = useMusicEnabled();

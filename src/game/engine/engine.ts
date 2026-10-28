@@ -1067,6 +1067,8 @@ function step(
         // A case with several endings records which one this investigation reached.
         const ending = pickEnding(def, s);
         if (ending) s.ending = ending.id;
+        // A losing ending still plays its closing, but the case is not solved: the investigation is put aside.
+        if (ending?.loss && !s.flags.includes("case_lost")) s.flags.push("case_lost");
         outcome = { kind: "verdict", correct: true, feedback: def.solution.resolution.accepted, note: "" };
       } else {
         outcome = { kind: "verdict", correct: false, feedback: REVIEW_FEEDBACK, note: review.note };

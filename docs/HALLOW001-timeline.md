@@ -202,9 +202,9 @@ Chosen when the report is accepted, first that holds:
 
 | Ending | When |
 | --- | --- |
-| D The Empty Chair (two murders) | Crane escaped after killing a witness |
-| D The Empty Chair | Crane escaped |
-| C A Second Body | A second murder |
+| D The Empty Chair (two murders) | Crane escaped after killing a witness. A loss |
+| D The Empty Chair | Crane escaped. A loss |
+| C A Second Body | A second murder. A loss |
 | B The Last Witness | An attack interrupted |
 | A The Truth Before Midnight | Crane detained before midnight, or the report accepted before midnight |
 | The Long Night | Anything else: nobody else hurt, after midnight |

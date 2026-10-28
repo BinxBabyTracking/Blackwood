@@ -788,6 +788,12 @@ export interface EndingDef {
   reconstruction?: { heading: string; body: string }[];
   /** Replaces the closing call. */
   bennett?: string[];
+  /**
+   * A losing ending: the closing plays, but the case is not counted as solved.
+   * The investigation is put aside (flag `case_lost`) and the player starts a
+   * fresh one. Once a case is passed, replays work as in every other case.
+   */
+  loss?: boolean;
 }
 
 export interface CaseDefinition {
@@ -1541,7 +1547,7 @@ export interface ClientView {
   /** Chapters, in a case told in chapters; null otherwise. */
   chapter: ClientChapter | null;
   /** Only present once the case is closed. */
-  closure: (SolutionDef["resolution"] & { final: FinalReport | null; closedAt: number | null; ending?: string }) | null;
+  closure: (SolutionDef["resolution"] & { final: FinalReport | null; closedAt: number | null; ending?: string; lost?: boolean }) | null;
 }
 
 /** One-off payloads returned alongside the view for the action just taken. */
