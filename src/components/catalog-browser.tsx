@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { CatalogCase } from "@/lib/types";
 import { DIFFICULTY_LABELS, STATUS_LABELS } from "@/lib/format";
 import { CaseCard } from "./case-card";
@@ -58,17 +58,7 @@ const sorters: Record<Sort, (a: CatalogCase, b: CatalogCase) => number> = {
   difficulty: (a, b) => (a.difficulty ?? 99) - (b.difficulty ?? 99) || a.est_minutes - b.est_minutes,
 };
 
-function Select<T extends string>({
-  label,
-  value,
-  onChange,
-  options,
-}: {
-  label: string;
-  value: T;
-  onChange: (v: T) => void;
-  options: [T, string][];
-}) {
+function Select<T extends string>({ label, value, onChange, options }: { label: string; value: T; onChange: (v: T) => void; options: [T, string][] }) {
   return (
     <label className="block text-xs text-smoke">
       {label}
@@ -95,7 +85,32 @@ function Select<T extends string>({
 export function CatalogBrowser({ cases, hrefBase, leaderboards = false }: { cases: CatalogCase[]; hrefBase: string; leaderboards?: boolean }) {
   const [filters, setFilters] = useState<Filters>(initial);
   const [sort, setSort] = useState<Sort>("newest");
-  const set = <K extends keyof Filters>(k: K) => (v: Filters[K]) => setFilters((f) => ({ ...f, [k]: v }));
+  // The filters fold away; whether they are open is remembered on this device.
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    let saved = false;
+    try {
+      saved = localStorage.getItem("bw-filters-open") === "1";
+    } catch {
+      /* storage blocked */
+    }
+    if (!saved) return;
+    const f = requestAnimationFrame(() => setOpen(true));
+    return () => cancelAnimationFrame(f);
+  }, []);
+  const toggle = () =>
+    setOpen((o) => {
+      try {
+        localStorage.setItem("bw-filters-open", o ? "0" : "1");
+      } catch {
+        /* fine */
+      }
+      return !o;
+    });
+  const set =
+    <K extends keyof Filters>(k: K) =>
+    (v: Filters[K]) =>
+      setFilters((f) => ({ ...f, [k]: v }));
 
   // Shelves come first, whatever the sort: free cases (the introductory one leading), then cases open for
   // early access, then cases on sale, then Coming Soon, then anything still in preparation. The sort applies within each.
@@ -107,73 +122,104 @@ export function CatalogBrowser({ cases, hrefBase, leaderboards = false }: { case
     [cases, filters, sort],
   );
   const filtered = JSON.stringify(filters) !== JSON.stringify(initial);
+  const active = (Object.keys(initial) as (keyof Filters)[]).filter((k) => filters[k] !== initial[k]).length + (sort !== "newest" ? 1 : 0);
 
   return (
     <div>
-      <form
-        className="grid grid-cols-2 gap-4 border-y border-rule py-5 sm:grid-cols-3 lg:grid-cols-6"
-        onSubmit={(e) => e.preventDefault()}
-        aria-label="Filter and sort assignments"
-      >
-        <Select
-          label="Difficulty"
-          value={filters.difficulty}
-          onChange={set("difficulty")}
-          options={[
-            ["any", "Any difficulty"],
-            ...Object.entries(DIFFICULTY_LABELS).map(([k, v]) => [k, v] as [string, string]),
-            ["unrated", "Not yet rated"],
-          ]}
-        />
-        <Select
-          label="Duration"
-          value={filters.duration}
-          onChange={set("duration")}
-          options={Object.entries(DURATIONS).map(([k, v]) => [k as keyof typeof DURATIONS, v.label])}
-        />
-        <Select
-          label="Price"
-          value={filters.price}
-          onChange={set("price")}
-          options={[
-            ["any", "Any price"],
-            ["free", "Free"],
-            ["paid", "Paid"],
-          ]}
-        />
-        <Select
-          label="Investigators"
-          value={filters.mode}
-          onChange={set("mode")}
-          options={[
-            ["any", "Solo or joint"],
-            ["solo", "Can be worked solo"],
-            ["collaborative", "Supports joint work"],
-          ]}
-        />
-        <Select
-          label="Case status"
-          value={filters.status}
-          onChange={set("status")}
-          options={[
-            ["any", "Any status"],
-            ["available", STATUS_LABELS.available],
-            ["coming_soon", STATUS_LABELS.coming_soon],
-            ["preview", "Previews"],
-          ]}
-        />
-        <Select
-          label="Sort by"
-          value={sort}
-          onChange={setSort}
-          options={[
-            ["newest", "Newest"],
-            ["shortest", "Shortest"],
-            ["longest", "Longest"],
-            ["difficulty", "Difficulty"],
-          ]}
-        />
-      </form>
+      <div className="border-y border-rule">
+        <button
+          type="button"
+          onClick={toggle}
+          aria-expanded={open}
+          aria-controls="catalog-filters"
+          className="flex w-full items-center justify-between gap-3 py-3 text-left text-sm text-paper hover:text-brass"
+        >
+          <span className="inline-flex items-center gap-2">
+            <svg aria-hidden viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+              <path d="M4 6h16M7 12h10M10 18h4" />
+            </svg>
+            Filter and sort
+            {active ? <span className="rounded-full bg-brass px-1.5 font-mono text-[0.65rem] leading-4 text-ink">{active}</span> : null}
+          </span>
+          <svg
+            aria-hidden
+            viewBox="0 0 24 24"
+            className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          >
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </button>
+        <form
+          id="catalog-filters"
+          hidden={!open}
+          className="grid grid-cols-2 gap-4 pb-5 pt-1 sm:grid-cols-3 lg:grid-cols-6"
+          onSubmit={(e) => e.preventDefault()}
+          aria-label="Filter and sort assignments"
+        >
+          <Select
+            label="Difficulty"
+            value={filters.difficulty}
+            onChange={set("difficulty")}
+            options={[
+              ["any", "Any difficulty"],
+              ...Object.entries(DIFFICULTY_LABELS).map(([k, v]) => [k, v] as [string, string]),
+              ["unrated", "Not yet rated"],
+            ]}
+          />
+          <Select
+            label="Duration"
+            value={filters.duration}
+            onChange={set("duration")}
+            options={Object.entries(DURATIONS).map(([k, v]) => [k as keyof typeof DURATIONS, v.label])}
+          />
+          <Select
+            label="Price"
+            value={filters.price}
+            onChange={set("price")}
+            options={[
+              ["any", "Any price"],
+              ["free", "Free"],
+              ["paid", "Paid"],
+            ]}
+          />
+          <Select
+            label="Investigators"
+            value={filters.mode}
+            onChange={set("mode")}
+            options={[
+              ["any", "Solo or joint"],
+              ["solo", "Can be worked solo"],
+              ["collaborative", "Supports joint work"],
+            ]}
+          />
+          <Select
+            label="Case status"
+            value={filters.status}
+            onChange={set("status")}
+            options={[
+              ["any", "Any status"],
+              ["available", STATUS_LABELS.available],
+              ["coming_soon", STATUS_LABELS.coming_soon],
+              ["preview", "Previews"],
+            ]}
+          />
+          <Select
+            label="Sort by"
+            value={sort}
+            onChange={setSort}
+            options={[
+              ["newest", "Newest"],
+              ["shortest", "Shortest"],
+              ["longest", "Longest"],
+              ["difficulty", "Difficulty"],
+            ]}
+          />
+        </form>
+      </div>
 
       <div className="mt-4 flex items-center justify-between text-sm text-smoke" aria-live="polite">
         <span>
@@ -189,17 +235,18 @@ export function CatalogBrowser({ cases, hrefBase, leaderboards = false }: { case
       {visible.length ? (
         <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {visible.map((c) => (
-            <CaseCard key={c.id} c={c} href={`${hrefBase}/${c.id}`} leaderboard={leaderboards && !c.is_preview && (c.status === "available" || Boolean(c.early_access_open))} />
+            <CaseCard
+              key={c.id}
+              c={c}
+              href={`${hrefBase}/${c.id}`}
+              leaderboard={leaderboards && !c.is_preview && (c.status === "available" || Boolean(c.early_access_open))}
+            />
           ))}
         </div>
       ) : (
         <div className="mt-10 rounded-[var(--radius-file)] border border-dashed border-rule p-10 text-center">
           <p className="font-serif text-lg">No files match these filters.</p>
-          <button
-            type="button"
-            className="mt-3 text-sm text-brass underline-offset-4 hover:underline"
-            onClick={() => setFilters(initial)}
-          >
+          <button type="button" className="mt-3 text-sm text-brass underline-offset-4 hover:underline" onClick={() => setFilters(initial)}>
             Clear filters
           </button>
         </div>
