@@ -43,6 +43,16 @@ export type Condition =
   | { chapter: number }
   /** This chapter has been completed. */
   | { chapterDone: number }
+  /**
+   * The case's clock (see ClockDef) has reached this time, "HH:MM" on a 24-hour
+   * clock. A case clock is one night: times from noon on are that evening,
+   * times before noon are after midnight ("00:30" is later than "23:50").
+   */
+  | { clockAt: string }
+  /** The case's adversary has made this move (an AdversaryMove id). */
+  | { moved: string }
+  /** At least this many final reports have been filed, accepted or not. */
+  | { attempts: number }
   | { always: true };
 
 /** Reactive event lifecycle. An event with no recorded state is "locked". */
@@ -592,6 +602,8 @@ export interface SolutionDef {
      */
     series?: { seriesId: string; title: string; text: string; board?: string; finale?: boolean };
   };
+  /** Different endings, by what happened; see EndingDef. Without them the resolution is the only ending. */
+  endings?: EndingDef[];
 }
 
 /** A report in progress: an answer per report question (a list for multi-select), and the attached evidence. */
@@ -707,6 +719,77 @@ export interface ChapterDef {
   onComplete?: Effect[];
 }
 
+/**
+ * A clock that runs on what the investigators do, not on real time (added for
+ * HALLOW001). It starts at `start` and each kind of action moves it on by its
+ * cost in minutes. Shown in the top bar. Conditions read it with `clockAt`.
+ */
+export interface ClockDef {
+  /** "HH:MM", 24-hour, e.g. "22:32". */
+  start: string;
+  /** Minutes each action takes. Looking again at something already looked at, and reading files, take no time. */
+  costs: { travel: number; inspect: number; question: number; call: number };
+}
+
+/**
+ * Someone in the story who acts on their own (HALLOW001's killer). Rule-driven:
+ * after every action that moves the clock on (a "tick"), the engine checks what
+ * they could have noticed (`learns`), then takes at most one move: the
+ * highest-priority move whose condition holds and whose chance comes up. Every
+ * chance is rolled from the playthrough's own seed, so each new investigation
+ * plays out differently and a saved one replays the same.
+ *
+ * They only know what the case lets them learn: write each `learns` condition
+ * from things they could see or hear from where they are (env `env`), never
+ * from what the investigators have found privately. Their decisions are logged
+ * in the save (`adversary.log`) for the developer; none of it reaches the browser.
+ */
+export interface AdversaryDef {
+  /** The person they are. */
+  characterId: string;
+  /** The environment key that holds where they are now (a location id). */
+  env: string;
+  /** Where they start. */
+  start: string;
+  /** No more noticing or moves once this holds (arrested, gone). */
+  stopped: Condition;
+  /** What they can find out, each at most once. */
+  learns: { id: string; note: string; when: Condition; chance?: number; effects?: Effect[] }[];
+  moves: AdversaryMove[];
+}
+
+export interface AdversaryMove {
+  id: string;
+  /** For the decision log: what they do and why. */
+  note: string;
+  when: Condition;
+  /** Higher goes first. Default 0. */
+  priority?: number;
+  /** Percent chance each tick that they take it when it is open. Default 100. */
+  chance?: number;
+  /** Where they are afterwards. */
+  goTo?: string;
+  effects?: Effect[];
+  /** Can be made again. Otherwise once. */
+  repeatable?: boolean;
+  /** Ticks to wait after this before any other move. */
+  rest?: number;
+}
+
+/** One way a case can end, chosen when the report is accepted: the first whose condition holds. */
+export interface EndingDef {
+  id: string;
+  /** Shown on the closing screen, e.g. "The Truth Before Midnight". */
+  title: string;
+  when: Condition;
+  /** Replaces the resolution's accepted line. */
+  accepted?: string;
+  /** Pages added after the resolution's reconstruction. */
+  reconstruction?: { heading: string; body: string }[];
+  /** Replaces the closing call. */
+  bennett?: string[];
+}
+
 export interface CaseDefinition {
   id: string;
   title: string;
@@ -783,6 +866,10 @@ export interface CaseDefinition {
   captivity?: CaptivityDef;
   /** A long case told in chapters, each ending in a checkpoint; see ChapterDef. */
   chapters?: ChapterDef[];
+  /** A clock that the investigators' actions move on; see ClockDef. */
+  clock?: ClockDef;
+  /** Someone who acts on their own; see AdversaryDef. */
+  adversary?: AdversaryDef;
 }
 
 /** Words the interface uses. Every case gets the defaults in `src/game/words.ts` unless it supplies its own. */
@@ -1024,6 +1111,26 @@ export interface InvestigationState {
   captivity?: CaptivityState;
   /** Chapter progress, in a case with chapters. */
   chapters?: ChapterState;
+  /** The case clock, in minutes from midnight of the first day (1352 is 10:32 PM; 1450 is 12:10 AM). */
+  clock?: number;
+  /** This playthrough's own seed for the adversary's chances. */
+  seed?: string;
+  /** What the adversary has learned and done. Server-only. */
+  adversary?: AdversaryState;
+  /** The ending reached, once the report is accepted. */
+  ending?: string;
+}
+
+export interface AdversaryState {
+  tick: number;
+  /** The clock at the last tick, so one action is one tick. */
+  lastClock: number;
+  learned: string[];
+  done: string[];
+  /** Ticks left before the next move. */
+  rest: number;
+  /** The developer's decision log. Never sent to the browser. */
+  log: { tick: number; clock: string; kind: "learned" | "move"; id: string; note: string }[];
 }
 
 /** A completed chapter: when, and what it added. */
@@ -1343,6 +1450,8 @@ export interface ClientView {
   };
   /** The case's status line, if the case has one. */
   caseStatus: string | null;
+  /** The case clock, e.g. "11:48 PM", in a case with one. */
+  clock: string | null;
   /** The case's look and its words for things. */
   theme: "noir" | "medieval";
   words: CaseWords;
@@ -1432,7 +1541,7 @@ export interface ClientView {
   /** Chapters, in a case told in chapters; null otherwise. */
   chapter: ClientChapter | null;
   /** Only present once the case is closed. */
-  closure: (SolutionDef["resolution"] & { final: FinalReport | null; closedAt: number | null }) | null;
+  closure: (SolutionDef["resolution"] & { final: FinalReport | null; closedAt: number | null; ending?: string }) | null;
 }
 
 /** One-off payloads returned alongside the view for the action just taken. */

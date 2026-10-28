@@ -109,6 +109,7 @@ export function CaseResolution({
         <div key="accepted" className="w-full max-w-2xl bg-[#efe8d6] px-6 py-9 text-[#231e17] shadow-2xl sm:px-12 game-closure">
           <Letterhead />
           <p className="mt-8 text-center font-mono text-sm font-bold tracking-[0.24em] text-[#4f6b4f]">REPORT ACCEPTED</p>
+          {closure.ending ? <p className="mt-3 text-center font-serif text-lg italic text-[#231e17]/80">{closure.ending}</p> : null}
           <p className="mt-5 text-center font-serif text-xl leading-relaxed">{closure.accepted}</p>
           <p className="mt-6 text-center font-mono text-xs tracking-[0.12em] text-[#231e17]/65">
             CASE {view.caseId} · {name.toUpperCase()}

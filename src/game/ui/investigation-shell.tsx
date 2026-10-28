@@ -532,6 +532,11 @@ export function InvestigationShell({
           </span>
         </p>
         <div className="flex shrink-0 items-center gap-4">
+          {view.clock ? (
+            <span className="font-mono text-paper" title="Time at the scene. It moves on as you investigate.">
+              {view.clock}
+            </span>
+          ) : null}
           {waiting.length ? (
             <span className="font-mono text-brass" role="timer">
               <span className="hidden sm:inline">Lab results in </span>

@@ -45,12 +45,15 @@ import type {
 } from "./types";
 
 import { acknowledgeChapter, chapterView, newChapters, objectiveChapter, runChapters } from "./chapters";
+import { clockCost, clockLabel, clockMinutes } from "./clock";
+import { newAdversary, newSeed, pickEnding, resolutionFor, runAdversary } from "./adversary";
 
 const IDLE_CAP_MS = 5 * 60 * 1000;
 const MAX_NOTES = 20000;
 
 export function newState(def: CaseDefinition, now = Date.now()): InvestigationState {
-  return {
+  const clock = def.clock ? clockMinutes(def.clock.start) : undefined;
+  const s: InvestigationState = {
     version: 1,
     caseId: def.id,
     status: "active",
@@ -98,6 +101,14 @@ export function newState(def: CaseDefinition, now = Date.now()): InvestigationSt
     closedAt: null,
     chapters: newChapters(def, { evidence: [], deductions: [], unlocked: [] }),
   };
+  // Opt-in: only a case with a clock or an adversary carries them in its save.
+  if (clock !== undefined) s.clock = clock;
+  if (def.adversary) {
+    s.seed = newSeed();
+    s.env[def.adversary.env] = def.adversary.start;
+    s.adversary = newAdversary(s);
+  }
+  return s;
 }
 
 // ---------------------------------------------------------------------------
@@ -1053,6 +1064,9 @@ function step(
         if (!s.flags.includes("case_closed")) s.flags.push("case_closed");
         s.messages = [];
         s.report.final = { theory, investigator: (action.investigator ?? "").trim() || "Investigator", filedAt: now, attempts: s.attempts };
+        // A case with several endings records which one this investigation reached.
+        const ending = pickEnding(def, s);
+        if (ending) s.ending = ending.id;
         outcome = { kind: "verdict", correct: true, feedback: def.solution.resolution.accepted, note: "" };
       } else {
         outcome = { kind: "verdict", correct: false, feedback: REVIEW_FEEDBACK, note: review.note };
@@ -1114,6 +1128,9 @@ function step(
       fail("Unknown action.");
   }
 
+  // A case with a clock: this action took time.
+  const mins = clockCost(def, prev, s, action);
+  if (mins > 0 && def.clock) s.clock = (s.clock ?? clockMinutes(def.clock.start)) + mins;
   finish(s, def);
   return { state: s, outcome };
 }
@@ -1121,6 +1138,8 @@ function step(
 /** Rules that run after every action: reactive events, established contradictions, changes of manner. */
 function finish(s: InvestigationState, def: CaseDefinition) {
   runLabs(s, def);
+  // The adversary acts once for each action that moved the clock on, before the world reacts.
+  runAdversary(s, def);
   runEvents(s, def);
   runContradictions(s, def);
   runDemeanor(s, def);
@@ -1424,6 +1443,7 @@ function projectState(def: CaseDefinition, s: InvestigationState, now: number, c
       }),
     },
     caseStatus: [...(def.status ?? [])].reverse().find((x) => check(x.when, s))?.label ?? null,
+    clock: def.clock ? clockLabel(s.clock ?? clockMinutes(def.clock.start)) : null,
     theme: def.theme ?? "noir",
     words: wordsFor(def),
     caseArt: Object.fromEntries(Object.entries(def.assets.images).flatMap(([k, v]) => (k.startsWith("ui.") && v ? [[k.slice(3), v]] : []))),
@@ -1529,7 +1549,7 @@ function projectState(def: CaseDefinition, s: InvestigationState, now: number, c
     captivity,
     // The solution, the reconstruction and Bennett's response exist in the view only once the case is closed.
     chapter: null,
-    closure: s.status === "closed" ? { ...def.solution.resolution, final: s.report.final, closedAt: s.closedAt } : null,
+    closure: s.status === "closed" ? { ...resolutionFor(def, s), final: s.report.final, closedAt: s.closedAt } : null,
   };
 }
 
@@ -1612,7 +1632,7 @@ export function spokenLine(
   if (ref.kind === "resolution") {
     // Nothing from the solution is spoken, or sent to the voice service, before the case is closed.
     if (s.status !== "closed") return null;
-    const r = def.solution.resolution;
+    const r = resolutionFor(def, s);
     if (ref.id === "accepted" && ref.n === 0) return { speakerId: "narrator", text: r.accepted };
     if (ref.id === "reconstruction" && r.reconstruction[ref.n]) return { speakerId: "narrator", text: r.reconstruction[ref.n].body };
     if (ref.id === "bennett" && r.bennett[ref.n]) return { speakerId: r.caller?.characterId ?? "bennett", text: r.bennett[ref.n] };

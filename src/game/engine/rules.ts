@@ -1,3 +1,4 @@
+import { clockMinutes } from "./clock";
 import type { CaseDefinition, Condition, Discovery, Effect, InvestigationState, ReactiveEventDef } from "./types";
 
 /** Evaluates a rule condition against the current investigation state. */
@@ -32,6 +33,9 @@ export function check(c: Condition | undefined, s: InvestigationState): boolean 
   if ("labReady" in c) return Boolean(s.labs?.[c.labReady]?.done);
   if ("chapter" in c) return (s.chapters?.current ?? 1) >= c.chapter;
   if ("chapterDone" in c) return Boolean(s.chapters?.completed.some((r) => r.number === c.chapterDone));
+  if ("clockAt" in c) return s.clock !== undefined && s.clock >= clockMinutes(c.clockAt);
+  if ("moved" in c) return Boolean(s.adversary?.done.includes(c.moved));
+  if ("attempts" in c) return (s.attempts ?? 0) >= c.attempts;
   if ("always" in c) return true;
   return false;
 }

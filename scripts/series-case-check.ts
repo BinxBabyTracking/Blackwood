@@ -51,9 +51,15 @@ export interface SeriesCaseConfig {
   present?: string[];
   /** Evidence only an action the vague player never takes can bring (showing something to someone). */
   vagueExempt?: string[];
+  /** Evidence, deductions and events the thorough player need not reach (made only by what an adversary does). */
+  optional?: string[];
+  /** Plays a version of the case (for example without its adversary, so the content can be checked on its own). */
+  variant?: (def: CaseDefinition) => CaseDefinition;
 }
 
-export function checkSeriesCase(id: string, def: CaseDefinition, problems: string[], cfg: SeriesCaseConfig) {
+export function checkSeriesCase(id: string, full: CaseDefinition, problems: string[], cfg: SeriesCaseConfig) {
+  const def = cfg.variant ? cfg.variant(full) : full;
+  const optional = new Set(cfg.optional ?? []);
   const expect = (ok: unknown, msg: string) => {
     if (!ok) problems.push(msg);
   };
@@ -154,11 +160,11 @@ export function checkSeriesCase(id: string, def: CaseDefinition, problems: strin
     if (progress() === before && round > 2) break;
   }
 
-  const missing = def.evidence.map((e) => e.id).filter((e) => !s.evidence.includes(e));
+  const missing = def.evidence.map((e) => e.id).filter((e) => !s.evidence.includes(e) && !optional.has(e));
   expect(!missing.length, `a thorough playthrough never finds ${missing.join(", ")}`);
-  const unmade = def.deductions.map((d) => d.id).filter((d) => !s.deductions.includes(d));
+  const unmade = def.deductions.map((d) => d.id).filter((d) => !s.deductions.includes(d) && !optional.has(d));
   expect(!unmade.length, `a thorough playthrough never makes ${unmade.join(", ")}`);
-  for (const e of def.events) expect(s.events.includes(e.id), `event ${e.id} never fired`);
+  for (const e of def.events) if (!optional.has(e.id)) expect(s.events.includes(e.id), `event ${e.id} never fired`);
   for (const f of cfg.flags) expect(s.flags.includes(f), `flag ${f} never set`);
   if (def.chapters?.length) expect((s.chapters?.current ?? 1) >= def.chapters.length, `the playthrough stops at chapter ${s.chapters?.current}`);
 
@@ -198,7 +204,7 @@ export function checkSeriesCase(id: string, def: CaseDefinition, problems: strin
   expect(s.status === "closed", "case not closed");
   const closure = project(def, s).closure;
   expect(closure?.caller?.characterId === cfg.caller, `closing call is from ${closure?.caller?.characterId}, not ${cfg.caller}`);
-  expect(closure?.series?.seriesId === "S001", "the closed case does not write the series notebook");
+  if (/^S\d{3}C\d{2}$/.test(id)) expect(closure?.series?.seriesId === "S001", "the closed case does not write the series notebook");
   const closingText = JSON.stringify(closure ?? {});
   expect(!/Clearwater|MAG-RM|account 20417/i.test(closingText) || id >= "S001C04", "the closing names the leak channel before C04");
   if (cfg.closingSecrets) expect(!cfg.closingSecrets.test(closingText), "the closing gives away a later case");
@@ -207,9 +213,10 @@ export function checkSeriesCase(id: string, def: CaseDefinition, problems: strin
   {
     const v = vaguePlaythrough(def);
     const exempt = new Set(cfg.vagueExempt ?? []);
-    const stuck = v.evidence.filter((e) => !exempt.has(e));
+    const stuck = v.evidence.filter((e) => !exempt.has(e) && !optional.has(e));
     if (stuck.length) problems.push(`vague player: never gets ${stuck.join(", ")} (nothing volunteers it)`);
-    if (v.deductions.length) problems.push(`vague player: never makes ${v.deductions.join(", ")}`);
+    const vd = v.deductions.filter((d) => !optional.has(d));
+    if (vd.length) problems.push(`vague player: never makes ${vd.join(", ")}`);
     if (!v.report) problems.push(`vague player: the report never opens (stuck in chapter ${v.chapter})`);
   }
 

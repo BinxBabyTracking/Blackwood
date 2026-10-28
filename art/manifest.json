@@ -199,7 +199,23 @@
     "s001c04_lang": "a 44-year-old white man, owner of a records storage company, a round face, receding dark blond hair, a reddish goatee, wearing a quilted navy work vest over a plaid flannel shirt and a company lanyard, reluctant and practical",
     "s001c06_sayer": "a 58-year-old white man, a former corporate records administrator, thinning gray hair neatly combed, gray eyes behind wire-rimmed glasses, a lined, patient, careful face, clean-shaven, wearing a dark overcoat over a creased white oxford shirt and a gray cardigan, exhausted, exact and quietly resolved",
     "s001c06_pike": "a 54-year-old white man, a private security consultant and former Army military police officer, close-cropped gray hair, a square jaw, pale blue eyes, a hard, controlled face, clean-shaven, wearing a dark gray suit with an open-collared white shirt, professional, short-spoken and unreadable",
-    "s001c06_oduya": "a 44-year-old Black woman, the owner of a small records-management consulting firm, shoulder-length braids tied back, small silver hoop earrings, reading glasses pushed up on her head, an intelligent, worried face, wearing a burgundy blazer over a black knit top, guarded at first and conscientious"
+    "s001c06_oduya": "a 44-year-old Black woman, the owner of a small records-management consulting firm, shoulder-length braids tied back, small silver hoop earrings, reading glasses pushed up on her head, an intelligent, worried face, wearing a burgundy blazer over a black knit top, guarded at first and conscientious",
+    "hallow001_ambrose": "a 67-year-old white man, an antiquarian of old Berkshire family, thin silver hair swept back, a long, gentle, tired face with deep lines, pale gray eyes, wire reading glasses, wearing a dark green velvet dinner jacket with a black bow tie, a nervous, decent man",
+    "hallow001_annabel": "a 17-year-old white girl in 1998, long straight dark brown hair with a center part, a bright, serious, clever face, a few freckles, brown eyes, small silver hoop earrings, wearing a dark plum velvet dress, a 1998 high school yearbook look",
+    "hallow001_crane": "a 61-year-old white man, a New England foundation treasurer and antiques dealer, neatly barbered steel-gray hair, a smooth, handsome, well-kept face, a faint polite smile, cool hazel eyes, clean-shaven, wearing an immaculate black dinner jacket, a white dress shirt and a black silk bow tie",
+    "hallow001_josie": "a 29-year-old white woman, a hospital pharmacist, long straight dark brown hair pinned up, a pale, serious, red-rimmed face, a dark red mouth, brown eyes, wearing full black mourning clothes of lace and crepe, a short black lace veil",
+    "hallow001_constance": "a 63-year-old white woman of old money, ash-blond hair in a sleek chignon, a sharp, handsome, composed face, gray eyes, pearl earrings, wearing a long midnight-blue silk evening dress and a cashmere wrap",
+    "hallow001_felix": "a 39-year-old white man, the charming, rattled son of money, untidy dark blond hair, a handsome, puffy, grief-struck face, a day's stubble, blue eyes, wearing a black dinner jacket with the bow tie pulled loose and the collar open",
+    "hallow001_penrose": "a 56-year-old white man, a small-town family doctor, short graying brown hair, round tortoiseshell glasses, a kind, careful, embarrassed face, clean-shaven, wearing a slightly worn black dinner jacket and a dark red bow tie",
+    "hallow001_harriet": "a 58-year-old white woman, a retired bookkeeper, short neat gray hair, a gentle, prim, anxious face, half-moon reading glasses on a chain, wearing a high-necked dark green dress and a cardigan, a large handbag held on her knee",
+    "hallow001_amos": "a 65-year-old white man, a retired estate caretaker, thick white hair cut short, a weathered, gruff, decent face, heavy eyebrows, big work-worn hands, wearing an old brown tweed jacket over a cardigan and a plain tie",
+    "hallow001_bridget": "a 60-year-old white Irish-American woman, a retired housekeeper, soft curled gray hair, a round, warm, frightened face, blue eyes, a small gold cross on a chain, wearing her best navy dress and a cardigan",
+    "hallow001_beatrice": "a 55-year-old white woman, a garden club chair, carefully styled auburn bob, a brisk, brittle, social face, too much rouge, green eyes, wearing a black evening dress with a silver brooch and a gold masquerade mask pushed up on her head",
+    "hallow001_byrne": "a 49-year-old white man, a careful small-city attorney, thinning sandy hair, a lean, formal, shaken face, rimless glasses, clean-shaven, wearing a charcoal suit with a white shirt and a dark tie",
+    "hallow001_iris": "a 41-year-old woman of mixed white and East Asian descent, a local historian, shoulder-length black hair with a gray streak tucked behind one ear, a bright, eager, sobering face, dark eyes, wearing a dark mustard-colored dress with a long cardigan and a lanyard of reading glasses",
+    "hallow001_wren": "a 52-year-old Black man, an events organizer, close-cropped gray hair and a neat gray beard, an organized, observant, professionally calm face, wearing a black suit with a black shirt and a small earpiece wire tucked into his collar",
+    "hallow001_mahoney": "a 48-year-old white woman, a Massachusetts State Police detective lieutenant, short practical dark hair going gray, a dry, direct, tired face, no makeup, wearing a dark rain jacket with a State Police badge on a lanyard over a gray sweater",
+    "hallow001_reyes": "a 30-year-old Latina woman, a small-town police officer, dark hair in a tight bun under a uniform cap, a steady, polite face, wearing a navy Harrow Falls Police uniform with a rain jacket"
   },
   "images": [
     {
@@ -8712,6 +8728,1230 @@
       "kind": "site",
       "style": "hallow001",
       "subject": "A grand Victorian Gothic stone estate on Halloween night seen from its open wrought-iron front gate, rain falling under a full moon through broken cloud. Steep gables, tall chimneys, ivy on the walls, every window glowing warm amber with candlelight. A wet curving drive reflects the light, low fog drifting across it, one dark late-model sedan parked near the front steps. Carved jack-o'-lanterns line the steps and sit by the gate pillar, a lit iron lantern on the pillar, red and orange autumn leaves overhead and on the ground. No people. No readable text."
+    },
+    {
+      "id": "hallow001_loc_morning_room",
+      "kind": "background",
+      "style": "hallow001",
+      "subject": "A small paneled morning room in a Victorian stone house, turned into an incident room for the night, late on Halloween. On the far left wall, a large cork board on an easel, empty. Below it, an old black desk telephone on a side table. In the center, a heavy oak desk with a clear blotter and a lamp, its surface left empty. Above the desk, a tall window with rain streaming down it and fog and distant gatehouse lights outside. On the right wall, a framed old estate plan, and below it a small tray table. A coal fire glows in a fireplace to the right. Halloween candles burned low on the mantel."
+    },
+    {
+      "id": "hallow001_loc_entrance_hall",
+      "kind": "background",
+      "style": "hallow001",
+      "subject": "The high stone entrance hall of a Victorian country house on Halloween night. On the far left, a carved oak chair by a log fire. Left of center, an oak coat stand crowded with damp overcoats. In the center, the tall iron-studded front door with a small security camera above it and a rain-wet doormat. To the right, the foot of a wide carved oak staircase and open floor before it. On the far right, a tall long-case clock. Carved pumpkins on the stairs, candlelight, and a police officer's dripping hat on a hall table."
+    },
+    {
+      "id": "hallow001_loc_dining_room",
+      "kind": "background",
+      "style": "hallow001",
+      "subject": "A long candlelit Victorian dining room on Halloween night after an interrupted masked dinner. A long table set for thirteen with white linen, silver and pumpkin and black-candle centerpieces, chairs pushed back. On the left, open floor along the wall for people standing. At the head of the table, left of center, a high-backed chair pushed back. At the foot of the table, center left, a full place setting with a blank place card. On the sideboard in the center, a propped seating chart card. Behind the table, tall windows looking down a fog-filled drive to a gatehouse with lights. On the right, open floor along the wall for people standing. Masquerade masks on several plates."
+    },
+    {
+      "id": "hallow001_loc_library",
+      "kind": "background",
+      "style": "hallow001",
+      "subject": "A tall book-lined Victorian library at night, the archive of a historic preservation foundation. On the far left, a leather reading chair and open floor. Left of center, a shelf of uniform brown buckram annual volumes. In the center foreground, a great antique floor globe four feet high in a walnut stand. Right of center, a small lady's writing desk with a blotter and a box of cream notepaper. On the right, open floor before more shelves. On the far right, a narrow plain door in the paneling. Rain on leaded windows, a fire, Halloween candles."
+    },
+    {
+      "id": "hallow001_loc_conservatory",
+      "kind": "background",
+      "style": "hallow001",
+      "subject": "A Victorian glass conservatory at night in a downpour, rain streaming down the glass roof. On the left, open tiled floor beside wicker chairs and brass tubs of palms. In the center, a glazed garden door onto a dark wet terrace, with a pale water stain on the tiles just inside it. Right of center, tall palms and orchids. On the right, open tiled floor with a wrought-iron bench. Low lamplight among the leaves."
+    },
+    {
+      "id": "hallow001_loc_upstairs_corridor",
+      "kind": "background",
+      "style": "hallow001",
+      "subject": "A long carpeted upstairs corridor in a Victorian house on Halloween night, lit by sconces. On the far left, a narrow door to an attic stair. Left of center, three heavy framed family portraits, the last draped in black crepe. In the center, a heavy oak study door standing ajar, its frame splintered at the bolt. On the right, a patterned runner leading to a corner where the corridor turns into a guest wing, with a doorway there. Rain on a window at the far end."
+    },
+    {
+      "id": "hallow001_loc_study",
+      "kind": "background",
+      "style": "hallow001",
+      "subject": "A dark oak-paneled study in a Victorian house at night, a crime scene. On the far left, a heavy oak door standing open, its frame splintered. Left of center, a fireplace with a small electric clock on the mantel. Above the desk, two sash windows streaming with rain. In the center, a broad desk with a lit green lamp and a leather blotter. On the right, the north wall of floor-to-ceiling oak bookshelves in sections, with a pale fresh scrape on the floorboards before the fourth section. The floor between the desk and the shelves is clear except for a sheet-covered shape. Police evidence markers on the carpet."
+    },
+    {
+      "id": "hallow001_loc_study_open",
+      "kind": "background",
+      "style": "hallow001",
+      "subject": "The same dark oak-paneled study at night, a crime scene, with the fourth section of the north bookshelves swung open into the room on a hinge like a door, books still on it, revealing a narrow dark stair going down inside the wall. On the far left, the open splintered door. Left of center, the fireplace and mantel clock. In the center, the broad desk with its lit green lamp. On the right, the shelves and the open dark gap. Police tape across the gap."
+    },
+    {
+      "id": "hallow001_loc_guest_wing",
+      "kind": "background",
+      "style": "hallow001",
+      "subject": "A narrow upstairs guest wing corridor in a Victorian house at night, lit by small sconces. On the far left, the corner back to the main corridor. Along the wall, four painted bedroom doors, each a little ajar except the last: the first plain, the second plain, the third plain, and on the right the last door painted with faded roses and closed. Rain on a small window at the end. A patterned runner."
+    },
+    {
+      "id": "hallow001_loc_attic",
+      "kind": "background",
+      "style": "hallow001",
+      "subject": "A long attic under a slate roof at night, lit by a single bare bulb and the beam of a flashlight. On the far left, the top of a narrow stair. In the center foreground, a battered tin steamer trunk with brass corners, its lid closed. On the right, rows of labeled cardboard boxes under the eaves. Rain drumming on the slates, dust in the air."
+    },
+    {
+      "id": "hallow001_loc_wine_cellar",
+      "kind": "background",
+      "style": "hallow001",
+      "subject": "A vaulted stone wine cellar under an old house at night. On the far left, a wall with an old slate fuse board and a new gray steel electrical switch box with a lever beside it. Left of center, a plain wooden door into a passage. In the center, open flagstone floor. On the right, brick bins of dusty port bottles. On the far right, stone steps up to an outside cellar door, rain blowing in under it. Lit by a single caged bulb."
+    },
+    {
+      "id": "hallow001_loc_service_corridor",
+      "kind": "background",
+      "style": "hallow001",
+      "subject": "A long narrow brick-and-plaster service passage under a Victorian house, painted cream long ago and gone gray, lit by caged bulbs. On the far left, a door to the wine cellar, and beside it a narrow stair going up. Left of center, a steel key cabinet on the wall with a notebook hanging on a string. In the center, a low doorway into an empty whitewashed coal room. At the far right end, the passage ends in plain tongue-and-groove paneling with one door-shaped panel whose edges are freshly cut free of the paint."
+    },
+    {
+      "id": "hallow001_loc_servants_stair",
+      "kind": "background",
+      "style": "hallow001",
+      "subject": "A cramped hidden servants' stair inside the walls of an old house, seen from partway down, lit only by a flashlight beam. At the top, the back of a hinged bookcase standing open, with an iron catch. A narrow flight of dusty wooden steps with a single line of footprints in the dust, a plain handrail. At the bottom, four worn granite steps and a small door. Cobwebs, bare plaster, close darkness."
+    },
+    {
+      "id": "hallow001_loc_greenhouse",
+      "kind": "background",
+      "style": "hallow001",
+      "subject": "A Victorian glass greenhouse on an estate at night in heavy rain, lit by a work lamp. On the left, rows of paper lanterns on poles leaning against a potting bench, each with a masquerade mask tied on. In the center, open brick floor. Right of center, a small iron stove on a brick plinth. On the right, open floor between tall potted lemon trees. Rain hammering on the glass."
+    },
+    {
+      "id": "hallow001_loc_garden_maze",
+      "kind": "background",
+      "style": "hallow001",
+      "subject": "Inside a yew hedge maze at night in fog and steady rain, lit by a distant lantern glow. On the left, a straight path between eight-foot black-green hedges vanishing into fog. On the right, at the far side of a small clearing, an old iron gate set in a stone boundary wall onto a dark lane, its padlock hanging open. Wet gravel underfoot."
+    },
+    {
+      "id": "hallow001_loc_carriage_house",
+      "kind": "background",
+      "style": "hallow001",
+      "subject": "The inside of a big old stone carriage house under renovation at night, lit by portable work lights. On the left, a trestle table with a roll of architect's plans weighted open. In the center floor, a brick-lined inspection pit about five feet deep, its floor paved with newer bricks. On the right, tall double carriage doors onto a rainy yard. Tarps, scaffolding, wheelbarrows."
+    },
+    {
+      "id": "hallow001_loc_carriage_house_open",
+      "kind": "background",
+      "style": "hallow001",
+      "subject": "The same stone carriage house at night, now a crime scene under bright police work lights: in the center floor, the brick-lined inspection pit with its brick floor broken open into a dark chamber below, police tape around it and evidence markers. On the left, the trestle table with plans. On the right, the tall double doors open to the rainy yard with blue police lights beyond."
+    },
+    {
+      "id": "hallow001_loc_gatehouse",
+      "kind": "background",
+      "style": "hallow001",
+      "subject": "The small office inside an estate gatehouse at night. On the left, a security desk with two monitors showing gate and front-door camera views and a small printer. Left of center, a row of gray filing cabinets. Right of center, a window looking out on a gravel parking lot with a row of guests' cars in the rain and a police cruiser's lights. On the right, open floor by a door. A space heater, a kettle, a guard's coat."
+    },
+    {
+      "id": "hallow001_portrait_ambrose",
+      "kind": "portrait",
+      "style": "hallow001",
+      "subject": "A family photograph-style portrait, warm, a little anxious, taken in his study.",
+      "person": "hallow001_ambrose"
+    },
+    {
+      "id": "hallow001_portrait_annabel",
+      "kind": "portrait",
+      "style": "hallow001",
+      "subject": "A 1998 school yearbook portrait: plain mottled blue backdrop, flash lighting, a small proud smile.",
+      "person": "hallow001_annabel"
+    },
+    {
+      "id": "hallow001_portrait_crane",
+      "kind": "portrait",
+      "style": "hallow001",
+      "subject": "Courteous and composed, a polite half smile that doesn't reach the eyes.",
+      "person": "hallow001_crane",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "hallow001_crane_mouth_open_slight",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: the lips are parted slightly, about the width of a pencil, as if in the middle of saying a soft \"t\", \"d\" or \"n\" sound. The tips of the upper teeth are just visible; the jaw drops only a little. The lips stay relaxed, not smiling.",
+      "person": "hallow001_crane",
+      "reference": "hallow001_portrait_crane"
+    },
+    {
+      "id": "hallow001_crane_mouth_ah",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: the mouth is open in the middle of saying \"ah\", as in \"father\". The jaw drops naturally and the lips open about the width of two fingers in a relaxed oval, the upper teeth and the tip of the tongue just visible. Ordinary speech, not a shout or a smile.",
+      "person": "hallow001_crane",
+      "reference": "hallow001_portrait_crane"
+    },
+    {
+      "id": "hallow001_crane_mouth_ee",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"ee\", as in \"see\". The lips are pulled slightly wider at the corners and only a little apart, showing both rows of teeth lightly together or nearly together. The jaw is almost closed. Not a smile: the corners do not turn up and the cheeks do not lift.",
+      "person": "hallow001_crane",
+      "reference": "hallow001_portrait_crane"
+    },
+    {
+      "id": "hallow001_crane_mouth_oh",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: in the middle of saying \"oh\", as in \"go\". The lips are rounded into a soft, open oval, taller than it is wide, the inside of the mouth dark with only a hint of the upper teeth. The jaw drops a little. Ordinary speech, not surprise.",
+      "person": "hallow001_crane",
+      "reference": "hallow001_portrait_crane"
+    },
+    {
+      "id": "hallow001_crane_mouth_oo",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"oo\", as in \"who\". The lips are pushed slightly forward and gathered into a small, round, puckered opening, smaller and tighter than \"oh\". No teeth showing. The jaw is nearly closed.",
+      "person": "hallow001_crane",
+      "reference": "hallow001_portrait_crane"
+    },
+    {
+      "id": "hallow001_crane_blink",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the eyes: both eyes are fully closed in a natural, relaxed blink, the upper lids all the way down and meeting the lower lids, the lashes resting along the lid line, the lids smooth and calm, not squeezed. The eyebrows stay relaxed and the mouth stays gently closed.",
+      "person": "hallow001_crane",
+      "reference": "hallow001_portrait_crane"
+    },
+    {
+      "id": "hallow001_portrait_josie",
+      "kind": "portrait",
+      "style": "hallow001",
+      "subject": "Veil pushed back, frightened and steady at once.",
+      "person": "hallow001_josie",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "hallow001_josie_mouth_open_slight",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: the lips are parted slightly, about the width of a pencil, as if in the middle of saying a soft \"t\", \"d\" or \"n\" sound. The tips of the upper teeth are just visible; the jaw drops only a little. The lips stay relaxed, not smiling.",
+      "person": "hallow001_josie",
+      "reference": "hallow001_portrait_josie"
+    },
+    {
+      "id": "hallow001_josie_mouth_ah",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: the mouth is open in the middle of saying \"ah\", as in \"father\". The jaw drops naturally and the lips open about the width of two fingers in a relaxed oval, the upper teeth and the tip of the tongue just visible. Ordinary speech, not a shout or a smile.",
+      "person": "hallow001_josie",
+      "reference": "hallow001_portrait_josie"
+    },
+    {
+      "id": "hallow001_josie_mouth_ee",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"ee\", as in \"see\". The lips are pulled slightly wider at the corners and only a little apart, showing both rows of teeth lightly together or nearly together. The jaw is almost closed. Not a smile: the corners do not turn up and the cheeks do not lift.",
+      "person": "hallow001_josie",
+      "reference": "hallow001_portrait_josie"
+    },
+    {
+      "id": "hallow001_josie_mouth_oh",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: in the middle of saying \"oh\", as in \"go\". The lips are rounded into a soft, open oval, taller than it is wide, the inside of the mouth dark with only a hint of the upper teeth. The jaw drops a little. Ordinary speech, not surprise.",
+      "person": "hallow001_josie",
+      "reference": "hallow001_portrait_josie"
+    },
+    {
+      "id": "hallow001_josie_mouth_oo",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"oo\", as in \"who\". The lips are pushed slightly forward and gathered into a small, round, puckered opening, smaller and tighter than \"oh\". No teeth showing. The jaw is nearly closed.",
+      "person": "hallow001_josie",
+      "reference": "hallow001_portrait_josie"
+    },
+    {
+      "id": "hallow001_josie_blink",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the eyes: both eyes are fully closed in a natural, relaxed blink, the upper lids all the way down and meeting the lower lids, the lashes resting along the lid line, the lids smooth and calm, not squeezed. The eyebrows stay relaxed and the mouth stays gently closed.",
+      "person": "hallow001_josie",
+      "reference": "hallow001_portrait_josie"
+    },
+    {
+      "id": "hallow001_portrait_constance",
+      "kind": "portrait",
+      "style": "hallow001",
+      "subject": "Cool and dry, watching.",
+      "person": "hallow001_constance",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "hallow001_constance_mouth_open_slight",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: the lips are parted slightly, about the width of a pencil, as if in the middle of saying a soft \"t\", \"d\" or \"n\" sound. The tips of the upper teeth are just visible; the jaw drops only a little. The lips stay relaxed, not smiling.",
+      "person": "hallow001_constance",
+      "reference": "hallow001_portrait_constance"
+    },
+    {
+      "id": "hallow001_constance_mouth_ah",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: the mouth is open in the middle of saying \"ah\", as in \"father\". The jaw drops naturally and the lips open about the width of two fingers in a relaxed oval, the upper teeth and the tip of the tongue just visible. Ordinary speech, not a shout or a smile.",
+      "person": "hallow001_constance",
+      "reference": "hallow001_portrait_constance"
+    },
+    {
+      "id": "hallow001_constance_mouth_ee",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"ee\", as in \"see\". The lips are pulled slightly wider at the corners and only a little apart, showing both rows of teeth lightly together or nearly together. The jaw is almost closed. Not a smile: the corners do not turn up and the cheeks do not lift.",
+      "person": "hallow001_constance",
+      "reference": "hallow001_portrait_constance"
+    },
+    {
+      "id": "hallow001_constance_mouth_oh",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: in the middle of saying \"oh\", as in \"go\". The lips are rounded into a soft, open oval, taller than it is wide, the inside of the mouth dark with only a hint of the upper teeth. The jaw drops a little. Ordinary speech, not surprise.",
+      "person": "hallow001_constance",
+      "reference": "hallow001_portrait_constance"
+    },
+    {
+      "id": "hallow001_constance_mouth_oo",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"oo\", as in \"who\". The lips are pushed slightly forward and gathered into a small, round, puckered opening, smaller and tighter than \"oh\". No teeth showing. The jaw is nearly closed.",
+      "person": "hallow001_constance",
+      "reference": "hallow001_portrait_constance"
+    },
+    {
+      "id": "hallow001_constance_blink",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the eyes: both eyes are fully closed in a natural, relaxed blink, the upper lids all the way down and meeting the lower lids, the lashes resting along the lid line, the lids smooth and calm, not squeezed. The eyebrows stay relaxed and the mouth stays gently closed.",
+      "person": "hallow001_constance",
+      "reference": "hallow001_portrait_constance"
+    },
+    {
+      "id": "hallow001_portrait_felix",
+      "kind": "portrait",
+      "style": "hallow001",
+      "subject": "Rattled, trying to joke and failing.",
+      "person": "hallow001_felix",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "hallow001_felix_mouth_open_slight",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: the lips are parted slightly, about the width of a pencil, as if in the middle of saying a soft \"t\", \"d\" or \"n\" sound. The tips of the upper teeth are just visible; the jaw drops only a little. The lips stay relaxed, not smiling.",
+      "person": "hallow001_felix",
+      "reference": "hallow001_portrait_felix"
+    },
+    {
+      "id": "hallow001_felix_mouth_ah",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: the mouth is open in the middle of saying \"ah\", as in \"father\". The jaw drops naturally and the lips open about the width of two fingers in a relaxed oval, the upper teeth and the tip of the tongue just visible. Ordinary speech, not a shout or a smile.",
+      "person": "hallow001_felix",
+      "reference": "hallow001_portrait_felix"
+    },
+    {
+      "id": "hallow001_felix_mouth_ee",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"ee\", as in \"see\". The lips are pulled slightly wider at the corners and only a little apart, showing both rows of teeth lightly together or nearly together. The jaw is almost closed. Not a smile: the corners do not turn up and the cheeks do not lift.",
+      "person": "hallow001_felix",
+      "reference": "hallow001_portrait_felix"
+    },
+    {
+      "id": "hallow001_felix_mouth_oh",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: in the middle of saying \"oh\", as in \"go\". The lips are rounded into a soft, open oval, taller than it is wide, the inside of the mouth dark with only a hint of the upper teeth. The jaw drops a little. Ordinary speech, not surprise.",
+      "person": "hallow001_felix",
+      "reference": "hallow001_portrait_felix"
+    },
+    {
+      "id": "hallow001_felix_mouth_oo",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"oo\", as in \"who\". The lips are pushed slightly forward and gathered into a small, round, puckered opening, smaller and tighter than \"oh\". No teeth showing. The jaw is nearly closed.",
+      "person": "hallow001_felix",
+      "reference": "hallow001_portrait_felix"
+    },
+    {
+      "id": "hallow001_felix_blink",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the eyes: both eyes are fully closed in a natural, relaxed blink, the upper lids all the way down and meeting the lower lids, the lashes resting along the lid line, the lids smooth and calm, not squeezed. The eyebrows stay relaxed and the mouth stays gently closed.",
+      "person": "hallow001_felix",
+      "reference": "hallow001_portrait_felix"
+    },
+    {
+      "id": "hallow001_portrait_penrose",
+      "kind": "portrait",
+      "style": "hallow001",
+      "subject": "Kind and careful, a little embarrassed.",
+      "person": "hallow001_penrose",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "hallow001_penrose_mouth_open_slight",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: the lips are parted slightly, about the width of a pencil, as if in the middle of saying a soft \"t\", \"d\" or \"n\" sound. The tips of the upper teeth are just visible; the jaw drops only a little. The lips stay relaxed, not smiling.",
+      "person": "hallow001_penrose",
+      "reference": "hallow001_portrait_penrose"
+    },
+    {
+      "id": "hallow001_penrose_mouth_ah",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: the mouth is open in the middle of saying \"ah\", as in \"father\". The jaw drops naturally and the lips open about the width of two fingers in a relaxed oval, the upper teeth and the tip of the tongue just visible. Ordinary speech, not a shout or a smile.",
+      "person": "hallow001_penrose",
+      "reference": "hallow001_portrait_penrose"
+    },
+    {
+      "id": "hallow001_penrose_mouth_ee",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"ee\", as in \"see\". The lips are pulled slightly wider at the corners and only a little apart, showing both rows of teeth lightly together or nearly together. The jaw is almost closed. Not a smile: the corners do not turn up and the cheeks do not lift.",
+      "person": "hallow001_penrose",
+      "reference": "hallow001_portrait_penrose"
+    },
+    {
+      "id": "hallow001_penrose_mouth_oh",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: in the middle of saying \"oh\", as in \"go\". The lips are rounded into a soft, open oval, taller than it is wide, the inside of the mouth dark with only a hint of the upper teeth. The jaw drops a little. Ordinary speech, not surprise.",
+      "person": "hallow001_penrose",
+      "reference": "hallow001_portrait_penrose"
+    },
+    {
+      "id": "hallow001_penrose_mouth_oo",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"oo\", as in \"who\". The lips are pushed slightly forward and gathered into a small, round, puckered opening, smaller and tighter than \"oh\". No teeth showing. The jaw is nearly closed.",
+      "person": "hallow001_penrose",
+      "reference": "hallow001_portrait_penrose"
+    },
+    {
+      "id": "hallow001_penrose_blink",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the eyes: both eyes are fully closed in a natural, relaxed blink, the upper lids all the way down and meeting the lower lids, the lashes resting along the lid line, the lids smooth and calm, not squeezed. The eyebrows stay relaxed and the mouth stays gently closed.",
+      "person": "hallow001_penrose",
+      "reference": "hallow001_portrait_penrose"
+    },
+    {
+      "id": "hallow001_portrait_harriet",
+      "kind": "portrait",
+      "style": "hallow001",
+      "subject": "Anxious, holding something in.",
+      "person": "hallow001_harriet",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "hallow001_harriet_mouth_open_slight",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: the lips are parted slightly, about the width of a pencil, as if in the middle of saying a soft \"t\", \"d\" or \"n\" sound. The tips of the upper teeth are just visible; the jaw drops only a little. The lips stay relaxed, not smiling.",
+      "person": "hallow001_harriet",
+      "reference": "hallow001_portrait_harriet"
+    },
+    {
+      "id": "hallow001_harriet_mouth_ah",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: the mouth is open in the middle of saying \"ah\", as in \"father\". The jaw drops naturally and the lips open about the width of two fingers in a relaxed oval, the upper teeth and the tip of the tongue just visible. Ordinary speech, not a shout or a smile.",
+      "person": "hallow001_harriet",
+      "reference": "hallow001_portrait_harriet"
+    },
+    {
+      "id": "hallow001_harriet_mouth_ee",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"ee\", as in \"see\". The lips are pulled slightly wider at the corners and only a little apart, showing both rows of teeth lightly together or nearly together. The jaw is almost closed. Not a smile: the corners do not turn up and the cheeks do not lift.",
+      "person": "hallow001_harriet",
+      "reference": "hallow001_portrait_harriet"
+    },
+    {
+      "id": "hallow001_harriet_mouth_oh",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: in the middle of saying \"oh\", as in \"go\". The lips are rounded into a soft, open oval, taller than it is wide, the inside of the mouth dark with only a hint of the upper teeth. The jaw drops a little. Ordinary speech, not surprise.",
+      "person": "hallow001_harriet",
+      "reference": "hallow001_portrait_harriet"
+    },
+    {
+      "id": "hallow001_harriet_mouth_oo",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"oo\", as in \"who\". The lips are pushed slightly forward and gathered into a small, round, puckered opening, smaller and tighter than \"oh\". No teeth showing. The jaw is nearly closed.",
+      "person": "hallow001_harriet",
+      "reference": "hallow001_portrait_harriet"
+    },
+    {
+      "id": "hallow001_harriet_blink",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the eyes: both eyes are fully closed in a natural, relaxed blink, the upper lids all the way down and meeting the lower lids, the lashes resting along the lid line, the lids smooth and calm, not squeezed. The eyebrows stay relaxed and the mouth stays gently closed.",
+      "person": "hallow001_harriet",
+      "reference": "hallow001_portrait_harriet"
+    },
+    {
+      "id": "hallow001_portrait_amos",
+      "kind": "portrait",
+      "style": "hallow001",
+      "subject": "Gruff and plain.",
+      "person": "hallow001_amos",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "hallow001_amos_mouth_open_slight",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: the lips are parted slightly, about the width of a pencil, as if in the middle of saying a soft \"t\", \"d\" or \"n\" sound. The tips of the upper teeth are just visible; the jaw drops only a little. The lips stay relaxed, not smiling.",
+      "person": "hallow001_amos",
+      "reference": "hallow001_portrait_amos"
+    },
+    {
+      "id": "hallow001_amos_mouth_ah",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: the mouth is open in the middle of saying \"ah\", as in \"father\". The jaw drops naturally and the lips open about the width of two fingers in a relaxed oval, the upper teeth and the tip of the tongue just visible. Ordinary speech, not a shout or a smile.",
+      "person": "hallow001_amos",
+      "reference": "hallow001_portrait_amos"
+    },
+    {
+      "id": "hallow001_amos_mouth_ee",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"ee\", as in \"see\". The lips are pulled slightly wider at the corners and only a little apart, showing both rows of teeth lightly together or nearly together. The jaw is almost closed. Not a smile: the corners do not turn up and the cheeks do not lift.",
+      "person": "hallow001_amos",
+      "reference": "hallow001_portrait_amos"
+    },
+    {
+      "id": "hallow001_amos_mouth_oh",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: in the middle of saying \"oh\", as in \"go\". The lips are rounded into a soft, open oval, taller than it is wide, the inside of the mouth dark with only a hint of the upper teeth. The jaw drops a little. Ordinary speech, not surprise.",
+      "person": "hallow001_amos",
+      "reference": "hallow001_portrait_amos"
+    },
+    {
+      "id": "hallow001_amos_mouth_oo",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"oo\", as in \"who\". The lips are pushed slightly forward and gathered into a small, round, puckered opening, smaller and tighter than \"oh\". No teeth showing. The jaw is nearly closed.",
+      "person": "hallow001_amos",
+      "reference": "hallow001_portrait_amos"
+    },
+    {
+      "id": "hallow001_amos_blink",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the eyes: both eyes are fully closed in a natural, relaxed blink, the upper lids all the way down and meeting the lower lids, the lashes resting along the lid line, the lids smooth and calm, not squeezed. The eyebrows stay relaxed and the mouth stays gently closed.",
+      "person": "hallow001_amos",
+      "reference": "hallow001_portrait_amos"
+    },
+    {
+      "id": "hallow001_portrait_bridget",
+      "kind": "portrait",
+      "style": "hallow001",
+      "subject": "Warm and frightened.",
+      "person": "hallow001_bridget",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "hallow001_bridget_mouth_open_slight",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: the lips are parted slightly, about the width of a pencil, as if in the middle of saying a soft \"t\", \"d\" or \"n\" sound. The tips of the upper teeth are just visible; the jaw drops only a little. The lips stay relaxed, not smiling.",
+      "person": "hallow001_bridget",
+      "reference": "hallow001_portrait_bridget"
+    },
+    {
+      "id": "hallow001_bridget_mouth_ah",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: the mouth is open in the middle of saying \"ah\", as in \"father\". The jaw drops naturally and the lips open about the width of two fingers in a relaxed oval, the upper teeth and the tip of the tongue just visible. Ordinary speech, not a shout or a smile.",
+      "person": "hallow001_bridget",
+      "reference": "hallow001_portrait_bridget"
+    },
+    {
+      "id": "hallow001_bridget_mouth_ee",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"ee\", as in \"see\". The lips are pulled slightly wider at the corners and only a little apart, showing both rows of teeth lightly together or nearly together. The jaw is almost closed. Not a smile: the corners do not turn up and the cheeks do not lift.",
+      "person": "hallow001_bridget",
+      "reference": "hallow001_portrait_bridget"
+    },
+    {
+      "id": "hallow001_bridget_mouth_oh",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: in the middle of saying \"oh\", as in \"go\". The lips are rounded into a soft, open oval, taller than it is wide, the inside of the mouth dark with only a hint of the upper teeth. The jaw drops a little. Ordinary speech, not surprise.",
+      "person": "hallow001_bridget",
+      "reference": "hallow001_portrait_bridget"
+    },
+    {
+      "id": "hallow001_bridget_mouth_oo",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"oo\", as in \"who\". The lips are pushed slightly forward and gathered into a small, round, puckered opening, smaller and tighter than \"oh\". No teeth showing. The jaw is nearly closed.",
+      "person": "hallow001_bridget",
+      "reference": "hallow001_portrait_bridget"
+    },
+    {
+      "id": "hallow001_bridget_blink",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the eyes: both eyes are fully closed in a natural, relaxed blink, the upper lids all the way down and meeting the lower lids, the lashes resting along the lid line, the lids smooth and calm, not squeezed. The eyebrows stay relaxed and the mouth stays gently closed.",
+      "person": "hallow001_bridget",
+      "reference": "hallow001_portrait_bridget"
+    },
+    {
+      "id": "hallow001_portrait_beatrice",
+      "kind": "portrait",
+      "style": "hallow001",
+      "subject": "Brittle, about to cry.",
+      "person": "hallow001_beatrice",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "hallow001_beatrice_mouth_open_slight",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: the lips are parted slightly, about the width of a pencil, as if in the middle of saying a soft \"t\", \"d\" or \"n\" sound. The tips of the upper teeth are just visible; the jaw drops only a little. The lips stay relaxed, not smiling.",
+      "person": "hallow001_beatrice",
+      "reference": "hallow001_portrait_beatrice"
+    },
+    {
+      "id": "hallow001_beatrice_mouth_ah",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: the mouth is open in the middle of saying \"ah\", as in \"father\". The jaw drops naturally and the lips open about the width of two fingers in a relaxed oval, the upper teeth and the tip of the tongue just visible. Ordinary speech, not a shout or a smile.",
+      "person": "hallow001_beatrice",
+      "reference": "hallow001_portrait_beatrice"
+    },
+    {
+      "id": "hallow001_beatrice_mouth_ee",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"ee\", as in \"see\". The lips are pulled slightly wider at the corners and only a little apart, showing both rows of teeth lightly together or nearly together. The jaw is almost closed. Not a smile: the corners do not turn up and the cheeks do not lift.",
+      "person": "hallow001_beatrice",
+      "reference": "hallow001_portrait_beatrice"
+    },
+    {
+      "id": "hallow001_beatrice_mouth_oh",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: in the middle of saying \"oh\", as in \"go\". The lips are rounded into a soft, open oval, taller than it is wide, the inside of the mouth dark with only a hint of the upper teeth. The jaw drops a little. Ordinary speech, not surprise.",
+      "person": "hallow001_beatrice",
+      "reference": "hallow001_portrait_beatrice"
+    },
+    {
+      "id": "hallow001_beatrice_mouth_oo",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"oo\", as in \"who\". The lips are pushed slightly forward and gathered into a small, round, puckered opening, smaller and tighter than \"oh\". No teeth showing. The jaw is nearly closed.",
+      "person": "hallow001_beatrice",
+      "reference": "hallow001_portrait_beatrice"
+    },
+    {
+      "id": "hallow001_beatrice_blink",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the eyes: both eyes are fully closed in a natural, relaxed blink, the upper lids all the way down and meeting the lower lids, the lashes resting along the lid line, the lids smooth and calm, not squeezed. The eyebrows stay relaxed and the mouth stays gently closed.",
+      "person": "hallow001_beatrice",
+      "reference": "hallow001_portrait_beatrice"
+    },
+    {
+      "id": "hallow001_portrait_byrne",
+      "kind": "portrait",
+      "style": "hallow001",
+      "subject": "Formal and shaken.",
+      "person": "hallow001_byrne",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "hallow001_byrne_mouth_open_slight",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: the lips are parted slightly, about the width of a pencil, as if in the middle of saying a soft \"t\", \"d\" or \"n\" sound. The tips of the upper teeth are just visible; the jaw drops only a little. The lips stay relaxed, not smiling.",
+      "person": "hallow001_byrne",
+      "reference": "hallow001_portrait_byrne"
+    },
+    {
+      "id": "hallow001_byrne_mouth_ah",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: the mouth is open in the middle of saying \"ah\", as in \"father\". The jaw drops naturally and the lips open about the width of two fingers in a relaxed oval, the upper teeth and the tip of the tongue just visible. Ordinary speech, not a shout or a smile.",
+      "person": "hallow001_byrne",
+      "reference": "hallow001_portrait_byrne"
+    },
+    {
+      "id": "hallow001_byrne_mouth_ee",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"ee\", as in \"see\". The lips are pulled slightly wider at the corners and only a little apart, showing both rows of teeth lightly together or nearly together. The jaw is almost closed. Not a smile: the corners do not turn up and the cheeks do not lift.",
+      "person": "hallow001_byrne",
+      "reference": "hallow001_portrait_byrne"
+    },
+    {
+      "id": "hallow001_byrne_mouth_oh",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: in the middle of saying \"oh\", as in \"go\". The lips are rounded into a soft, open oval, taller than it is wide, the inside of the mouth dark with only a hint of the upper teeth. The jaw drops a little. Ordinary speech, not surprise.",
+      "person": "hallow001_byrne",
+      "reference": "hallow001_portrait_byrne"
+    },
+    {
+      "id": "hallow001_byrne_mouth_oo",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"oo\", as in \"who\". The lips are pushed slightly forward and gathered into a small, round, puckered opening, smaller and tighter than \"oh\". No teeth showing. The jaw is nearly closed.",
+      "person": "hallow001_byrne",
+      "reference": "hallow001_portrait_byrne"
+    },
+    {
+      "id": "hallow001_byrne_blink",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the eyes: both eyes are fully closed in a natural, relaxed blink, the upper lids all the way down and meeting the lower lids, the lashes resting along the lid line, the lids smooth and calm, not squeezed. The eyebrows stay relaxed and the mouth stays gently closed.",
+      "person": "hallow001_byrne",
+      "reference": "hallow001_portrait_byrne"
+    },
+    {
+      "id": "hallow001_portrait_iris",
+      "kind": "portrait",
+      "style": "hallow001",
+      "subject": "Bright, sobering.",
+      "person": "hallow001_iris",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "hallow001_iris_mouth_open_slight",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: the lips are parted slightly, about the width of a pencil, as if in the middle of saying a soft \"t\", \"d\" or \"n\" sound. The tips of the upper teeth are just visible; the jaw drops only a little. The lips stay relaxed, not smiling.",
+      "person": "hallow001_iris",
+      "reference": "hallow001_portrait_iris"
+    },
+    {
+      "id": "hallow001_iris_mouth_ah",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: the mouth is open in the middle of saying \"ah\", as in \"father\". The jaw drops naturally and the lips open about the width of two fingers in a relaxed oval, the upper teeth and the tip of the tongue just visible. Ordinary speech, not a shout or a smile.",
+      "person": "hallow001_iris",
+      "reference": "hallow001_portrait_iris"
+    },
+    {
+      "id": "hallow001_iris_mouth_ee",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"ee\", as in \"see\". The lips are pulled slightly wider at the corners and only a little apart, showing both rows of teeth lightly together or nearly together. The jaw is almost closed. Not a smile: the corners do not turn up and the cheeks do not lift.",
+      "person": "hallow001_iris",
+      "reference": "hallow001_portrait_iris"
+    },
+    {
+      "id": "hallow001_iris_mouth_oh",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: in the middle of saying \"oh\", as in \"go\". The lips are rounded into a soft, open oval, taller than it is wide, the inside of the mouth dark with only a hint of the upper teeth. The jaw drops a little. Ordinary speech, not surprise.",
+      "person": "hallow001_iris",
+      "reference": "hallow001_portrait_iris"
+    },
+    {
+      "id": "hallow001_iris_mouth_oo",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"oo\", as in \"who\". The lips are pushed slightly forward and gathered into a small, round, puckered opening, smaller and tighter than \"oh\". No teeth showing. The jaw is nearly closed.",
+      "person": "hallow001_iris",
+      "reference": "hallow001_portrait_iris"
+    },
+    {
+      "id": "hallow001_iris_blink",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the eyes: both eyes are fully closed in a natural, relaxed blink, the upper lids all the way down and meeting the lower lids, the lashes resting along the lid line, the lids smooth and calm, not squeezed. The eyebrows stay relaxed and the mouth stays gently closed.",
+      "person": "hallow001_iris",
+      "reference": "hallow001_portrait_iris"
+    },
+    {
+      "id": "hallow001_portrait_wren",
+      "kind": "portrait",
+      "style": "hallow001",
+      "subject": "Professionally calm.",
+      "person": "hallow001_wren",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "hallow001_wren_mouth_open_slight",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: the lips are parted slightly, about the width of a pencil, as if in the middle of saying a soft \"t\", \"d\" or \"n\" sound. The tips of the upper teeth are just visible; the jaw drops only a little. The lips stay relaxed, not smiling.",
+      "person": "hallow001_wren",
+      "reference": "hallow001_portrait_wren"
+    },
+    {
+      "id": "hallow001_wren_mouth_ah",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: the mouth is open in the middle of saying \"ah\", as in \"father\". The jaw drops naturally and the lips open about the width of two fingers in a relaxed oval, the upper teeth and the tip of the tongue just visible. Ordinary speech, not a shout or a smile.",
+      "person": "hallow001_wren",
+      "reference": "hallow001_portrait_wren"
+    },
+    {
+      "id": "hallow001_wren_mouth_ee",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"ee\", as in \"see\". The lips are pulled slightly wider at the corners and only a little apart, showing both rows of teeth lightly together or nearly together. The jaw is almost closed. Not a smile: the corners do not turn up and the cheeks do not lift.",
+      "person": "hallow001_wren",
+      "reference": "hallow001_portrait_wren"
+    },
+    {
+      "id": "hallow001_wren_mouth_oh",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: in the middle of saying \"oh\", as in \"go\". The lips are rounded into a soft, open oval, taller than it is wide, the inside of the mouth dark with only a hint of the upper teeth. The jaw drops a little. Ordinary speech, not surprise.",
+      "person": "hallow001_wren",
+      "reference": "hallow001_portrait_wren"
+    },
+    {
+      "id": "hallow001_wren_mouth_oo",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"oo\", as in \"who\". The lips are pushed slightly forward and gathered into a small, round, puckered opening, smaller and tighter than \"oh\". No teeth showing. The jaw is nearly closed.",
+      "person": "hallow001_wren",
+      "reference": "hallow001_portrait_wren"
+    },
+    {
+      "id": "hallow001_wren_blink",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the eyes: both eyes are fully closed in a natural, relaxed blink, the upper lids all the way down and meeting the lower lids, the lashes resting along the lid line, the lids smooth and calm, not squeezed. The eyebrows stay relaxed and the mouth stays gently closed.",
+      "person": "hallow001_wren",
+      "reference": "hallow001_portrait_wren"
+    },
+    {
+      "id": "hallow001_portrait_mahoney",
+      "kind": "portrait",
+      "style": "hallow001",
+      "subject": "Dry and direct.",
+      "person": "hallow001_mahoney",
+      "suffix": "A painted head-and-shoulders portrait made for a talking portrait. The person faces the viewer directly, head straight and level, looking straight into the camera, mouth gently closed with the lips relaxed, not smiling. Head centered horizontally, face filling the upper middle of the frame, shoulders across the bottom. Nothing covers the mouth or eyes: no hands near the face, no hair across the lips. Even, soft lamplight from the front and slightly above, so both sides of the face are clearly lit. Plain, dark, muted painted backdrop, a little warmer behind the head. Natural, believable face; not a caricature."
+    },
+    {
+      "id": "hallow001_mahoney_mouth_open_slight",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: the lips are parted slightly, about the width of a pencil, as if in the middle of saying a soft \"t\", \"d\" or \"n\" sound. The tips of the upper teeth are just visible; the jaw drops only a little. The lips stay relaxed, not smiling.",
+      "person": "hallow001_mahoney",
+      "reference": "hallow001_portrait_mahoney"
+    },
+    {
+      "id": "hallow001_mahoney_mouth_ah",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: the mouth is open in the middle of saying \"ah\", as in \"father\". The jaw drops naturally and the lips open about the width of two fingers in a relaxed oval, the upper teeth and the tip of the tongue just visible. Ordinary speech, not a shout or a smile.",
+      "person": "hallow001_mahoney",
+      "reference": "hallow001_portrait_mahoney"
+    },
+    {
+      "id": "hallow001_mahoney_mouth_ee",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"ee\", as in \"see\". The lips are pulled slightly wider at the corners and only a little apart, showing both rows of teeth lightly together or nearly together. The jaw is almost closed. Not a smile: the corners do not turn up and the cheeks do not lift.",
+      "person": "hallow001_mahoney",
+      "reference": "hallow001_portrait_mahoney"
+    },
+    {
+      "id": "hallow001_mahoney_mouth_oh",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth and the chin just below it: in the middle of saying \"oh\", as in \"go\". The lips are rounded into a soft, open oval, taller than it is wide, the inside of the mouth dark with only a hint of the upper teeth. The jaw drops a little. Ordinary speech, not surprise.",
+      "person": "hallow001_mahoney",
+      "reference": "hallow001_portrait_mahoney"
+    },
+    {
+      "id": "hallow001_mahoney_mouth_oo",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the mouth: in the middle of saying \"oo\", as in \"who\". The lips are pushed slightly forward and gathered into a small, round, puckered opening, smaller and tighter than \"oh\". No teeth showing. The jaw is nearly closed.",
+      "person": "hallow001_mahoney",
+      "reference": "hallow001_portrait_mahoney"
+    },
+    {
+      "id": "hallow001_mahoney_blink",
+      "kind": "face",
+      "style": "hallow001",
+      "subject": "Change ONLY the eyes: both eyes are fully closed in a natural, relaxed blink, the upper lids all the way down and meeting the lower lids, the lashes resting along the lid line, the lids smooth and calm, not squeezed. The eyebrows stay relaxed and the mouth stays gently closed.",
+      "person": "hallow001_mahoney",
+      "reference": "hallow001_portrait_mahoney"
+    },
+    {
+      "id": "hallow001_portrait_reyes",
+      "kind": "portrait",
+      "style": "hallow001",
+      "subject": "Polite and steady.",
+      "person": "hallow001_reyes"
+    },
+    {
+      "id": "hallow001_figure_crane",
+      "kind": "figure",
+      "style": "hallow001",
+      "subject": "Standing at ease with a glass of brandy, one hand in his jacket pocket, a black domino masquerade mask with a silver edge in his other hand.",
+      "person": "hallow001_crane",
+      "reference": "hallow001_portrait_crane"
+    },
+    {
+      "id": "hallow001_figure_josie",
+      "kind": "figure",
+      "style": "hallow001",
+      "subject": "Standing very still in black mourning clothes and a short veil, one hand gloved in black lace and the other bare, holding a red diary against her chest.",
+      "person": "hallow001_josie",
+      "reference": "hallow001_portrait_josie"
+    },
+    {
+      "id": "hallow001_figure_constance",
+      "kind": "figure",
+      "style": "hallow001",
+      "subject": "Standing composed among palms, arms folded under a cashmere wrap.",
+      "person": "hallow001_constance",
+      "reference": "hallow001_portrait_constance"
+    },
+    {
+      "id": "hallow001_figure_felix",
+      "kind": "figure",
+      "style": "hallow001",
+      "subject": "Standing with a whiskey glass, shoulders slumped, bow tie undone.",
+      "person": "hallow001_felix",
+      "reference": "hallow001_portrait_felix"
+    },
+    {
+      "id": "hallow001_figure_penrose",
+      "kind": "figure",
+      "style": "hallow001",
+      "subject": "Standing with his hands clasped behind his back, a doctor's patience.",
+      "person": "hallow001_penrose",
+      "reference": "hallow001_portrait_penrose"
+    },
+    {
+      "id": "hallow001_figure_harriet",
+      "kind": "figure",
+      "style": "hallow001",
+      "subject": "Standing with a large handbag held in front of her in both hands.",
+      "person": "hallow001_harriet",
+      "reference": "hallow001_portrait_harriet"
+    },
+    {
+      "id": "hallow001_figure_amos",
+      "kind": "figure",
+      "style": "hallow001",
+      "subject": "Standing a little stooped, hands in his jacket pockets.",
+      "person": "hallow001_amos",
+      "reference": "hallow001_portrait_amos"
+    },
+    {
+      "id": "hallow001_figure_bridget",
+      "kind": "figure",
+      "style": "hallow001",
+      "subject": "Standing with a rosary wound through her fingers.",
+      "person": "hallow001_bridget",
+      "reference": "hallow001_portrait_bridget"
+    },
+    {
+      "id": "hallow001_figure_beatrice",
+      "kind": "figure",
+      "style": "hallow001",
+      "subject": "Standing stiffly with a gold masquerade mask pushed up on her head, a handkerchief in one hand.",
+      "person": "hallow001_beatrice",
+      "reference": "hallow001_portrait_beatrice"
+    },
+    {
+      "id": "hallow001_figure_byrne",
+      "kind": "figure",
+      "style": "hallow001",
+      "subject": "Standing with a leather document folder under one arm.",
+      "person": "hallow001_byrne",
+      "reference": "hallow001_portrait_byrne"
+    },
+    {
+      "id": "hallow001_figure_iris",
+      "kind": "figure",
+      "style": "hallow001",
+      "subject": "Standing with a rolled set of architectural drawings under one arm.",
+      "person": "hallow001_iris",
+      "reference": "hallow001_portrait_iris"
+    },
+    {
+      "id": "hallow001_figure_wren",
+      "kind": "figure",
+      "style": "hallow001",
+      "subject": "Standing with a clipboard and a phone, alert.",
+      "person": "hallow001_wren",
+      "reference": "hallow001_portrait_wren"
+    },
+    {
+      "id": "hallow001_ev_he001",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "The inside of an oak door: a heavy brass barrel bolt shot fully home, and on the carpet below it a brass keeper torn from the frame with a long splinter of oak still screwed to it."
+    },
+    {
+      "id": "hallow001_ev_he002",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A cast brass bookend shaped like a seated griffin lying on a dark carpet, a little blood caught in the angle of its square base, beside a yellow evidence marker."
+    },
+    {
+      "id": "hallow001_ev_he003",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A small leather pocket notebook lying open, a page of hurried pencil notes and a little sketch of a head, a fountain pen beside it."
+    },
+    {
+      "id": "hallow001_ev_he004",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "The foot of tall dark oak bookshelves: a pale fresh curved scrape in varnished floorboards, and four empty screw holes with bright threads in the upright between two sections."
+    },
+    {
+      "id": "hallow001_ev_he005",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "Narrow wooden stairs inside a wall, thick gray dust with a single clear line of a man's smooth-soled shoe prints going up and coming down, lit by a flashlight beam."
+    },
+    {
+      "id": "hallow001_ev_he006",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A new gray steel electrical disconnect box on an old cellar wall beside a slate fuse board, its big lever up, a printed label on the box reading exactly: MAIN HOUSE DISCONNECT. HOLLINS ELECTRIC 10/24/18. UP: ON. DOWN: OFF."
+    },
+    {
+      "id": "hallow001_ev_he007",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A small walnut-cased electric mantel clock with a plain dial, its plug cord trailing behind a vase."
+    },
+    {
+      "id": "hallow001_ev_he008",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A ruled index card on a green leather blotter, written in blue fountain pen in a small upright hand, soft unreadable text, beside a clean pale rectangle on the leather where a file used to lie."
+    },
+    {
+      "id": "hallow001_ev_he009",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A slate blue State Police laboratory folder, closed, a white label on the front reading exactly: LATENT PRINT REPORT, with a fingerprint card clipped to it."
+    },
+    {
+      "id": "hallow001_ev_he010",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A photocopied sheet of foundation letterhead with a handwritten numbered list of names in soft unreadable script, a lawyer's paperclip on the corner."
+    },
+    {
+      "id": "hallow001_ev_he011",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A single formal place setting at the foot of a candlelit table: silver, china, a half-finished soup plate pushed away, a water glass with a dark red lipstick mark, and a blank black-bordered place card."
+    },
+    {
+      "id": "hallow001_ev_he012",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "Two pages of a yellow legal event pad in neat handwriting, soft unreadable text, a Wren Events pen lying across them."
+    },
+    {
+      "id": "hallow001_ev_he013",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A seating chart card propped on a sideboard, a drawn table with thirteen places and soft unreadable names, one at the foot left blank."
+    },
+    {
+      "id": "hallow001_ev_he014",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "Three small glossy photo prints of a candlelit dinner table fanned out, in the first a woman in a black lace veil at the foot of the table."
+    },
+    {
+      "id": "hallow001_ev_he015",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A printout from a security system, a list of soft unreadable times beside small grainy camera thumbnails, one showing a veiled figure at a gate at night."
+    },
+    {
+      "id": "hallow001_ev_he016",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A woman's black lace evening glove lying on a patterned corridor runner, an old faded cloth name tag sewn inside the cuff."
+    },
+    {
+      "id": "hallow001_ev_he017",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "Three sheets of cream notepaper covered in handwriting in black ink, soft unreadable text, a wet ring from a water glass on one corner."
+    },
+    {
+      "id": "hallow001_ev_he018",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A red cloth-covered girl's diary from the 1990s lying open, round handwriting with little circles for dots, soft unreadable text."
+    },
+    {
+      "id": "hallow001_ev_he019",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A green clothbound foolscap ledger lying open, columns of figures in neat ink, with penciled notes in the margin, soft unreadable text."
+    },
+    {
+      "id": "hallow001_ev_he020",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "Three slim brown buckram bound volumes of annual accounts stacked on a library table, one open, with an old archive request card sticking out of it."
+    },
+    {
+      "id": "hallow001_ev_he021",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A large photocopy of an old architectural floor plan drawing from 1903, fine ink lines of rooms and a narrow stair, soft unreadable lettering, held flat by two books."
+    },
+    {
+      "id": "hallow001_ev_he022",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A sheet of lined paper written slowly in big capital letters in ballpoint, soft unreadable text, signed at the bottom, a pair of reading glasses on it."
+    },
+    {
+      "id": "hallow001_ev_he023",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "The back of a printed dinner menu card covered in careful handwriting, soft unreadable text, a small rosary lying across it."
+    },
+    {
+      "id": "hallow001_ev_he024",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A roll of architect's construction plans weighted open on a trestle with a tape measure and a brick, a section drawing of a pit and chamber, a yellow sticky note on it."
+    },
+    {
+      "id": "hallow001_ev_he025",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A small black leather shoulder bag from the 1990s and a tarnished silver bangle lying on a sheet of police evidence paper under a work light, beside a yellow evidence marker. Nothing graphic."
+    },
+    {
+      "id": "hallow001_ev_he026",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "An old folded note on company letterhead in black ink, soft unreadable text, with a second handwritten sheet paper-clipped behind it, lying in the tray of a tin trunk among old letters."
+    },
+    {
+      "id": "hallow001_ev_he027",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A buff letter file stuffed with invoices, wedged in dust behind dusty bottles in a brick wine bin, the tab handwritten."
+    },
+    {
+      "id": "hallow001_ev_he028",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A sheet torn from a doctor's prescription pad, handwritten in black ink, soft unreadable text, two signatures at the bottom."
+    },
+    {
+      "id": "hallow001_ev_he029",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A ruled notebook hanging on a string beside a steel key cabinet, an open page of handwritten sign-out entries, soft unreadable text, one empty key hook above."
+    },
+    {
+      "id": "hallow001_ev_he030",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "An electrician's carbon-copy work order form on a clipboard, a company header, soft unreadable handwritten entries and two signatures."
+    },
+    {
+      "id": "hallow001_ev_he031",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A handwritten letter on foundation letterhead in blue fountain pen, soft unreadable text, folded in thirds and opened out on a desk."
+    },
+    {
+      "id": "hallow001_ev_he032",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "Three letters from a lender in window envelopes, one unfolded showing a bold red header and soft unreadable text, lying on an overnight bag."
+    },
+    {
+      "id": "hallow001_ev_he033",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "Four letters in a woman's handwriting tucked into a medical journal on a night table, one unfolded, soft unreadable text."
+    },
+    {
+      "id": "hallow001_ev_he034",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A thick, much-handled accordion file labeled in a child's marker, papers and photocopies spilling from it, an old police report on top, soft unreadable text."
+    },
+    {
+      "id": "hallow001_ev_he035",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "An antique floor globe opened at the equator like a box, a heavy cream envelope lying inside it."
+    },
+    {
+      "id": "hallow001_ev_he036",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A small sheet of cream notepaper with a faint griffin watermark, unfolded, a few lines of block capitals in black ink, soft unreadable."
+    },
+    {
+      "id": "hallow001_ev_he037",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "A State Police supplementary report on a clipboard, soft unreadable typed text, with a small evidence bag clipped to it holding a scrap of black satin ribbon with a silver edge."
+    },
+    {
+      "id": "hallow001_ev_he038",
+      "kind": "evidence",
+      "style": "hallow001",
+      "subject": "The open door of a small iron stove, a grate full of black curled paper ash and one brown scorched corner of a printed invoice that did not burn."
+    },
+    {
+      "id": "hallow001_obj_casefile",
+      "kind": "sprite",
+      "style": "hallow001",
+      "subject": "A manila case folder with a printed label on the tab reading exactly: BLACKTHORN, A., beside a smartphone."
+    },
+    {
+      "id": "hallow001_obj_labfolder",
+      "kind": "sprite",
+      "style": "hallow001",
+      "subject": "A slate blue State Police laboratory folder, closed, with a white label on the front reading exactly: LAB REPORT."
+    },
+    {
+      "id": "hallow001_obj_report_folder",
+      "kind": "sprite",
+      "style": "hallow001",
+      "subject": "A buff State Police report folder, closed, with a red stamp on the front reading exactly: SUPPLEMENTARY."
+    },
+    {
+      "id": "hallow001_obj_notebook",
+      "kind": "sprite",
+      "style": "hallow001",
+      "subject": "A black hardcover pocket notebook with an elastic band and a pen clipped to it."
+    },
+    {
+      "id": "hallow001_obj_evidence_bag",
+      "kind": "sprite",
+      "style": "hallow001",
+      "subject": "A clear plastic evidence bag with a red tamper-proof seal strip and a white label, holding a folded paper."
+    },
+    {
+      "id": "hallow001_obj_phone",
+      "kind": "sprite",
+      "style": "hallow001",
+      "subject": "A modern black smartphone lying at a slight angle, its screen lit with a soft, unreadable home screen, a few raindrops on the glass."
+    },
+    {
+      "id": "hallow001_map",
+      "kind": "map",
+      "style": "hallow001",
+      "subject": "A hand-drawn estate plan of a Victorian country house and its grounds, seen flat from above: in the middle, the outline of a large stone house with its rooms faintly marked; to the upper left, a carriage house; to the right, a greenhouse and a square yew hedge maze with a gate in the far boundary wall onto a lane; at the bottom left, a gatehouse at the end of a long curving drive; lawns, trees, a boundary wall all round. Cream paper, faded ink, a compass rose, a small title cartouche reading exactly: BLACKTHORN ESTATE.",
+      "suffix": "A hand-painted estate plan seen flat from directly above and filling the whole image edge to edge like a sheet laid on a table: no table, no border, no frame. Muted colors: cream paper, faded sepia ink, soft greens for lawns and hedges."
     }
   ],
   "styles": {
