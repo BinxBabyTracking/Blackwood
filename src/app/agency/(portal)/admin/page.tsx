@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { SERIES } from "@/series";
 import { Suspense } from "react";
 import { lockAdmin } from "@/app/actions/admin";
@@ -39,40 +40,74 @@ function usd(n: number) {
   return `$${n.toFixed(2)}`;
 }
 
-export default function AdminPage() {
+const TABS = [
+  { id: "spending", label: "Spending", blurb: "What the paid services cost, by case: Claude for interviews, ElevenLabs for voices and push-to-talk. Figures are estimates from your rates below; the providers' own dashboards are the bill." },
+  { id: "players", label: "Player data", blurb: "Early access requests, playthroughs, feedback, leaderboard entries and the new-case email list." },
+  { id: "music", label: "Music and sounds", blurb: "Each case's music and room sound, made with ElevenLabs." },
+  { id: "voices", label: "Voices", blurb: "The voice of every person in each case." },
+  { id: "artwork", label: "Artwork", blurb: "Every painting in the game, made with OpenAI or uploaded, case by case." },
+] as const;
+type Tab = (typeof TABS)[number]["id"];
+
+export default function AdminPage({ searchParams }: PageProps<"/agency/admin">) {
+  return (
+    <Suspense fallback={<LoadingFile label="Opening the admin files" />}>
+      <Admin searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function Admin({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const q = await searchParams;
+  const tab: Tab = TABS.some((t) => t.id === q.tab) ? (q.tab as Tab) : "spending";
+  const info = TABS.find((t) => t.id === tab)!;
+  const me = await requireInvestigator();
+  const open = await hasAdminAccess(me.id);
   return (
     <>
-      <PortalHeading title="Admin: Spending">
-        What the paid services cost, by case and by playthrough: Claude for interviews, ElevenLabs for voices and push-to-talk.
-        Figures are estimates from your rates below; the providers&apos; own dashboards are the bill.
-      </PortalHeading>
-      <Suspense fallback={<LoadingFile label="Totting up the ledger" />}>
-        <Spending />
-      </Suspense>
+      <PortalHeading title={`Admin: ${info.label}`}>{info.blurb}</PortalHeading>
+      {open ? (
+        <nav aria-label="Admin sections" className="-mt-4 mb-10 flex gap-1 overflow-x-auto border-b border-rule">
+          {TABS.map((t) => (
+            <Link
+              key={t.id}
+              href={t.id === "spending" ? "/agency/admin" : `/agency/admin?tab=${t.id}`}
+              aria-current={t.id === tab ? "page" : undefined}
+              className={`-mb-px shrink-0 border-b-2 px-3 py-2.5 text-sm ${t.id === tab ? "border-brass text-paper" : "border-transparent text-smoke hover:text-paper"}`}
+            >
+              {t.label}
+            </Link>
+          ))}
+        </nav>
+      ) : null}
+      {!open ? (
+        <section aria-labelledby="locked" className="space-y-4">
+          <h2 id="locked" className="font-serif text-xl text-smoke">
+            Restricted
+          </h2>
+          <p className="max-w-[60ch] text-sm text-smoke">Enter the admin password to open the Admin pages. It stays open on this device for 12 hours.</p>
+          <AdminUnlock />
+        </section>
+      ) : (
+        <div className="space-y-14">
+          {tab === "spending" ? <Spending /> : tab === "players" ? <Players /> : tab === "music" ? <Soundtracks /> : tab === "voices" ? <Voices /> : <Artwork />}
+          <form action={lockAdmin}>
+            <button type="submit" className="text-sm text-smoke underline-offset-4 hover:text-paper hover:underline">
+              Lock the Admin page on this device
+            </button>
+          </form>
+        </div>
+      )}
     </>
   );
 }
 
 async function Spending() {
-  const me = await requireInvestigator();
-  if (!(await hasAdminAccess(me.id))) {
-    return (
-      <section aria-labelledby="locked" className="space-y-4">
-        <h2 id="locked" className="font-serif text-xl text-smoke">
-          Restricted
-        </h2>
-        <p className="max-w-[60ch] text-sm text-smoke">Enter the admin password to see spending. It stays open on this device for 12 hours.</p>
-        <AdminUnlock />
-      </section>
-    );
-  }
   const s = await getSpending();
   if (!s) return <p className="text-smoke">The server is not configured to read the ledger.</p>;
   const { rates } = s;
-
   return (
-    <div className="space-y-14">
-      <EarlyAccessAdmin />
+    <>
       <AdminSection id="totals" title="Totals" defaultOpen>
         <Ledger
           items={[
@@ -129,6 +164,36 @@ async function Spending() {
         )}
       </AdminSection>
 
+      <InterviewAI />
+
+      <AdminSection id="rates" title="Rates" className="max-w-2xl">
+        <p className="mt-2 text-sm text-smoke">
+          In US dollars. Change these to match your plans; every figure on this page is re-priced with them.
+        </p>
+        <form action={updateRates} className="mt-5 grid gap-4 sm:grid-cols-2">
+          <Rate id="claude_input_per_mtok" label="Claude input, per million tokens" value={rates.claude_input_per_mtok} />
+          <Rate id="claude_output_per_mtok" label="Claude output, per million tokens" value={rates.claude_output_per_mtok} />
+          <Rate id="tts_per_1k_chars" label="ElevenLabs voices, per 1,000 characters" value={rates.tts_per_1k_chars} />
+          <Rate id="stt_per_hour" label="ElevenLabs push-to-talk, per hour of audio" value={rates.stt_per_hour} />
+          <Rate id="target_margin" label="Target margin for suggested prices, %" value={Math.round(rates.target_margin * 100)} step="1" />
+          <div className="flex items-end">
+            <button type="submit" className="rounded-[2px] bg-brass px-4 py-2 text-sm font-semibold text-ink hover:bg-[#d4b585]">
+              Save rates
+            </button>
+          </div>
+        </form>
+      </AdminSection>
+    </>
+  );
+}
+
+/** Player data: early access, playthroughs, feedback, the leaderboards and the email list. */
+async function Players() {
+  const s = await getSpending();
+  return (
+    <>
+      <EarlyAccessAdmin />
+      {s ? (
       <AdminSection id="plays" title="Playthroughs">
         <p className="mt-2 text-sm text-smoke">
           The latest {s.playthroughs.length}, newest first: {s.playthroughs.filter((p) => p.status === "closed").length} solved,{" "}
@@ -173,44 +238,14 @@ async function Spending() {
           </div>
         ) : null}
       </AdminSection>
+      ) : null}
 
       <Feedback />
 
       <LeaderboardAdmin />
 
       <CaseAlertList />
-
-      <InterviewAI />
-
-      <Soundtracks />
-      <Voices />
-
-      <Artwork />
-
-      <form action={lockAdmin}>
-        <button type="submit" className="text-sm text-smoke underline-offset-4 hover:text-paper hover:underline">
-          Lock the Admin page on this device
-        </button>
-      </form>
-
-      <AdminSection id="rates" title="Rates" className="max-w-2xl">
-        <p className="mt-2 text-sm text-smoke">
-          In US dollars. Change these to match your plans; every figure on this page is re-priced with them.
-        </p>
-        <form action={updateRates} className="mt-5 grid gap-4 sm:grid-cols-2">
-          <Rate id="claude_input_per_mtok" label="Claude input, per million tokens" value={rates.claude_input_per_mtok} />
-          <Rate id="claude_output_per_mtok" label="Claude output, per million tokens" value={rates.claude_output_per_mtok} />
-          <Rate id="tts_per_1k_chars" label="ElevenLabs voices, per 1,000 characters" value={rates.tts_per_1k_chars} />
-          <Rate id="stt_per_hour" label="ElevenLabs push-to-talk, per hour of audio" value={rates.stt_per_hour} />
-          <Rate id="target_margin" label="Target margin for suggested prices, %" value={Math.round(rates.target_margin * 100)} step="1" />
-          <div className="flex items-end">
-            <button type="submit" className="rounded-[2px] bg-brass px-4 py-2 text-sm font-semibold text-ink hover:bg-[#d4b585]">
-              Save rates
-            </button>
-          </div>
-        </form>
-      </AdminSection>
-    </div>
+    </>
   );
 }
 
