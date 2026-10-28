@@ -6,6 +6,7 @@ import { PreferenceApplier } from "@/components/portal/preferences";
 import { Avatar } from "@/components/portal/avatar";
 import { getNotices } from "@/lib/catalog";
 import { getSettings, requireInvestigator } from "@/lib/investigator";
+import { FullScreenButton } from "@/game/ui/full-screen";
 
 export default function PortalLayout({ children }: LayoutProps<"/agency">) {
   return (
@@ -13,7 +14,9 @@ export default function PortalLayout({ children }: LayoutProps<"/agency">) {
       <SideNav />
       <div className="flex min-w-0 flex-1 flex-col overflow-x-clip">
         <header className="sticky top-0 z-30 border-b border-rule bg-ink/90 backdrop-blur-md">
-          <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-8">
+          <div className="relative flex items-center justify-between gap-4 px-4 py-3 sm:px-8">
+            {/* Full screen: in the middle of the bar on wide screens, an icon beside the others on narrower ones. */}
+            <FullScreenButton className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 xl:inline-flex" />
             <div className="flex min-w-0 items-center gap-3">
               <MobileNav />
               <div className="min-w-0 leading-tight">
@@ -22,6 +25,7 @@ export default function PortalLayout({ children }: LayoutProps<"/agency">) {
               </div>
             </div>
             <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+              <FullScreenButton compact className="hidden sm:inline-flex xl:hidden" />
               <Suspense fallback={<NoticesMenu notices={[]} />}>
                 <Notices />
               </Suspense>

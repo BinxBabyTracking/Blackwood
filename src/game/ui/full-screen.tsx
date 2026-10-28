@@ -114,3 +114,31 @@ export function HomeScreenTip({ paused = false }: { paused?: boolean }) {
     </div>
   );
 }
+
+/**
+ * Full screen on or off, for the Agency top bar. Shown only where the browser
+ * can go full screen (computers, Android, tablets). Full screen carries on into
+ * a case, since moving between pages doesn't reload the site.
+ */
+export function FullScreenButton({ className = "", compact = false }: { className?: string; compact?: boolean }) {
+  const { mode, active, toggle } = useFullScreen();
+  if (mode !== "fullscreen") return null;
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={() => void toggle()}
+      aria-label={compact ? (active ? "Exit full screen" : "Full screen") : undefined}
+      className={
+        compact
+          ? `rounded-[2px] p-2 text-smoke hover:text-paper ${className || "inline-flex"}`
+          : `items-center gap-2 rounded-[2px] border border-rule px-3 py-1.5 text-xs text-smoke hover:border-brass hover:text-brass ${className || "inline-flex"}`
+      }
+    >
+      <svg viewBox="0 0 24 24" className={compact ? "h-5 w-5" : "h-4 w-4"} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        {active ? <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" /> : <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />}
+      </svg>
+      {compact ? null : active ? "Exit full screen" : "Full screen"}
+    </button>
+  );
+}
