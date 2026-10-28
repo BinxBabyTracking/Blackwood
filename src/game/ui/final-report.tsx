@@ -12,7 +12,7 @@ const picks = (v: string | string[] | undefined) => (Array.isArray(v) ? v : v ? 
 
 /**
  * The final investigative report: an agency form typed on the office
- * typewriter. Draft, review, confirm, submit. When the agency returns a report
+ * typewriter. Draft, review, submit. When the agency returns a report
  * its memo is clipped to the front; when it accepts one, the filed copy can be
  * read here afterwards. Nothing in this component knows the answer.
  */
@@ -42,7 +42,6 @@ export function FinalReport({
   const filed = c.final;
   const [draft, setDraft] = useState<ReportDraft>(() => ({ ...c.draft, evidence: [...c.draft.evidence] }));
   const [mode, setMode] = useState<Mode>(c.review && !filed ? "returned" : "form");
-  const [confirming, setConfirming] = useState(false);
   const [saved, setSaved] = useState<"idle" | "saved">("idle");
   const top = useRef<HTMLDivElement>(null);
 
@@ -95,15 +94,13 @@ export function FinalReport({
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
-      if (confirming) setConfirming(false);
-      else void leave();
+      void leave();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   });
 
   const submit = async () => {
-    setConfirming(false);
     const theory: Theory = { evidence: draft.evidence };
     for (const cl of claims) theory[claimKey(cl.id)] = picks(draft[claimKey(cl.id)]);
     for (const ch of c.choices) theory[ch.id] = ch.multi ? picks(draft[ch.id]) : (draft[ch.id] as string);
@@ -112,7 +109,6 @@ export function FinalReport({
   };
 
   const backdrop = useBackdropClose(() => void leave());
-  const confirmBackdrop = useBackdropClose(() => setConfirming(false));
   const shown: ReportDraft = filed ? { ...filed.theory } : draft;
   const name = filed?.investigator ?? investigator;
 
@@ -196,13 +192,16 @@ export function FinalReport({
                 </div>
               </dl>
               <Signature name={name} date={c.date} />
-              <div className="mt-8 flex flex-wrap gap-3">
+              <p className="mt-6 font-serif text-sm leading-relaxed text-[#231e17]/75">
+                Submitting files the report with {view.words.reviewer}. If it is returned, your investigation continues and you can file a revised report.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-3">
                 <PaperButton onClick={() => setMode("form")}>Return to Report</PaperButton>
                 {guest ? (
                   <span className="self-center font-mono text-xs text-[#231e17]/70">Only the host can file the report. Your changes are saved for them.</span>
                 ) : (
-                  <PaperButton strong disabled={pending || !complete} onClick={() => setConfirming(true)}>
-                    Submit Findings
+                  <PaperButton strong disabled={pending || !complete} onClick={() => void submit()}>
+                    {pending ? "Filing" : "Submit Findings"}
                   </PaperButton>
                 )}
               </div>
@@ -353,23 +352,6 @@ export function FinalReport({
           )}
         </div>
 
-        {confirming ? (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="alertdialog" aria-modal="true" aria-labelledby="confirm-h" {...confirmBackdrop}>
-            <div className="w-full max-w-md bg-[#efe8d6] p-6 text-[#231e17] shadow-2xl">
-              <p id="confirm-h" className="font-mono text-sm font-bold tracking-[0.12em]">SUBMIT FINDINGS?</p>
-              <p className="mt-3 font-serif leading-relaxed">
-                Your report will be evaluated by {view.words.reviewer} against the case file and the evidence you have attached. If it is returned, your
-                investigation continues and you can file a revised report.
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <PaperButton strong disabled={pending} onClick={submit}>
-                  {pending ? "Filing" : "Submit Findings"}
-                </PaperButton>
-                <PaperButton onClick={() => setConfirming(false)}>Cancel</PaperButton>
-              </div>
-            </div>
-          </div>
-        ) : null}
       </div>
     </div>
   );
