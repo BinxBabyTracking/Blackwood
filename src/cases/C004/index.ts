@@ -50,6 +50,11 @@ export const C004: CaseDefinition = {
   boardHint: { evidenceCount: 4, callId: "call_keene_board" },
   labs,
   captivity,
+  speech: {
+    setting: "a murder investigation at a Chicago radio station in October 1927, during Prohibition",
+    style:
+      "Plain American English of 1927 that a modern player reads easily, with period touches where they fit (the wireless or the radio, a telephone call, a speakeasy, a flivver, swell, applesauce, on the level). Never modern words or ideas: no cell phones, computers, DNA, fingerprint matches, forensics, security cameras, okay, or anything invented after 1927. Times are told the way people said them then: a quarter past ten, twenty to eleven.",
+  },
   mapTitle: "Street map of Chicago, 1927",
   reportDate: "October 1927",
   reportHeader: [
