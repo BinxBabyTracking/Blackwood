@@ -1,4 +1,5 @@
 import "server-only";
+import { inSeason, isSeasonTester, returnsLabel } from "@/lib/season";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { seriesUnlocked } from "@/series/server";
 import { newState, progressOf } from "./engine/engine";
@@ -63,7 +64,7 @@ export async function findInvestigation(userId: string, caseId: string): Promise
  */
 export async function startInvestigation(userId: string, def: CaseDefinition): Promise<Loaded> {
   const db = admin();
-  const { data: c, error } = await db.from("cases").select("id, status, is_preview, tier:pricing_tiers(price_cents)").eq("id", def.id).maybeSingle();
+  const { data: c, error } = await db.from("cases").select("id, status, is_preview, available_month, tier:pricing_tiers(price_cents)").eq("id", def.id).maybeSingle();
   if (error) throw new PersistenceError(error.message);
   if (!c || c.is_preview) throw new PersistenceError("This case is not open for assignment.");
   const { data: ent } = await db.from("case_entitlements").select("id, source").eq("user_id", userId).eq("case_id", def.id).maybeSingle();
@@ -73,6 +74,9 @@ export async function startInvestigation(userId: string, def: CaseDefinition): P
 
   const existing = await findInvestigation(userId, def.id);
   if (existing && existing.sessionStatus === "active") return existing;
+
+  // Seasonal cases start only in their month; the open investigation above is still returned.
+  await assertInSeason(db, userId, c);
 
   // A series case opens only once the case before it is solved.
   const unlock = await seriesUnlocked(userId, def.id);
@@ -86,6 +90,14 @@ export async function startInvestigation(userId: string, def: CaseDefinition): P
   }
 
   return createSession(db, userId, def);
+}
+
+/** Throws outside a seasonal case's month, except for the agency's test accounts. */
+async function assertInSeason(db: Admin, userId: string, c: { available_month?: number | null }) {
+  if (inSeason(c)) return;
+  const { data } = await db.auth.admin.getUserById(userId);
+  if (isSeasonTester(data.user?.email)) return;
+  throw new PersistenceError(`This is a seasonal case. ${returnsLabel(c)}.`);
 }
 
 async function createSession(db: Admin, userId: string, def: CaseDefinition): Promise<Loaded> {
@@ -117,6 +129,9 @@ async function createSession(db: Admin, userId: string, def: CaseDefinition): Pr
 /** Archives the open investigation and starts over with a clean save. */
 export async function restartInvestigation(userId: string, def: CaseDefinition): Promise<Loaded> {
   const db = admin();
+  const { data: season } = await db.from("cases").select("available_month").eq("id", def.id).maybeSingle();
+  // Starting over is a new investigation, so a seasonal case can only be restarted in its month.
+  if (season) await assertInSeason(db, userId, season);
   const current = await findInvestigation(userId, def.id);
   if (current && current.sessionStatus === "active") {
     await db.from("investigation_sessions").update({ status: "archived", last_activity_at: new Date().toISOString() }).eq("id", current.sessionId);

@@ -11,6 +11,7 @@ import { seriesUnlocked } from "@/series/server";
 import { requestStatus, type RequestStatus } from "@/lib/early-access";
 import { EarlyAccessButton } from "./early-access-button";
 import { buttonClass } from "./ui";
+import { inSeason, lastDayLabel, monthName, offSeasonFor, returnsLabel } from "@/lib/season";
 
 /** Reads the visitor's session, so render inside <Suspense>. */
 export async function AssignmentActions({ c }: { c: CatalogCase }) {
@@ -22,11 +23,13 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
   let teamOpen = false;
   let seriesLockedBy: string | null = null;
   let request: RequestStatus | null = null;
+  let email: string | null = null;
 
   if (supabase) {
     const { data } = await supabase.auth.getUser();
     if (data.user) {
       signedIn = true;
+      email = data.user.email ?? null;
       const [{ data: ent }, { data: rows }] = await Promise.all([
         supabase.from("case_entitlements").select("id, source").eq("case_id", c.id).eq("user_id", data.user.id).maybeSingle(),
         supabase
@@ -49,7 +52,7 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
     }
   }
 
-  const action = resolveAssignmentAction(c, { signedIn, entitled, playable: isPlayable(c.id), session, earlyAccess, seriesLockedBy });
+  const action = resolveAssignmentAction(c, { signedIn, entitled, playable: isPlayable(c.id), session, earlyAccess, seriesLockedBy, offSeason: offSeasonFor(c, email) });
 
   switch (action.kind) {
     case "in_preparation":
@@ -86,6 +89,12 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
           ) : null}
         </div>
       );
+    case "out_of_season":
+      return (
+        <Notice title={returnsLabel(c)}>
+          This is a seasonal case. New investigations open only in {monthName(c.available_month ?? 0)}, so check back {returnsLabel(c).replace("Returns ", "on ")}.
+        </Notice>
+      );
     case "retired":
       return <Notice title="Archived">This case has been withdrawn from active assignment.</Notice>;
     case "sign_in":
@@ -109,6 +118,7 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
             <TeamButton caseId={c.id} open={teamOpen} />
           </div>
           <p className="mt-3 max-w-[48ch] text-sm text-smoke">As a team, friends join your investigation from their phones and pick up where you are.</p>
+          {c.available_month ? <SeasonNote c={c} open /> : null}
         </div>
       );
     case "review_closed":
@@ -135,6 +145,7 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
           <p className="mt-3 max-w-[48ch] text-sm text-smoke">
             Accepting opens the investigation. Your progress is saved as you go. To investigate as a team, you host and show a code; up to five friends join from their phones, no accounts needed.
           </p>
+          <SeasonNote c={c} />
         </div>
       );
     case "series_locked":
@@ -153,6 +164,15 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
         </div>
       );
   }
+}
+
+/** Seasonal cases: when new investigations close, or that an open one can still be finished. */
+function SeasonNote({ c, open = false }: { c: CatalogCase; open?: boolean }) {
+  if (!c.available_month) return null;
+  const text = inSeason(c)
+    ? `Seasonal case: new investigations can be started through ${lastDayLabel(c)}.${open ? " An investigation already open can be finished after that." : ""}`
+    : `Seasonal case: outside ${monthName(c.available_month)}, open investigations can still be finished.`;
+  return <p className="mt-2 max-w-[48ch] text-xs text-brass">{text}</p>;
 }
 
 function Notice({ title, children }: { title: string; children: React.ReactNode }) {

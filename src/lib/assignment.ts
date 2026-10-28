@@ -4,6 +4,8 @@ export type AssignmentAction =
   | { kind: "in_preparation" }
   | { kind: "coming_soon" }
   | { kind: "retired" }
+  /** A seasonal case outside its month, with no investigation of it open. */
+  | { kind: "out_of_season" }
   | { kind: "sign_in" }
   | { kind: "resume" }
   | { kind: "review_closed" }
@@ -19,13 +21,15 @@ export type AssignmentAction =
  */
 export function resolveAssignmentAction(
   c: Pick<CatalogCase, "status" | "is_preview" | "tier">,
-  viewer: { signedIn: boolean; entitled: boolean; playable: boolean; session: "active" | "closed" | null; earlyAccess?: boolean; seriesLockedBy?: string | null },
+  viewer: { signedIn: boolean; entitled: boolean; playable: boolean; session: "active" | "closed" | null; earlyAccess?: boolean; seriesLockedBy?: string | null; offSeason?: boolean },
 ): AssignmentAction {
   if (c.is_preview || c.status === "in_development") return { kind: "in_preparation" };
   // Testers with an early-access grant can play a case that everyone else sees as Coming Soon.
   const early = c.status === "coming_soon" && viewer.earlyAccess === true && viewer.playable;
   if (!early && (c.status === "coming_soon" || (c.status === "available" && !viewer.playable))) return { kind: "coming_soon" };
   if (c.status === "retired") return { kind: "retired" };
+  // Seasonal cases start only in their month; an open or closed file can still be worked or reviewed.
+  if (viewer.offSeason && !viewer.session) return { kind: "out_of_season" };
   if (!viewer.signedIn) return { kind: "sign_in" };
   if (viewer.session === "active") return { kind: "resume" };
   if (viewer.session === "closed") return { kind: "review_closed" };

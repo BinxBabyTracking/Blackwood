@@ -39,6 +39,8 @@ export interface CaseRecord {
   catalog_order: number;
   /** A Coming Soon case the agency's owner has solved: players can see its leaderboard and request early access. */
   early_access_open?: boolean;
+  /** Seasonal cases start only in this month (1 to 12, Eastern time), e.g. 10 for the HALLOW cases. Null all year. */
+  available_month?: number | null;
   /** The series a case belongs to (S001), and its place in it. Null for standalone cases. */
   series_id?: string | null;
   series_order?: number | null;

@@ -12,13 +12,15 @@ import {
 } from "@/lib/format";
 import { CaseCover } from "./case-cover";
 import { Tag } from "./ui";
+import { inSeason, returnsLabel, seasonLabel } from "@/lib/season";
 
 /** `mine`: how the case stands for the signed-in investigator, which outranks the catalog status. */
-export function StatusTag({ c, mine }: { c: Pick<CatalogCase, "status" | "is_preview">; mine?: "available" | "open" | "solved" }) {
+export function StatusTag({ c, mine }: { c: Pick<CatalogCase, "status" | "is_preview" | "available_month">; mine?: "available" | "open" | "solved" }) {
   if (c.is_preview) return <Tag tone="muted">Preview, not yet available</Tag>;
   if (mine === "open") return <Tag tone="ok">Open</Tag>;
   if (mine === "solved") return <Tag tone="ok">Solved</Tag>;
   if (mine === "available") return <Tag tone="ok">Available</Tag>;
+  if (c.status === "available" && !inSeason(c)) return <Tag tone="muted">{returnsLabel(c)}</Tag>;
   const tone = c.status === "available" ? "ok" : c.status === "coming_soon" ? "brass" : "muted";
   return <Tag tone={tone}>{STATUS_LABELS[c.status]}</Tag>;
 }
@@ -29,6 +31,7 @@ export function CaseFacts({ c, className = "" }: { c: CatalogCase; className?: s
     ["Duration", durationLabel(c)],
     ["Difficulty", difficultyLabel(c.difficulty)],
     ["Investigators", investigatorLabel(c)],
+    ...(seasonLabel(c) ? [["Season", seasonLabel(c) as string] as [string, string]] : []),
     ["Price", c.is_preview ? `${formatPrice(c.tier)} (${c.tier.label})` : formatPrice(c.tier)],
   ];
   return (
