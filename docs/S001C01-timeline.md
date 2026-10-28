@@ -16,7 +16,7 @@ Author-only. Series S001, The Judas Principle, case 1 of 6. Read with the projec
 
 ## The truth in brief
 
-Martin Keller, controller of the Carroway Community Foundation, spent the autumn tracing money from the foundation's Small Business Recovery Fund through three small companies into Meridian Advisory Group. Adrian Holt, the fund's outside administrator, was moving the money without anyone's authorization. Holt learned Martin was about to take his records to an independent auditor, Walter Ames, on Friday morning, November 9. He sent Paul Reddick, the building's maintenance contractor, to take the records from Martin's office after hours on Thursday night. Holt never told Reddick to hurt anyone.
+Martin Keller, controller of the Carroway Community Foundation, spent the autumn tracing money from the foundation's Small Business Recovery Fund through three small companies into Meridian Advisory Group. Adrian Holt, the fund's outside administrator, was moving the money without anyone's authorization. Holt learned Martin was about to take his records to an independent auditor, Walter Kiley, on Friday morning, November 9. He sent Paul Reddick, the building's maintenance contractor, to take the records from Martin's office after hours on Thursday night. Holt never told Reddick to hurt anyone.
 
 Martin was working late. At about 8:44 PM he caught Reddick at his filing cabinet, refused to hand anything over, and Reddick struck him with the heavy brass eagle from his desk. Reddick took a red folder of copied records, forced the desk drawer and scattered the room to look like a burglary, carried the eagle off in his tool bag, and left by the rear service door at 8:57 PM. He missed Martin's handwritten ledger, hidden inside an old auditing textbook on the shelf, and the memo still sitting in the printer.
 
@@ -38,7 +38,7 @@ Dr. Evelyn Lockhart, the fund's founding donor, already knew Holt was moving mon
 | Hannah's apartment | 5612 Darlington Road, Squirrel Hill, Pittsburgh |
 | Reddick | Reddick Maintenance Services, a garage bay and office at 2207 Route 30 East, Carroway |
 | Holt | Holt Advisory LLC, Suite 2210, Gulf Tower area, 600 Grant Street, Pittsburgh. Shares the suite with **Meridian Advisory Group's Pittsburgh office** (Holt is listed as an "affiliate partner") |
-| Auditor | Ames and Kiley, Certified Public Accountants, 4th floor, 310 Grant Street, Pittsburgh |
+| Auditor | Kiley and Strand, Certified Public Accountants, 4th floor, 310 Grant Street, Pittsburgh |
 | Shell | Tri-County Facility Partners LLC. Registered office: 600 Grant Street, Suite 2210, Pittsburgh. Organizer: C. Dunmore (Holt Advisory's office manager) |
 | Other intermediaries | Penn Valley Business Services (partly real: it ran some genuine workshops) and Monongah Strategy Group |
 | Holt's cell | (412) 555-0193 |
@@ -79,8 +79,8 @@ Calendar checked: Nov 1, 2018 is a Thursday; Nov 4 Sunday, Nov 5 Monday, Nov 6 T
 | Sun Nov 4 | Martin writes a letter to Hannah, sealed, left in his home desk | E14 |
 | Mon Nov 5, about 2 PM | Warren Foster argues loudly with Martin at the foundation over a $12,000 clawback letter | E28, Morris, Foster |
 | Tue Nov 6, 4:10 PM and 6:35 PM | Holt calls Reddick twice (Holt has heard from Whitfield's office that Martin booked an outside auditor) | E25 |
-| Tue Nov 6, 10:14 PM | Martin emails Walter Ames asking for an urgent confidential meeting | E10 |
-| Wed Nov 7 | Martin copies the payment records at home; sets meeting: Fri Nov 9, 9:00 AM, Ames and Kiley | E09, E12 |
+| Tue Nov 6, 10:14 PM | Martin emails Walter Kiley asking for an urgent confidential meeting | E10 |
+| Wed Nov 7 | Martin copies the payment records at home; sets meeting: Fri Nov 9, 9:00 AM, Kiley and Strand | E09, E12 |
 | Wed Nov 7, 8:52 PM | Holt calls Reddick, 6 minutes | E25 |
 
 ### Thursday, November 8
@@ -109,7 +109,7 @@ Calendar checked: Nov 1, 2018 is a Thursday; Nov 4 Sunday, Nov 5 Monday, Nov 6 T
 | When | What happened | Where the player learns it |
 | --- | --- | --- |
 | Fri Nov 9, 6:40 AM | The cleaner, starting her early shift, finds Martin. 911 at 6:43 AM | E01 |
-| Fri Nov 9, 9:00 AM | Ames waits for Martin; calls his cell twice, no answer | Ames |
+| Fri Nov 9, 9:00 AM | Kiley waits for Martin; calls his cell twice, no answer | Kiley |
 | Fri Nov 9, 10:14 AM | Tri-County pays Reddick Maintenance $9,500, "HVAC retrofit, Mercantile Bldg" (approved online under Holt's login) | E19, E24 |
 | Fri Nov 9, 10:31 AM | Holt calls Reddick, 1 minute, to tell him the money is in | E25 |
 | Fri Nov 9 | ME: death by blunt force injury to the head, between about 8:00 and 10:00 PM Thursday | E03 |
@@ -143,7 +143,7 @@ Interviewable (10) plus Bennett. Everyone's knowledge is their own account; liar
 | holt | Adrian Holt, 49 | Principal, Holt Advisory LLC; fund administrator | Arranged the theft, paid Reddick afterward. Did not order the killing. Polished, impatient | Polished, Impatient, Defensive, Declining to answer |
 | reddick | Paul Reddick, 38 | Owner, Reddick Maintenance Services | The killer. Says he finished the boiler at 4:30 and went home | Easygoing, Guarded, Hostile, Declining to answer |
 | lockhart | Dr. Evelyn Lockhart, 52 | Founder of the Lockhart Foundation, New York; founding donor of the fund | By telephone, after RE02. Composed, gracious, helpful. Says nothing later cases contradict | Gracious |
-| ames | Walter Ames, 43 | Partner, Ames and Kiley CPAs, Pittsburgh | Martin's appointment; hands over E10; explains the money plainly | Careful, Engaged |
+| ames | Walter Kiley, 43 | Partner, Kiley and Strand CPAs, Pittsburgh | Martin's appointment; hands over E10; explains the money plainly | Careful, Engaged |
 | avery | Stanley Avery, 61 | Security supervisor for the Mercantile Building's owner | Keeps the card system; hands over E06 and E22; thinks maintenance access is irrelevant | Gruff, Helpful |
 | morris | Angela Morris, 35 | Administrative assistant at the foundation | Saw Reddick's van at 7:48 PM; afraid for her job | Nervous, Forthcoming |
 | bowman | Det. Curtis Bowman, 47 | Carroway PD, lead investigator | Police contact, in person and by phone, unlimited. Starts at burglary, open to evidence. Hands over police records, runs the footwear comparison, gets the subpoenas | Professional, Engaged |
@@ -162,15 +162,15 @@ Not interviewable: **Martin Keller** (46, victim; on the board).
 
 **Paul Reddick.** Story: boiler job 1 to 4:30, went home, alone, watched the game. Has a card because he's maintenance, "everybody knows that." After D06 and E21: says he "might have swung by" but didn't go in. After D07 (RE04): hostile, refuses until new evidence (re-interview grant on E07 or E24). Never confesses. Says the $9,500 is "the HVAC job, ask Tri-County."
 
-**Dr. Evelyn Lockhart** (phone, after RE02). Gracious and precise. The envelope arrived at her office "weeks ago with no name on it"; she didn't know what to make of it and put it aside; after reading about Martin she felt Blackwood should have it. Tri-County "deserves a closer look." She has funded the Carroway fund since 2014; Holt was the administrator the foundation chose. She has "heard of" Meridian as a consulting firm. Never claims to know anything further. Never says anything about the waybill or footer. If asked who sent the envelope: she doesn't know.
+**Dr. Evelyn Lockhart** (phone, after RE02). Gracious and precise. The envelope arrived at her office "weeks ago with no name on it"; she didn't know what to make of it and put it aside; after reading about Martin she felt Blackwood should have it. Tri-County "deserves a closer look." She has funded the Carroway fund since 2014; Holt was the administrator the foundation chose. On Meridian: "I was involved with Meridian a long time ago, when it was small. I have no role there now, and I don't follow its business." Never claims to know anything further. Never says anything about the waybill or footer. If asked who sent the envelope: she doesn't know.
 
-**Walter Ames.** Martin called him in late October and emailed on Nov 6 (E10). Martin never arrived; Ames waited for him at 9:00 Friday. Explains pass-through payments and split engagements in plain words. After RE05 he prepares E29 from the subpoenaed bank records.
+**Walter Kiley.** Martin called him in late October and emailed on Nov 6 (E10). Martin never arrived; Kiley waited for him at 9:00 Friday. Explains pass-through payments and split engagements in plain words. After RE05 he prepares E29 from the subpoenaed bank records.
 
 **Stanley Avery.** Card system: front doors lock at 6:00; rear door logs card entries and every opening. Hands over E06 (rear door and front door, Nov 8) when asked about access that night, and E22 (card 0447) when asked whose card or about maintenance access. Thinks it's irrelevant because maintenance "comes and goes at all hours."
 
 **Angela Morris.** Martin had been "jumpy" for weeks, kept his office door shut, printed things at the end of the day. Left at 7:48 PM; saw Reddick's van by the dumpsters and him in it on his phone; thought nothing of it. Afraid for her job; tells it once the player has been to the rear lot or asks about leaving that night. Writes it down for Det. Bowman and gives the player a copy (E26). Witnessed the Foster argument on Nov 5.
 
-**Det. Curtis Bowman.** Robbery theory at first ("a laptop and petty cash were taken" is false; nothing of value was taken except whatever was in the files: he notes that). Hands over E01 (police report), E02 (scene photographs), E03 (ME summary), E08 (canvass statement). Runs the footwear comparison once asked (lab). After D06 he gets the bank camera footage and vehicle registration (E23). After D10 (RE05) he gets the bank subpoenas and sends them to Ames (E29 arrives).
+**Det. Curtis Bowman.** Robbery theory at first ("a laptop and petty cash were taken" is false; nothing of value was taken except whatever was in the files: he notes that). Hands over E01 (police report), E02 (scene photographs), E03 (ME summary), E08 (canvass statement). Runs the footwear comparison once asked (lab). After D06 he gets the bank camera footage and vehicle registration (E23). After D10 (RE05) he gets the bank subpoenas and sends them to Kiley (E29 arrives).
 
 **Warren Foster.** Loud, then embarrassed. The clawback was for missing quarterly reports; Martin was "just doing his job, I was out of line." Thursday night he was at Carroway Middle School's fall concert, 7:00 to 9:15 PM; "ask two hundred parents." Bowman confirms if asked.
 
@@ -187,7 +187,7 @@ Not interviewable: **Martin Keller** (46, victim; on the board).
 | L05 | hannah_apt | Hannah Keller's apartment, Squirrel Hill | Hannah | Start |
 | L06 | reddick_shop | Reddick Maintenance Services, Route 30 | Paul Reddick, job sheet (E21), bank statement (E24), phone bill (E25), the van | After E22 or E26 |
 | L07 | police | Carroway Police Department | Det. Bowman | Start |
-| L08 | ames_office | Ames and Kiley CPAs, Pittsburgh | Walter Ames | After E09 or E10 known (calendar) |
+| L08 | ames_office | Kiley and Strand CPAs, Pittsburgh | Walter Kiley | After E09 or E10 known (calendar) |
 | L09 | meridian | Meridian Advisory Group, Pittsburgh office (Suite 2210) | Adrian Holt; the shared nameplate (Holt Advisory beside Meridian); E020 handed over by Holt; E019 in his out tray once D09 is made | After Holt is named (casefile) |
 | L10 | rear_lot | Rear service entrance and parking lot, Mulberry Alley | Avery at the security desk inside the service door; the card reader; the dumpsters; the bank camera across the alley | Start |
 
@@ -206,7 +206,7 @@ Every item is reached exactly one way. "Bowman" or a person's name means a hando
 | E007 | Footwear comparison report | Lab (ask Bowman), needs E002 and E022 | Physical |
 | E008 | Canvass statement: Lorraine Bix | Bowman | Movement |
 | E009 | Martin's desk calendar | L03, the desk blotter | Martin's work |
-| E010 | Martin's email to Walter Ames | Ames | Martin's work |
+| E010 | Martin's email to Walter Kiley | Kiley | Martin's work |
 | E011 | Martin's hidden ledger | L03, the old textbook (after RE01) | Money |
 | E012 | Copied fund payment records | L04, home office | Money |
 | E013 | Martin's draft memo (printer tray) | L03, the printer | Martin's work |
@@ -225,7 +225,7 @@ Every item is reached exactly one way. "Bowman" or a person's name means a hando
 | E026 | Angela Morris's statement | Morris | Movement |
 | E027 | Susan Whitfield's email exchange with Martin | Whitfield, after E013 or E015 | Martin's work |
 | E028 | The Foster clawback letter | L02, Martin's outbox tray at reception | Supporting |
-| E029 | Meridian payment pattern (Ames's schedule) | Delivery, RE05 | Money |
+| E029 | Meridian payment pattern (Kiley's schedule) | Delivery, RE05 | Money |
 | E030 | Dr. Lockhart's note with enclosure | Delivery, RE02 | Money |
 
 ### Inspection texts
@@ -233,7 +233,7 @@ Every item is reached exactly one way. "Bowman" or a person's name means a hando
 **E001, incident report.**
 > CARROWAY POLICE DEPARTMENT. Incident report 18-1108-022. Reporting officer: Ptl. J. Sandoval. Investigating: Det. C. Bowman.
 >
-> Friday, November 9, 2018, 6:43 AM. 911 call from Rosa Delgado, contract cleaner, Mercantile Building, 118 Market Street. Male found unresponsive in second-floor office of the Carroway Community Foundation.
+> Friday, November 9, 2018, 6:43 AM. 911 call from Dorota Wisniewski, contract cleaner, Mercantile Building, 118 Market Street. Male found unresponsive in second-floor office of the Carroway Community Foundation.
 >
 > 6:51 AM. Units on scene. Victim identified as Martin Keller, 46, of 23 Orchard Street, controller of the foundation. Pronounced dead at 7:02 AM.
 >
@@ -248,14 +248,14 @@ Every item is reached exactly one way. "Bowman" or a person's name means a hando
 >
 > Photo 2: The corner office, wide. Victim on the floor between the desk and the filing cabinet, face down. Desk chair pushed back against the wall.
 >
-> Photo 5: The filing cabinet. Top two drawers open. One drawer's hanging folders are pushed apart around an empty slot labeled FUND 2018 – WORKING. The other drawers are untouched.
+> Photo 5: The filing cabinet. Top two drawers open. One drawer's hanging folders are pushed apart around an empty slot labeled FUND 2018, WORKING. The other drawers are untouched.
 >
 > Photo 9: The floor in front of the cabinet. A toner cartridge knocked from a shelf has spilled a fan of black powder. In it, a partial print of a boot sole: heel and the back third of a lugged tread.
 >
 > Photo 14: The desk. Center drawer forced and hanging open, its contents (pens, stamps, a calculator) dumped on the blotter. On the lower bookshelf, eight or nine volumes pulled out onto the floor; the upper shelves untouched.
 
 **E003, medical examiner's summary.**
-> CARROWAY COUNTY MEDICAL EXAMINER. Summary of findings. Case ME-18-0371. Dr. H. Okafor. Nov 10, 2018.
+> CARROWAY COUNTY MEDICAL EXAMINER. Summary of findings. Case ME-18-0371. Dr. H. Adeyemi. Nov 10, 2018.
 >
 > KELLER, Martin, 46.
 >
@@ -277,7 +277,7 @@ Every item is reached exactly one way. "Bowman" or a person's name means a hando
 **E005, the searched filing cabinet** (L03, the cabinet).
 > A four-drawer steel filing cabinet. The top two drawers stand open; the bottom two are shut and locked, keys still on Martin's ring in the police property list.
 >
-> In the second drawer, the hanging files run in order: FUND 2016, FUND 2017, FUND 2018 – GRANTEES, then an empty hanging folder whose tab reads FUND 2018 – WORKING in Martin's square capitals, then FUND 2018 – BOARD. Only the working folder is gone.
+> In the second drawer, the hanging files run in order: FUND 2016, FUND 2017, FUND 2018, GRANTEES, then an empty hanging folder whose tab reads FUND 2018, WORKING in Martin's square capitals, then FUND 2018, BOARD. Only the working folder is gone.
 >
 > Somebody went straight to one folder in one drawer. The petty cash, the laptop and the locked drawers were left alone.
 
@@ -317,17 +317,17 @@ Every item is reached exactly one way. "Bowman" or a person's name means a hando
 **E009, Martin's desk calendar** (L03, the blotter).
 > A paper desk-pad calendar, November 2018, Martin's handwriting.
 >
-> Mon 5: "Board pkt due 11/15." "Foster — 2:00 (clawback)," crossed through, with "came in anyway" beside it.
+> Mon 5: "Board pkt due 11/15." "Foster, 2:00 (clawback)," crossed through, with "came in anyway" beside it.
 > Tue 6: "Call W.A."
-> Wed 7: "Copies — home."
+> Wed 7: "Copies, home."
 > Thu 8: "Finish memo." "Printer jams. Use the back one."
-> Fri 9: "9:00 W. Ames — Ames & Kiley, 310 Grant St, 4th fl. Bring EVERYTHING." Underlined twice.
+> Fri 9: "9:00 W. Kiley, Kiley & Strand, 310 Grant St, 4th fl. Bring EVERYTHING." Underlined twice.
 >
 > In the margin, small: "Book stays here."
 
-**E010, Martin's email to Walter Ames** (Ames hands it over).
+**E010, Martin's email to Walter Kiley** (Kiley hands it over).
 > From: Martin Keller <mkeller@carrowaycf.org>
-> To: Walter Ames <wames@ameskiley.com>
+> To: Walter Kiley <wkiley@kileystrand.com>
 > Sent: Tuesday, November 6, 2018, 10:14 PM
 > Subject: Confidential, request to meet
 >
@@ -351,16 +351,16 @@ Every item is reached exactly one way. "Bowman" or a person's name means a hando
 > Columns: date, payee, fund line, amount, approved by, "work seen?", "onward to".
 >
 > Typical lines:
-> 7/23 Tri-County Facility Ptrs — Storefront impr. — $24,600 — A.H. — NO — Meridian $19,700 (bank memo)
-> 8/14 Penn Valley Bus. Svcs — Tech. asst. — $36,000 — A.H. — workshops 2 of 4 — Meridian $21,000
-> 9/04 Monongah Strategy Grp — Prog. eval. — $49,500 — A.H. — NO — Meridian $48,900
-> 10/16 Tri-County — Storefront impr. — $24,800 — A.H. — NO — ?
+> 7/23 Tri-County Facility Ptrs, Storefront impr., $24,600, A.H., NO, Meridian $19,700 (bank memo)
+> 8/14 Penn Valley Bus. Svcs, Tech. asst., $36,000, A.H., workshops 2 of 4, Meridian $21,000
+> 9/04 Monongah Strategy Grp, Prog. eval., $49,500, A.H., NO, Meridian $48,900
+> 10/16 Tri-County, Storefront impr., $24,800, A.H., NO, ?
 >
 > Totals, Nov 7: paid to the three, $412,600. Traced on to Meridian, $329,000. "Work seen: Penn Valley workshops only (~$52k)."
 >
 > On the last page: "Every engagement under $50,000. Every approval A.H. Ask W.A. whether 'administrator's discretion' covers paying the same firm through three doors."
 >
-> Inside the back cover: "If you're reading this and I'm not, give it to Hannah. — M.K."
+> Inside the back cover: "If you're reading this and I'm not, give it to Hannah., M.K."
 
 **E012, copied fund payment records** (L04, home office).
 > An accordion file on the desk in Martin's spare room, labeled HOME COPIES in his capitals. Photocopies of 23 fund payment vouchers from July through October 2018, each stamped APPROVED, FUND ADMINISTRATOR and initialed A.H., with Martin's sticky notes:
@@ -372,7 +372,7 @@ Every item is reached exactly one way. "Bowman" or a person's name means a hando
 > Clipped to the front: "Office set in the cabinet. This set stays home."
 
 **E013, Martin's draft memo** (L03, the printer tray).
-> Four pages still in the output tray of the back printer, printed Thursday, November 8, 2018, 8:12 PM (the printer's header line). Headed: "DRAFT — CONFIDENTIAL. To: Board of Directors; W. Ames, CPA. From: M. Keller, Controller. Re: Recovery Fund disbursements to intermediary firms."
+> Four pages still in the output tray of the back printer, printed Thursday, November 8, 2018, 8:12 PM (the printer's header line). Headed: "DRAFT, CONFIDENTIAL. To: Board of Directors; W. Kiley, CPA. From: M. Keller, Controller. Re: Recovery Fund disbursements to intermediary firms."
 >
 > Summary: since July, $412,600 paid to three firms under the administrator's sole approval; documented work found for about $52,000 (Penn Valley workshops); bank records show each firm paying most of its receipts on to Meridian Advisory Group; each engagement sized under the $50,000 board-approval limit.
 >
@@ -381,7 +381,7 @@ Every item is reached exactly one way. "Bowman" or a person's name means a hando
 > Page 4, a handwritten note in the margin: "S.W. asked me to wait (10/22). I can't."
 
 **E014, Martin's letter to Hannah** (L04, home desk drawer).
-> A sealed envelope, "Hannah — only if needed," in the top drawer of the desk in Martin's spare room. Inside, one page, dated Sunday, November 4, 2018.
+> A sealed envelope, "Hannah, only if needed," in the top drawer of the desk in Martin's spare room. Inside, one page, dated Sunday, November 4, 2018.
 >
 > "Hannie. You'll think I'm being dramatic. I've found something at work that I think is wrong, money going where it shouldn't, and I'm going to report it this week. The people involved are not people who like being reported. I don't think anything will happen. But if it does, don't let anyone tell you it was random. Look at the numbers. You know where I keep the things I don't want borrowed. I love you more than columns of figures, which is saying something. Dad."
 
@@ -444,11 +444,11 @@ Every item is reached exactly one way. "Bowman" or a person's name means a hando
 **E021, Reddick's weekly job sheet** (L06, the clipboard).
 > REDDICK MAINTENANCE SERVICES. Weekly job sheet, Nov 5 to 9, 2018. In Paul Reddick's block capitals.
 >
-> MON 11/5. Dollar General Rt 30, walk-in cooler. 8–12.
-> TUE 11/6. Carroway Middle, gym unit heaters. 9–3.
+> MON 11/5. Dollar General Rt 30, walk-in cooler. 8 to 12.
+> TUE 11/6. Carroway Middle, gym unit heaters. 9 to 3.
 > WED 11/7. Off.
-> THU 11/8. MERCANTILE BLDG, boiler PM + gauge. 1:00–4:30. HOME.
-> FRI 11/9. —
+> THU 11/8. MERCANTILE BLDG, boiler PM + gauge. 1:00 to 4:30. HOME.
+> FRI 11/9. , 
 >
 > "HOME" is written in heavier pen than the rest, as if added later.
 
@@ -518,7 +518,7 @@ Every item is reached exactly one way. "Bowman" or a person's name means a hando
 >
 > Stapled behind it, Angela's phone message slip, Nov 5, 2:40 PM: "W. Foster came in. Very upset, shouting, says he'll 'go to the paper.' Mr. K. calmed him down. Reports promised by the 15th." Initialed A.M.
 
-**E029, Meridian payment pattern** (delivery, RE05: Ames's schedule from the subpoenaed records).
+**E029, Meridian payment pattern** (delivery, RE05: Kiley's schedule from the subpoenaed records).
 > AMES AND KILEY, CPAs. Prepared for Det. C. Bowman, Carroway PD, from bank records produced under subpoena. Schedule of onward payments, January 1 to November 9, 2018.
 >
 > Tri-County Facility Partners: received $148,200 from the fund. Paid Meridian Advisory Group $118,500 in 6 payments, each within 3 business days of a fund payment. Paid Reddick Maintenance $9,500 (Nov 9).
@@ -575,7 +575,7 @@ D05 is reachable early with E011 + E016 (Martin's own tracing); E029 confirms it
 | RE02 Dr. Lockhart's lead | D04 made, or E012 or E015 collected | A courier envelope on the desk (E030); a call from Lockhart's office: she can be telephoned from now on |
 | RE03 Holt changes his story | E018 presented to Holt, or asked about the authorizations with E018 in hand | Holt admits engagements were kept under the threshold and documentation was "not what I'd want"; denies wrongdoing; demeanor Impatient → Defensive |
 | RE04 Reddick shuts down | D07 made | Reddick refuses further questions (demeanor Declining) until a re-interview grant (E007 or E024) |
-| RE05 Bowman gets the bank records | D10 made | Bowman calls: subpoenas served on the three firms' banks; Ames is preparing a schedule. E029 arrives on the desk |
+| RE05 Bowman gets the bank records | D10 made | Bowman calls: subpoenas served on the three firms' banks; Kiley is preparing a schedule. E029 arrives on the desk |
 | RE06 The series begins | Report accepted | Closing sequence; the rolling board is wheeled into the office (series system) |
 
 Board hint: Bennett, once, at 4 evidence with nothing connected.
@@ -588,7 +588,7 @@ Board hint: Bennett, once, at 4 evidence with nothing connected.
 
 ## Re-interview grants
 
-Hannah after RE01 and after E011; Whitfield after E013 and after E018; Holt after E018, after D09 and after E019; Reddick after E021, after E007 and after E024; Ames after E011; Avery after E023; Morris after E021; Foster after E028; Lockhart after D09.
+Hannah after RE01 and after E011; Whitfield after E013 and after E018; Holt after E018, after D09 and after E019; Reddick after E021, after E007 and after E024; Kiley after E011; Avery after E023; Morris after E021; Foster after E028; Lockhart after D09.
 
 ## Final report
 
@@ -642,6 +642,6 @@ Known: reddick known once `{ any: [{ hasEvidence: "E022" }, { hasEvidence: "E026
 
 **Events (story owns):** RE01 (D01 or E014) → incomingCall `call_hannah_book`, sets `book_known` on answer; RE02 (D04 or E012 or E015) → delivery `lockhart_note` (E030) and incomingCall `call_lockhart`; RE03 (Holt presented E018, i.e. `{ presented: "holt:E018" }` or asked `holt_authorizations` with E018 held) → sets `holt_admits`; RE04 (D07) → sets `reddick_refuses` (Reddick's demeanor "Declining to answer" requires `{ all: [{ flag: "reddick_refuses" }, { not: { any: [{ hasEvidence: "E007" }, { hasEvidence: "E024" }] } }] }`); RE05 (D10) → incomingCall `call_bowman_bank`, delivery `ames_schedule` (E029), sets `bank_records`; lab `footwear` (180 s) → delivery `lab_footwear` (E007). Board hint call `call_bennett_board`.
 
-**Handovers (characters own, through knowledge facts with `effects: [{ giveEvidence }]` and an authored entry):** Bowman: E001, E002, E003, E008 from start; E023 once `{ deduction: "D06" }`. Avery: E006 (asked about the doors or access that night), E022 (asked whose card / maintenance access). Ames: E010. Bennett: E017 once Tri-County is known (`{ any: [{ hasEvidence: "E030" }, { hasEvidence: "E015" }, { hasEvidence: "E011" }] }`). Holt: E020. Morris: E026 once `{ any: [{ visited: "rear_lot" }, { asked: "morris_thursday" }] }`. Whitfield: E027 once `{ any: [{ hasEvidence: "E013" }, { hasEvidence: "E015" }] }`.
+**Handovers (characters own, through knowledge facts with `effects: [{ giveEvidence }]` and an authored entry):** Bowman: E001, E002, E003, E008 from start; E023 once `{ deduction: "D06" }`. Avery: E006 (asked about the doors or access that night), E022 (asked whose card / maintenance access). Kiley: E010. Bennett: E017 once Tri-County is known (`{ any: [{ hasEvidence: "E030" }, { hasEvidence: "E015" }, { hasEvidence: "E011" }] }`). Holt: E020. Morris: E026 once `{ any: [{ visited: "rear_lot" }, { asked: "morris_thursday" }] }`. Whitfield: E027 once `{ any: [{ hasEvidence: "E013" }, { hasEvidence: "E015" }] }`.
 
 **Scene items (locations own):** E004 desk, E005 cabinet, E009 blotter, E011 textbook (visible on `book_known`), E013 printer (all `martin_office`); E012, E014 (`keller_home`); E015 Angela's files, E016 reimbursement binder, E018 Susan's fund binder (visible `{ talkedTo: "whitfield" }`), E028 outbox tray (all `foundation`); E019 Holt's out tray (`meridian`, visible `{ deduction: "D09" }`); E021 clipboard, E024 desk, E025 mail tray (`reddick_shop`).

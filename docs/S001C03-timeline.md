@@ -1001,7 +1001,7 @@ How the bible's series deductions are carried by this case's items:
 - **S001-D002** (C01-E029 + C03-E038): C01-E029 shows the Carroway money reaching Meridian; E038 shows Meridian's Pittsburgh office account paying Patapsco, Kane, Fisk and Malone, on Holt's login.
 - **S001-D003** (C02-E035 + C03-E033, with C03-E037 pinned): E033 is a Meridian Corporate Intelligence subject file "Indexed: Compromising Information Index, Logistics series," reviewed "J.R."; E037 shows the same accounts across the financial, intelligence and logistics practices. **Note for C02:** C02-E035 should be titled or headed "Compromising Information Index" and, ideally, use subject numbers in the form `CI-YYYY-NNNN` so the two documents visibly belong to one system. **Note for C02-E034:** E037 lists Monongah Strategy Group and Tri-County Facility Partners as Corporate Intelligence subscribers since 2017; C02's cross-reference should not contradict that.
 - **S001-D004** (C04-E018 + C04-E038, with C03-E022 as the delivered item): E022's footer `MAG-RM 31-0056-044` and its waybill (account 20417, Dec 4) match the courier statement and Claire's register.
-- **C06 recovery routes** for this case: E033 (Agent Quinlan; Whitaker's closing call says she has it), E037 (Benjamin Sayer; the original register is in Meridian's records), E038 (Walter Ames; traced for prosecutors after this case). Each keeps its id and content.
+- **C06 recovery routes** for this case: E033 (Agent Quinlan; Whitaker's closing call says she has it), E037 (Benjamin Sayer; the original register is in Meridian's records), E038 (Walter Kiley; traced for prosecutors after this case). Each keeps its id and content.
 
 ### Series notebook entry (written as the report is accepted)
 

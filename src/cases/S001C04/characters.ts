@@ -652,7 +652,7 @@ export const questions: DialogueQuestion[] = [
     "I'm afraid I can't help you with Meridian's internal shorthand.",
   ]),
   q("lockhart", "Meridian", "lockhart_meridian", "What do you know about Meridian Advisory Group?", [
-    "A consulting firm. I gather it has had a difficult autumn.",
+    "I had a hand in starting it, years ago. I gather it has had a difficult autumn.",
   ]),
   q("lockhart", "Her call", "lockhart_help", "Can the foundation help?", [
     "Anything that's in my power. My office will put you through to me at any hour.",

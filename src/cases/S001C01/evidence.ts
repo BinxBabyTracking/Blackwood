@@ -10,8 +10,8 @@ import type { EvidenceDef } from "@/game/engine/types";
  *          E015, E016, E018, E028 (foundation); E019 (meridian);
  *          E021, E024, E025 (reddick_shop)
  *   interview: E001, E002, E003, E008, E023 (Bowman); E006, E022 (Avery);
- *          E010 (Ames); E017 (Bennett); E020 (Holt); E026 (Morris); E027 (Whitfield)
- *   delivery: E007 (lab: footwear), E029 (RE05: Ames's schedule), E030 (RE02: Dr. Lockhart)
+ *          E010 (Kiley); E017 (Bennett); E020 (Holt); E026 (Morris); E027 (Whitfield)
+ *   delivery: E007 (lab: footwear), E029 (RE05: Kiley's schedule), E030 (RE02: Dr. Lockhart)
  *
  * E030's copier footer and courier waybill are series threads. Nothing in this
  * case explains them, and no text here comments on them.
@@ -29,7 +29,7 @@ export const evidence: EvidenceDef[] = [
     image: "ev.E001",
     inspection: P(
       "CARROWAY POLICE DEPARTMENT. Incident report 18-1108-022. Reporting officer: Ptl. J. Sandoval. Investigating: Det. C. Bowman.",
-      "Friday, November 9, 2018, 6:43 AM. 911 call from Rosa Delgado, contract cleaner, Mercantile Building, 118 Market Street. Male found unresponsive in second-floor office of the Carroway Community Foundation.",
+      "Friday, November 9, 2018, 6:43 AM. 911 call from Dorota Wisniewski, contract cleaner, Mercantile Building, 118 Market Street. Male found unresponsive in second-floor office of the Carroway Community Foundation.",
       "6:51 AM. Units on scene. Victim identified as Martin Keller, 46, of 23 Orchard Street, controller of the foundation. Pronounced dead at 7:02 AM.",
       "Scene: office in disarray. Desk drawer forced (pry marks, lock broken). Filing cabinet drawers open, files on floor. Books pulled from lower shelf. No forced entry to the building found; front doors locked as normal. Victim's wallet ($62, cards) and phone on the desk. Laptop present. Foundation petty cash box (second floor, reception) undisturbed.",
       "Initial assessment: burglary interrupted by victim, entry method undetermined. Building access records requested.",
@@ -65,7 +65,7 @@ export const evidence: EvidenceDef[] = [
     sourceLocationId: "police",
     image: "ev.E003",
     inspection: P(
-      "CARROWAY COUNTY MEDICAL EXAMINER. Summary of findings. Case ME-18-0371. Dr. H. Okafor. Nov 10, 2018.",
+      "CARROWAY COUNTY MEDICAL EXAMINER. Summary of findings. Case ME-18-0371. Dr. H. Adeyemi. Nov 10, 2018.",
       "KELLER, Martin, 46.",
       "Cause of death: blunt force injury of the head. A single depressed fracture of the left side of the skull, roughly triangular, about 2 inches across, consistent with a heavy object with a hard, angular edge. No defensive injuries to the hands. A bruise on the right forearm.",
       "Time of death: between about 8:00 and 10:00 PM on Thursday, November 8, from body temperature and other findings at 7:20 AM.",
@@ -184,7 +184,7 @@ export const evidence: EvidenceDef[] = [
         "Tue 6: \"Call W.A.\"",
         "Wed 7: \"Copies, home.\"",
         "Thu 8: \"Finish memo.\" \"Printer jams. Use the back one.\"",
-        "Fri 9: \"9:00 W. Ames, Ames & Kiley, 310 Grant St, 4th fl. Bring EVERYTHING.\" Underlined twice.",
+        "Fri 9: \"9:00 W. Kiley, Kiley & Strand, 310 Grant St, 4th fl. Bring EVERYTHING.\" Underlined twice.",
       ),
       "In the margin, small: \"Book stays here.\"",
     ),
@@ -195,14 +195,14 @@ export const evidence: EvidenceDef[] = [
   }),
   ev({
     id: "E010",
-    title: "Martin's Email to Walter Ames",
+    title: "Martin's Email to Walter Kiley",
     description: "Martin asks an outside auditor for an urgent, confidential meeting.",
     sourceLocationId: "ames_office",
     image: "ev.E010",
     inspection: P(
       L(
         "From: Martin Keller <mkeller@carrowaycf.org>",
-        "To: Walter Ames <wames@ameskiley.com>",
+        "To: Walter Kiley <wkiley@kileystrand.com>",
         "Sent: Tuesday, November 6, 2018, 10:14 PM",
         "Subject: Confidential, request to meet",
       ),
@@ -214,7 +214,7 @@ export const evidence: EvidenceDef[] = [
       "I may be wrong. I would rather be wrong in front of you than right in front of nobody.",
       "Martin",
     ),
-    discovery: "Walter Ames prints it when asked about Martin's appointment or how Martin contacted him.",
+    discovery: "Walter Kiley prints it when asked about Martin's appointment or how Martin contacted him.",
     characters: ["martin", "ames"],
     related: ["E013", "E011", "E009", "E014"],
     boardable: true,
@@ -271,7 +271,7 @@ export const evidence: EvidenceDef[] = [
     sourceLocationId: "martin_office",
     image: "ev.E013",
     inspection: P(
-      "Four pages still in the output tray of the back printer, printed Thursday, November 8, 2018, 8:12 PM (the printer's header line). Headed: \"DRAFT: CONFIDENTIAL. To: Board of Directors; W. Ames, CPA. From: M. Keller, Controller. Re: Recovery Fund disbursements to intermediary firms.\"",
+      "Four pages still in the output tray of the back printer, printed Thursday, November 8, 2018, 8:12 PM (the printer's header line). Headed: \"DRAFT: CONFIDENTIAL. To: Board of Directors; W. Kiley, CPA. From: M. Keller, Controller. Re: Recovery Fund disbursements to intermediary firms.\"",
       "Summary: since July, $412,600 paid to three firms under the administrator's sole approval; documented work found for about $52,000 (Penn Valley workshops); bank records show each firm paying most of its receipts on to Meridian Advisory Group; each engagement sized under the $50,000 board-approval limit.",
       "\"Recommendation: freeze further disbursements to these three firms; independent review; notify the founding donor.\"",
       "Page 4, a handwritten note in the margin: \"S.W. asked me to wait (10/22). I can't.\"",
@@ -574,8 +574,8 @@ export const evidence: EvidenceDef[] = [
   }),
   ev({
     id: "E029",
-    title: "Meridian Payment Pattern (Ames's Schedule)",
-    description: "Walter Ames's schedule from the subpoenaed bank records: where the fund's money went next.",
+    title: "Meridian Payment Pattern (Kiley's Schedule)",
+    description: "Walter Kiley's schedule from the subpoenaed bank records: where the fund's money went next.",
     sourceLocationId: "office",
     image: "ev.E029",
     inspection: P(

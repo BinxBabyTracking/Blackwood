@@ -82,7 +82,7 @@ export const SOUNDTRACK: SoundtrackDef[] = [
   {
     key: "amb.ames_office",
     kind: "ambience",
-    label: "Room sound: Ames and Kiley",
+    label: "Room sound: Kiley and Strand",
     seconds: 30,
     prompt:
       "A small accounting firm's office in an older downtown Pittsburgh building. Heating vents humming, pages turning, a calculator printing a tape, quiet keyboard clicks, rain on a window, distant traffic on Grant Street. Seamless loop.",

@@ -166,7 +166,7 @@ export const characters: CharacterDef[] = [
     role: "Former Meridian records analyst; cooperating witness",
     portrait: "char.donovan",
     bio: [
-      { text: "Thirty-four. Former records analyst at the Meridian Records Center. Cooperating witness with the FBI since the events of The Informant." },
+      { text: "Thirty-four. Former records analyst at the Meridian Records Center. Cooperating witness with the FBI since her rescue on December 14." },
       { text: "Received an anonymous text at 2:15 PM on Thursday, December 27: 'Some records burn.'", requires: G.re02 },
     ],
     available: G.re02,
@@ -255,10 +255,10 @@ export const characters: CharacterDef[] = [
   {
     id: "kane",
     name: "Gideon Kane",
-    role: "Formerly Kane Logistics Inc.; in federal detention",
+    role: "Formerly Kane Logistics Inc.; held in Baltimore",
     portrait: "char.kane",
     bio: [
-      { text: "Forty-eight. Formerly president of Kane Logistics Inc., Baltimore. In federal detention since December 5, 2018." },
+      { text: "Forty-eight. Formerly president of Kane Logistics Inc., Baltimore. Held in Baltimore since December 5, 2018; HSI's federal case is pending." },
       { text: "Recorded video interview with his lawyer present, set up from SA Quinlan's office." },
       { text: "Requester code L-4 in Meridian's executive register.", requires: ev("E031") },
     ],
@@ -314,18 +314,18 @@ export const characters: CharacterDef[] = [
   },
   {
     id: "ames",
-    name: "Walter Ames",
-    role: "Partner, Ames and Kiley CPAs; forensic accountant to the federal prosecutors",
+    name: "Walter Kiley",
+    role: "Partner, Kiley and Strand CPAs; forensic accountant to the federal prosecutors",
     portrait: "char.ames",
     bio: [
-      { text: "Forty-three. Partner at Ames and Kiley, Certified Public Accountants, Pittsburgh. Since the Baltimore case, forensic accountant to the federal prosecutors." },
+      { text: "Forty-three. Partner at Kiley and Strand, Certified Public Accountants, Pittsburgh. Since the Baltimore case, forensic accountant to the federal prosecutors." },
       { text: "Working in the records room of Brandywine Fiduciary Company, Rodney Square, Wilmington.", requires: G.ch4 },
     ],
     available: G.ch2,
     locationId: null,
     moves: [{ when: G.ch4, locationId: "financial_archive" }],
     phone: G.ch2,
-    contact: "Ames and Kiley CPAs, Pittsburgh. Working for the prosecutors.",
+    contact: "Kiley and Strand CPAs, Pittsburgh. Working for the prosecutors.",
     onBoard: true,
     defaultEvidenceReply: "I'd want to sit with that before I said anything about it.",
     idleLine: "I have the trustee's people waiting. Come back any time.",
@@ -337,7 +337,7 @@ export const characters: CharacterDef[] = [
     },
     demeanor: [
       { id: "careful", label: "Careful", requires: { always: true } },
-      { id: "engaged", label: "Engaged", requires: G.ch4, cue: "Ames clears a space on the records room table and uncaps a pen." },
+      { id: "engaged", label: "Engaged", requires: G.ch4, cue: "Kiley clears a space on the records room table and uncaps a pen." },
     ],
   },
   {
@@ -401,7 +401,7 @@ export const characters: CharacterDef[] = [
     role: "FBI Washington Field Office",
     portrait: "char.quinlan",
     bio: [
-      { text: "Forty-five. Special Agent, FBI Washington Field Office, 601 4th Street NW." },
+      { text: "Forty-four. Special Agent, FBI Washington Field Office, 601 4th Street NW." },
       { text: "Received Benjamin Sayer's email from Blackwood at 9:10 AM on Thursday and asked Arlington County Police for a welfare check." },
     ],
     available: { always: true },
@@ -558,11 +558,11 @@ export const questions: DialogueQuestion[] = [
     "Shredding or burning records under a federal hold, or changing the schedule to do it, is obstruction. Following a witness to take records off him is witness tampering. That's the line. Keep your report on the right side of it.",
   ]),
   q("quinlan", "Arrangements", "quinlan_video", "Can I interview Holt, Rourke and Kane?", [
-    "Recorded video from the room down the hall, each with his lawyer on the line. Holt is held in Carroway County; Rourke and Kane are federal.",
+    "Recorded video from the room down the hall, each with his lawyer on the line. Holt is held in Carroway County, Rourke is federal, and Kane is held in Baltimore with HSI's federal case pending.",
     "Rourke won't say a word without a proffer agreement. Ask anyway. It costs you nothing but a question.",
   ], { requires: G.ch2 }),
   q("quinlan", "Arrangements", "quinlan_search", "What happened in the search of Meridian headquarters?", [
-    "Warrant executed at nine on Friday, 1620 K Street. The executive floor and records administration on six are open to you while we work.",
+    "Warrant executed at nine on Friday, 1620 K Street. The executive floor and records administration on ten are open to you while we work.",
     "The Chair's suite was already empty when we got there.",
   ], { requires: G.ch2 }),
   q("quinlan", "The recovery", "quinlan_recover", "Can you send people to get Benjamin out of the tenant house?", [
@@ -614,12 +614,12 @@ export const questions: DialogueQuestion[] = [
     "It doesn't reach the killing of Hector Navarro, and Kane says so himself. Here.",
   ], { requires: G.kaneSafe, reveals: "SA Quinlan handed over item 9 from Kane's safe: his yellow copy of EX-2018-019.", effects: [{ giveEvidence: "E048" }] }),
   q("quinlan", "Exhibits", "quinlan_castell", "How were the leaks run through Miriam Castell and Clearwater?", [
-    "Miriam Castell has been cooperating since she came in. Her file is yours now: the typed notes she received, and Clearwater's own log of what Claire handed over and what was held back.",
-    "Read them in date order.",
+    "Miriam Castell has been cooperating since she came in. She burned every note her source sent her, as the first one told her to. What she kept is Clearwater's own log of what Claire handed over and what was held back. It's yours now.",
+    "Read it in date order.",
   ], {
     requires: G.ch5,
-    reveals: "SA Quinlan handed over Miriam Castell's file: the typed notes she received and Clearwater's release log.",
-    effects: [{ giveEvidence: "E052" }, { giveEvidence: "E056" }],
+    reveals: "SA Quinlan handed over Clearwater's release log from Miriam Castell's file; Castell burned the notes her source sent her.",
+    effects: [{ giveEvidence: "E056" }],
   }),
   q("quinlan", "Exhibits", "quinlan_witnesses", "How do the witnesses hold up against the records?", [
     "We've put every witness against the paper. Where somebody has a reason to shade it, the record carries the point, not the testimony.",
@@ -629,10 +629,10 @@ export const questions: DialogueQuestion[] = [
     "The index is an exhibit in the case against Rourke. I can release a copy to you for this.",
     "Here. It's logged.",
   ], { requires: G.route("R03"), reveals: "SA Quinlan released a copy of the Compromising Information Index from the Rourke case.", effects: [{ giveEvidence: "R03" }] }),
-  q("quinlan", "Earlier files", "quinlan_briggs", "How was Russell Briggs pressured in Baltimore?", [
-    "The intelligence reference on Briggs went into the federal case after Baltimore. That's how the pressure was built.",
+  q("quinlan", "Earlier files", "quinlan_briggs", "How was Russell Gaffney pressured in Baltimore?", [
+    "The intelligence reference on Gaffney went into the federal case after Baltimore. That's how the pressure was built.",
     "You can have a copy for this. Here.",
-  ], { requires: G.route("R04"), reveals: "SA Quinlan released a copy of the intelligence reference on Russell Briggs.", effects: [{ giveEvidence: "R04" }] }),
+  ], { requires: G.route("R04"), reveals: "SA Quinlan released a copy of the intelligence reference on Russell Gaffney.", effects: [{ giveEvidence: "R04" }] }),
   q("quinlan", "The case", "quinlan_architect", "Is Dr. Lockhart the Architect?", [
     "I don't do your reasoning for you. Bring me paper that says who, and paper that says the paper is real.",
   ], { variants: [{ requires: G.d16, reply: ["The register says what it says, and it will have to say it to a jury."] }] }),
@@ -718,7 +718,7 @@ export const questions: DialogueQuestion[] = [
   ]),
   q("bennett", "Records", "bennett_trust", "What can you find on the Cardinal Point Trust?", [
     "Delaware statutory trust, 2009. Trustee is Brandywine Fiduciary in Wilmington. Delaware doesn't make a trust tell you who's behind it. That's the point of Delaware.",
-    "Walter Ames is the man for trust paper.",
+    "Walter Kiley is the man for trust paper.",
   ]),
   q("bennett", "Records", "bennett_patuxent", "Run Patuxent Secure Destruction.", [
     "Licensed shredding outfit in Laurel, Maryland. Real company, real trucks. They do what the paperwork tells them.",
@@ -741,18 +741,18 @@ export const questions: DialogueQuestion[] = [
     "Miriam told me they were what the investigators needed next. I believed her. I still think she believed it.",
   ]),
   q("donovan", "Her part", "donovan_footer", "What is the MAG-RM footer?", [
-    "The Records Center copier stamps every page: MAG-RM, the machine, the date. Anybody who knew the building could tell where a copy came from. That was never a secret.",
+    "The Records Center copier stamps every page: MAG-RM, then the collection, box and item: the address of the original. Anybody who knew the building could tell where a copy came from. That was never a secret.",
   ]),
   q("donovan", "Her part", "donovan_castell", "What did Miriam Castell tell you?", [
     "That I was helping. That the investigators needed the next thing, and then the next. She never said who decided what came next. I never asked.",
   ]),
   q("donovan", "People", "donovan_lockhart", "Have you met Dr. Lockhart?", [
-    "Once, at a Clearwater donor breakfast in October. She thanked me for my courage.",
+    "Once, at Clearwater's donor breakfast on October 18, for about five minutes. She asked what I did, and when I told her she said the people who keep the records are an institution's conscience. She never mentioned Meridian.",
     "I was flattered. I went home and told my mother.",
   ], {
     variants: [{
       requires: G.claireUnderstands,
-      reply: ["Once. At a breakfast in October. She thanked me for my courage.", "If those notes are hers, she had already chosen what my courage would copy."],
+      reply: ["Once. At the breakfast in October. She asked what I did and said the people who keep the records are an institution's conscience.", "If those notes are hers, she already knew exactly what I did when she asked."],
     }],
   }),
   q("donovan", "People", "donovan_benjamin", "What was Benjamin Sayer like as your supervisor?", [
@@ -761,14 +761,14 @@ export const questions: DialogueQuestion[] = [
   ]),
   q("donovan", "Her part", "donovan_ex", "Did you ever see the EX series?", [
     "Never. Bay C was Benjamin's, and only his card opened it.",
-    "I saw EX numbers on cover sheets filed behind some of the pages I copied. On December 1 I offered three of those pages to Miriam. She gave them back.",
+    "I saw EO-01 references on cover sheets filed behind some of the pages I copied. On December 1 I offered three of those pages to Miriam. She gave them back.",
   ]),
   q("donovan", "Earlier files", "donovan_copies", "Did you keep copies of the earlier records?", [
     "I kept copies of everything I ever touched; that was the point.",
     "Ask me for the one you need.",
   ]),
   q("donovan", "Earlier files", "donovan_courier", "Do you have the Capital Courier statement for the account that carried the leaks?", [
-    "Account 20417. I kept the statement, because I was the one handing over the envelopes.",
+    "Account 20417. Miriam gave me a copy of her courier statement after I was out.",
     "Here's my copy.",
   ], { requires: G.route("R08"), reveals: "Claire Donovan provided her copy of the Capital Courier statement for account 20417.", effects: [{ giveEvidence: "R08" }] }),
   q("donovan", "Earlier files", "donovan_register", "Do you have your own register of what you copied?", [
@@ -780,7 +780,7 @@ export const questions: DialogueQuestion[] = [
     "Take it.",
   ], { requires: G.route("R11"), reveals: "Claire Donovan provided her Executive Exposure Timeline.", effects: [{ giveEvidence: "R11" }] }),
   q("donovan", "Earlier files", "donovan_comparison", "Do you have your notes comparing the disclosures?", [
-    "My comparison notes. What went out, what was filed behind it, and what never went anywhere.",
+    "My comparison notes: my dates set against what Halvard did.",
     "Here.",
   ], { requires: G.route("R17"), reveals: "Claire Donovan provided her comparison notes.", effects: [{ giveEvidence: "R17" }] }),
   q("donovan", "People", "donovan_corbett", "Who could explain Meridian's retention rules and legal holds?", [
@@ -885,7 +885,7 @@ export const questions: DialogueQuestion[] = [
     "Benjamin was the only one who saw both halves.",
   ]),
   q("corbett", "The EX series", "corbett_ex", "Did the EX series really exist?", [
-    "It existed. I saw EX numbers on transmittals and cover sheets for years. I asked once what was in it and was told it was above my pay grade.",
+    "It existed. I saw EO-01 references on transmittals and cover sheets for years. I asked once what was in it and was told it was above my pay grade.",
     "I never saw a page of it.",
   ]),
   q("corbett", "Retention", "corbett_retention", "How does Meridian's retention policy work?", [
@@ -1168,20 +1168,20 @@ export const questions: DialogueQuestion[] = [
   q("kane", "His position", "kane_deal", "Are you cooperating?", ["His lawyer: 'We're talking to the government. Not to you.'"]),
 
   // =====================================================================
-  // Walter Ames: the accountant
+  // Walter Kiley: the accountant
   // =====================================================================
   q("ames", "About him", "ames_role", "What are you working on now?", [
     "Since Baltimore I've worked for the federal prosecutors, following the money from all of your cases into one set of books.",
     "I'm careful about what I tell you. Not because I don't trust you. Because a defense lawyer will ask.",
   ]),
   q("ames", "The trust file", "ames_trust", "What does the trust file show?", [
-    "A Delaware statutory trust, 2009. On paper the trustee owns Meridian and Dr. Lockhart owns nothing. Article VII gives the trust protector the power to direct distributions, appoint the managers and direct the business.",
+    "A Delaware statutory trust, 2009. On paper the trustee owns Meridian and Dr. Lockhart owns nothing. Article 4 gives the trust protector the power to direct distributions, appoint the managers and direct the business.",
     "The trustee acts on her written direction and isn't required to ask why. Control, cleanly hidden.",
   ], { requires: G.ch4 }),
   q("ames", "The money", "ames_match", "Do the trust's distributions match the reserved budgets?", [
     "Four directions in 2018, $1,100,000 each, $4,400,000 in all. The 2018 reserved budgets total $4,400,000. To the dollar.",
     "I've done this for twenty years. Numbers don't match like that by accident.",
-  ], { requires: ev("E033"), reveals: "Walter Ames: the four 2018 trust directions ($4,400,000) match the 2018 reserved budgets to the dollar." }),
+  ], { requires: ev("E033"), reveals: "Walter Kiley: the four 2018 trust directions ($4,400,000) match the 2018 reserved budgets to the dollar." }),
   q("ames", "The money", "ames_control", "Does financial control prove criminal command?", [
     "No. Control is not a crime by itself. A trust can direct money to a company that does perfectly lawful things.",
     "What it shows is who could direct the money. Whether what was directed was criminal is what the other records are for.",
@@ -1192,11 +1192,11 @@ export const questions: DialogueQuestion[] = [
   q("ames", "Earlier files", "ames_carroway", "Do you have your schedule of the Carroway onward payments?", [
     "My payment pattern schedule from the Carroway audit. I kept a copy; accountants always do.",
     "Here.",
-  ], { requires: G.route("R01"), reveals: "Walter Ames provided his Meridian payment pattern schedule from the Carroway audit.", effects: [{ giveEvidence: "R01" }] }),
+  ], { requires: G.route("R01"), reveals: "Walter Kiley provided his Meridian payment pattern schedule from the Carroway audit.", effects: [{ giveEvidence: "R01" }] }),
   q("ames", "Earlier files", "ames_freight", "How does the freight money connect to the finance network?", [
     "I traced it for the prosecutors after Baltimore: the intermediaries that paid the freight side, and where the money went next.",
-    "Here's the network as I drew it.",
-  ], { requires: G.route("R06"), reveals: "Walter Ames provided his tracing of the intermediary payment network.", effects: [{ giveEvidence: "R06" }] }),
+    "Here's BPD's schedule, with my tracing on it.",
+  ], { requires: G.route("R06"), reveals: "Walter Kiley provided his tracing of the intermediary payment network.", effects: [{ giveEvidence: "R06" }] }),
   q("ames", "Meridian", "ames_pryor", "Who runs Meridian on paper?", [
     "Malcolm Pryor, the managing director. He's abroad and represented.",
   ]),
@@ -1219,16 +1219,8 @@ export const questions: DialogueQuestion[] = [
   q("wexler", "About him", "wexler_safe", "How are you holding up?", [
     "Not well. I jump when the phone rings. Detective Caruso says that's normal. I don't think it is.",
   ]),
-  q("wexler", "Earlier files", "wexler_trustee", "Do you have Nathaniel's findings on the trustee's authority?", [
-    "The foundation trustee authorization. Nathaniel's research copy.",
-    "Here.",
-  ], { requires: G.route("R13"), reveals: "Simon Wexler provided Nathaniel Ogden's copy of the Foundation Trustee Authorization.", effects: [{ giveEvidence: "R13" }] }),
-  q("wexler", "Earlier files", "wexler_control", "Do you have the control agreement showing how control ran through intermediaries?", [
-    "The corporate control agreement, his copy, with his notes in the margin.",
-    "Here.",
-  ], { requires: G.route("R14"), reveals: "Simon Wexler provided Nathaniel Ogden's copy of the Corporate Control Agreement.", effects: [{ giveEvidence: "R14" }] }),
   q("wexler", "Earlier files", "wexler_comparison", "Do you have Nathaniel's comparison of the exposed executives?", [
-    "His comparison of the three men who went down this autumn, side by side. He started it the night Kane was arrested.",
+    "His comparison of the three men who went down this autumn, side by side. He started it on December 10.",
     "Here.",
   ], { requires: G.route("R16"), reveals: "Simon Wexler provided Nathaniel Ogden's Executive Exposure Comparison.", effects: [{ giveEvidence: "R16" }] }),
 
@@ -1247,6 +1239,15 @@ export const questions: DialogueQuestion[] = [
     "The letters from the recovered briefcase. They're evidence in my case, but the DA signed off on a copy for yours.",
     "Here.",
   ], { requires: G.route("R15"), reveals: "Det. Caruso released a copy of the Evelyn Lockhart correspondence from the recovered briefcase.", effects: [{ giveEvidence: "R15" }] }),
+  // The two trust papers came out of Halvard's binders after Nathaniel Ogden died; NYPD holds the subpoena copies.
+  q("caruso", "Earlier files", "wexler_trustee", "Do you have the trust protector authorization from the Ogden case?", [
+    "The trust protector authorization. It came out of Halvard's binders on the subpoena returns, after Ogden was dead. A clean copy, no notes on it.",
+    "The DA signed off on a copy for you. Here.",
+  ], { requires: G.route("R13"), reveals: "Det. Caruso released the subpoena copy of the Cardinal Point Trust's Trust Protector Authorization from the Ogden case.", effects: [{ giveEvidence: "R13" }] }),
+  q("caruso", "Earlier files", "wexler_control", "Do you have the control agreement showing how control ran through Halvard?", [
+    "The Class B rights agreement. Same subpoena returns, same Halvard binders. Clean copy.",
+    "Here.",
+  ], { requires: G.route("R14"), reveals: "Det. Caruso released the subpoena copy of the Class B Unitholder Rights Agreement from the Ogden case.", effects: [{ giveEvidence: "R14" }] }),
   q("caruso", "People", "caruso_marchetti", "Where does Marchetti stand in your case?", [
     "Out on bail since Christmas Eve. The DA has her for New York and your feds want her for everything else.",
     "Her lawyer is shopping for the best deal in two cities.",
@@ -1284,14 +1285,14 @@ export const questions: DialogueQuestion[] = [
   ]),
   q("sayer", "The register", "sayer_codes", "What were the executive codes?", [
     "A-1, the Chair. Then the operating codes: F-2 finance, I-3 intelligence, L-4 logistics, C-5 counsel, S-6 security. I held no code. I kept the book.",
-    "Each code had a card with a name and a specimen signature. The cards were in Bay C, and on my drive.",
+    "Each code had a card with a name and a specimen signature. The cards were in Bay C, and on my drive. File copies sent outside the executive floor show EO-01 in place of the A-1 code; that was Policy 7.",
   ]),
   q("sayer", "The register", "sayer_specimen", "Who signed the A-1 specimen card?", [
     "I watched it signed twice, at 1140 Fifth Avenue: April 6, 2009, and March 8, 2016. Dr. Lockhart signed it in front of me both times.",
     "That's what I saw. I never saw her sign a reserved matter. What the card means is for the records to show.",
   ], { requires: G.ch4, reveals: "Benjamin says he watched Dr. Lockhart sign the A-1 specimen card at 1140 Fifth Avenue in 2009 and 2016, and never saw her sign a reserved matter." }),
   q("sayer", "The register", "sayer_a_notes", "What were the A notes?", [
-    "The Chair's instructions. Typed on plain paper, signed 'A.' in ink, sealed, carried by courier. I logged a duplicate in the EX-CORR series and sent the original on.",
+    "The Chair's instructions. Most were typed on plain paper and signed 'A.' in ink; a few were printed and left unsigned. Sealed, carried by courier. I logged a duplicate in the EX-CORR series and sent the original on.",
     "Operators never contacted the Chair directly. That was the rule.",
   ]),
   q("sayer", "The register", "sayer_architect", "Who is the Architect?", [
@@ -1350,17 +1351,17 @@ export const questions: DialogueQuestion[] = [
     "S-6, from November 2016. He left a message on my machine on the 23rd about company property, in a voice that wanted me to know he knew where the machine was.",
   ]),
   q("sayer", "Earlier files", "sayer_clients", "Do you have the shared client register, the clients common to the cases?", [
-    "The shared client reference. I kept a printed copy in my satchel with the ledger.",
+    "The copy our archive held of the client register. I kept a printed copy in my satchel with the ledger.",
     "Ms. Chen, may I? Here.",
   ], { requires: G.route("R05"), reveals: "Benjamin provided the Shared Meridian Client Reference from his archive.", effects: [{ giveEvidence: "R05" }] }),
   q("sayer", "Earlier files", "sayer_checkout", "Do you have the checkout log showing who pulled the leaked originals?", [
-    "The checkout log. Every pull Claire made, with my initials approving it. I printed it in November because I wanted a record of what I'd done.",
+    "Gerald Lang's restored checkout log. My approvals are on the stack register that goes with it.",
     "Here.",
-  ], { requires: G.route("R07"), reveals: "Benjamin provided the archive checkout log of Claire Donovan's pulls.", effects: [{ giveEvidence: "R07" }] }),
+  ], { requires: G.route("R07"), reveals: "Benjamin provided Gerald Lang's restored checkout log of Claire Donovan's pulls.", effects: [{ giveEvidence: "R07" }] }),
   q("sayer", "Earlier files", "sayer_upward", "Do you have the authorization record that pointed above the operators?", [
-    "The one that points up. I kept the original, not a copy. It was never going to be released, so I made sure it was kept.",
+    "The one that points up. I kept a file copy of what Claire's cover sheets showed. It was never going to be released, so I made sure it was kept.",
     "Here.",
-  ], { requires: G.route("R12"), reveals: "Benjamin provided the original Unidentified Authorization Record from his archive.", effects: [{ giveEvidence: "R12" }] }),
+  ], { requires: G.route("R12"), reveals: "Benjamin provided his file copy of the Unidentified Authorization Record.", effects: [{ giveEvidence: "R12" }] }),
 
   // =====================================================================
   // Dr. Evelyn Lockhart: telephone from chapter 2, in person later
@@ -1409,7 +1410,7 @@ export const questions: DialogueQuestion[] = [
     "The company's insurers and the fire marshal will sort it out.",
   ]),
   q("lockhart", "People", "lockhart_donovan", "Have you met Claire Donovan?", [
-    "Once, at a Clearwater breakfast in October. A brave young woman. I thanked her for her courage, and I meant it.",
+    "Once, at a Clearwater breakfast in October. A thoughtful young woman. We spoke about record keeping for five minutes.",
   ]),
   q("lockhart", "People", "lockhart_marchetti", "What is your relationship with Elena Marchetti?", [
     "Elena was the foundation's outside counsel for many years. I haven't spoken to her since her arrest, as I understand her bail requires.",
@@ -1423,7 +1424,7 @@ export const questions: DialogueQuestion[] = [
     "I signed directions to my trustee, yes. That's what a trust protector does.",
     "What a company does with a distribution is the company's business.",
   ], { requires: ev("E033") }),
-  q("lockhart", "The foundation", "lockhart_courier", "Your courier account carried notes to Castell and Marchetti.", [
+  q("lockhart", "The foundation", "lockhart_courier", "Your foundation's courier account carried the December 21 note to Marchetti.", [
     "My office sends a great deal by courier: grant letters, board papers, birthday cards.",
     "I don't read waybills.",
   ], { requires: ev("E042") }),
@@ -1473,7 +1474,7 @@ export const reactions: EvidenceReaction[] = [
   r("bennett", "E021", ["Pike's own truck. On the 23rd, the 26th and the 28th. Men who use their own trucks aren't worried yet."]),
   // Donovan
   r("donovan", "E037", ["'Records to be copied by C. Donovan.' My name, typed, in September. Before Miriam ever asked me."], { reveals: "Claire sees her own name in the release program, dated before Castell first approached her." }),
-  r("donovan", "E052", ["'Thank Claire; tell her nothing.' She thanked me in person, too."]),
+  r("donovan", "E052", ["'Thank Claire; tell her nothing.' At that breakfast she asked me what I did. She already knew."]),
   r("donovan", "E056", ["December 1. 'Not now, not ever.' Those were the pages that pointed up, and they gave them back to me."]),
   r("donovan", "E051", ["That's what I wrote. Every word."]),
   r("donovan", "E002", ["The register. I never saw a page of it. I saw its numbers."]),
@@ -1527,8 +1528,8 @@ export const reactions: EvidenceReaction[] = [
   // Kane
   r("kane", "E035", ["'Pressure only.' It says so right there. Pressure is not killing."]),
   r("kane", "E048", ["My copy. 'Pressure only.' I never told anyone to kill that man."]),
-  // Ames
-  r("ames", "E043", ["Article VII. There's the control, in the trustee's own file."]),
+  // Kiley
+  r("ames", "E043", ["Article 4. There's the control, in the trustee's own file."]),
   r("ames", "E033", ["Four directions, $1,100,000 each. Put this next to the trust file and add."]),
   r("ames", "E041", ["A document examiner's 'strong support.' That's as strong as they ever say."]),
   // Wexler
@@ -1556,13 +1557,13 @@ export const reactions: EvidenceReaction[] = [
   r("lockhart", "E002", ["A page with codes on it. I don't know what any of it means."]),
   r("lockhart", "E028", ["Mr. Sayer stole, and now he is buying his freedom with what he stole."]),
   r("lockhart", "E045", ["Ms. Marchetti is buying her freedom. I'd expect her to say a great deal."]),
-  r("lockhart", "E051", ["Ms. Donovan copied documents for strangers. I admired her courage. I'm less sure now what it was."]),
+  r("lockhart", "E051", ["Ms. Donovan copied documents for strangers. I thought her a thoughtful young woman. I'm less sure now what she was."]),
   r("lockhart", "E030", ["A disgruntled man's homemade drive, examined at his own lawyer's insistence."]),
   r("lockhart", "E038", ["A card with my name typed on it. Anyone can type a name."]),
   r("lockhart", "E041", ["Support, not certainty. I've signed a great many things."]),
   r("lockhart", "E031", ["A register I've never seen, kept by a man who took it home."]),
   r("lockhart", "E057", ["A chart drawn from a thief's drive. Very tidy."]),
-  r("lockhart", "E052", ["Notes on my stationery. My stationery is in a great many offices."]),
+  r("lockhart", "E052", ["Typed notes with no signature, and two letters in a corner. Anyone can type, and anyone can write two letters."]),
   r("lockhart", "E037", ["A form I've never seen, about a program I've never heard of."]),
   r("lockhart", "E042", ["My office sends a great deal by courier. I telephone a great many people."]),
   r("lockhart", "E059", ["I asked that company property be recovered and that an obsolete records center be cleared. Companies do that.", "If Mr. Pike broke the law, Mr. Pike will answer."]),
@@ -1673,14 +1674,14 @@ export const contradictions: ContradictionDef[] = [
     id: "X_LOCKHART_ENVELOPE",
     characterId: "lockhart",
     title: "Dr. Lockhart: the envelope came with no name",
-    text: "Dr. Lockhart says the copied invoice in the Keller case reached her office with no name and no letter. A typed note to Miriam Castell on Lockhart Foundation paper, signed 'E.L.' and dated October 11, 2018, reads: 'The finance item, number 14-0412-117, to me at the Foundation first. I'll pass it on.'",
+    text: "Dr. Lockhart says the copied invoice in the Keller case reached her office with no name and no letter. Her own file copy of an unsigned note sent to Miriam Castell, initialed 'E.L.' and dated October 11, 2018, reads: 'The finance item, number 14-0412-117, goes to the Carroway fund's founding donor, the Lockhart Foundation, so the fund has to look at itself.'",
     when: { all: [{ asked: "lockhart_envelope" }, ev("E052")] },
   },
   {
     id: "X_LOCKHART_CLEARWATER",
     characterId: "lockhart",
     title: "Dr. Lockhart: Clearwater's program was its own work",
-    text: "Dr. Lockhart says Clearwater's program was its own work and she does not direct her grantees. Four typed notes to Miriam Castell, signed 'E.L.' and carried by the foundation's own courier account, tell Castell what to release, where to send it and when to stop: 'Thank Claire; tell her nothing.'",
+    text: "Dr. Lockhart says Clearwater's program was its own work and she does not direct her grantees. Her own file copies of four unsigned notes sent to Miriam Castell by bike messenger, each initialed 'E.L.', tell Castell what to release, where to send it and when to stop: 'Thank Claire; tell her nothing.'",
     when: { all: [{ asked: "lockhart_clearwater" }, ev("E052")] },
   },
   {
@@ -1735,7 +1736,7 @@ const KEYWORDS: Record<string, string> = {
   quinlan_castell: "castell miriam clearwater leaks leaked how were the leaks run her file cooperating notes release log",
   quinlan_witnesses: "witnesses hold up corroboration corroborated credible believable testimony summary",
   quinlan_index: "blackmail index compromising information index rourke case intelligence exhibits dirt leverage file",
-  quinlan_briggs: "briggs russell pressured pressure baltimore intelligence link reference terminal",
+  quinlan_briggs: "gaffney russell pressured pressure baltimore intelligence link reference terminal",
   quinlan_architect: "architect is lockhart the architect is it her who is behind it",
   quinlan_pike: "conrad pike background who is pike pike risk services",
   quinlan_marchetti: "marchetti elena status bail arrested arrest deal",
@@ -1760,16 +1761,16 @@ const KEYWORDS: Record<string, string> = {
   donovan_text: "text message threat threatened warning some records burn phone",
   donovan_part: "your part role leaks what did you do involvement account statement your side",
   donovan_copying: "copying how did you copy copy copies copied process pulled where did the copies go made after went took them",
-  donovan_footer: "mag-rm footer stamp copier mark",
+  donovan_footer: "mag-rm footer stamp copier mark collection box item number address",
   donovan_castell: "miriam castell what did she say tell you clearwater",
   donovan_lockhart: "dr lockhart evelyn met meet ever met breakfast",
   donovan_benjamin: "benjamin sayer supervisor boss what was he like",
-  donovan_ex: "ex series bay c ex numbered pages cover sheets",
+  donovan_ex: "ex series bay c ex numbered pages cover sheets eo-01 executive office",
   donovan_copies: "kept copies earlier records keep copy old files duplicates everything",
   donovan_courier: "courier statement capital courier account 20417 carried the leaks waybill delivery envelopes",
   donovan_register: "copy register record of what you copied log of copies list of copies what you copied",
   donovan_timeline: "timeline order exposed exposure sequence arrests order executives arrested arrest men wrote write down written",
-  donovan_comparison: "comparison notes comparing disclosures compare notes",
+  donovan_comparison: "comparison notes comparing disclosures compare notes dates halvard",
   donovan_corbett: "retention rules legal holds who could explain compliance corbett",
   donovan_release: "release program chose selected what you copied chosen",
   donovan_safe: "safe okay are you all right protection scared",
@@ -1791,7 +1792,7 @@ const KEYWORDS: Record<string, string> = {
   corbett_who: "who are you what did you do your job compliance",
   corbett_call: "contacted called anyone contact you threatened confidentiality reminder",
   corbett_bayc: "bay c access compliance cage",
-  corbett_ex: "ex series exist existed real",
+  corbett_ex: "ex series exist existed real eo-01",
   corbett_retention: "retention policy rules schedule how long kept disposal",
   corbett_hold: "legal hold what does a hold do lift hold release",
   corbett_schedule: "change schedule retention schedule signatures needed revise",
@@ -1857,14 +1858,14 @@ const KEYWORDS: Record<string, string> = {
   rourke_a1: "a-1 who signed who is code signature",
   rourke_lockhart: "dr lockhart evelyn",
   kane_orders: "orders who gave you orders boss told you instructions",
-  kane_harbor: "harbor program approved a-1 pressure briggs authorization",
+  kane_harbor: "harbor program approved a-1 pressure gaffney authorization",
   kane_navarro: "hector navarro killed death what about",
   kane_meridian: "meridian arrangement agreement relationship",
   kane_a1: "a-1 who is heard of code mean",
   kane_form: "your copy form harbor form approved a-1 yellow",
   kane_deal: "cooperating deal talk government",
   ames_role: "working on now what are you doing job role",
-  ames_trust: "trust file show trust document article vii what does the trust say",
+  ames_trust: "trust file show trust document article 4 article four what does the trust say",
   ames_match: "distributions match reserved budgets add up 4,400,000 trust money budget",
   ames_control: "financial control prove criminal command crime control prove",
   ames_settlor: "trust protector settlor what is",
@@ -1875,8 +1876,8 @@ const KEYWORDS: Record<string, string> = {
   wexler_copies: "research still have copies nathaniel's work files",
   wexler_brandywine: "trustee reach brandywine contact the trustee",
   wexler_safe: "holding up okay how are you",
-  wexler_trustee: "trustee authority findings trustee authorization foundation trustee",
-  wexler_control: "control agreement intermediaries corporate control how control was exercised",
+  wexler_trustee: "trustee authority findings trustee authorization foundation trustee trust protector authorization protector article 4 subpoena halvard binders",
+  wexler_control: "control agreement intermediaries corporate control how control was exercised class b unitholder rights agreement halvard subpoena",
   wexler_comparison: "comparison exposed executives compare executives",
   caruso_case: "ogden case status where stands knox charged",
   caruso_knox: "knox say who sent him counsel scare",
@@ -1923,7 +1924,7 @@ const KEYWORDS: Record<string, string> = {
   lockhart_marchetti: "elena marchetti relationship lawyer counsel",
   lockhart_operators: "holt rourke kane operators executives men",
   lockhart_directions: "directions trustee signed 2018 distributions",
-  lockhart_courier: "courier account waybill notes castell marchetti capital courier 18850",
+  lockhart_courier: "courier account waybill note marchetti december 21 capital courier 18850",
   lockhart_calls: "called pike phone calls december 22 26 28 telephone",
   lockhart_signature: "signature laboratory compared match handwriting",
   lockhart_command: "register approved every reserved matter command",

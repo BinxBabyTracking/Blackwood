@@ -41,7 +41,7 @@ export const characters: CharacterDef[] = [
     bio: [
       { text: "Forty-six. Controller of the Carroway Community Foundation for eleven years. Lived at 23 Orchard Street, Carroway. Hannah Keller's father." },
       { text: "Found dead in his office on the second floor of the Mercantile Building at 6:40 AM on Friday, November 9, 2018." },
-      { text: "Had an appointment with Walter Ames, CPA, at 9:00 AM that Friday.", requires: { any: [ev("E009"), ev("E010")] } },
+      { text: "Had an appointment with Walter Kiley, CPA, at 9:00 AM that Friday.", requires: { any: [ev("E009"), ev("E010")] } },
       { text: "Kept a hidden ledger of fund payments from July 23, 2018.", requires: ev("E011") },
     ],
     available: never,
@@ -194,11 +194,11 @@ export const characters: CharacterDef[] = [
   },
   {
     id: "ames",
-    name: "Walter Ames",
-    role: "Partner, Ames and Kiley CPAs",
+    name: "Walter Kiley",
+    role: "Partner, Kiley and Strand CPAs",
     portrait: "char.ames",
     bio: [
-      { text: "Forty-three. Partner at Ames and Kiley, Certified Public Accountants, 4th floor, 310 Grant Street, Pittsburgh." },
+      { text: "Forty-three. Partner at Kiley and Strand, Certified Public Accountants, 4th floor, 310 Grant Street, Pittsburgh." },
       { text: "Martin Keller's appointment at 9:00 AM on Friday, November 9. Martin never arrived." },
     ],
     available: { always: true },
@@ -215,7 +215,7 @@ export const characters: CharacterDef[] = [
     },
     demeanor: [
       { id: "careful", label: "Careful", requires: { always: true } },
-      { id: "engaged", label: "Engaged", requires: { any: [ev("E011"), ev("E013"), { flag: "bank_records" }] }, cue: "Ames clears a space on his desk and uncaps a pen." },
+      { id: "engaged", label: "Engaged", requires: { any: [ev("E011"), ev("E013"), { flag: "bank_records" }] }, cue: "Kiley clears a space on his desk and uncaps a pen." },
     ],
   },
   {
@@ -627,7 +627,7 @@ export const questions: DialogueQuestion[] = [
     "Mr. Holt was the administrator the foundation in Carroway chose. We relied on their oversight, as donors do.",
   ]),
   q("lockhart", "The fund", "lockhart_meridian", "Have you heard of Meridian Advisory Group?", [
-    "I've heard of Meridian as a consulting firm. I couldn't tell you more than that.",
+    "I was involved with Meridian a long time ago, when it was small. I have no role there now, and I don't follow its business.",
   ]),
   q("lockhart", "The envelope", "lockhart_waybill", "What about the courier waybill and the marks on the copy?", [
     "I really couldn't say.",
@@ -638,10 +638,10 @@ export const questions: DialogueQuestion[] = [
   ], { requiresDeductions: ["D09"] }),
 
   // =====================================================================
-  // Walter Ames: the auditor
+  // Walter Kiley: the auditor
   // =====================================================================
-  q("ames", "About him", "ames_who", "What do you do, Mr. Ames?", [
-    "I'm a partner here at Ames and Kiley. Audits, mostly for nonprofits, and the occasional forensic engagement when something looks wrong.",
+  q("ames", "About him", "ames_who", "What do you do, Mr. Kiley?", [
+    "I'm a partner here at Kiley and Strand. Audits, mostly for nonprofits, and the occasional forensic engagement when something looks wrong.",
   ]),
   q("ames", "Martin", "ames_call", "How did you know Martin Keller?", [
     "He called me at the end of October. We'd met at a nonprofit finance seminar years ago. He was careful not to say much on the phone.",
@@ -650,14 +650,14 @@ export const questions: DialogueQuestion[] = [
     "On Tuesday, November 6, at 10:14 at night. He asked to meet outside his office, in confidence. Here's a copy.",
     "Read the last line. I've read it a dozen times.",
   ], {
-    reveals: "Walter Ames handed over Martin's email of Tuesday, November 6, asking for a confidential meeting.",
-    effects: [{ giveEvidence: "E010" }, tl("10:14 PM (Tue 11/6)", "Martin emails Walter Ames asking for an urgent, confidential meeting.", "Martin's email")],
+    reveals: "Walter Kiley handed over Martin's email of Tuesday, November 6, asking for a confidential meeting.",
+    effects: [{ giveEvidence: "E010" }, tl("10:14 PM (Tue 11/6)", "Martin emails Walter Kiley asking for an urgent, confidential meeting.", "Martin's email")],
     volunteer: { after: 1 },
   }),
   q("ames", "Martin", "ames_friday", "What happened on Friday morning?", [
     "I waited for him at nine. By nine thirty I called his cell. Then again at ten. No answer.",
     "I read about it that evening.",
-  ], { reveals: "Ames waited for Martin at 9:00 AM on Friday, November 9, and called his cell twice with no answer.", effects: [tl("9:00 AM (Fri 11/9)", "Walter Ames waits for Martin, who never arrives. Ames calls his cell twice.", "Walter Ames")] }),
+  ], { reveals: "Kiley waited for Martin at 9:00 AM on Friday, November 9, and called his cell twice with no answer.", effects: [tl("9:00 AM (Fri 11/9)", "Walter Kiley waits for Martin, who never arrives. Kiley calls his cell twice.", "Walter Kiley")] }),
   q("ames", "The money", "ames_passthrough", "What is a pass-through payment?", [
     "Money goes to a company that keeps a little and sends the rest on somewhere else. The middle company is a door.",
     "Doors aren't illegal. But you ask why the money needs one.",
@@ -731,7 +731,7 @@ export const questions: DialogueQuestion[] = [
     "Martin Keller badged in at 7:42 that morning. After the doors locked at six, nobody came in the front till the cleaner Friday.",
   ]),
   q("avery", "Friday", "avery_cleaner", "Who found Martin?", [
-    "Rosa Delgado, the cleaner. She badged in at 6:38 Friday morning and found him a couple minutes later. Called 911. Good woman. She hasn't been back.",
+    "Dorota Wisniewski, the cleaner. She badged in at 6:38 Friday morning and found him a couple minutes later. Called 911. Good woman. She hasn't been back.",
   ]),
   q("avery", "The lot", "avery_camera", "Are there cameras on the lot?", [
     "Not ours. The owner won't pay for them. The bank across the alley has one on its drive-through lane. That's a police request, not mine.",
@@ -811,15 +811,15 @@ export const questions: DialogueQuestion[] = [
     variants: [
       { requires: { deduction: "D01" }, reply: ["One folder from one drawer. That's not a burglar. I've stopped writing 'burglary' on anything I sign."] },
       { requires: { deduction: "D06" }, reply: ["Reddick's card, at 8:31, and the back door opening from inside at 8:57. I'm pulling the bank camera."] },
-      { requires: { flag: "bank_records" }, reply: ["Subpoenas are served. Ames has the bank records. Now it's about the money as much as the man."] },
+      { requires: { flag: "bank_records" }, reply: ["Subpoenas are served. Kiley has the bank records. Now it's about the money as much as the man."] },
     ],
   }),
   q("bowman", "Reports", "bowman_report", "Can I see the police report?", [
-    "Here. Rosa Delgado, the cleaner, found him at 6:40 Friday morning. 911 at 6:43.",
+    "Here. Dorota Wisniewski, the cleaner, found him at 6:40 Friday morning. 911 at 6:43.",
     "Read my note at the bottom. It's the part that keeps me up.",
   ], {
     reveals: "Det. Bowman handed over the incident report: Martin was found at 6:40 AM on Friday, November 9; 911 was called at 6:43.",
-    effects: [{ giveEvidence: "E001" }, tl("6:40 AM (Fri 11/9)", "The cleaner, Rosa Delgado, finds Martin. 911 at 6:43 AM.", "Police report")],
+    effects: [{ giveEvidence: "E001" }, tl("6:40 AM (Fri 11/9)", "The cleaner, Dorota Wisniewski, finds Martin. 911 at 6:43 AM.", "Police report")],
     volunteer: { after: 1 },
   }),
   q("bowman", "Reports", "bowman_photos", "Can I see the scene photographs?", [
@@ -827,7 +827,7 @@ export const questions: DialogueQuestion[] = [
   ], { reveals: "Det. Bowman handed over the crime scene photographs.", effects: [{ giveEvidence: "E002" }] }),
   q("bowman", "Reports", "bowman_autopsy", "What did the medical examiner find?", [
     "One blow, left side of the head, something heavy with a hard edge. No defensive injuries. Death between about eight and ten Thursday night.",
-    "No weapon at the scene. Here's Dr. Okafor's summary.",
+    "No weapon at the scene. Here's Dr. Adeyemi's summary.",
   ], {
     reveals: "The medical examiner found a single blow to the head from a heavy object with a hard, angular edge; death between about 8:00 and 10:00 PM Thursday.",
     effects: [{ giveEvidence: "E003" }, tl("8:00 to 10:00 PM (Thu 11/8)", "Medical examiner's window for Martin's death.", "ME summary")],
@@ -884,10 +884,10 @@ export const questions: DialogueQuestion[] = [
   q("bowman", "Money", "bowman_subpoena", "Can you get the three firms' bank records?", [
     "Not on a theory. A judge wants to see money moving between people who've got no business paying each other. Bring me that and I'll write the affidavit that afternoon.",
   ], {
-    variants: [{ requires: { flag: "bank_records" }, reply: ["Done. Served on all three banks. Walter Ames is building the schedule."] }],
+    variants: [{ requires: { flag: "bank_records" }, reply: ["Done. Served on all three banks. Walter Kiley is building the schedule."] }],
   }),
   q("bowman", "Money", "bowman_bank", "What did the subpoenas turn up?", [
-    "The banks produced. I sent everything to Walter Ames, because I'm a detective, not an accountant. His schedule will come to your desk.",
+    "The banks produced. I sent everything to Walter Kiley, because I'm a detective, not an accountant. His schedule will come to your desk.",
   ], { requires: { flag: "bank_records" }, volunteer: { after: 1 } }),
 
   // =====================================================================
@@ -963,7 +963,7 @@ export const questions: DialogueQuestion[] = [
   ], { requiresEvidence: ["E028"] }),
   q("bennett", "The case", "bennett_again", "Anything new on your side?", ["Nothing new. I'm waiting on you."], {
     repeatable: true,
-    variants: [{ requires: { flag: "bank_records" }, reply: ["Bowman's got the bank records and Ames is doing the arithmetic. Watch your desk."] }],
+    variants: [{ requires: { flag: "bank_records" }, reply: ["Bowman's got the bank records and Kiley is doing the arithmetic. Watch your desk."] }],
   }),
 ];
 
@@ -1022,8 +1022,8 @@ export const reactions: EvidenceReaction[] = [
   r("lockhart", "E030", ["Yes, that's what reached my office. I'm glad it's with someone who'll know what to do with it."]),
   r("lockhart", "E017", ["The same suite as Mr. Holt's office. I see. That does seem worth understanding."]),
   r("lockhart", "E013", ["'Notify the founding donor.' He meant to. I'm so sorry he didn't have the chance."]),
-  r("lockhart", "E018", ["I'm afraid I'm not the person to interpret these. Mr. Ames would be."]),
-  // Ames
+  r("lockhart", "E018", ["I'm afraid I'm not the person to interpret these. Mr. Kiley would be."]),
+  // Kiley
   r("ames", "E011", ["This is careful work. Every column an auditor would want.", "His last question is the right question."]),
   r("ames", "E013", ["That's what he was bringing me on Friday."]),
   r("ames", "E012", ["He called the grantees. Good. That's evidence of absence, which is harder to get than people think."]),

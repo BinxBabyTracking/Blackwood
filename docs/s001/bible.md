@@ -47,7 +47,7 @@ Kept: Claire Donovan, Gabriel Knox, Meridian Advisory Group, Martin Keller, Paul
 | Case | Brief | Now |
 | --- | --- | --- |
 | C01 | Rebecca Keller | Hannah Keller |
-| C01 | Daniel Brooks (auditor) | Walter Ames |
+| C01 | Daniel Brooks (auditor) | Walter Kiley |
 | C01 | Thomas Avery | Stanley Avery |
 | C01 | Det. Robert Hayes | Det. Curtis Bowman |
 | C01 | Michael Foster | Warren Foster |
@@ -84,7 +84,7 @@ Kept: Claire Donovan, Gabriel Knox, Meridian Advisory Group, Martin Keller, Paul
 | C06 | Special Agent Rebecca Stone | Special Agent Teresa Quinlan |
 | C06 | Caroline Mercer | Caroline Oduya |
 
-Unchanged: Susan Whitfield, Angela Morris, Vince Sullivan (renamed from Frank in the C03 design: Bennett is Frank), Victoria Lane, James Porter. Characters who return in later cases carry their new names (Irene Chen, Walter Ames, Simon Wexler, Alan Corbett, Det. Caruso). Names were checked against the C001 to C006 design docs; search the repo for each surname before building, since C001's and C004's full casts live there.
+Unchanged: Susan Whitfield, Angela Morris, Vince Sullivan (renamed from Frank in the C03 design: Bennett is Frank), Victoria Lane, James Porter. Characters who return in later cases carry their new names (Irene Chen, Walter Kiley, Simon Wexler, Alan Corbett, Det. Caruso). Names were checked against the C001 to C006 design docs; search the repo for each surname before building, since C001's and C004's full casts live there.
 
 **"A" stays "A".** No principal's name starts with A except Adrian Holt, which is now a deliberate red herring: the first "A" message (C02) is dated after Holt's arrest, so a careful player can rule him out.
 
@@ -255,20 +255,20 @@ So a player who missed something in C01 is never stuck in C06.
 
 | Record | Who has it in C06 | Why they have it |
 | --- | --- | --- |
-| C01-E029 Meridian Payment Pattern | Walter Ames | His working copy from the Carroway audit |
+| C01-E029 Meridian Payment Pattern | Walter Kiley | His working copy from the Carroway audit |
 | C01-E030 Lockhart referral note | Bennett | It was delivered to the agency in C01; if never opened, it is still sealed in the Keller file |
 | C02-E035 Compromising Information Index | Agent Quinlan | Exhibit in the federal case against Rourke |
 | C03-E033 Rourke reference on Gaffney | Agent Quinlan | The Baltimore case was folded into the federal case |
-| C03-E037 Shared Meridian Client Reference | Benjamin Sayer | His archive holds the client register |
-| C03-E038 Intermediary Payment Network | Walter Ames | He traced it for the prosecutors after C03 |
-| C04-E017 Archive checkout log | Benjamin Sayer | He approved the archive's transfers |
-| C04-E018 Courier statement | Claire Donovan | She kept a copy |
+| C03-E037 Shared Meridian Client Reference | Benjamin Sayer | His archive held a copy of the client register |
+| C03-E038 Intermediary Payment Network | Walter Kiley | He traced it for the prosecutors after C03 |
+| C04-E017 Archive checkout log | Benjamin Sayer | G. Lang's restored log; his approvals are on the stack register |
+| C04-E018 Courier statement | Claire Donovan | Miriam Castell gave her a copy after her rescue |
 | C04-E022 Missing Document Sequence | Alan Corbett | He reconstructed it from compliance records |
 | C04-E038 Claire's copy register | Claire Donovan | It is hers |
 | C04-E039 Executive Exposure Timeline | Claire Donovan | She wrote it |
-| C04-E040 Unidentified Authorization Record | Benjamin Sayer | The original is in his archive |
-| C05-E035 Foundation Trustee Authorization | Simon Wexler | Nathaniel's research copies |
-| C05-E039 Corporate Control Agreement | Simon Wexler | Same |
+| C04-E040 Unidentified Authorization Record | Benjamin Sayer | His file copy of what Claire's cover sheets showed |
+| C05-E035 Foundation Trustee Authorization | Det. Caruso | Subpoena returns: found in Halvard's binders after Nathaniel died |
+| C05-E039 Corporate Control Agreement | Det. Caruso | Subpoena returns: same binders |
 | C05-E040 Evelyn Lockhart Correspondence | Det. Caruso | It was in the recovered briefcase |
 | C05-E043 Executive Exposure Comparison | Simon Wexler | Nathaniel's research copies |
 | C05-E044 Claire's Comparison Notes | Claire Donovan | They are hers |
@@ -362,6 +362,10 @@ Renames made while building, beyond section 2:
 | C06 | Travis Mabry | Travis Dunleavy | C03's Otis Mabry |
 | C06 | Priya Raman | Priya Natarajan | C05's Raman |
 | C06 | Samira Haddad | Samira Qureshi | C05's Joyce Haddad |
+| C01 | Rosa Delgado (cleaner) | Dorota Wisniewski | C001 has a Rosa Delgado |
+| C01 | Dr. H. Okafor (ME) | Dr. H. Adeyemi | C002 has an R. Okafor |
+| C01, C03, C06 | Walter Ames, Ames and Kiley CPAs | Walter Kiley, Kiley and Strand CPAs (character id `ames` kept) | C004 has a Dr. Walter Ames |
+| C004 (not S001) | Leon Marchetti, City Chemist; Miss G. Pike, stenographer | Leon Tessaro; Miss G. Thornbury | Marchetti and Pike are S001 principals |
 
 Continuity settled while building:
 
@@ -369,6 +373,13 @@ Continuity settled while building:
 - Gaffney's Meridian file is CI-2017-0384 in C02, C03 and C06.
 - The ownership structure is C05's in C06 too: Cardinal Point Trust (formed June 30, 2009; administrative trustee Brandywine Fiduciary Company; special trustee Elena Marchetti; Evelyn Lockhart settlor and Trust Protector) over Fifth Avenue Endowment GP, Lockhart Endowment Partners and Halvard Holdings, which holds every Class B (voting) unit of Meridian.
 - Claire met Evelyn once, at the Clearwater donor breakfast on Oct 18: Evelyn asked what she did and never mentioned Meridian (C04 and C05).
+- Castell never knew the source: the notes reached her unsigned, typed, by bike messenger, and she burned them (C04). C06-E052 is Evelyn's own file copies, initialed "E.L." on the copies only.
+- Lockhart never flatly denies Meridian: C01 "I was involved with Meridian a long time ago, when it was small"; C04 "I had a hand in starting it, years ago."
+- The Records Center is 3900 Brookfield Corporate Drive, Chantilly; Meridian headquarters is 1620 K Street, floors eight to ten, the executive floor the tenth.
+- The Cardinal Point Trust's protector powers are Article 4, its secrecy clause Article 9 (C05, C06).
+- File copies of A-1 approvals sent outside the executive floor read EO-01 (C04-E040); the register reads A-1 (C06). Most "A." notes are typed and signed in ink; a few, including the Nov 19 card (C02-E036), were printed and unsigned.
+- EX-2018-019 (Mar 12, 2018) renews EX-2017-061 (Oct 16, 2017); the pressure on Gaffney began Oct 17, 2017 (C02, C03).
+- Holt is held in Carroway County Prison; Kane is held in Baltimore on state charges with HSI's federal case pending; Rourke is in federal detention.
 - Claire's character id is `donovan` in every case. Each recurring person keeps one voice across the series.
 - C04 starts at the cafe; the office and the rolling board are reachable from it.
 - Recovered records in C06 are local ids R01 to R17 with a `canonical` id, so the rolling board treats each as the original.

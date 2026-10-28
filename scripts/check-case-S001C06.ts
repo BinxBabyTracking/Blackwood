@@ -58,6 +58,8 @@ export const S001C06_CHECK: SeriesCaseConfig = {
     ["ames", "What are you working on now?", "ames_role"],
     ["wexler", "Did Nathaniel ever reach the trustee?", "wexler_brandywine"],
     ["caruso", "Where does the Ogden case stand?", "caruso_case"],
+    ["caruso", "Do you have the trust protector authorization?", "wexler_trustee"],
+    ["caruso", "Do you have the Class B rights agreement?", "wexler_control"],
     ["sayer", "Why did you copy the executive volume?", "sayer_exports"],
     ["sayer", "What do you know about Conrad Pike?", "sayer_pike"],
     ["lockhart", "What's your connection to Meridian?", "lockhart_meridian"],

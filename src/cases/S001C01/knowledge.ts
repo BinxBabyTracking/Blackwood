@@ -45,9 +45,9 @@ export const PERSONA: Record<string, string> = {
   reddick:
     "Paul Reddick, 38, owner of Reddick Maintenance Services on Route 30 East, Carroway; the Mercantile Building's maintenance contractor since April 2018. Easygoing, friendly in a work-shirt way, short answers, a Steelers fan. His story: he serviced the boiler from 1:00 to 4:30 PM on Thursday, went home, was home by five, alone, and watched the game. Has a 24-hour card because he's maintenance, 'everybody knows that.' Pressed with the door log, says he 'might have swung by' but never went in. The $9,500 is 'the HVAC job, ask Tri-County.' Gets guarded, then hostile. Never confesses and never explains anything he hasn't been shown.",
   lockhart:
-    "Dr. Evelyn Lockhart, 52, founder of the Lockhart Foundation, 1140 Fifth Avenue, New York, founding donor of the Carroway fund. Speaks by telephone. Composed, gracious, precise, warm in a measured way. The envelope reached her office weeks ago with no name and no letter; she did not know what to make of it and set it aside; after reading about Martin she felt the investigator should have it. Thinks Tri-County 'deserves a closer look.' Her foundation has supported the fund since 2014; Holt was the administrator the Carroway foundation chose; she has heard of Meridian as a consulting firm. Does not know who sent the envelope. On the courier waybill or the copy's footer she says only 'I really couldn't say.' Never claims to know anything further.",
+    "Dr. Evelyn Lockhart, 52, founder of the Lockhart Foundation, 1140 Fifth Avenue, New York, founding donor of the Carroway fund. Speaks by telephone. Composed, gracious, precise, warm in a measured way. The envelope reached her office weeks ago with no name and no letter; she did not know what to make of it and set it aside; after reading about Martin she felt the investigator should have it. Thinks Tri-County 'deserves a closer look.' Her foundation has supported the fund since 2014; Holt was the administrator the Carroway foundation chose; she was involved with Meridian long ago, when it was small, has no role there now and doesn't follow its business. Does not know who sent the envelope. On the courier waybill or the copy's footer she says only 'I really couldn't say.' Never claims to know anything further.",
   ames:
-    "Walter Ames, 43, partner at Ames and Kiley, Certified Public Accountants, 310 Grant Street, Pittsburgh. Careful, kind, exact; explains money in plain words without jargon. Martin called him at the end of October and emailed on November 6 asking to meet; Ames waited for him at 9:00 AM on Friday, November 9, and called his cell twice. Will not accuse anyone; says what records show and what they cannot. Never met Holt.",
+    "Walter Kiley, 43, partner at Kiley and Strand, Certified Public Accountants, 310 Grant Street, Pittsburgh. Careful, kind, exact; explains money in plain words without jargon. Martin called him at the end of October and emailed on November 6 asking to meet; Kiley waited for him at 9:00 AM on Friday, November 9, and called his cell twice. Will not accuse anyone; says what records show and what they cannot. Never met Holt.",
   avery:
     "Stanley Avery, 61, security supervisor for the Mercantile Building's owner. Gruff, plain, retired-cop manner, proud of his card system. Front doors on Market Street lock at 6:00 PM; the rear service door on Mulberry Alley logs every card and every opening. Thinks maintenance access is irrelevant because maintenance 'comes and goes at all hours.' Warms up and becomes helpful once he has printed the log.",
   morris:
@@ -135,12 +135,12 @@ export const KNOWLEDGE: Record<string, Fact[]> = {
     f("I don't know who sent it.", lockhartLead, "lockhart_sender"),
     f("The contractor named on that invoice, Tri-County, deserves a closer look.", lockhartLead, "lockhart_tricounty"),
     f("Mr. Holt was the administrator the foundation in Carroway chose. We relied on their oversight.", lockhartLead, "lockhart_holt"),
-    f("I've heard of Meridian as a consulting firm. I couldn't tell you more than that.", lockhartLead, "lockhart_meridian"),
+    f("I was involved with Meridian a long time ago, when it was small. I have no role there now, and I don't follow its business.", lockhartLead, "lockhart_meridian"),
     f("The courier slip, the marks on the copy: I really couldn't say.", lockhartLead, "lockhart_waybill"),
     f("If Mr. Holt controlled those payments, that is very troubling, and I'm grateful someone is looking carefully.", { deduction: "D09" }, "lockhart_control"),
   ],
   ames: [
-    f("Walter Ames, Ames and Kiley, CPAs, fourth floor, 310 Grant Street. We do audits and forensic work for nonprofits.", undefined, "ames_who"),
+    f("Walter Kiley, Kiley and Strand, CPAs, fourth floor, 310 Grant Street. We do audits and forensic work for nonprofits.", undefined, "ames_who"),
     f("Martin Keller called me at the end of October. He was careful not to say much on the phone.", undefined, "ames_call"),
     f("Martin emailed me on Tuesday, November 6, at 10:14 PM, asking to meet in confidence. You can have a copy.", undefined, "ames_email", [{ giveEvidence: "E010" }]),
     f("I waited for Martin at nine on Friday, November 9. He didn't come. I called his cell twice and got no answer.", undefined, "ames_friday"),
@@ -162,7 +162,7 @@ export const KNOWLEDGE: Record<string, Fact[]> = {
     f("Maintenance comes and goes at all hours. Boilers don't keep office hours. That's normal.", undefined, "avery_maintenance"),
     f("REX is request to exit, the push bar. The door logs that it opened. It doesn't know who walked out.", { asked: "avery_doors" }, "avery_rex"),
     f("Martin Keller badged in at the front at 7:42 Thursday morning. Nobody came in the front after six.", undefined, "avery_front"),
-    f("The cleaner, Rosa Delgado, badged in at 6:38 Friday morning. She found him.", undefined, "avery_cleaner"),
+    f("The cleaner, Dorota Wisniewski, badged in at 6:38 Friday morning. She found him.", undefined, "avery_cleaner"),
     f("The building has no camera on the lot. The bank across the alley has one on its drive-through. That's for the police to ask.", undefined, "avery_camera"),
     f("Reddick got the maintenance contract in April on the foundation's recommendation. Holt, I think.", reddickKnown, "avery_reddick"),
     f("Mr. Keller worked late plenty. Nice man. Always said good night.", undefined, "avery_martin"),
@@ -198,7 +198,7 @@ export const KNOWLEDGE: Record<string, Fact[]> = {
     f("Reddick handed over his boots without a fuss. The county lab has them; the report comes when it's done.", { labStarted: "footwear" }, "bowman_lab"),
     f("Warren Foster was at the middle school concert Thursday, seven to nine fifteen. I checked. Two teachers and the principal saw him.", ev("E028"), "bowman_foster"),
     f("Give me a payment that ties Holt's money to Reddick and a judge will sign subpoenas for the banks.", undefined, "bowman_subpoena"),
-    f("The subpoenas are served on the three firms' banks. Walter Ames is building the schedule.", { flag: "bank_records" }, "bowman_bank"),
+    f("The subpoenas are served on the three firms' banks. Walter Kiley is building the schedule.", { flag: "bank_records" }, "bowman_bank"),
   ],
   foster: [
     f("Warren Foster. Foster's Hardware and Supply. My dad opened it. I run it.", ev("E028"), "foster_who"),
@@ -220,6 +220,6 @@ export const KNOWLEDGE: Record<string, Fact[]> = {
     f("The Lockhart Foundation is a private foundation on Fifth Avenue. Its public filings show grants to the Carroway fund since 2014.", lockhartLead, "bennett_lockhart"),
     f("The courier account on that waybill is a business account with no public listing. That's all I can get.", ev("E030"), "bennett_courier"),
     f("Warren Foster: no record. Third-generation hardware store. Detective Bowman can tell you where he was.", ev("E028"), "bennett_foster"),
-    f("Bowman has the bank records and Walter Ames is doing the arithmetic.", { flag: "bank_records" }, "bennett_again"),
+    f("Bowman has the bank records and Walter Kiley is doing the arithmetic.", { flag: "bank_records" }, "bennett_again"),
   ],
 };

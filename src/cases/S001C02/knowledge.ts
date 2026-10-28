@@ -280,7 +280,7 @@ export const KNOWLEDGE: Record<string, Fact[]> = {
     f("Northgate Bridge Lending: a Maryland LLC formed March 2017. Resident agent Garrett M. Lyons, Kestrel's suite.", ev("E019"), "bennett_northgate"),
     f("Briarfield Holdings: Maryland LLC, same resident agent, Garrett M. Lyons.", ev("E028"), "bennett_briarfield"),
     f("Corvane Systems is a defense logistics contractor, Eastbridge's competitor on the recompete.", ev("E018"), "bennett_corvane"),
-    f("Adrian Holt has been held without bail in the Carroway County Jail since Thursday the 15th.", undefined, "bennett_holt"),
+    f("Adrian Holt has been held without bail in the Carroway County Prison since Thursday the 15th.", undefined, "bennett_holt"),
     f("Courier account 20417 is a business account with no public listing. Same as I told you in Carroway.", ev("E033"), "bennett_courier"),
     f("Jonathan Ellery: no record. Cleared employee at a defense contractor. Lives in Clarendon.", undefined, "bennett_jonathan"),
     f("Kevin Hurst: no criminal record. A couple of small-claims judgments from a payday lender.", hurstKnown, "bennett_hurst"),

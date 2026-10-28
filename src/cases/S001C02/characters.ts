@@ -1212,7 +1212,7 @@ export const questions: DialogueQuestion[] = [
     "Defense logistics contractor. Eastbridge's competitor on the recompete. Public company filings, nothing interesting in them.",
   ], { requires: ev("E018") }),
   q("bennett", "Records", "bennett_holt", "Where is Adrian Holt?", [
-    "Held without bail in the Carroway County Jail since Thursday the 15th. He's not going anywhere.",
+    "Held without bail in the Carroway County Prison since Thursday the 15th. He's not going anywhere.",
   ]),
   q("bennett", "Records", "bennett_courier", "Can you trace the courier waybill?", [
     "Capital Courier, account 20417. A business account with no public listing. Same as I told you in Carroway.",

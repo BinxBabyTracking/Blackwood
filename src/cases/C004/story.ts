@@ -297,7 +297,7 @@ export const deliveries: DeliveryDef[] = [
     id: "lab_weight",
     title: "City Chemist's report",
     exterior: "A police department envelope stamped OFFICE OF THE CITY CHEMIST.",
-    text: "Officer Keene's note on the envelope: 'Marchetti ran your brass weight. Read what it says and what it doesn't. T.K.'",
+    text: "Officer Keene's note on the envelope: 'Tessaro ran your brass weight. Read what it says and what it doesn't. T.K.'",
     evidence: ["E19"],
   },
   {

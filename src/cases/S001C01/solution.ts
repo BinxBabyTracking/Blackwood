@@ -23,7 +23,7 @@ export const deductions: DeductionDef[] = [
     id: "D02",
     code: "D02",
     title: "Martin Was Investigating the Fund",
-    text: "Martin was tracing more than $400,000 the Recovery Fund paid to three outside firms, money that went on to a consulting firm in Pittsburgh. He had booked an independent auditor, Walter Ames, for 9:00 on Friday morning. He died the night before.",
+    text: "Martin was tracing more than $400,000 the Recovery Fund paid to three outside firms, money that went on to a consulting firm in Pittsburgh. He had booked an independent auditor, Walter Kiley, for 9:00 on Friday morning. He died the night before.",
     connections: [["E010", "E013"], ["E013", "E011"], ["E010", "E014"]],
   },
   {
@@ -271,7 +271,7 @@ export const solution: CaseDefinition["solution"] = {
       },
       {
         heading: "October 22",
-        body: "Martin took his concerns to Susan Whitfield. She asked him to wait until after the Lockhart donor dinner on December 6, so as not to alarm the fund's founding donor over paperwork. He couldn't. He called Walter Ames, an independent auditor, and on November 6 asked to meet him on Friday the 9th at nine. He copied the payment files twice: one set for the office cabinet, one for home.",
+        body: "Martin took his concerns to Susan Whitfield. She asked him to wait until after the Lockhart donor dinner on December 6, so as not to alarm the fund's founding donor over paperwork. He couldn't. He called Walter Kiley, an independent auditor, and on November 6 asked to meet him on Friday the 9th at nine. He copied the payment files twice: one set for the office cabinet, one for home.",
       },
       {
         heading: "November 6 and 7",
@@ -291,7 +291,7 @@ export const solution: CaseDefinition["solution"] = {
       },
       {
         heading: "The next morning",
-        body: "At 6:40 on Friday the cleaner found Martin. At 9:00 Walter Ames waited for him. At 10:14, logged in as himself, Holt paid Reddick $9,500 from Tri-County Facility Partners, a company registered at his own suite, as an HVAC retrofit at the Mercantile Building that never happened. He wrote \"done. shred.\" on the confirmation and left it in his out tray.",
+        body: "At 6:40 on Friday the cleaner found Martin. At 9:00 Walter Kiley waited for him. At 10:14, logged in as himself, Holt paid Reddick $9,500 from Tri-County Facility Partners, a company registered at his own suite, as an HVAC retrofit at the Mercantile Building that never happened. He wrote \"done. shred.\" on the confirmation and left it in his out tray.",
       },
       {
         heading: "The lead from New York",

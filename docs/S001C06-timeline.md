@@ -34,9 +34,9 @@ The archive, imaged at an independent laboratory, matched Benjamin's handwritten
 | | |
 | --- | --- |
 | Meridian headquarters | Meridian Advisory Group, Washington, D.C. (C02's "D.C. office"; street address as set in the S001C02 design). Executive floor (9), records administration (6). Public head: Malcolm Pryor, Managing Director, abroad since Dec 22 and represented; never interviewed |
-| Records Center | Meridian Records Center, an industrial park off Willard Road, Chantilly, Virginia (C04's records office; the same site). Bays A and B: Collections 14 (finance), 22 (client services), 31 (logistics). Bay C: the EX cage. Facility manager Dale Merriman (innocent) |
-| Benjamin's house | 4417 North 19th Street, Arlington, Virginia. Landline (703) 555-0129. Cell (703) 555-0151, left at home switched off. Neighbor Dolores Haverty, 71, at 4419 (has his key). His cat, Dewey |
-| Benjamin's former office | Room 611, records administration, sixth floor, Meridian headquarters |
+| Records Center | Meridian Records Center, 3900 Brookfield Corporate Drive, Chantilly, Virginia (C04's records office; the same site). Bays A and B: Collections 14 (finance), 22 (client services), 31 (logistics). Bay C: the EX cage. Facility manager Dale Merriman (innocent) |
+| Benjamin's house | 4417 North 19th Street, Arlington, Virginia. Landline (703) 555-0168. Cell (703) 555-0151, left at home switched off. Neighbor Dolores Haverty, 71, at 4419 (has his key). His cat, Dewey |
+| Benjamin's former office | Room 1011, records administration, tenth floor (the executive floor), Meridian headquarters, 1620 K Street |
 | Oduya Records Consulting | Suite 300, 1840 Sunrise Valley Drive, Reston, Virginia. (703) 555-0186. Built Meridian's records system, Custodia RMS, in 2010 to 2011; kept its monthly offsite backups until Dec 23 |
 | Safe apartment | Glenmore Court Residences, Unit 3C, Silver Spring, Maryland. Short-stay, booked by Oduya Records Consulting Dec 26 for Dec 27 to Jan 3. Guest code 4471. Night concierge Ahmed Siddiqui |
 | Transit facility | Frederick Transit Center, Frederick, Maryland. Customer service agent Bernadette Kovalenko. Cab stand: Monocacy Cab Company, car 31, driver Emmanuel Asante |
@@ -65,7 +65,7 @@ This is the case's "money": the thing every document refers to.
 | Reserved matter | Anything outside ordinary consulting. Defined in Operating Protocol No. 1 (EX-2009-001, April 6, 2009) |
 | Executive codes | A-1 the Chair ("the Architect"): Evelyn Lockhart. F-2 finance: Adrian Holt (from 2010). I-3 intelligence: Julian Rourke. L-4 logistics: Gideon Kane (from 2012). C-5 counsel: Elena Marchetti. S-6 security: Conrad Pike (from 2016). The Records Administrator holds no code |
 | Form EX-7 | Numbered two-part carbonless authorization slip. The requester fills and signs it; the set goes sealed, through the Records Administrator, to the approving code, who signs "APPROVED" with code and date. The white original goes to Bay C; the yellow copy goes back to the requester "as your authority" and must be returned for destruction when the matter closes. Holt, Rourke and Kane kept their yellows |
-| A notes | The Chair's instructions, typed on plain paper, signed "A." in ink, sealed, carried by courier from 1140 Fifth Avenue to the Records Administrator, who logs a duplicate in the EX-CORR series and forwards the original. Operators never contact the Architect directly |
+| A notes | The Chair's instructions, mostly typed on plain paper and signed "A." in ink (a few, including the Nov 19 card in Rourke's safe, C02-E036, printed and unsigned), sealed, carried by courier from 1140 Fifth Avenue to the Records Administrator, who logs a duplicate in the EX-CORR series and forwards the original. Operators never contact the Architect directly |
 | The register | Executive Authorization Register (EX-AR): number, date, matter, requesting code, approving code, digest of the scan. 412 entries from 2009 to Dec 21, 2018 |
 | Digests | MD5 until 2013, SHA-256 from January 2014. Benjamin also wrote each week's digests by hand in a bound custody ledger from January 2014 |
 | EXVOL | The executive volume on Custodia RMS (the scans and register). Exported by Benjamin to the same encrypted drive (serial WX41A87H2210) every Friday since January 10, 2014. Wiped by account `cpike_admin` Sunday, Dec 23, 9:14 PM |
@@ -85,7 +85,7 @@ This is the case's "money": the thing every document refers to.
 | EX-2016-044 | Mon Nov 7, 2016 | S-6 appointed: C. Pike | A-1 | E038 |
 | EX-2017-022 | Tue Jun 13, 2017 | Leverage program: J. Ellery (Eastbridge Systems) | I-3 | E034, E047, C02 |
 | EX-2018-007 | Mon Jan 8, 2018 | Carroway program, FY2018, ceiling $450,000 | F-2 | E046, C01 |
-| EX-2018-019 | Mon Mar 12, 2018 | Harbor program: compliance of terminal staff (R. Gaffney) per file CI-2017-0384 | L-4 | E035, E048, C03 |
+| EX-2018-019 | Mon Mar 12, 2018 | Harbor program. Renewal: compliance of terminal staff (R. Gaffney) by continued application of file CI-2017-0384 (first approved EX-2017-061, 10/16/2017; the pressure itself began Oct 17, 2017, C02 and C03) | L-4 | E035, E048, C03 |
 | EX-2018-052 | Mon Sep 10, 2018 | Release program (Clearwater), with amendment of Nov 16 | A-1 | E037 |
 | EX-2018-071 | Mon Dec 17, 2018 | Ogden research: recover materials, persuade silence. "No physical harm" | C-5 | E035, C05 |
 | EX-CORR-2018-061 | Fri Dec 21, 2018 | A note to C-5: clear the Records Center, end the EX series | A-1 | E032, E045 |
@@ -101,10 +101,10 @@ The bible's section 4 is the truth. C06 adds the top of it, all from records tha
 | Why | E054, A-1's risk review, Aug 20, 2018: the three operators "now cost more than they protect" |
 | The plan | E053, the Exposure Sequence Directive, Sep 7, 2018: F-2, then I-3, then L-4; hold C-5 and S-6; "nothing above the operators" |
 | The authority | E037, EX-2018-052 with its release schedule: the three MAG-RM items, the order to Benjamin to approve Claire's pulls, the list of what is never released |
-| The instructions | E052, Evelyn's typed notes to Castell, Sep 14, Oct 11, Nov 16 and Dec 3; Oct 11: send the first item "to me at the Foundation" |
+| The instructions | E052, Evelyn's own file copies of the unsigned typed notes sent to Castell by bike messenger, Sep 11, Oct 11, Nov 16 and Dec 3, initialed "E.L." on the file copies only (Castell burned the notes and never knew the source, as in C04); Oct 11: send the first item to the Lockhart Foundation |
 | The execution | E051 (Claire's own account), E056 (Castell's release log, with what was withheld) |
 | The watching | E055, Pike's progress reports to A-1: "Blackwood performing as expected" |
-| The courier | E042: the Lockhart Foundation's own Capital Courier account, 18850, carried her notes to Castell on the dates in E052 |
+| The courier | E042: the Lockhart Foundation's own Capital Courier account, 18850, carried the Dec 21 note to Marchetti. The notes to Castell went by bike messenger (C04) |
 
 Delivery 1 matters most: the copied invoice in C01-E030 came to Evelyn because she ordered it sent to herself, so that it would look as though she had merely received it.
 
@@ -149,22 +149,22 @@ Travel: Arlington to Chantilly about 30 minutes; Arlington to Silver Spring abou
 | Mon Aug 20, 2018 | A-1's risk review: Holt, Rourke, Kane are liabilities | E054 |
 | Fri Sep 7, 2018 | The Exposure Sequence Directive | E053 |
 | Mon Sep 10, 2018 | EX-2018-052, the release program. Same day: $250,000 president's discretionary grant to Clearwater | E037, E044 |
-| Fri Sep 14, 2018 | Evelyn's first note to Castell | E052, E042 |
+| Tue Sep 11, 2018 | Evelyn's first unsigned note to Castell, naming Claire (Castell meets Claire on Fri Sep 14) | E052 |
 | Thu Oct 4, 2018 | A note to the Records Administrator: approve C. Donovan's pulls without query (part of EX-2018-052) | E037, E032, E028 |
-| Thu Oct 11, 2018 | Evelyn to Castell: item 14-0412-117, "to me at the Foundation" | E052 |
+| Thu Oct 11, 2018 | Evelyn to Castell, unsigned: item 14-0412-117 to the fund's founding donor, the Lockhart Foundation | E052 |
 | Fri Oct 26 | Claire pulls the first original (C04) | E056, E051 |
 | Mon Oct 29 | Delivery 1 to the Lockhart Foundation | E056, E042 |
 | Thu Nov 8 | Martin Keller killed (C01). No register entry | E031, E057 |
 | Tue Nov 13, Thu Nov 15 | Pike's progress reports to A-1; Holt arrested Nov 15 | E055 |
 | Fri Nov 16 | Amendment 1 to EX-2018-052: items 2 and 3 to Blackwood. Evelyn's note to Castell | E037, E052 |
 | Sun Nov 18 | Jonathan Ellery taken (C02). No register entry | E031 |
-| Mon Nov 19 | A note to I-3: "Contain the Ellery exposure..." (C02-E036). Evelyn telephones Castell 4:10 PM; Claire pulls item 2 | E032, E050, E042, E056 |
+| Mon Nov 19 | A note to I-3: "Contain the Ellery exposure..." (C02-E036). Evelyn telephones Castell 4:08 PM (a patron's call; nothing records what was said); Claire pulls item 2 | E032, E050, E042, E056 |
 | Tue Nov 20 | Delivery 2 | E056 |
 | Wed Nov 21 | Rourke, Lyons, Hurst arrested; FBI inventories Rourke's safe (item 14: a yellow EX-7) | E047, E055 |
 | Mon Nov 26 | Legal hold letter served on Meridian through Marchetti; Benjamin applies it to every collection including EX | E014, E045, E028 |
 | Fri Nov 23, Sat Nov 24 | Benjamin calls Lester Burkholder; signs a winter lease on the tenant house Nov 24 | E006, E025 |
 | Fri Nov 30 | Oduya Records Consulting takes Meridian's last monthly backup | E040 |
-| Sat Dec 1 | Castell asks Evelyn about three EX-numbered pages Claire offered; "not now, not ever" | E056 |
+| Sat Dec 1 | Castell asks the source, through the message number, about three Executive Office pages marked EO-01 that Claire offered; "not now, not ever" | E056 |
 | Sun Dec 2 | Hector Navarro killed (C03). No register entry | E031 |
 | Mon Dec 3 | Evelyn to Castell: item 3 tomorrow; Claire pulls it | E052, E056 |
 | Tue Dec 4 | Delivery 3 | E056 |
@@ -186,7 +186,7 @@ Travel: Arlington to Chantilly about 30 minutes; Arlington to Silver Spring abou
 | 5:42 PM | Marchetti leaves a message on his landline | E006 |
 | Sat Dec 22 | Marchetti arrested (C05) | Case file |
 | Sat Dec 22, afternoon | Pike's IT check of Custodia finds Benjamin's weekly exports; he tells Evelyn | E059 |
-| Sat Dec 22, 7:12 PM | Evelyn calls Pike, 18 minutes. Her signed note to Pike goes by same-day courier (account 18850) | E042, E059 |
+| Sat Dec 22, 7:12 PM | Evelyn calls Pike, 18 minutes. Her signed note to Pike (E059) reaches him the same day | E042, E059 |
 | Sat Dec 22 | Engagement of Pike Risk Services, special assignment 2018-12, signed by Malcolm Pryor "at the request of the Office of the Chair" | E017 |
 | Sun Dec 23, 10:15 AM | Pike's message on Benjamin's machine | E006 |
 | Sun Dec 23 | Pike issues work order RC-2018-1223 and schedule revision 12/23 | E013, E015 |
@@ -269,20 +269,21 @@ No dialogue, knowledge or evidence reveals these:
 
 ### Contradictions found and fixed
 
-- **Names.** Every brief name is renamed per bible section 2: Evelyn Lockhart, Adrian Holt, Julian Rourke, Gideon Kane, Elena Marchetti, Benjamin Sayer, Conrad Pike, Irene Chen (was Margaret Chen), Walter Ames (was Daniel Brooks), Simon Wexler (was Simon Hale), Det. Anthony Caruso (was Russo), SA Teresa Quinlan (was Rebecca Stone), Alan Corbett (was Thomas Reed), Caroline Oduya (was Caroline Mercer). Bellwether is Carroway; the Voss Foundation is the Lockhart Foundation. C03's victim is Hector Navarro, killed by Dwayne Fisk; C05's is Nathaniel Ogden, killed by Gabriel Knox.
+- **Names.** Every brief name is renamed per bible section 2: Evelyn Lockhart, Adrian Holt, Julian Rourke, Gideon Kane, Elena Marchetti, Benjamin Sayer, Conrad Pike, Irene Chen (was Margaret Chen), Walter Kiley (was Daniel Brooks), Simon Wexler (was Simon Hale), Det. Anthony Caruso (was Russo), SA Teresa Quinlan (was Rebecca Stone), Alan Corbett (was Thomas Reed), Caroline Oduya (was Caroline Mercer). Bellwether is Carroway; the Voss Foundation is the Lockhart Foundation. C03's victim is Hector Navarro, killed by Dwayne Fisk; C05's is Nathaniel Ogden, killed by Gabriel Knox.
 - **Benjamin's message and his disappearance.** The brief has him contact Blackwood "after learning Meridian was destroying records" and then vanish "before a meeting can be arranged"; the bible puts the fire on Dec 26 and the message on Dec 27. Fixed: he had been watched since Dec 23 and booked the apartment on Dec 26; the 1:14 AM voicemail about the fire made him write at 6:12 AM; he left at 8:10 AM, so his message and his flight are the same morning.
 - **What the archive can hold.** The brief lists "evidence of attempted record destruction" in Benjamin's archive, but he left on Dec 21, before the wipe and the fire. Fixed: the archive holds the Dec 21 instruction (EX-CORR-2018-061); the wipe is in Oduya's backup records (E040), the fire in the fire marshal's report and the Records Center's own logs, and Evelyn's Dec 22 authorization (E059) in her own file in Long Island City.
 - **Marchetti's role.** The brief has her supervising disposal throughout. Per the bible she received the Dec 21 instruction, was arrested Dec 22, bailed Dec 24, and was cut out; Pike took the job under E059. She cannot travel or contact Meridian or foundation staff, so she is interviewed at her law office with her counsel.
 - **How Evelyn learned the archive might exist.** The brief says only that she "learns." Fixed: Pike's IT check of Custodia on Dec 22 found Benjamin's weekly exports, and E059 says so.
 - **"Unidentified" sender.** The brief calls the sender unidentified, but C04-E016 already shows Benjamin's signature as Records Administrator. Fixed: the email is signed only "The former Records Administrator"; the case file's page from Quinlan names the man who held that job until Dec 21.
 - **C06-E053.** Renamed Exposure Sequence Directive (C04-E039 keeps "Executive Exposure Timeline").
-- **Custody interviews.** The brief asks for interviews with Holt, Rourke and Kane. All three are held (Holt state, Rourke and Kane federal), so each is a recorded video interview with counsel, set up from Quinlan's office. Rourke declines; the case never relies on him.
+- **Custody interviews.** The brief asks for interviews with Holt, Rourke and Kane. All three are held (Holt in Carroway County; Rourke federal; Kane in Baltimore on state charges, HSI's federal case pending, C03), so each is a recorded video interview with counsel, set up from Quinlan's office. Rourke declines; the case never relies on him.
 - **Deductions built from deductions.** The brief's D09, D21 and D22 connect deductions to deductions; the case board strings evidence and people. Fixed: each is an evidence or person pair with the deductions as requirements.
 - **D22 and concealment.** The brief's D22 needs D17, D18, D19 and D21, but its own final confrontation and report require "her involvement in concealment," which is D20. D20 is added to D22's requirements. Not circular.
 - **D016 required versus a case solvable on its own board.** The bible makes D016 required in C06; the build guide requires every case to be solvable without the rolling board. Resolved: the C06 report is judged on the case board alone; D016 is the series' capstone, made only on the rolling board, and the finale ending plays whatever the board holds (section "Series board handoff").
 - **Recovered records' ids.** The bible says a recovered record keeps its original ID; the engine holds it as a C06 entry R01 to R17 with a canonical id field pointing at the original, so the rolling board treats it as the same record.
 - **Splitting up.** The brief's "multiplayer players may investigate separate areas" is read as "anyone at the table can do any step"; the table moves together.
 - **Real schedules.** The bus and taxi times in Frederick are fictional; no real timetable is claimed.
+- **Series continuity review (Oct 27).** Castell's notes reached her unsigned, by bike messenger, and she burned them (C04): E052 is Evelyn's own file copies from Long Island City, initialed "E.L." on the copies only, and courier account 18850 carries only the Dec 21 note to Marchetti. Claire's breakfast with Evelyn is C04's and C05's (Oct 18, five minutes, "the people who keep the records are an institution's conscience"). The footer is collection, box and item (C04-E015). The Records Center is 3900 Brookfield Corporate Drive (C04); the executive floor and Room 1011 are on the tenth floor of 1620 K Street (C02). The trust's protector powers are Article 4 (C05). EX-2018-019 is a renewal of EX-2017-061 (the pressure on Gaffney began Oct 17, 2017, C02 and C03). File copies sent outside the executive floor read EO-01 where the register reads A-1 (C04-E040). Most "A." notes are typed and signed in ink; a few, including the Nov 19 card (C02-E036), were printed and unsigned, and E041 compares only the signed ones. R13 and R14 are NYPD's subpoena copies from Halvard's binders (C05), held by Caruso. Sayer's landline is (703) 555-0168 (C04 has Claire's cell on 0129). Quinlan is 44 (C02).
 
 ## Cast
 
@@ -295,14 +296,14 @@ Interviewable (15) plus Bennett. Everyone's knowledge is their own account; liar
 | marchetti | Elena Marchetti, 50 | Attorney; Meridian's outside counsel; C-5 | Legal concealment. On bail; wants a cooperation deal; fears she is next | Her law office, after RE05, with her defense counsel | Controlled, Anxious, Defensive |
 | pike | Conrad Pike, 54 | Principal, Pike Risk Services; S-6 | Ran the destruction and the pursuit. Claims lawful corporate security work | His office in Tysons, once known (chapter 2); same place during the chapter 5 search, with counsel | Professional, Guarded, Hostile, Declining to answer |
 | donovan | Claire Donovan, 34 | Former Meridian records analyst | Cooperating witness (C04); copied the leaked records; received the threat | FBI Washington Field Office and telephone, after RE02 | Shaken, Steady, Angry |
-| holt | Adrian Holt, 49 | Formerly Holt Advisory LLC; F-2 | Held without bail (C01). Minimizes; seeks a deal | Recorded video from Carroway County Jail, with counsel, from Quinlan's office, chapter 2 on | Polished, Calculating |
+| holt | Adrian Holt, 49 | Formerly Holt Advisory LLC; F-2 | Held without bail (C01). Minimizes; seeks a deal | Recorded video from Carroway County Prison, with counsel, from Quinlan's office, chapter 2 on | Polished, Calculating |
 | rourke | Julian Rourke, 46 | Formerly Meridian's intelligence floor; I-3 | Federal detention (C02). Declines without a proffer agreement | Recorded video, with counsel, chapter 2 on | Contemptuous, Silent |
-| kane | Gideon Kane, 48 | Formerly Kane Logistics; L-4 | Federal detention (C03). Says he acted independently | Recorded video, with counsel, chapter 2 on | Blunt, Defensive |
+| kane | Gideon Kane, 48 | Formerly Kane Logistics; L-4 | Held in Baltimore since Dec 5; HSI's federal case pending (C03). Says he acted independently | Recorded video, with counsel, chapter 2 on | Blunt, Defensive |
 | chen | Irene Chen, 48 | Attorney, Washington (C02) | Benjamin's counsel since Dec 26. Advises on preservation and authentication; not an all-purpose legal authority | Telephone once known (E006); Solvang laboratory in chapter 4 | Precise, Protective |
-| ames | Walter Ames, 43 | Partner, Ames and Kiley CPAs, Pittsburgh (C01) | Forensic accountant to the federal prosecutors since C03 | Telephone from chapter 2; Brandywine Fiduciary records room in chapter 4 | Careful, Engaged |
+| ames | Walter Kiley, 43 | Partner, Kiley and Strand CPAs, Pittsburgh (C01) | Forensic accountant to the federal prosecutors since C03 | Telephone from chapter 2; Brandywine Fiduciary records room in chapter 4 | Careful, Engaged |
 | wexler | Simon Wexler, 29 | Financial analyst (C05) | Keeps Nathaniel Ogden's research copies | Telephone from chapter 2 | Nervous, Earnest |
 | caruso | Det. Anthony Caruso, 49 | NYPD homicide (C05) | New York contact, unlimited. Holds the Ogden case | NYPD from chapter 2, telephone; the Long Island City floor after RE11 | Dry, Engaged |
-| quinlan | SA Teresa Quinlan, 45 | FBI Washington Field Office (C02) | Federal contact, unlimited. Coordinates; never does the player's reasoning | FBI Washington Field Office and telephone, from the start | Brisk, Engaged |
+| quinlan | SA Teresa Quinlan, 44 | FBI Washington Field Office (C02) | Federal contact, unlimited. Coordinates; never does the player's reasoning | FBI Washington Field Office and telephone, from the start | Brisk, Engaged |
 | corbett | Alan Corbett, 51 | Former Meridian compliance officer (C04) | Explains classification and retention; corroborates the EX series existed | Telephone, once known | Wary, Candid |
 | oduya | Caroline Oduya, 44 | Owner, Oduya Records Consulting, Reston | Built Custodia; kept the last backup; booked the apartment. Innocent; reluctant at first | Her office, chapter 2 on, once known | Guarded, Guilty, Helpful |
 | bennett | Bennett | Blackwood's records man, by phone, unlimited | Pulls records; board hint; holds the Keller file | Telephone, from the start | (none) |
@@ -313,15 +314,15 @@ Not interviewable: Malcolm Pryor (abroad, represented), Miriam Castell (cooperat
 
 ### What each person says
 
-**SA Teresa Quinlan.** Brisk, plain, exact about what the law allows. Got Benjamin's email forwarded by Blackwood at 9:10 AM Thursday and asked Arlington County for a welfare check. Hands over the welfare-check report and photographs (E003) and the canvass statement of Dolores Haverty (E005) when asked about the house, the police or the neighbors. Explains the legal hold of Nov 26 and the line between restructuring (legal) and destroying held records (obstruction). Sets up the video interviews with Holt, Rourke and Kane. Leads the HQ search on Friday and the recovery on Saturday, but only when the player brings her the location and the danger: "Give me where he is and why he can't wait, and I'll have troopers there in an hour." Sends the drive to the laboratory, the contractors' phones to CART (lab `phones`), and asks Dr. Solvang for the signature comparison and the chain certification (labs) when asked in any words once the inputs are in hand. From chapter 4: hands over E047 when asked what was in Rourke's safe, once E034 is in hand ("Item fourteen. We had it since November and couldn't read it"), and E048 when asked about Kane's safe, once E035 is in hand. From chapter 5: hands over Castell's file (E052, E056) when asked about Castell, Clearwater or how the leaks were run; and E058 when asked how the witnesses hold up, once the player has talked to Benjamin, Claire and Marchetti. Never says Evelyn is the Architect; after D16 she says "the register says what it says, and it will have to say it to a jury." Holds recovery routes R03 and R04. Makes the closing call.
+**SA Teresa Quinlan.** Brisk, plain, exact about what the law allows. Got Benjamin's email forwarded by Blackwood at 9:10 AM Thursday and asked Arlington County for a welfare check. Hands over the welfare-check report and photographs (E003) and the canvass statement of Dolores Haverty (E005) when asked about the house, the police or the neighbors. Explains the legal hold of Nov 26 and the line between restructuring (legal) and destroying held records (obstruction). Sets up the video interviews with Holt, Rourke and Kane. Leads the HQ search on Friday and the recovery on Saturday, but only when the player brings her the location and the danger: "Give me where he is and why he can't wait, and I'll have troopers there in an hour." Sends the drive to the laboratory, the contractors' phones to CART (lab `phones`), and asks Dr. Solvang for the signature comparison and the chain certification (labs) when asked in any words once the inputs are in hand. From chapter 4: hands over E047 when asked what was in Rourke's safe, once E034 is in hand ("Item fourteen. We had it since November and couldn't read it"), and E048 when asked about Kane's safe, once E035 is in hand. From chapter 5: hands over Castell's file (E056, Clearwater's release log; she burned the notes) when asked about Castell, Clearwater or how the leaks were run; and E058 when asked how the witnesses hold up, once the player has talked to Benjamin, Claire and Marchetti. Never says Evelyn is the Architect; after D16 she says "the register says what it says, and it will have to say it to a jury." Holds recovery routes R03 and R04. Makes the closing call.
 
 **Bennett.** Dry, kind, retired LAPD. Board hint (with the recovery line). Runs the partial plate from E005 (E021) when asked about the SUV or the plate. Runs the Fulton County number on Benjamin's cell statement (E025) when asked about it in chapter 3: he calls the farm, and Lester Burkholder faxes the lease. Holds the Keller file (R02). At the start of chapter 2 he calls to say that anything the agency didn't keep from the earlier files, the people who were there still have copies. On the rolling board: "That board's where the old cases talk to each other. I don't pin things for people."
 
-**Claire Donovan.** After RE02. Shaken by the text ("Some records burn"), then steady, then angry as she understands. Explains the copying, the MAG-RM footers and Castell's "what the investigators need next" in her own words. Met Evelyn once, at a Clearwater donor breakfast in October, "and she thanked me for my courage." Benjamin was her supervisor from 2012; he signed her pulls without a word ("I thought he was protecting me"). Never saw the EX series. Hands over her written account (E051) when asked about her part. Holds R08, R10, R11 and R17, and says "I kept copies of everything I ever touched; that was the point" if asked about earlier records in general. Suggests Alan Corbett on retention questions.
+**Claire Donovan.** After RE02. Shaken by the text ("Some records burn"), then steady, then angry as she understands. Explains the copying, the MAG-RM footers and Castell's "what the investigators need next" in her own words. Met Evelyn once, for about five minutes, at the Clearwater donor breakfast on Oct 18: Evelyn asked what she did, said the people who keep the records are an institution's conscience, and never mentioned Meridian (C04, C05). Benjamin was her supervisor from 2012; he signed her pulls without a word ("I thought he was protecting me"). Never saw the EX series; saw EO-01 references on cover sheets (C04). Miriam gave her a copy of the courier statement after her rescue. Hands over her written account (E051) when asked about her part. Holds R08, R10, R11 and R17, and says "I kept copies of everything I ever touched; that was the point" if asked about earlier records in general. Suggests Alan Corbett on retention questions.
 
 **Caroline Oduya.** Guarded at first: says she hasn't heard from Benjamin (her lie, to protect him). Once shown E001 or E004, or asked about the booking with E004 in hand, she admits she booked Glenmore Court for him on Dec 26 and hands over the booking (E008), then tells the pretext call: her office manager read the address and code to "Glenmore Court billing" at 3:40 PM Thursday. She feels responsible. Explains Custodia, EXVOL, digests and the weekly exports ("Ben's drive was the only external device the system ever saw"). Pike's office terminated her contract on Dec 23 and demanded the backup tapes back; under the contract's 30-day return clause she still has the Nov 30 tape. After RE08 or once E029 is in hand, she restores it and hands over the audit log and the Dec 24 backup alert (E040) when asked about backups, logs or the tape.
 
-**Alan Corbett.** Wary; got a call on Dec 27 "reminding" him of his confidentiality agreement. Compliance never had access to Bay C or the EX series; "Benjamin was the only one who saw both halves." Explains the retention policy, legal holds and what a schedule change needs (Records Administrator and Counsel). Holds R09.
+**Alan Corbett.** Wary; got a call on Dec 27 "reminding" him of his confidentiality agreement. Compliance never had access to Bay C or the EX series; he saw only EO-01 references on transmittals and cover sheets (C04); "Benjamin was the only one who saw both halves." Explains the retention policy, legal holds and what a schedule change needs (Records Administrator and Counsel). Holds R09.
 
 **Conrad Pike.** Professional, ex-Army military police, short sentences. First story: after the fire he was "reviewing security at the Records Center for the company"; he has never met Benjamin Sayer beyond a phone message about "company property." His card? "Cards get lent. Contractors need doors." After D06 (RE03) his story changes: he was lawfully retained on Dec 22 to recover company records a former employee took, and to "locate him discreetly so the company's lawyers could write to him"; the disposal on Dec 26 was a scheduled records action under counsel's instruction. Says his contractors "may have exceeded instructions" once E026 or E027 is in hand. Shown E020: hostile; "I want my lawyer," then Declining to answer until a re-interview grant on E059 or E055. Never names Evelyn: "my client is the company." Contradicted by E012, E016, E020, E021, E022, E026.
 
@@ -335,13 +336,13 @@ Not interviewable: Malcolm Pryor (abroad, represented), Miriam Castell (cooperat
 
 **Irene Chen.** Precise and protective. Benjamin retained her by phone on Dec 26 for a proffer; she does not know where he went. She advises: authentication is a chain, not a signature; the drive must be sealed in front of counsel and imaged at an independent laboratory with an FBI examiner present, or the defense will say the FBI wrote it. At the laboratory in chapter 4 she is present when Benjamin gives the passphrase.
 
-**Walter Ames.** Careful, exact. Since C03 he has worked for the federal prosecutors. At Brandywine Fiduciary (chapter 4) he explains the trust: its 2018 distributions to Meridian match the reserved budgets to the dollar. Distinguishes financial control from proof of criminal command. Holds R01 and R06.
+**Walter Kiley.** Careful, exact. Since C03 he has worked for the federal prosecutors. At Brandywine Fiduciary (chapter 4) he explains the trust: its 2018 distributions to Meridian match the reserved budgets to the dollar. Distinguishes financial control from proof of criminal command. Holds R01 and R06.
 
-**Simon Wexler.** Nervous, earnest. Nathaniel Ogden "thought the trust at the bottom was hers, but the paper stopped at the trustee's door." Holds R13, R14 and R16.
+**Simon Wexler.** Nervous, earnest. Nathaniel Ogden "thought the trust at the bottom was hers, but the paper stopped at the trustee's door." Holds R16 (Nathaniel started the comparison on Dec 10).
 
-**Det. Anthony Caruso.** Dry. The Ogden case: Knox charged with murder; Knox says Marchetti sent him to scare Ogden, not kill him. Holds R15 (from the recovered briefcase). Makes the RE11 call and meets the player at the Long Island City floor.
+**Det. Anthony Caruso.** Dry. The Ogden case: Knox charged with murder; Knox says Marchetti sent him to scare Ogden, not kill him. Holds R15 (from the recovered briefcase), and R13 and R14 (the subpoena copies from Halvard's binders, found after Nathaniel died). Makes the RE11 call and meets the player at the Long Island City floor.
 
-**Benjamin Sayer** (after RE08). Exhausted, exact, then resolved. Kept the records because "if they were going to be kept, someone honest had to keep them." Explains the register, EX-7, A notes, digests, the custody ledger and the weekly exports. Saw Evelyn sign the A-1 specimen card in 2009 and 2016; never saw her sign a reserved matter. In October he understood whose design the leaks were (the Oct 4 note) and began indexing every A note he had logged (E050, handed over when asked about A or the Architect). Fled because he was watched, not taken; the contractors came later. Says plainly which conclusions need corroboration: "I can tell you what came through my hands. I can't tell you what anyone meant." Hands over his signed statement (E028) when asked for his account. In chapter 4, asked about the drive or the passphrase with E029 in hand, gives the passphrase with Chen present (flag `passphrase_given`; starts lab `imaging`). Holds R05, R07 and R12.
+**Benjamin Sayer** (after RE08). Exhausted, exact, then resolved. Kept the records because "if they were going to be kept, someone honest had to keep them." Explains the register, EX-7, A notes, digests, the custody ledger and the weekly exports. Saw Evelyn sign the A-1 specimen card in 2009 and 2016; never saw her sign any EX-7 approval. Explains that file copies sent outside the executive floor show EO-01 in place of the A-1 code (Policy 7), which is why C04-E040 reads EO-01 for the same Jan 8, 2018 approval the register shows as A-1. In October he understood whose design the leaks were (the Oct 4 note) and began indexing every A note he had logged (E050, handed over when asked about A or the Architect). Fled because he was watched, not taken; the contractors came later. Says plainly which conclusions need corroboration: "I can tell you what came through my hands. I can't tell you what anyone meant." Hands over his signed statement (E028) when asked for his account. In chapter 4, asked about the drive or the passphrase with E029 in hand, gives the passphrase with Chen present (flag `passphrase_given`; starts lab `imaging`). Holds R05, R07 and R12.
 
 **Dr. Evelyn Lockhart.** Composed, gracious, precise; increasingly guarded. Her account: she founded Meridian in 2007 and stepped away in 2009; her family trust is "a passive investor"; Malcolm Pryor runs the company. The restructuring is prudence after Ms. Marchetti's arrest. She funds Clearwater proudly; what its program did "was its own work." The C01 envelope reached her office with no name. She barely knows Benjamin, "who I'm told took company property." She knows Pike as "the company's security consultant." A-1? "I don't know what that is." After D16: "Codes on a form are not a person." She challenges provenance ("a disgruntled man's homemade drive"), credibility ("Mr. Sayer stole, Ms. Marchetti is buying her freedom, Ms. Donovan copied documents for strangers"), and interpretation ("trusts are not crimes"). She acknowledges only what is undeniable: her signature on trust documents, that she knows Pike, that she funded Clearwater. She never confesses. Her final-interview reactions are listed under RE12.
 
@@ -353,7 +354,7 @@ Not interviewable: Malcolm Pryor (abroad, represented), Miriam Castell (cooperat
 | L02 | sayer_home | Benjamin Sayer's house, 4417 North 19th Street, Arlington | Study: legal pad (E004); kitchen: answering machine and mail (E006); bookshelf: retention binder (E007); bedroom and empty fire safe (photos) | Start (after the case file) |
 | L03 | records_center | Meridian Records Center, Chantilly | Fire marshal's command post (E011); security office: access printout (E012) and camera stills (E016); dock office: work order (E013) and schedule binder (E015); salvage tables (E019); the burned Bay C, viewed from the doorway (photo). After RE06: the FBI's evidence tent; the same hotspots stay | RE01 |
 | L04 | meridian_hq | Meridian Advisory Group headquarters, Washington, D.C., during the FBI search | Executive floor: assistant's vendor files (E017); accounts payable tray (E018); the empty Chair's suite and the freight elevator log (photo); door to L05 | Chapter 2 |
-| L05 | sayer_office | Benjamin's former office, Room 611 (sub-scene of L04, onMap false) | Policy binder (E014); Governance and Records Manual (E039); desk blotter "Fri: export, ledger" and the empty ledger drawer (photos) | Chapter 2, from L04 |
+| L05 | sayer_office | Benjamin's former office, Room 1011 (sub-scene of L04, onMap false) | Policy binder (E014); Governance and Records Manual (E039); desk blotter "Fri: export, ledger" and the empty ledger drawer (photos) | Chapter 2, from L04 |
 | L06 | oduya_office | Oduya Records Consulting, Reston | Caroline Oduya; the backup tape safe; server room (photos) | Chapter 2, oduya known |
 | L07 | safe_apartment | Glenmore Court Residences, Silver Spring (lobby and Unit 3C) | Front desk: door record, print log and night note (E023); Unit 3C searched (photos: drawers out, mattress lifted) | Chapter 3, E008 in hand |
 | L08 | transit | Frederick Transit Center | Security office: stills and cab stand log (E009); ticket window: Bernadette Kovalenko's statement (E024) | Chapter 3, E023 or E010 in hand |
@@ -361,11 +362,11 @@ Not interviewable: Malcolm Pryor (abroad, represented), Miriam Castell (cooperat
 | L10 | lockhart_foundation | The Lockhart Foundation, 1140 Fifth Avenue, New York | Evelyn's office (Evelyn); boardroom: subpoena production laid out for the FBI (E044); the founding photograph "Meridian Advisory Group, 2007" (photo) | Chapter 5 |
 | L11 | marchetti_office | Elena Marchetti's law office, Midtown Manhattan | Marchetti and her counsel | RE05 |
 | L12 | pike_office | Pike Risk Services, Tysons | Pike; the whiteboard (E022). Chapter 5: FBI search; the "PITTSBURGH" file (E055) | Chapter 2, pike known |
-| L13 | financial_archive | Brandywine Fiduciary Company records room, Wilmington | Walter Ames; the Cardinal Point Trust file (E043) | Chapter 4 |
+| L13 | financial_archive | Brandywine Fiduciary Company records room, Wilmington | Walter Kiley; the Cardinal Point Trust file (E043) | Chapter 4 |
 | L14 | exam_facility | Solvang Document Laboratory, Baltimore | Irene Chen and Benjamin (chapter 4); lab countdowns; after RE09, the light table with the printed archive exhibits (E031 to E038, E049) | Chapter 4 |
 | L15 | nypd | NYPD, Det. Caruso's squad room | Caruso | Chapter 2 |
 | L16 | fbi | FBI Washington Field Office | Quinlan; Claire (after RE02); the video interview room (Holt, Rourke, Kane, chapter 2 on); Benjamin (chapter 3, after RE08) | Start |
-| L17 | storage_office | Meridian's former New York office, Long Island City | Caruso (after RE11); 31 cartons with the Chair's file (E053, E054); the box marked "EX-CORR: hold for Administrator" (E059); the shredding truck booking on the door (photo) | RE11 |
+| L17 | storage_office | Meridian's former New York office, Long Island City | Caruso (after RE11); 31 cartons with the Chair's file (E053, E054, and the file copies of the notes to Castell, E052); the box marked "EX-CORR: hold for Administrator" (E059); the shredding truck booking on the door (photo) | RE11 |
 | L18 | interview_room | FBI New York Field Office, 26 Federal Plaza, interview room | Evelyn with counsel, Quinlan present | RE12 |
 
 Areas: `pittsburgh` (office), `northern_virginia` (sayer_home, records_center, oduya_office, pike_office), `dc` (meridian_hq, sayer_office, fbi), `maryland` (safe_apartment, transit), `baltimore` (exam_facility), `fulton_county` (ridge_property), `delaware` (financial_archive), `new_york` (lockhart_foundation, marchetti_office, nypd, storage_office, interview_room). Map title "The East Coast and Pennsylvania". Map tags: `records_center` "FIRE SCENE"; `ridge_property` "WITNESS".
@@ -427,7 +428,7 @@ Every item is reached exactly one way. A person's name means a handover in conve
 | E049 | Architect designation record | L14 (after RE09) | Command |
 | E050 | "A" identity cross-reference | Sayer | Command |
 | E051 | Claire Donovan disclosure record | Donovan | Betrayal |
-| E052 | Evelyn's disclosure instructions | Quinlan (Castell's file, chapter 5) | Betrayal |
+| E052 | Evelyn's disclosure instructions | L17 (the Chair's file, after RE11) | Betrayal |
 | E053 | Exposure Sequence Directive | L17, the Chair's file cartons | Betrayal |
 | E054 | Internal risk assessment | L17, the Chair's file cartons | Betrayal |
 | E055 | Blackwood investigation reference | L12, the PITTSBURGH file (chapter 5) | Betrayal |
@@ -466,7 +467,7 @@ Classification: critical (needed for a report claim or a required deduction) E00
 >
 > No. | Date | Matter | Req. | Appr. | Digest (SHA-256, first and last 6)
 > EX-2018-007 | 01/08/2018 | Carroway program: intermediary engagements, FY2018. Ceiling $450,000 | F-2 | A-1 | 3f9c07...a1e44b
-> EX-2018-019 | 03/12/2018 | Harbor program: East Harbor terminal. Compliance of terminal staff per file CI-2017-0384 | L-4 | A-1 | 77d2be...0c91f3
+> EX-2018-019 | 03/12/2018 | Harbor program: East Harbor terminal. Renewal: compliance of terminal staff (R. Gaffney) by continued application of file CI-2017-0384 (first approved EX-2017-061, 10/16/2017) | L-4 | A-1 | 77d2be...0c91f3
 > EX-2017-022 (carried forward) | 06/13/2017 | Leverage program: J. Ellery (Eastbridge Systems). Continuing | I-3 | A-1 | c40a19...e8d270
 >
 > Footer, printed by the records system: "Custodia RMS, EXVOL, printed 12/21/2018 15:47, user bsayer."
@@ -760,7 +761,7 @@ Classification: critical (needed for a report claim or a required deduction) E00
 >
 > "I was the Records Administrator at Meridian from 2009 until the 21st of this month. I was never an officer and never a member of what they called the executive. I kept the executive's records.
 >
-> Every reserved matter, anything outside ordinary consulting, was requested on a numbered form, an EX-7, and approved in ink by the code with authority over it. The codes were A-1 down to the operators. A-1 was the Chair. Operators knew the Chair only as 'the Architect.' The Chair's instructions came as typed notes signed 'A.' I logged each one, scanned it, wrote its digest in a bound book in my own hand, and filed the original in Bay C, which only my card opened.
+> Every reserved matter, anything outside ordinary consulting, was requested on a numbered form, an EX-7, and approved in ink by the code with authority over it. The codes were A-1 down to the operators. A-1 was the Chair. Operators knew the Chair only as 'the Architect.' The Chair's instructions came as notes signed 'A.' I logged each one, scanned it, wrote its digest in a bound book in my own hand, and filed the original in Bay C, which only my card opened.
 >
 > From January 2014 I copied the executive volume to an encrypted drive every Friday and wrote the week's digests by hand the same day. I started keeping my own copy in 2013, after a matter I did not want to be the only record of.
 >
@@ -792,19 +793,21 @@ Classification: critical (needed for a report claim or a required deduction) E00
 > EX-2014-022 (06/02/2014): "Carroway: F-2 to administer the Small Business Recovery Fund; intermediary engagements authorized." Req. F-2, appr. A-1.
 > EX-2018-007 (01/08/2018): "Carroway program, FY2018, ceiling $450,000." Req. F-2, appr. A-1.
 > EX-2011-014 (05/16/2011) and EX-2017-022 (06/13/2017): the intelligence index and the Ellery leverage program. Req. I-3, appr. A-1.
-> EX-2016-031 (02/22/2016) and EX-2018-019 (03/12/2018): the Harbor program and the pressure on terminal staff. Req. L-4, appr. A-1.
+> EX-2016-031 (02/22/2016) and EX-2018-019 (03/12/2018): the Harbor program and the renewed pressure on terminal staff. Req. L-4, appr. A-1.
 > EX-2018-071 (12/17/2018): "Ogden research: recover materials, persuade silence. No physical harm." Req. C-5, appr. A-1.
+>
+> File copies of A-1 approvals sent outside the executive floor show the reference EO-01 in place of the A-1 code (Policy 7).
 >
 > Every reserved matter in the register was approved by A-1. No entry exists for the death of Martin Keller, the taking of Jonathan Ellery, the death of Hector Navarro, the detention of Claire Donovan or the death of Nathaniel Ogden. The register records authorizations, not acts.
 
 **E032, executive correspondence archive** (L14, after RE09).
-> EX-CORR series: the Records Administrator's logged duplicates of the Chair's notes, each typed on plain paper and signed "A." in ink, with the date received and the EX-CORR number. Selected notes:
+> EX-CORR series: the Records Administrator's logged duplicates of the Chair's notes, with the date received and the EX-CORR number. Most are typed on plain paper and signed "A." in ink; a few, including the note of November 19, 2018, were printed and left unsigned. Selected notes:
 >
 > EX-CORR-2014-009 (09/15/2014), to C-5: "Keep the foundation, the trust and the company at arm's length on paper. Nothing in one name. A."
 > EX-CORR-2018-040 (10/04/2018), to the Records Administrator: "Approve C. Donovan's pulls under the release program without query. Log as ordinary. A."
 > EX-CORR-2018-061 (12/21/2018), to C-5: "The hold is an inconvenience, not a bar. Clear the Center. End the EX series. See me before year end. A."
 >
-> A reviewer's note: "These are the administrator's contemporaneous copies, logged on receipt. The ink signatures are on the originals; the examiner has compared them (see signature report)."
+> A reviewer's note: "These are the administrator's contemporaneous copies, logged on receipt. The ink signatures are on the originals of the signed notes, and the examiner has compared those (see signature report). The few printed, unsigned notes have no signature to compare."
 
 **E033, financial control register** (L14, after RE09).
 > EX-FIN series. The reserved-programs budget and its funding, 2016 to 2018.
@@ -827,13 +830,13 @@ Classification: critical (needed for a report claim or a required deduction) E00
 > EX-2011-014 (05/16/2011): "Establish and maintain a standing index of compromising information on clients and counterparties, for leverage as directed." Requested I-3 (J. Rourke), approved A-1.
 > EX-2017-022 (06/13/2017): "Leverage program: J. Ellery, Eastbridge Systems. Obtain and apply compromising information to secure procurement cooperation." Requested I-3, approved A-1. A note on the form: "Collection only. Escalation requires the Chair."
 >
-> These are the authorizations behind the intelligence operation Blackwood uncovered in Room 614. They approve surveillance and coercion. They do not mention, and do not authorize, the taking of Jonathan Ellery.
+> These are the authorizations behind the intelligence operation Blackwood uncovered in the Ellery case. They approve surveillance and coercion. They do not mention, and do not authorize, the taking of Jonathan Ellery.
 
 **E035, enforcement authorization record** (L14, after RE09).
 > Scans of the EX-7 forms for the logistics program (L-4) and the Ogden matter (C-5).
 >
 > EX-2016-031 (02/22/2016): "Harbor program: move and conceal designated freight through cooperating terminals." Requested L-4 (G. Kane), approved A-1.
-> EX-2018-019 (03/12/2018): "Compliance of terminal staff (R. Gaffney) by application of file CI-2017-0384. Pressure only." Requested L-4, approved A-1.
+> EX-2018-019 (03/12/2018): "Renewal: compliance of terminal staff (R. Gaffney) by continued application of file CI-2017-0384 (first approved EX-2017-061, 10/16/2017). Pressure only." Requested L-4, approved A-1.
 > EX-2018-071 (12/17/2018): "Ogden research: recover materials, persuade silence. No physical harm." Requested C-5 (E. Marchetti), approved A-1.
 >
 > A reviewer's note: "These approve intimidation, concealment and pressure on named people. Each limits itself ('pressure only,' 'no physical harm'). None authorizes a killing. The deaths of Hector Navarro and Nathaniel Ogden have no authorization in this archive."
@@ -843,14 +846,14 @@ Classification: critical (needed for a report claim or a required deduction) E00
 >
 > The note: "Keep the foundation, the trust and the company at arm's length on paper. Nothing in one name. Where ownership must be shown, show the trustee, never the settlor. If a researcher ever reaches the trust, the trail ends at the trustee's door. A."
 >
-> The memo (C-5, undated, filed with it): a list of holding companies and trusts, who signs for each, and which documents are "produced only under subpoena." The structure matches the one Nathaniel Ogden was tracing in The Benefactor.
+> The memo (C-5, undated, filed with it): a list of holding companies and trusts, who signs for each, and which documents are "produced only under subpoena." The structure matches the one Nathaniel Ogden was tracing before his death.
 
 **E037, disclosure selection register** (L14, after RE09).
 > EX-2018-052, the "release program," with its schedule and amendments. Requested and approved A-1 (a matter the Chair requested of herself), 09/10/2018.
 >
 > "Through the Clearwater intermediary, release genuine records implicating F-2, then I-3, then L-4, in that order, to draw outside investigation onto them. Records to be copied by C. Donovan under the Records Administrator's standing approval and carried by the usual courier. Release nothing above the operator level. Return nothing to the Chair except confirmation."
 >
-> Schedule: item 1 (finance), item 2 (intelligence), item 3 (logistics), with digests matching three records (C01-E030's enclosure, C02-E033, C03-E022). Amendment 1 (11/16/2018): "Items 2 and 3 to the Blackwood agency directly." A line at the foot: "Not to be released: the register, EX-CORR, anything bearing A-1."
+> Schedule: item 1 (finance), item 2 (intelligence), item 3 (logistics), with digests matching three records: the copied invoice the foundation passed to Blackwood in November, the intelligence client list and the Kane contractor agreement. Amendment 1 (11/16/2018): "Items 2 and 3 to the Blackwood agency directly." A line at the foot: "Not to be released: the register, EX-CORR, anything bearing A-1."
 
 **E038, executive identity cross-reference** (L14, after RE09).
 > EX-SPEC series: the specimen and code cards. One card per executive code: the code, the name, a specimen signature, and the dates the code was held. Tabbed:
@@ -883,37 +886,37 @@ Classification: critical (needed for a report claim or a required deduction) E00
 **E041, Evelyn Lockhart executive signature record** (lab `signatures`).
 > SOLVANG DOCUMENT LABORATORY. Forensic document examination, signature comparison. Dr. I. Solvang.
 >
-> Questioned: the "A." signatures on the imaged A notes (EX-CORR) and the "A-1" approvals on the imaged EX-7 forms, and the two A-1 specimen signatures (E038).
+> Questioned: the "A." signatures on the imaged A notes that were signed in ink (EX-CORR; the few printed, unsigned notes carry no signature and are not compared) and the "A-1" approvals on the imaged EX-7 forms, and the two A-1 specimen signatures (E038).
 > Known: Evelyn R. Lockhart's signatures on documents not in dispute: the Cardinal Point Trust instrument and the four Trust Protector directions (E043, E033), the Lockhart Foundation's filed instruments, and her signature witnessed by counsel at this examination.
 >
 > Findings: the questioned "A-1" and "A." signatures and the known Lockhart signatures share the same construction, proportions and pen habits across the period 2009 to 2018, including individual features in the capital letters and the terminal stroke. No features suggest a different writer or a simulation.
 >
-> Opinion: there is strong support for the proposition that the A-1 approvals, the specimen cards and the "A." notes were signed by the writer of the known Lockhart signatures. A document examiner states support, not mathematical certainty; the opinion is one strand, to be weighed with the custody and corroboration evidence.
+> Opinion: there is strong support for the proposition that the A-1 approvals, the specimen cards and the signed "A." notes were signed by the writer of the known Lockhart signatures. A document examiner states support, not mathematical certainty; the opinion is one strand, to be weighed with the custody and corroboration evidence.
 
 **E042, Evelyn Lockhart communication record** (delivery, RE09).
 > Produced under subpoena to the FBI. Capital Courier Service, account 18850, "Lockhart Foundation, Office of the President," and the Lockhart Foundation's own phone records. Compiled by the agent.
 >
-> Courier account 18850, outbound from 1140 Fifth Avenue, to "Clearwater Accountability Initiative, attn. M. Castell": pickups on 09/14, 10/11, 11/16 and 12/03/2018. To "E. Marchetti, by hand": 12/21/2018, 8:05 AM, delivered 9:10 AM.
+> Courier account 18850, outbound from 1140 Fifth Avenue, to "E. Marchetti, by hand": 12/21/2018, 8:05 AM, delivered 9:10 AM.
 >
 > Foundation phone (212) 555-0108 and Evelyn's cell: calls to Clearwater (M. Castell) on 11/19 at 4:08 PM; to Pike Risk Services (703) 555-0177 on 12/22 at 7:12 PM (18 min), 12/26 at 3:55 PM (6 min), 12/28 at 9:40 AM (4 min).
 >
-> A reviewer's note: "The courier dates match the dates on the notes to Castell (E052). The calls to Pike begin the day the drive was discovered and run through the pursuit."
+> A reviewer's note: "The December 21 delivery is the note Ms. Marchetti received at 9:10 that morning (E045). The calls to Pike begin the day the drive was discovered and run through the pursuit."
 
 **E043, Meridian control agreement (the trust file)** (L13, Brandywine Fiduciary).
 > CARDINAL POINT TRUST. A Delaware statutory trust, formed June 30, 2009. Beneficiary: the Lockhart Foundation. Produced from the trustee's file, Brandywine Fiduciary Company.
 >
 > Administrative trustee: Brandywine Fiduciary Company. Special trustee: Elena Marchetti. Settlor and Trust Protector: Evelyn R. Lockhart. Through Fifth Avenue Endowment GP LLC, Lockhart Endowment Partners LP and Halvard Holdings LLC, the trust holds every voting (Class B) unit of Meridian Advisory Group LLC.
 >
-> Reserved powers (Article VII): the Trust Protector may, in writing, direct distributions, appoint and remove the managers of the trust's companies, and "direct the business of the trust's holdings." "The trustee shall act on the written direction of the Trust Protector and shall not be required to inquire further."
+> Reserved powers (Article 4): the Trust Protector may, in writing, direct distributions, appoint and remove the managers of the trust's companies, and "direct the business of the trust's holdings." "The trustee shall act on the written direction of the Trust Protector and shall not be required to inquire further."
 >
 > Signature card: "E. R. Lockhart, Trust Protector," 06/30/2009, renewed 03/08/2016.
 >
-> Walter Ames's note: "On paper the trust and its companies own Meridian and Ms. Lockhart owns nothing. In practice she can direct it all, and the four 2018 directions show she did. Control, cleanly hidden. Control is not a crime by itself; what she directed is the question."
+> Walter Kiley's note: "On paper the trust and its companies own Meridian and Ms. Lockhart owns nothing. In practice she can direct it all, and the four 2018 directions show she did. Control, cleanly hidden. Control is not a crime by itself; what she directed is the question."
 
 **E044, Lockhart Foundation financial relationship** (L10, the boardroom).
 > Laid out for the FBI's subpoena in the foundation's boardroom: the Lockhart Foundation's grants and investments touching Meridian, 2014 to 2018.
 >
-> The foundation's "program-related investments" include its 96 percent stake in Lockhart Endowment Partners LP, which the trust file (E043) shows sits under the same trust that holds Meridian's voting units. The foundation is the founding donor of the Carroway fund (C01) and funds the Clearwater Accountability Initiative; a $250,000 "president's discretionary grant" went to Clearwater on 09/10/2018, the day the release program was approved.
+> The foundation's "program-related investments" include its 96 percent stake in Lockhart Endowment Partners LP, which the trust file (E043) shows sits under the same trust that holds Meridian's voting units. The foundation is the founding donor of the Carroway fund and funds the Clearwater Accountability Initiative; a $250,000 "president's discretionary grant" went to Clearwater on 09/10/2018, the day the release program was approved.
 >
 > A reviewer's note: "The foundation's real charity and Ms. Lockhart's hidden control run through some of the same companies and the same nonprofit. The overlap is the point: the legitimate work gave the structure its cover."
 
@@ -934,7 +937,7 @@ Classification: critical (needed for a report claim or a required deduction) E00
 > Holt, on the record: "I kept my authority, as anyone would. I never knew whose hand wrote A-1. I assumed it was older money than mine." The digest on his yellow copy matches the register entry (E031) and the archive scan.
 
 **E047, Julian Rourke authorization reference** (Quinlan, chapter 4, after E034).
-> FBI exhibit, from the search of Julian Rourke's office safe after the Room 614 rescue (Nov 21). Inventory item 14, held since then and only now readable against the archive.
+> FBI exhibit, from the search of Julian Rourke's office safe after Jonathan Ellery's rescue (Nov 21). Inventory item 14, held since then and only now readable against the archive.
 >
 > A yellow carbonless EX-7: requester I-3 (J. Rourke), matter "Leverage program: J. Ellery," "APPROVED A-1," dated 06/13/2017. Stamped "REQUESTER'S COPY."
 >
@@ -943,7 +946,7 @@ Classification: critical (needed for a report claim or a required deduction) E00
 **E048, Gideon Kane authorization reference** (Quinlan, chapter 4, after E035).
 > FBI exhibit, from the search of Gideon Kane's office safe at the Riverside Freight Transfer Yard (Dec 5). Inventory item 9.
 >
-> A yellow carbonless EX-7: requester L-4 (G. Kane), matter "Harbor program: compliance of terminal staff per file CI-2017-0384," "APPROVED A-1," dated 03/12/2018. Stamped "REQUESTER'S COPY."
+> A yellow carbonless EX-7: requester L-4 (G. Kane), matter "Harbor program. Renewal: compliance of terminal staff (R. Gaffney) by continued application of file CI-2017-0384 (first approved EX-2017-061, 10/16/2017)," "APPROVED A-1," dated 03/12/2018. Stamped "REQUESTER'S COPY."
 >
 > Quinlan's note: "Kane's copy of the same authorization that sits in the register as EX-2018-019. 'Pressure only' is written on both. It does not reach the killing of Hector Navarro, and Kane says so himself."
 
@@ -957,28 +960,28 @@ Classification: critical (needed for a report claim or a required deduction) E00
 > A reviewer's note: "This is the document that creates the title 'Architect' and the designation 'A,' and ties both to code A-1. By itself it names no one; with E038 and E041 it does."
 
 **E050, "A" identity cross-reference** (Sayer).
-> An index Benjamin assembled after October, handed over when the player asks him about "A" or the Architect.
+> An index Benjamin began in October, kept in the satchel with his custody ledger.
 >
-> A table: every "A." note he logged (EX-CORR, 2009 to 2018), its date, its EX-CORR number, and, beside it, where the same instruction surfaces in the operators' own files or in Blackwood's cases. The October 4 note ("approve Donovan's pulls") sits beside the leaks of C01 to C03; the November 19 note beside C02-E036 ("Contain the Ellery exposure... A."); the December 21 note beside the Records Center destruction.
+> A table: every "A." note he logged (EX-CORR, 2009 to 2018), its date, its EX-CORR number, and, beside it, where the same instruction surfaces in the operators' own files or in Blackwood's cases. The October 4 note ("approve Donovan's pulls") sits beside the three copied records that reached the Lockhart Foundation and Blackwood that autumn; the November 19 note, one of the few printed and unsigned, beside the card from Rourke's safe ("Contain the Ellery exposure... A."); the December 21 note beside the Records Center destruction.
 >
-> Benjamin's preface: "I never saw the Chair sign a reserved matter; the notes came sealed by courier from the Foundation's address. But every 'A.' note I logged, I logged on the day it arrived, and I can show you where each one was acted on. The specimen card gives A-1 a name. This shows A-1 at work."
+> Benjamin's preface: "I never saw the Chair sign any EX-7 approval, only the specimen cards; the notes came sealed by courier from the Foundation's address. But every 'A.' note I logged, I logged on the day it arrived, and I can show you where each one was acted on. The specimen card gives A-1 a name. This shows A-1 at work."
 
 **E051, Claire Donovan disclosure record** (Donovan).
-> Claire Donovan's written account, given to the FBI and handed to the player when she is asked about her part.
+> Claire Donovan's written account, given to the FBI.
 >
 > "I copied three records in the autumn and gave them to Miriam Castell at Clearwater, who told me they were what the investigators needed next. I believed I was exposing corrupt men. I was. What I did not know was that the choice of which records, and in what order, was not mine or Miriam's. My pulls were approved without question because, I now know, someone had ordered that they be.
 >
-> I met Dr. Lockhart once, at a Clearwater breakfast in October. She thanked me for my courage. I did not know she was the person the records point to. Benjamin Sayer was my supervisor; he signed my pulls and said nothing, and I thought he was shielding me. The records were always genuine. That is the part that still frightens me."
+> I met Dr. Lockhart once, at Clearwater's donor breakfast in October. She asked what I did, said the people who keep the records are an institution's conscience, and never mentioned Meridian. I did not know who she was to Meridian. Benjamin Sayer was my supervisor; he signed my pulls and said nothing, and I thought he was shielding me. The records were always genuine. That is the part that still frightens me."
 
-**E052, Evelyn's disclosure instructions** (Quinlan, Castell's file, chapter 5).
-> From Miriam Castell's file, produced to the FBI under her cooperation agreement: four typed notes to Castell, on Lockhart Foundation paper, each signed "E.L." by hand, carried by Capital Courier account 18850 (E042).
+**E052, Evelyn's disclosure instructions** (L17, the Chair's file).
+> From the Chair's file in the Long Island City cartons, in a folder marked "C.": Evelyn Lockhart's own file copies of four typed notes sent to Miriam Castell. The notes went out unsigned, on plain paper, by bike messenger, a different messenger each time. Only the file copies carry a mark: "E.L." in ink in the top corner, beside the date sent.
 >
-> 09/14/2018: "Miriam, the first item will come from our records friend. Have it carried the usual way to the usual desk. No names."
-> 10/11/2018: "The finance item, number 14-0412-117, to me at the Foundation first. I'll pass it on." (This is the first delivery, which reached the Lockhart Foundation on Oct 29 and became C01-E030.)
-> 11/16/2018: "The next two directly to the Pittsburgh agency."
+> 09/11/2018: "Someone senior at Meridian wants it cleaned up. A records analyst at the Chantilly center, Claire Donovan, has the access and the conscience to help. The investigators will need what she can reach. Burn this, and every note after it."
+> 10/11/2018: "The finance item, number 14-0412-117, goes to the Carroway fund's founding donor, the Lockhart Foundation, so the fund has to look at itself."
+> 11/16/2018: "The next two go directly to the investigators in Pittsburgh."
 > 12/03/2018: "The logistics item tomorrow. Then nothing further from this source. Thank Claire; tell her nothing."
 >
-> A reviewer's note: "The October note is the one that matters. The copied invoice did not simply arrive at the Foundation; Ms. Lockhart arranged for it to come to her, so she could appear to receive it."
+> A reviewer's note: "The notes reached Castell unsigned, and she burned each one; only the sender's own file copies carry the initials. The October note is the one that matters. The copied invoice did not simply arrive at the Foundation; Ms. Lockhart arranged for it to come to her, so she could appear to receive it."
 
 **E053, Exposure Sequence Directive** (L17, the Chair's file). Renamed from the brief's "Executive Exposure Timeline" per the bible; C04-E039 keeps that title.
 > MERIDIAN. RESERVED. "Exposure Sequence." A single typed sheet signed "A.", dated September 7, 2018, from the cartons taken out of the Chair's suite.
@@ -997,7 +1000,7 @@ Classification: critical (needed for a report claim or a required deduction) E00
 **E055, Blackwood investigation reference** (L12, the PITTSBURGH file, chapter 5).
 > Seized in the FBI search of Pike Risk Services: a folder labeled "PITTSBURGH." Inside, Pike's periodic reports "to the Chair," 2018.
 >
-> Dated entries track Blackwood's progress case by case: "Carroway: arrests made, F-2 held." "DC: I-3 in federal custody; informant rescued, exposure contained." "Baltimore: L-4 held." "Agency now at the foundation (C05). Monitoring. No sign they have anything above the operators." The last, 12/27: "Records Center resolved. Administrator located, recovery in progress. Agency active; advise."
+> Dated entries track Blackwood's progress case by case: "Carroway: arrests made, F-2 held." "DC: I-3 in federal custody; informant rescued, exposure contained." "Baltimore: L-4 held." "Agency now at the foundation (the Ogden matter). Monitoring. No sign they have anything above the operators." The last, 12/27: "Records Center resolved. Administrator located, recovery in progress. Agency active; advise."
 >
 > A reviewer's note: "The organization watched Blackwood the whole way and reported it to one reader, 'the Chair.' This is the watching half of the manipulation; E052 and E037 are the feeding half."
 
@@ -1006,16 +1009,16 @@ Classification: critical (needed for a report claim or a required deduction) E00
 >
 > Three releases: 10/26 (finance item, to the Foundation per instruction, then onward), 11/19 (intelligence item, to Blackwood), 12/03 (logistics item, to Blackwood). Each is a genuine Meridian record with its MAG-RM footer and courier waybill.
 >
-> A fourth column, "offered but withheld": on 12/01 Claire offered Castell "three EX-numbered pages" she had seen; Castell's note, "Asked the patron. 'Not now, not ever.' Returned to C.D." (These are the only records that pointed upward; they were kept out of every release.)
+> A fourth column, "offered but withheld": on 12/01 Claire offered Castell "three Executive Office pages, ref. EO-01" she had seen; Castell's note, "Asked the source. 'Not now, not ever.' Returned to C.D." (These are the only records that pointed upward; they were kept out of every release.)
 
 **E057, authenticated criminal command chain** (lab `chain`).
 > SOLVANG DOCUMENT LABORATORY, with the FBI. Reconstruction of authority, certified for the investigators. Sunday, December 30, 2018.
 >
 > This exhibit sets the authenticated records side by side, by operation:
-> Finance (Carroway): EX-2014-022 and EX-2018-007, requested F-2, approved A-1, funded by trust direction (E033); matches C01.
-> Intelligence (Ellery): EX-2011-014 and EX-2017-022, requested I-3, approved A-1; the operator's own yellow copy (E047); matches C02.
-> Logistics (Harbor) and enforcement: EX-2016-031 and EX-2018-019, requested L-4, approved A-1; the operator's yellow copy (E048); matches C03.
-> Concealment: EX-CORR-2014-009 and EX-2018-071, approved A-1; matches C05.
+> Finance (Carroway): EX-2014-022 and EX-2018-007, requested F-2, approved A-1, funded by trust direction (E033); matches the Keller case.
+> Intelligence (Ellery): EX-2011-014 and EX-2017-022, requested I-3, approved A-1; the operator's own yellow copy (E047); matches the Ellery case.
+> Logistics (Harbor) and enforcement: EX-2016-031 and EX-2018-019, requested L-4, approved A-1; the operator's yellow copy (E048); matches the Navarro case.
+> Concealment: EX-CORR-2014-009 and EX-2018-071, approved A-1; matches the Ogden case.
 > A-1 is identified as Evelyn R. Lockhart by the specimen cards (E038) and the signature examination (E041); the records are authenticated by custody and cross-check (E030).
 >
 > Limits, stated plainly: "These records establish that A-1 approved specific unlawful programs of intelligence, pressure and concealment, and controlled their funding. They do not record, and do not establish, that A-1 ordered any homicide. The murders of Keller, Navarro and Ogden have no authorization in this archive and are attributed to their perpetrators."
@@ -1045,7 +1048,7 @@ Classification: critical (needed for a report claim or a required deduction) E00
 >
 > It states the limits as plainly: the earlier findings stand; the three killers remain responsible for the three murders; and the evidence does not establish that Evelyn Lockhart ordered any killing.
 >
-> This document is generated only after the player has completed the required final reconstruction (see RE12). It is not awarded when the archive is recovered, and it is not a substitute for the player's own work on the board.
+> Assembled by the investigators after the final interview at 26 Federal Plaza.
 
 ## Recovery routes (prior-case records)
 
@@ -1059,20 +1062,20 @@ The finale's required chain reaches back to records the player may never have fo
 
 | Local | Canonical | Record | Hands it over | Knowledge-fact gate | Ask them about | Provenance line (appended) |
 | --- | --- | --- | --- | --- | --- | --- |
-| R01 | S001-C01-E029 | Meridian Payment Pattern (Ames's schedule) | Walter Ames | chapter ≥ 2, canonical not held | the Carroway money, the intermediaries' onward payments, his schedule from C01 | "Copy retained by Walter Ames from the Carroway audit; provided to the series investigation, December 2018." |
+| R01 | S001-C01-E029 | Meridian Payment Pattern (Kiley's schedule) | Walter Kiley | chapter ≥ 2, canonical not held | the Carroway money, the intermediaries' onward payments, his schedule from C01 | "Copy retained by Walter Kiley from the Carroway audit; provided to the series investigation, December 2018." |
 | R02 | S001-C01-E030 | Dr. Lockhart's referral note and enclosure | Bennett | chapter ≥ 2, canonical not held | the envelope Lockhart sent in the Keller case, the first delivery, the Keller file | "Recovered December 2018 from the sealed Keller case file held by Blackwood records (Bennett)." |
 | R03 | S001-C02-E035 | Compromising Information Index | SA Quinlan | chapter ≥ 2, canonical not held | Meridian's blackmail index, the intelligence exhibits in the Rourke case | "Exhibit in the federal case against J. Rourke; released to the series investigation, December 2018." |
-| R04 | S001-C03-E033 | Meridian Subject Profile on Gaffney | SA Quinlan | chapter ≥ 2, canonical not held | how Gaffgs was pressured, the Baltimore intelligence link | "Folded into the federal case; copy released to the series investigation, December 2018." |
-| R05 | S001-C03-E037 | Shared Meridian Client Reference | Benjamin Sayer | chapter ≥ 2 (after RE08), canonical not held | the shared client register, the clients common to the cases | "Copy recovered December 2018 from the archive kept by B. Sayer." |
-| R06 | S001-C03-E038 | Intermediary Payment Network | Walter Ames | chapter ≥ 2, canonical not held | how the freight money connects to the finance network | "Traced by Walter Ames for the prosecutors after the Baltimore case; provided December 2018." |
-| R07 | S001-C04-E017 | Archive checkout log | Benjamin Sayer | chapter ≥ 2 (after RE08), canonical not held | who pulled the leaked originals, the checkout log, Claire's pulls | "Copy recovered December 2018 from the archive kept by B. Sayer, who approved the transfers." |
-| R08 | S001-C04-E018 | Capital Courier statement (account 20417) | Claire Donovan | chapter ≥ 2 (after RE02), canonical not held | the courier that carried the leaks, account 20417 | "Copy retained by Claire Donovan; provided to the series investigation, December 2018." |
+| R04 | S001-C03-E033 | Meridian Subject Profile on Gaffney | SA Quinlan | chapter ≥ 2, canonical not held | how Gaffney was pressured, the Baltimore intelligence link | "Folded into the federal case; copy released to the series investigation, December 2018." |
+| R05 | S001-C03-E037 | Shared Meridian Client Reference | Benjamin Sayer | chapter ≥ 2 (after RE08), canonical not held | the shared client register, the clients common to the cases | "Copy recovered December 2018 from the archive kept by B. Sayer." (C03 found the original extract in Kane's site office; Benjamin has the copy the archive held.) |
+| R06 | S001-C03-E038 | Intermediary Payment Network | Walter Kiley | chapter ≥ 2, canonical not held | how the freight money connects to the finance network | "Traced by Walter Kiley for the prosecutors after the Baltimore case; provided December 2018." |
+| R07 | S001-C04-E017 | Archive checkout log | Benjamin Sayer | chapter ≥ 2 (after RE08), canonical not held | who pulled the leaked originals, the checkout log, Claire's pulls | "Copy recovered December 2018 from the archive kept by B. Sayer, who approved the transfers." (It is G. Lang's restored log, printed Dec 13, C04; Benjamin's approvals are on the stack register.) |
+| R08 | S001-C04-E018 | Capital Courier statement (account 20417) | Claire Donovan | chapter ≥ 2 (after RE02), canonical not held | the courier that carried the leaks, account 20417 | "Copy given to Claire Donovan by Miriam Castell; provided to the series investigation, December 2018." (Castell printed it on Dec 13, C04, and gave Claire a copy after her rescue.) |
 | R09 | S001-C04-E022 | Missing Document Sequence | Alan Corbett | chapter ≥ 2 (Corbett known), canonical not held | the gaps in what was released, the missing document numbers | "Reconstructed by Alan Corbett from compliance records; provided December 2018." |
 | R10 | S001-C04-E038 | Claire's copy register | Claire Donovan | chapter ≥ 2 (after RE02), canonical not held | her own record of what she copied, the copy register | "Claire Donovan's own register; provided to the series investigation, December 2018." |
 | R11 | S001-C04-E039 | Executive Exposure Timeline | Claire Donovan | chapter ≥ 2 (after RE02), canonical not held | the order the executives were exposed in, her timeline | "Written by Claire Donovan; provided to the series investigation, December 2018." (Distinct from C06-E053, the Exposure Sequence Directive.) |
-| R12 | S001-C04-E040 | Unidentified Authorization Record | Benjamin Sayer | chapter ≥ 2 (after RE08), canonical not held | the authorization above the operators, the record that pointed upward | "Original recovered December 2018 from the archive kept by B. Sayer." |
-| R13 | S001-C05-E035 | Foundation Trustee Authorization | Simon Wexler | chapter ≥ 2, canonical not held | the trustee's authority, Nathaniel's trustee findings | "Research copy kept by Nathaniel Ogden; held by Simon Wexler; provided December 2018." |
-| R14 | S001-C05-E039 | Corporate Control Agreement | Simon Wexler | chapter ≥ 2, canonical not held | how control was exercised through intermediaries, the control agreement | "Research copy kept by Nathaniel Ogden; held by Simon Wexler; provided December 2018." |
+| R12 | S001-C04-E040 | Unidentified Authorization Record | Benjamin Sayer | chapter ≥ 2 (after RE08), canonical not held | the authorization above the operators, the record that pointed upward | "File copy recovered December 2018 from the archive kept by B. Sayer." (His file copy of what Claire's cover sheets showed.) |
+| R13 | S001-C05-E035 | Foundation Trustee Authorization | Det. Caruso | chapter ≥ 2, canonical not held | the trust protector authorization, the trustee's authority, the Halvard subpoena returns | "Subpoena copy from the Halvard Holdings binders in the Ogden case; released by NYPD to the series investigation, December 2018." (Found in Halvard's binders after Nathaniel died, C05; no notes on it.) |
+| R14 | S001-C05-E039 | Corporate Control Agreement | Det. Caruso | chapter ≥ 2, canonical not held | how control ran through Halvard, the control agreement, the Class B rights agreement | "Subpoena copy from the Halvard Holdings binders in the Ogden case; released by NYPD to the series investigation, December 2018." (Same: Halvard's binders, no notes.) |
 | R15 | S001-C05-E040 | Evelyn Lockhart Correspondence | Det. Caruso | chapter ≥ 2, canonical not held | the letters from the recovered briefcase, Lockhart's correspondence in the Ogden case | "Recovered in the briefcase in the Ogden case; released by NYPD to the series investigation, December 2018." |
 | R16 | S001-C05-E043 | Executive Exposure Comparison | Simon Wexler | chapter ≥ 2, canonical not held | Nathaniel's comparison of the exposed executives | "Research copy kept by Nathaniel Ogden; held by Simon Wexler; provided December 2018." |
 | R17 | S001-C05-E044 | Claire's Comparison Notes | Claire Donovan | chapter ≥ 2 (after RE02), canonical not held | her notes comparing the disclosures, her comparison notes | "Claire Donovan's own notes; provided to the series investigation, December 2018." |
@@ -1221,7 +1224,7 @@ Claim hints (from the second return on, pointing at a place or person, never an 
 
 Numbers (long-form, Final Report Standard): `minItems` 10, `maxItems` 14, `minKey` 10. Lines of inquiry (independent support): Disappearance and pursuit (E003 to E010, E020 to E027), Destruction (E011 to E020, E059), Command and identity (E031 to E050, E057), Betrayal (E037, E044, E051 to E056), Authenticity (E028, E030, E040, E058). `minLines` 4. `linkToSuspect` (ties Evelyn to the command): E038, E041, E049, E057, E059, E052. `linkNote`: "Nothing attached connects Dr. Lockhart to the authority behind these operations." Supporting (never held against the report): E001, E002, E004, E005, E006, E008, E009, E010, E021, E022, E023, E024, E025, E026, E028, E029, E039, E042, E043, E045, E046, E047, E048, E060. `maxUnrelated` 2. `undecided` ["unknown"].
 
-**Closing reconstruction** (stages): the register and the system Benjamin kept; the sacrifice of the three operators (E054, E053); the genuine leaks, steered (E037, E052, E056); why the earlier findings still stand; the fire and the hunt for the keeper (E011 to E020, E059); the archive authenticated (E030, E041, E057); what it proves and what it does not (no order to kill). Quinlan's closing call: Evelyn Lockhart arrested on federal charges of conspiracy, obstruction of justice, witness tampering and related counts; Conrad Pike arrested on arson, obstruction and witness tampering; Sobczak and Dunleavy charged; Holt, Rourke, Kane and Marchetti's cases proceed; the earlier convictions stand; arrest is not conviction, and no sentence is promised. Then the series ending.
+**Closing reconstruction** (stages): the register and the system Benjamin kept; the sacrifice of the three operators (E054, E053); the genuine leaks, steered (E037, E052, E056); why the earlier findings still stand; the fire and the hunt for the keeper (E011 to E020, E059); the archive authenticated (E030, E041, E057); what it proves and what it does not (no order to kill). Quinlan's closing call: Evelyn Lockhart arrested on federal charges of conspiracy, obstruction of justice, witness tampering and related counts; Conrad Pike arrested on arson, obstruction and witness tampering; Sobczak and Dunleavy charged; Holt, Rourke, Kane and Marchetti's cases proceed; the earlier findings stand; arrest is not conviction, and no sentence is promised. Then the series ending.
 
 **Caller:** `caller: { characterId: "quinlan", name: "SA Teresa Quinlan", tag: "FBI" }`.
 
@@ -1295,14 +1298,15 @@ Case id `S001C06`; folder `src/cases/S001C06/`; export `S001C06: CaseDefinition`
 **Deliveries:** `benjamin_letter` (E010, chapter 3 start, triggered by entering the office in chapter 3 or by `{ any: [{ hasEvidence: "E023" }, { visited: "transit" }] }`), `recovery_report` (E027, RE08), `subpoena_return` (E042, RE09), `phones_report` (E020), `imaging_report` (E030), `signatures_report` (E041), `chain_report` (E057), `final_reconstruction` (E060, RE12 onComplete). Desk layout (percent rects), laid out like C01's `desk.ts`, several spots so more than one can sit at once: lab countdowns (phones, imaging, signatures, chain) and the letter, subpoena return and final reconstruction.
 
 **Handovers (characters own, through knowledge facts with `effects: [{ giveEvidence }]` and an authored entry):**
-- Quinlan: E003 (asked about the house/welfare check/neighbors) and E005 (asked about the SUV/surveillance/neighbor) from start; E047 once `{ all: [{ chapter: 4 }, { hasEvidence: "E034" }] }` (asked about Rourke's safe/the intelligence exhibit); E048 once `{ all: [{ chapter: 4 }, { hasEvidence: "E035" }] }` (asked about Kane's safe); E052 and E056 once `{ chapter: 5 }` (asked about Castell/Clearwater/how the leaks were run); E058 once `{ all: [{ chapter: 5 }, { talkedTo: "sayer" }, { talkedTo: "donovan" }, { talkedTo: "marchetti" }] }`; plus recovery routes R03, R04.
+- Quinlan: E003 (asked about the house/welfare check/neighbors) and E005 (asked about the SUV/surveillance/neighbor) from start; E047 once `{ all: [{ chapter: 4 }, { hasEvidence: "E034" }] }` (asked about Rourke's safe/the intelligence exhibit); E048 once `{ all: [{ chapter: 4 }, { hasEvidence: "E035" }] }` (asked about Kane's safe); E056 once `{ chapter: 5 }` (asked about Castell/Clearwater/how the leaks were run); E058 once `{ all: [{ chapter: 5 }, { talkedTo: "sayer" }, { talkedTo: "donovan" }, { talkedTo: "marchetti" }] }`; plus recovery routes R03, R04.
 - Oduya: E008 once `{ any: [{ hasEvidence: "E001" }, { hasEvidence: "E004" }] }` (asked about the booking/where Benjamin went); E040 once `{ any: [{ event: "RE08" }, { hasEvidence: "E029" }] }` (asked about backups/logs/the tape).
 - Sayer: E028 (asked for his account) from availability; E050 (asked about "A"/the Architect); plus routes R05, R07, R12. The passphrase fact (sets `passphrase_given`, starts lab `imaging`) at `exam_facility`.
 - Donovan: E051 (asked about her part); plus routes R08, R10, R11, R17.
 - Marchetti: E045 once `{ event: "RE05" }` (asked what she kept/can prove).
 - Holt: E046 once `{ hasEvidence: "E031" }` (asked about his approvals); route none.
-- Ames: routes R01, R06 (asked about the Carroway money / the freight-finance link).
-- Wexler: routes R13, R14, R16 (asked about the trustee/control agreement/Nathaniel's comparison).
+- Kiley: routes R01, R06 (asked about the Carroway money / the freight-finance link).
+- Wexler: route R16 (asked about Nathaniel's comparison).
+- Caruso: routes R13, R14 (asked about the trust protector authorization/the control agreement), R15 (the briefcase letters).
 - Caruso: route R15 (asked about the briefcase/Lockhart's letters).
 - Corbett: route R09 (asked about the missing document sequence/gaps).
 - Bennett: E021 once `{ hasEvidence: "E005" }` (asked about the SUV/plate); E025 once `{ all: [{ chapter: 3 }, { hasEvidence: "E006" }] }` (asked about the 717 number/where Benjamin went); route R02 (asked about Lockhart's envelope in the Keller case/the sealed Keller file).

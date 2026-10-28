@@ -805,7 +805,7 @@ export const questions: DialogueQuestion[] = [
     "He shouted, he threatened, he owed the dead man money, and he told us he went home to an apartment with a padlock on it. To a captain that's three-quarters of a conviction.",
   ]),
   q("keene", "The chemist", "keene_send_weight", "Can you get the brass weight tested?", [
-    "Bring it in. I'll walk it down to Marchetti myself; he's the City Chemist, he owes me a hat. He can tell you if it's blood and if it's human, and maybe the group. He can't tell you whose hand. Give him a few minutes.",
+    "Bring it in. I'll walk it down to Tessaro myself; he's the City Chemist, he owes me a hat. He can tell you if it's blood and if it's human, and maybe the group. He can't tell you whose hand. Give him a few minutes.",
   ], { requiresEvidence: ["E18"], effects: [{ startLab: "weight" }] }),
   q("keene", "The chemist", "keene_lab", "What did the chemist find?", [
     "Human blood in the screw thread, Vale's group, which is four people in ten. Wiped down with that rag. It's the weapon, near as anybody can say. It doesn't say who swung it. Somebody who knew where the storage room was.",

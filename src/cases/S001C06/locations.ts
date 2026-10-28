@@ -18,7 +18,7 @@ import { briefed, reportAvailable } from "./story";
  * in a scene overlap, whatever is showing.
  *
  * Scene items and availability follow the build contract in
- * docs/S001C06-timeline.md. Benjamin's former office (Room 611) is a
+ * docs/S001C06-timeline.md. Benjamin's former office (Room 1011) is a
  * sub-scene of Meridian headquarters, reached by its door. People in custody
  * (Holt, Rourke, Kane) are on the screen in the FBI's video interview room.
  * Person hotspots are shown exactly when the person is at that place.
@@ -273,7 +273,7 @@ const SCENES: LocationDef[] = [
     id: "records_center",
     area: "northern_virginia",
     name: "Meridian Records Center",
-    subtitle: "Willard Road industrial park, Chantilly, Virginia",
+    subtitle: "3900 Brookfield Corporate Drive, Chantilly, Virginia",
     mapPin: { x: 36, y: 79 },
     mapTag: "FIRE SCENE",
     background: "loc.records_center",
@@ -420,18 +420,18 @@ const SCENES: LocationDef[] = [
         "The FBI search",
         "Agents in windbreakers boxing files under a warrant served at 9:00 Friday morning. Every box gets a number and a line in a log. Nobody from Meridian is in the building except a lawyer who stands by the elevator taking notes on everything.",
       ),
-      door("hq_to_611", "Room 611, records administration", "sayer_office", { x: 84, y: 10, w: 14, h: 56 }),
+      door("hq_to_611", "Room 1011, records administration", "sayer_office", { x: 84, y: 10, w: 14, h: 56 }),
     ],
   },
 
   // -------------------------------------------------------------------------
-  // L05 Benjamin's former office, Room 611 (sub-scene of headquarters)
+  // L05 Benjamin's former office, Room 1011 (sub-scene of headquarters)
   // -------------------------------------------------------------------------
   {
     id: "sayer_office",
     area: "dc",
-    name: "Room 611",
-    subtitle: "Records administration, sixth floor, Meridian headquarters",
+    name: "Room 1011",
+    subtitle: "Records administration, tenth floor, Meridian headquarters",
     background: "loc.sayer_office",
     ambience: "amb.corporate",
     available: { chapter: 2 },
@@ -477,7 +477,7 @@ const SCENES: LocationDef[] = [
         "window",
         { x: 62, y: 6, w: 20, h: 30 },
         "The window",
-        "Six floors down, an interior courtyard with a bare gingko tree and a smokers' bench. Nobody is smoking today. There is an FBI van in the service lane.",
+        "Ten floors down, an interior courtyard with a bare gingko tree and a smokers' bench. Nobody is smoking today. There is an FBI van in the service lane.",
       ),
       door("so_to_hq", "Back to the executive floor", "meridian_hq", { x: 86, y: 10, w: 12, h: 60 }),
     ],
@@ -863,10 +863,10 @@ const SCENES: LocationDef[] = [
         "folder",
         { x: 10, y: 50, w: 18, h: 14 },
         "The trust file",
-        "A red-rope file on the reading table, tagged MHT-2009-04. Walter Ames has already flagged three pages with yellow tabs.",
+        "A red-rope file on the reading table, tagged MHT-2009-04. Walter Kiley has already flagged three pages with yellow tabs.",
         { evidence: "E043" },
       ),
-      person("fa_ames", "Walter Ames", "ames", { x: 46, y: 18, w: 12, h: 66 }),
+      person("fa_ames", "Walter Kiley", "ames", { x: 46, y: 18, w: 12, h: 66 }),
       inspect(
         "fa_lamp",
         "Reading table",
@@ -903,7 +903,7 @@ const SCENES: LocationDef[] = [
         "A write-blocker, two workstations and an evidence bag under a lamp. The FBI's examiner, Priya Natarajan, logs every keystroke on paper as well as on screen. Dr. Ingrid Solvang moves between the bench and the comparison microscope and says very little.",
       ),
       inspect("ex_register", "Register printout", "paper", { x: 32, y: 60, w: 12, h: 11 }, "The register", "On the light table, the register printed from the image, 412 entries, tabbed in red.", { evidence: "E031", visible: archiveOpen }),
-      inspect("ex_corr", "EX-CORR printouts", "paper", { x: 45, y: 60, w: 12, h: 11 }, "The notes", "On the light table, a stack of copies of typed notes, each signed with one letter.", { evidence: "E032", visible: archiveOpen }),
+      inspect("ex_corr", "EX-CORR printouts", "paper", { x: 45, y: 60, w: 12, h: 11 }, "The notes", "On the light table, a stack of copies of typed notes, most signed with one letter.", { evidence: "E032", visible: archiveOpen }),
       inspect("ex_fin", "EX-FIN printouts", "paper", { x: 58, y: 60, w: 12, h: 11 }, "The budgets", "On the light table, budget sheets and four trust directions laid side by side.", { evidence: "E033", visible: archiveOpen }),
       inspect("ex_intel", "Intelligence EX-7s", "paper", { x: 71, y: 60, w: 12, h: 11 }, "The intelligence forms", "On the light table, scanned EX-7 forms for one program, approval boxes inked.", { evidence: "E034", visible: archiveOpen }),
       inspect("ex_enforce", "Logistics and C-5 EX-7s", "paper", { x: 84, y: 60, w: 12, h: 11 }, "The enforcement forms", "On the light table, scanned EX-7 forms for two programs and one matter, each with a limit written in.", { evidence: "E035", visible: archiveOpen }),
@@ -1028,6 +1028,15 @@ const SCENES: LocationDef[] = [
         "The Chair's cartons",
         "Further down the pallet, cartons of typed memoranda in clear sleeves, each page signed with a single letter.",
         { evidence: "E054" },
+      ),
+      inspect(
+        "st_castell",
+        "A folder marked C.",
+        "folder",
+        { x: 74, y: 52, w: 14, h: 16 },
+        "The folder marked C.",
+        "In the last of the Chair's cartons, a slim folder with a single letter on the tab: C. Inside, four typed sheets on plain paper, each with two initials in ink in the corner.",
+        { evidence: "E052" },
       ),
       inspect(
         "st_excorr",

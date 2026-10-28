@@ -14,7 +14,7 @@ import { briefed, reportAvailable } from "./story";
 
 /** Paul Reddick is known (contract): his shop opens on the map at the same moment. */
 const reddickKnown: Condition = { any: [{ hasEvidence: "E022" }, { hasEvidence: "E026" }, { talkedTo: "avery" }, { hasEvidence: "E021" }] };
-/** Walter Ames is known (contract). */
+/** Walter Kiley is known (contract). */
 const amesKnown: Condition = { any: [{ hasEvidence: "E009" }, { hasEvidence: "E010" }, { talkedTo: "hannah" }] };
 const bookKnown: Condition = { flag: "book_known" };
 
@@ -108,7 +108,7 @@ export const locations: LocationDef[] = [
       panel("office_casefile", "Case file: Martin Keller", "folder", { x: 27, y: 66, w: 15, h: 22 }, "casefile"),
       deskItem("office_lab_footwear", "Lab report: footwear comparison", "lab_footwear", "E007", LAB_FOOTWEAR_RECT, "obj.labfolder"),
       deskItem("office_lockhart", "Courier envelope from New York", "lockhart_note", "E030", LOCKHART_NOTE_RECT, "obj.envelope_sealed", "obj.envelope_open"),
-      deskItem("office_ames", "Envelope from Ames and Kiley", "ames_schedule", "E029", AMES_SCHEDULE_RECT, "obj.schedule_envelope"),
+      deskItem("office_ames", "Envelope from Kiley and Strand", "ames_schedule", "E029", AMES_SCHEDULE_RECT, "obj.schedule_envelope"),
       {
         ...panel("office_board", "Murder board", "board", { x: 0, y: 4, w: 24, h: 42 }, "board"),
         attention: BOARD_NUDGE,
@@ -545,12 +545,12 @@ export const locations: LocationDef[] = [
   },
 
   // -------------------------------------------------------------------------
-  // L08 Ames and Kiley, CPAs
+  // L08 Kiley and Strand, CPAs
   // -------------------------------------------------------------------------
   {
     id: "ames_office",
     area: "pittsburgh",
-    name: "Ames and Kiley, CPAs",
+    name: "Kiley and Strand, CPAs",
     subtitle: "4th floor, 310 Grant Street, Pittsburgh",
     mapPin: { x: 20, y: 24 },
     secret: true,
@@ -567,14 +567,14 @@ export const locations: LocationDef[] = [
         "The shelves",
         "Floor to ceiling: the Internal Revenue Code in fat paperback volumes by year, nonprofit audit guides, a row of binders labeled by client. The newest spines are the most worn.",
       ),
-      person("ao_ames", "Walter Ames", "ames", { x: 40, y: 24, w: 12, h: 62 }),
+      person("ao_ames", "Walter Kiley", "ames", { x: 40, y: 24, w: 12, h: 62 }),
       inspect(
         "ao_table",
         "Conference table",
         "desk",
         { x: 56, y: 58, w: 26, h: 14 },
         "The conference table",
-        "A small round table with two chairs, a legal pad and two pens laid square. Ames says it was set up exactly like this for nine o'clock on Friday, and he hasn't had the heart to move it.",
+        "A small round table with two chairs, a legal pad and two pens laid square. Kiley says it was set up exactly like this for nine o'clock on Friday, and he hasn't had the heart to move it.",
       ),
       inspect(
         "ao_window",

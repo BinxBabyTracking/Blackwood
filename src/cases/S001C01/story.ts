@@ -141,7 +141,7 @@ export const calls: CallDef[] = [
     title: "Call from Det. Bowman",
     lines: [
       "Bowman. What you turned up on that $9,500 got me in front of a judge this morning.",
-      "Subpoenas went out to the banks for Tri-County, Penn Valley and Monongah. The records came back fast. I sent them straight to Walter Ames, and he's turned them into a schedule a jury could read.",
+      "Subpoenas went out to the banks for Tri-County, Penn Valley and Monongah. The records came back fast. I sent them straight to Walter Kiley, and he's turned them into a schedule a jury could read.",
       "He's sending you a copy. Read his note at the bottom.",
     ],
     effects: [{ setFlag: "bank_records" }],
@@ -205,9 +205,9 @@ export const deliveries: DeliveryDef[] = [
   },
   {
     id: "ames_schedule",
-    title: "Schedule from Ames and Kiley",
-    exterior: "A manila envelope from Ames and Kiley, CPAs, 310 Grant Street, Pittsburgh, addressed to you by hand: \"Copy, at Det. Bowman's request.\"",
-    text: "Walter Ames's cover note: \"Prepared from the subpoenaed bank records. I have kept it to what the banks show and nothing more. W.A.\"",
+    title: "Schedule from Kiley and Strand",
+    exterior: "A manila envelope from Kiley and Strand, CPAs, 310 Grant Street, Pittsburgh, addressed to you by hand: \"Copy, at Det. Bowman's request.\"",
+    text: "Walter Kiley's cover note: \"Prepared from the subpoenaed bank records. I have kept it to what the banks show and nothing more. W.A.\"",
     evidence: ["E029"],
   },
   {
@@ -304,7 +304,7 @@ export const events: ReactiveEventDef[] = [
       delivery: "ames_schedule",
       learned: [
         { text: "Det. Bowman served subpoenas on the banks of Tri-County Facility Partners, Penn Valley Business Services and Monongah Strategy Group.", requires: { callAnswered: "call_bowman_bank" } },
-        { text: "Walter Ames turned the bank records into a schedule of where the fund's money went next.", requires: { hasEvidence: "E029" } },
+        { text: "Walter Kiley turned the bank records into a schedule of where the fund's money went next.", requires: { hasEvidence: "E029" } },
       ],
     },
   },

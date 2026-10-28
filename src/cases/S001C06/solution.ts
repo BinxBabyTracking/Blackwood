@@ -422,7 +422,7 @@ export const solution: CaseDefinition["solution"] = {
       },
       {
         heading: "The leaks, steered",
-        body: "On September 10 she approved the release program for herself, and the same day her foundation gave Clearwater $250,000. Through Miriam Castell she had Claire Donovan copy three genuine records, and she ordered Benjamin in writing to approve the pulls without question. On October 11 she told Castell to send the first item to her at the Foundation, so that she could appear to have received it. The next two went straight to Blackwood. When Claire offered three pages that pointed upward, the answer was \"not now, not ever.\" Conrad Pike reported Blackwood's progress to her, case by case.",
+        body: "On September 10 she approved the release program for herself, and the same day her foundation gave Clearwater $250,000. Through Miriam Castell she had Claire Donovan copy three genuine records, and she ordered Benjamin in writing to approve the pulls without question. On October 11 an unsigned note of hers told Castell to send the first item to the Lockhart Foundation, so that she could appear to have received it. The next two went straight to Blackwood. When Claire offered three pages that pointed upward, the answer was \"not now, not ever.\" Conrad Pike reported Blackwood's progress to her, case by case.",
       },
       {
         heading: "Why the earlier findings stand",
@@ -443,7 +443,7 @@ export const solution: CaseDefinition["solution"] = {
     ],
     bennett: [
       "It's Quinlan. Your report is with the U.S. Attorney, and it holds.",
-      "Evelyn Lockhart was arrested as she left 26 Federal Plaza at 6:40 this evening, on federal charges of conspiracy, obstruction of justice, witness tampering and related counts. Conrad Pike was arrested at his home in Vienna at 5:15: arson, obstruction, witness tampering. Sobczak and Dunleavy are charged. Holt, Rourke, Kane and Marchetti's cases go on, and every one of the earlier convictions stands.",
+      "Evelyn Lockhart was arrested as she left 26 Federal Plaza at 6:40 this evening, on federal charges of conspiracy, obstruction of justice, witness tampering and related counts. Conrad Pike was arrested at his home in Vienna at 5:15: arson, obstruction, witness tampering. Sobczak and Dunleavy are charged. Holt, Rourke, Kane and Marchetti's cases go on, and every one of the earlier findings stands.",
       "Arrest isn't conviction. Nobody's promising a sentence, and her lawyers will fight every page. But the pages are real, and they're in our custody now, not hers.",
       "Benjamin asked me to tell you something. He said someone honest had to keep the records, and someone honest had to read them. Thank you.",
     ],

@@ -93,7 +93,7 @@ export const reinterviews: ReinterviewDef[] = [
   grant("reddick_jobsheet", "reddick", { hasEvidence: "E021" }, "His own job sheet gives you reason to question Paul Reddick again."),
   grant("reddick_footwear", "reddick", { hasEvidence: "E007" }, "The footwear report gives you reason to question Paul Reddick again."),
   grant("reddick_bank", "reddick", { hasEvidence: "E024" }, "His bank statement gives you reason to question Paul Reddick again."),
-  grant("ames_ledger", "ames", { hasEvidence: "E011" }, "Martin's ledger gives you reason to talk to Walter Ames again."),
+  grant("ames_ledger", "ames", { hasEvidence: "E011" }, "Martin's ledger gives you reason to talk to Walter Kiley again."),
   grant("avery_camera", "avery", { hasEvidence: "E023" }, "The bank camera stills give you reason to talk to Stanley Avery again."),
   grant("morris_jobsheet", "morris", { hasEvidence: "E021" }, "Reddick's job sheet gives you reason to talk to Angela Morris again."),
   grant("foster_letter", "foster", { hasEvidence: "E028" }, "The clawback letter gives you reason to call Warren Foster."),
