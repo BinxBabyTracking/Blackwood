@@ -39,6 +39,14 @@ function matches(c: CatalogCase, f: Filters) {
   return true;
 }
 
+/** Where a case sits in the list, before any sort. */
+function shelf(c: CatalogCase) {
+  if (c.is_preview || c.status === "in_development") return 4;
+  if (c.status === "available") return (c.tier?.price_cents ?? 0) === 0 ? 0 : 2;
+  if (c.status === "coming_soon") return c.early_access_open ? 1 : 3;
+  return 5;
+}
+
 const sorters: Record<Sort, (a: CatalogCase, b: CatalogCase) => number> = {
   newest: (a, b) =>
     (b.released_at ?? "").localeCompare(a.released_at ?? "") ||
@@ -89,9 +97,13 @@ export function CatalogBrowser({ cases, hrefBase, leaderboards = false }: { case
   const [sort, setSort] = useState<Sort>("newest");
   const set = <K extends keyof Filters>(k: K) => (v: Filters[K]) => setFilters((f) => ({ ...f, [k]: v }));
 
-  // The introductory case (The Whitmore File) always leads the list, whatever the sort.
+  // Shelves come first, whatever the sort: free cases (the introductory one leading), then cases open for
+  // early access, then cases on sale, then Coming Soon, then anything still in preparation. The sort applies within each.
   const visible = useMemo(
-    () => cases.filter((c) => matches(c, filters)).sort((a, b) => Number(b.is_introductory) - Number(a.is_introductory) || sorters[sort](a, b)),
+    () =>
+      cases
+        .filter((c) => matches(c, filters))
+        .sort((a, b) => shelf(a) - shelf(b) || Number(b.is_introductory) - Number(a.is_introductory) || sorters[sort](a, b)),
     [cases, filters, sort],
   );
   const filtered = JSON.stringify(filters) !== JSON.stringify(initial);
