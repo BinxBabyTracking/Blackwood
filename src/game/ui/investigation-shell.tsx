@@ -37,6 +37,7 @@ import { TravelMap } from "./travel-map";
 import { EvidenceStamp } from "./evidence-stamp";
 import { isSpeaking, subscribeSpeaking } from "./audio-bus";
 import { setMusicEnabled, useBackgroundSound, useMusicEnabled } from "./background-sound";
+import { HomeScreenSteps, HomeScreenTip, useFullScreen } from "./full-screen";
 
 type Layer =
   | { k: "inspect"; text: string; title: string; evidence: ClientEvidence | null; photo: { hotspotId: string; taken: boolean } | null }
@@ -155,6 +156,10 @@ export function InvestigationShell({
   const [save, setSave] = useState<SaveStatus>({ state: "saved", at: null });
   const [toast, setToast] = useState<{ text: string; tone: "info" | "error" | "deduction" } | null>(null);
   const [menu, setMenu] = useState(false);
+  const full = useFullScreen();
+  const [homeSteps, setHomeSteps] = useState(false);
+  // First-time pointers take turns: nothing else points while the swipe card is up.
+  const [swipeCard, setSwipeCard] = useState(false);
   const [report, setReport] = useState<{ open: string; characterId: string | null } | null>(null);
   // Things on the desk (and anywhere else) stack in the order they were last picked up: the latest lies on top.
   const stackKey = `bw-stack-${caseId}`;
@@ -621,6 +626,24 @@ export function InvestigationShell({
                   Travel scenes: {travelScenes ? "On" : "Off"}
                   <span className="block text-xs text-smoke">A short drive or walk, with sound, between locations. Click to skip.</span>
                 </button>
+                {full.mode === "fullscreen" ? (
+                  <button type="button" role="switch" aria-checked={full.active} className="block w-full px-3 py-2 text-left hover:bg-white/5" onClick={() => void full.toggle()}>
+                    Full screen: {full.active ? "On" : "Off"}
+                    <span className="block text-xs text-smoke">Hides the address bar and the rest of the browser while you play.</span>
+                  </button>
+                ) : full.mode === "ios" ? (
+                  <div className="border-b border-white/10 px-3 py-2">
+                    <button type="button" className="block w-full text-left" aria-expanded={homeSteps} onClick={() => setHomeSteps((o) => !o)}>
+                      Play full screen
+                      <span className="block text-xs text-smoke">On iPhone, add Blackwood to your home screen to play without the address bar.</span>
+                    </button>
+                    {homeSteps ? (
+                      <div className="mt-2">
+                        <HomeScreenSteps />
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
                 <button
                   type="button"
                   className="block w-full px-3 py-2 text-left hover:bg-white/5"
@@ -644,8 +667,11 @@ export function InvestigationShell({
         </div>
       </div>
 
+      <HomeScreenTip paused={swipeCard} />
+
       <ExplorationScene
         introKey={`bw-swipe-${caseId}`}
+        onIntro={setSwipeCard}
         overlays={
           atHome
             ? waiting.map((l) => (
@@ -706,9 +732,9 @@ export function InvestigationShell({
                 label={words.map}
                 image={hudArt(caseId, "map", view.theme, view.caseArt)}
                 fallback="map"
-                guide={!mapUsed}
+                guide={!mapUsed && !swipeCard}
                 callout={
-                  mapUsed ? undefined : (
+                  mapUsed || swipeCard ? undefined : (
                     <>
                       <span className="pointer-fine:hidden">Tap</span>
                       <span className="hidden pointer-fine:inline">Click</span> the map to travel

@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   },
   description:
     "Every case has a truth. Join Blackwood Investigations, a fictional private investigative agency, and work through unsolved cases as a newly recruited investigator.",
+  // Added to a home screen, the site opens like an app, without the address bar.
+  appleWebApp: { capable: true, title: "Blackwood", statusBarStyle: "black" },
+  icons: { apple: "/icons/apple-touch-icon.png" },
 };
 
 export const viewport: Viewport = {

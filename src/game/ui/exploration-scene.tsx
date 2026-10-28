@@ -180,7 +180,10 @@ export function ExplorationScene({
   underlays,
   stack = [],
   introKey,
+  onIntro,
 }: {
+  /** Told when the first-time swipe card opens or closes, so other first-time pointers can wait for it. */
+  onIntro?: (open: boolean) => void;
   /** Remembers that this player has seen the "swipe to look around" card for this case (phones and tablets held upright). */
   introKey?: string;
   /** Pinned to the scene surface, under any painted object placed on top (a grayed-out spot for lab results). */
@@ -242,6 +245,7 @@ export function ExplorationScene({
   /** The first-time "swipe to look around" card: shown once per case, gone at the first swipe. */
   const [intro, setIntro] = useState(false);
   const introStart = useRef<number | null>(null);
+  useEffect(() => onIntro?.(intro), [intro, onIntro]);
   /** The room the card was shown in: the small swipe hint is not repeated there right after it. */
   const [introRoom, setIntroRoom] = useState<string | null>(null);
   useEffect(() => {
