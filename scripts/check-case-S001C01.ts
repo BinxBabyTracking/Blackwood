@@ -14,6 +14,7 @@ import { bestMatch } from "../src/game/engine/matcher";
 import { questionsLeft } from "../src/game/engine/questions";
 import { check } from "../src/game/engine/rules";
 import { fileUnder, reportStandardProblems } from "./report-helpers";
+import { vaguePlaythrough } from "./series-case-check";
 import type { CaseDefinition, GameAction, InvestigationState, Theory } from "../src/game/engine/types";
 
 /** Everyday phrasings and the authored answer each should reach. */
@@ -222,6 +223,11 @@ export function checkS001C01(def: CaseDefinition, problems: string[]) {
 
   const real = errors.filter((e) => !/already|not available|isn't|can't|No further|not on the board|nothing new|not here/i.test(e));
   if (real.length) console.log(`(engine refused ${real.length} moves in the thorough playthrough, e.g. ${real.slice(0, 3).join(" | ")})`);
+  // A player who never finds the right words still gets to the report.
+  const v = vaguePlaythrough(def);
+  if (v.evidence.length) problems.push(`vague player: never gets ${v.evidence.join(", ")}`);
+  if (!v.report) problems.push("vague player: the report never opens");
+
   console.log(`S001C01: ${def.evidence.length} evidence, ${def.locations.length} locations, ${def.questions.length} questions, ${def.deductions.length} deductions`);
   console.log(`playthrough: status=${s.status} attempts=${s.attempts} events=${s.events.join(",")} matcher=${hits}/${S001C01_MATCH.length}`);
 }

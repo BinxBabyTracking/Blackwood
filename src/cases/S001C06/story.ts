@@ -337,7 +337,21 @@ export const calls: CallDef[] = [
   },
 ];
 
-export const outgoingCalls: OutgoingCallDef[] = [];
+export const outgoingCalls: OutgoingCallDef[] = [
+  {
+    // The rescue, as a call the player can see once the danger is in front of them (as C04 does for its rescue).
+    id: "out_quinlan_recover",
+    to: "quinlan",
+    label: "Call SA Quinlan: send troopers to the farm now.",
+    available: { all: [{ event: "RE07" }, { not: { event: "RE08" } }, { at: "ridge_property" }, { hasEvidence: "E026" }] },
+    done: { flag: "recovery_requested" },
+    lines: [
+      "The Burkholder farm, Fulton County. A truck across the lane and a man at Benjamin's back door with a pry bar.",
+      "Quinlan: \"That's enough. State troopers are ten minutes out and I'm on my way. Stay where you are.\"",
+    ],
+    effects: [{ setFlag: "recovery_requested" }],
+  },
+];
 
 export const texts: TextDef[] = [
   { id: "t_quinlan_welfare", from: "quinlan", body: "Arlington's doing the welfare check. I'll send you what they find. T.Q." },
@@ -576,7 +590,7 @@ export const events: ReactiveEventDef[] = [
     caseId: "S001C06",
     title: "Benjamin is recovered",
     characterId: "sayer",
-    requires: { all: [{ at: "ridge_property" }, { hasEvidence: "E026" }, { asked: "quinlan_recover" }] },
+    requires: { all: [{ at: "ridge_property" }, { hasEvidence: "E026" }, { any: [{ asked: "quinlan_recover" }, { flag: "recovery_requested" }] }] },
     onActivate: [
       { incomingCall: "call_recovery" },
       { text: "t_recovery" },

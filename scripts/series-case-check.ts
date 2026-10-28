@@ -48,6 +48,8 @@ export interface SeriesCaseConfig {
   closingSecrets?: RegExp;
   /** Items the player presents to whoever is in front of them, when held. */
   present?: string[];
+  /** Evidence only an action the vague player never takes can bring (showing something to someone). */
+  vagueExempt?: string[];
 }
 
 export function checkSeriesCase(id: string, def: CaseDefinition, problems: string[], cfg: SeriesCaseConfig) {
@@ -129,6 +131,7 @@ export function checkSeriesCase(id: string, def: CaseDefinition, problems: strin
           if (o?.kind === "inspect" && o.evidence && !s.evidence.includes(o.evidence.id)) run({ type: "collect", evidenceId: o.evidence.id });
         }
         for (const c of def.characters.filter((c) => characterLocation(c, s) === loc && check(c.available, s))) exhaust(c.id);
+        for (const c of project(def, s).phone.outgoing) if (!s.answeredCalls.includes(c.id)) run({ type: "placeCall", callId: c.id });
       }
     }
     for (const c of project(def, s).phone.contacts) exhaust(c.id);
@@ -199,6 +202,16 @@ export function checkSeriesCase(id: string, def: CaseDefinition, problems: strin
   expect(!/Clearwater|MAG-RM|account 20417/i.test(closingText) || id >= "S001C04", "the closing names the leak channel before C04");
   if (cfg.closingSecrets) expect(!cfg.closingSecrets.test(closingText), "the closing gives away a later case");
 
+  // ---- a player who never finds the right words still gets to the report ----
+  {
+    const v = vaguePlaythrough(def);
+    const exempt = new Set(cfg.vagueExempt ?? []);
+    const stuck = v.evidence.filter((e) => !exempt.has(e));
+    if (stuck.length) problems.push(`vague player: never gets ${stuck.join(", ")} (nothing volunteers it)`);
+    if (v.deductions.length) problems.push(`vague player: never makes ${v.deductions.join(", ")}`);
+    if (!v.report) problems.push(`vague player: the report never opens (stuck in chapter ${v.chapter})`);
+  }
+
   // ---- the question limits ----
   for (const c of def.characters) {
     const used = s.asked.filter((q) => def.questions.find((x) => x.id === q)?.characterId === c.id).length + s.presented.filter((k) => k.startsWith(`${c.id}:`)).length;
@@ -224,4 +237,93 @@ export function checkSeriesCase(id: string, def: CaseDefinition, problems: strin
   if (real.length) console.log(`(engine refused ${real.length} moves in the thorough playthrough, e.g. ${[...new Set(real)].slice(0, 4).join(" | ")})`);
   console.log(`${id}: ${def.evidence.length} evidence, ${def.locations.length} locations, ${def.questions.length} questions, ${def.deductions.length} deductions, ${def.events.length} events`);
   console.log(`playthrough: status=${s.status} attempts=${s.attempts} chapter=${s.chapters?.current ?? "-"} events=${s.events.join(",")} matcher=${hits}/${cfg.match.length}`);
+}
+
+
+/**
+ * A player who never finds the right words: everywhere, everyone, every call
+ * and delivery, but the only question ever asked is a vague one. Returns what
+ * such a player cannot reach, which should be nothing that blocks the case.
+ */
+export function vaguePlaythrough(def: CaseDefinition) {
+  let s: InvestigationState = newState(def, 0);
+  let t = 1000;
+  const run = (a: GameAction) => {
+    try {
+      const r = reduce(def, s, a, (t += 5000));
+      s = r.state;
+      return r.outcome;
+    } catch {
+      return null;
+    }
+  };
+  run({ type: "dismissIntro" });
+  const file = run({ type: "readDocument", documentId: "casefile" });
+  if (file?.kind === "document") for (const e of file.evidence) if (!e.collected) run({ type: "collect", evidenceId: e.id });
+  const board = new Set<string>();
+  const reach = (from: string, seen: Set<string>): string[] => {
+    if (seen.has(from)) return [];
+    seen.add(from);
+    const l = def.locations.find((x) => x.id === from);
+    const doors = (l?.hotspots ?? []).map((h) => (h.interaction as { locationId?: string }).locationId).filter((x): x is string => Boolean(x) && !def.locations.find((y) => y.id === x)?.onMap);
+    return [from, ...doors.flatMap((d) => reach(d, seen))];
+  };
+  // Like a real player: back to someone only when something new has happened since, and on until two questions bring nothing.
+  const lastSeen: Record<string, number> = {};
+  const world = () => s.evidence.length + s.deductions.length + s.events.length + s.flags.length + (s.chapters?.current ?? 0) + s.visited.length;
+  const vague = (cid: string) => {
+    if (lastSeen[cid] === world()) return;
+    run({ type: "talk", characterId: cid });
+    let idle = 0;
+    for (let i = 0; i < 12 && idle < 2; i++) {
+      const before = s.evidence.length + s.asked.length + s.flags.length;
+      run({ type: "askFree", characterId: cid, text: "Is there anything else you can tell me?", match: null, composed: null, facts: null });
+      idle = s.evidence.length + s.asked.length + s.flags.length === before ? idle + 1 : 0;
+    }
+    lastSeen[cid] = world();
+  };
+  const progress = () => s.evidence.length + s.deductions.length + s.answeredCalls.length + s.openedDeliveries.length + s.events.length + s.flags.length + s.inspected.length;
+  for (let round = 0; round < 40; round++) {
+    const before = progress();
+    for (const m of project(def, s).map.filter((x) => x.available)) {
+      for (const loc of reach(m.id, new Set())) {
+        if (s.location !== loc) run({ type: "travel", locationId: loc });
+        if (s.location !== loc) continue;
+        for (const h of project(def, s).location.hotspots) {
+          if (h.local) continue;
+          const hd = def.locations.find((l) => l.id === loc)!.hotspots.find((x) => x.id === h.id)!;
+          if (hd.interaction.type === "travel") continue;
+          const o = run({ type: "hotspot", hotspotId: h.id });
+          if (o?.kind === "inspect" && o.evidence && !s.evidence.includes(o.evidence.id)) run({ type: "collect", evidenceId: o.evidence.id });
+        }
+        for (const c of def.characters.filter((c) => characterLocation(c, s) === loc && check(c.available, s))) vague(c.id);
+        for (const c of project(def, s).phone.outgoing) if (!s.answeredCalls.includes(c.id)) run({ type: "placeCall", callId: c.id });
+      }
+    }
+    for (const c of project(def, s).phone.contacts) vague(c.id);
+    for (const c of project(def, s).phone.outgoing) if (!s.answeredCalls.includes(c.id)) run({ type: "placeCall", callId: c.id });
+    for (const c of [...s.pendingCalls]) run({ type: "answerCall", callId: c });
+    t += 3_600_000;
+    run({ type: "checkLabs" });
+    for (const d of [...s.pendingDeliveries]) run({ type: "openDelivery", deliveryId: d });
+    for (const d of def.deliveries) if (s.openedDeliveries.includes(d.id)) for (const e of d.evidence) if (!s.evidence.includes(e)) run({ type: "collect", evidenceId: e });
+    for (const d of def.deductions)
+      for (const [a, b] of d.connections) {
+        for (const x of [a, b])
+          if (!board.has(x) && (s.evidence.includes(x) || project(def, s).characters.some((c) => c.id === x))) {
+            run({ type: "boardAdd", itemId: x, x: 10, y: 10 });
+            if (s.board.items.some((i) => i.id === x)) board.add(x);
+          }
+        if (board.has(a) && board.has(b) && !s.deductions.includes(d.id)) run({ type: "connect", a, b });
+      }
+    if (progress() === before && round > 2) break;
+  }
+  return {
+    evidence: def.evidence.map((e) => e.id).filter((e) => !s.evidence.includes(e)),
+    deductions: def.deductions.map((d) => d.id).filter((d) => !s.deductions.includes(d)),
+    events: def.events.map((e) => e.id).filter((e) => !s.events.includes(e)),
+    chapter: s.chapters?.current ?? null,
+    report: project(def, s).conclusion.available,
+    state: s,
+  };
 }

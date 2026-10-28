@@ -11,6 +11,7 @@ export const S001C06_CHECK: SeriesCaseConfig = {
     ["exam_facility", "ex_register", "the register printout (before the archive opens)"],
   ],
   present: ["E038"],
+  vagueExempt: ["E060"],
   flags: ["casefile_read", "archive_open", "passphrase_given", "pike_admits", "records_sealed", "confront_ready", "final_concealment"],
   right: {
     architect: "lockhart",

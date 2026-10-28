@@ -1,6 +1,7 @@
 import "server-only";
 import type { CaseDefinition } from "@/game/engine/types";
 import { assets } from "./assets";
+import { volunteerEssentials } from "@/series/volunteer";
 import { characters, contradictions, questions, reactions } from "./characters";
 import { evidence } from "./evidence";
 import { reinterviews } from "./interviews";
@@ -61,3 +62,5 @@ export const S001C01: CaseDefinition = {
     { label: "Victim", value: "Martin Keller" },
   ],
 };
+
+volunteerEssentials(S001C01);
