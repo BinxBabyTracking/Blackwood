@@ -253,6 +253,7 @@ Added for C002. Each is off unless a case uses it, so older cases behave exactly
 | --- | --- | --- |
 | `known` | a person | When they appear in the case file, people list and board (default: once the case file is read). Keeps a culprit found mid-case, or a later victim, unnamed until then. |
 | `moves` | a person | Later places they can be interviewed (a suspect taken into custody). |
+| `portraitWhen` | a person | A portrait shown instead of the usual one while a condition holds and the picture is painted (an injury, custody). A talking portrait gives way to it. Used by C002 (Gordon Pell after Oak Terrace). |
 | `secret` | a location | Keeps it off the map, and out of the browser, until it can be visited. |
 | `requires` | a report option | Keeps a choice off the report form until it holds (a suspect not found yet). |
 | `mapTitle` | the case | Title of the travel map. |
