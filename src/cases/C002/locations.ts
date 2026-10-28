@@ -80,6 +80,7 @@ const ART: Record<string, string> = {
   ra_ruth: "art.figure_ruth",
   ra_laura: "art.figure_laura",
   cb_gordon: "art.figure_gordon",
+  cb_gordon_cut: "art.figure_gordon_cut",
   mh_diane: "art.figure_diane",
 };
 
@@ -277,7 +278,9 @@ export const locations: LocationDef[] = [
     available: { any: [{ hasEvidence: "E14" }, { hasEvidence: "E15" }, arrested] },
     onMap: true,
     hotspots: [
-      person("cb_gordon", "The man at the door of Cabin 14", "gordon", { x: 36, y: 32, w: 8, h: 34 }, { not: arrested }),
+      person("cb_gordon", "The man at the door of Cabin 14", "gordon", { x: 36, y: 32, w: 8, h: 34 }, { all: [{ not: arrested }, { not: { flag: "oak_terrace" } }] }),
+      // After Oak Terrace: the same man, with a fresh cut on his scalp.
+      person("cb_gordon_cut", "The man at the door of Cabin 14", "gordon", { x: 36, y: 32, w: 8, h: 34 }, { all: [{ not: arrested }, { flag: "oak_terrace" }] }),
       inspect("cb_van", "Something under a tarp", "van", { x: 62, y: 42, w: 26, h: 31 }, "Under the tarp", "A full-size van under a brown tarp, pulled tight and weighted with firewood. One back corner has slipped: dark blue paint, and a California plate, 2KXL418.", { textAfter: [{ requires: arrested, text: "Sheriff's tape around the place where the van stood. It has been towed to the county yard." }] }),
       inspect("cb_window", "Back window", "window", { x: 12, y: 34, w: 7.5, h: 19 }, "The back window", "On the side of the cabin, one window is covered from the inside with a sheet of plywood. The others have curtains."),
       inspect("cb_antenna", "Antenna on the roof", "antenna", { x: 35, y: 2, w: 23, h: 28 }, "The roof", "An oversized television antenna and a CB whip, guyed with wire. Through the open door, a workbench with a soldering iron and the gutted chassis of a console television."),

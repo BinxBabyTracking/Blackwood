@@ -209,6 +209,7 @@ export const calls: CallDef[] = [
       "Bennett. San Bernardino County served a warrant on Cabin 14 at Tamarack Lake at a quarter past six this morning.",
       "Gordon Pell was home. They've arrested him, and he's been brought down to Mariposa Bay for questioning. He has a fresh cut on his scalp.",
       "The deputies' inventory is in a sealed envelope on its way to your desk. I haven't read all of it. I wanted you to see it first.",
+      "He's in custody because of your work. But an arrest isn't a case. We still have to prove every piece of it, and show that Tom Hale and Laura Kessler told the truth from the start.",
     ],
     effects: [
       { setFlag: "gordon_arrested" },

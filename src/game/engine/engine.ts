@@ -366,6 +366,11 @@ export function talkingFace(def: CaseDefinition, characterId: string): TalkingFa
   return Object.fromEntries(FACE_SHAPES.flatMap((sh) => (url(sh) ? [[sh, url(sh)]] : []))) as TalkingFace;
 }
 
+/** The portrait asset key to show for a character now: a conditional one (an injury, custody) if it holds and is painted, else the usual one. */
+function portraitOf(def: CaseDefinition, c: CharacterDef, s: InvestigationState) {
+  return c.portraitWhen?.find((p) => def.assets.images[p.image] && check(p.when, s))?.image ?? c.portrait;
+}
+
 function conversationOutcome(def: CaseDefinition, s: InvestigationState, characterId: string, latest: number[] = []): ActionOutcome {
   const c = char(def, characterId)!;
   const d = demeanorOf(def, s, characterId);
@@ -374,7 +379,7 @@ function conversationOutcome(def: CaseDefinition, s: InvestigationState, charact
     characterId,
     name: c.name,
     role: c.role,
-    portrait: def.assets.images[c.portrait] ?? "",
+    portrait: def.assets.images[portraitOf(def, c, s)] ?? "",
     where: whereOf(def, s, c),
     medium: reachOf(def, s, c) ?? c.medium ?? "in person",
     demeanor: d?.label ?? null,
@@ -386,7 +391,8 @@ function conversationOutcome(def: CaseDefinition, s: InvestigationState, charact
     available: characterHere(def, s, characterId),
     voiced: voiced(c),
     questions: questionsView(def, s, c),
-    face: talkingFace(def, c.id),
+    // A talking portrait is painted from the usual portrait, so it gives way to a conditional one.
+    face: portraitOf(def, c, s) === c.portrait ? talkingFace(def, c.id) : null,
   };
 }
 
@@ -774,7 +780,7 @@ function step(
         peopleHeading: d.peopleHeading ?? "Persons involved",
         people: (d.people ?? []).map((id) => {
           const c = char(def, id)!;
-          return { id: c.id, name: c.name, role: c.role, portrait: def.assets.images[c.portrait] ?? "" };
+          return { id: c.id, name: c.name, role: c.role, portrait: def.assets.images[portraitOf(def, c, s)] ?? "" };
         }),
         pages: d.pages,
         evidence: d.evidence.map((id) => ({ id, title: def.evidence.find((e) => e.id === id)!.title, collected: s.evidence.includes(id) })),
@@ -1379,7 +1385,7 @@ function projectState(def: CaseDefinition, s: InvestigationState, now: number, c
       id: c.id,
       name: c.name,
       role: c.role,
-      portrait: img(c.portrait),
+      portrait: img(portraitOf(def, c, s)),
       bio: c.bio.filter((b) => check(b.requires, s)).map((b) => b.text),
       onBoard: c.onBoard,
       deceased: isDeceased(c, s),
@@ -1560,7 +1566,7 @@ function interviewsView(def: CaseDefinition, s: InvestigationState): ClientInter
         characterId: c.id,
         name: c.name,
         role: c.role,
-        portrait: def.assets.images[c.portrait] ?? "",
+        portrait: def.assets.images[portraitOf(def, c, s)] ?? "",
         where: whereOf(def, s, c),
         medium: reachOf(def, s, c) ?? c.medium ?? "in person",
         demeanor: talked && !isDeceased(c, s) ? d?.label ?? null : null,

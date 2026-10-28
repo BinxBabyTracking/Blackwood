@@ -252,7 +252,7 @@ export function checkC002(def: CaseDefinition, problems: string[]) {
   open("search");
   expect(s.evidence.includes("E18") && s.evidence.includes("E20"), "search inventory and cassette transcript not delivered");
   go("cabin14");
-  expect(!project(def, s).location.hotspots.some((h) => h.id === "cb_gordon"), "Gordon still at his door after his arrest");
+  expect(!project(def, s).location.hotspots.some((h) => h.id.startsWith("cb_gordon")), "Gordon still at his door after his arrest");
   try { talk("gordon"); problems.push("Gordon could be interviewed at the cabin after his arrest"); } catch {}
   go("police_station");
   expect(project(def, s).location.hotspots.some((h) => h.id === "ps_gordon"), "Gordon not shown at the station");

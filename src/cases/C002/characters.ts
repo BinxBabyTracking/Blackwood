@@ -220,6 +220,8 @@ export const characters: CharacterDef[] = [
     name: "Gordon Pell",
     role: "TV and radio repairman, Cabin 14",
     portrait: "char.gordon",
+    // From Oak Terrace (November 4) on, the cut where Diane Moss hit him with the lamp shows.
+    portraitWhen: [{ image: "char.gordon_cut", when: { flag: "oak_terrace" } }],
     bio: [
       { text: "Thirty-eight. Repairs televisions, radios and stereos from his mother's cabin at Tamarack Lake." },
       { text: "His mother, Vera Pell, has lived in a care home in Redlands since spring.", requires: { any: [{ asked: "gordon_who" }, { hasEvidence: "E17" }] } },

@@ -125,6 +125,8 @@ export interface CharacterDef {
   name: string;
   role: string;
   portrait: string; // asset key
+  /** Portraits that replace `portrait` while their condition holds (an injury, custody); the first that holds wins. Opt-in. */
+  portraitWhen?: { image: string; when: Condition }[];
   /** Bio paragraphs, each optionally gated so hidden details appear only when relevant. */
   bio: { text: string; requires?: Condition }[];
   /** Whether the character can be met or interviewed right now. */

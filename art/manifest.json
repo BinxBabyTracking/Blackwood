@@ -1744,6 +1744,22 @@
       "reference": "c002_portrait_gordon"
     },
     {
+      "id": "c002_portrait_gordon_cut",
+      "kind": "portrait",
+      "style": "c002",
+      "subject": "The same man as the reference portrait, same pose, light and backdrop, now with a fresh cut on his scalp above the left ear: a short dark scab and a little bruising at the hairline, partly hidden under a faded navy ball cap pushed back on his head. Nothing else changes.",
+      "person": "c002_gordon",
+      "reference": "c002_portrait_gordon"
+    },
+    {
+      "id": "c002_figure_gordon_cut",
+      "kind": "figure",
+      "style": "c002",
+      "subject": "Standing in a doorway pose, hands loosely clasped, a faded navy ball cap pushed back on his head that does not quite hide a fresh cut and bruise on his scalp above the left ear.",
+      "person": "c002_gordon",
+      "reference": "c002_portrait_gordon"
+    },
+    {
       "id": "c002_obj_casefile",
       "kind": "sprite",
       "style": "c002",

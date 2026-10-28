@@ -50,6 +50,8 @@ const PAINTED: Record<string, string> = {
   "obj.newspaper": "c002_obj_newspaper",
   ...Object.fromEntries(locations.filter((l) => l !== "office").map((l) => [`loc.${l}`, `c002_loc_${l}`])),
   ...Object.fromEntries(characters.filter((c) => c !== "bennett").map((c) => [`char.${c}`, `c002_portrait_${c}`])),
+  // After Oak Terrace Gordon Pell has a cut on his scalp.
+  "char.gordon_cut": "c002_portrait_gordon_cut",
   ...Object.fromEntries(evidence.map((e) => [`ev.${e}`, `c002_ev_${e}`])),
 };
 
@@ -57,7 +59,7 @@ const PAINTED: Record<string, string> = {
 const OFFICE_OVERLAYS = ["obj_casefile", "obj_labfolder", "obj_phone", "obj_notebook", "obj_recorder", "obj_mailtray"];
 /** People and objects drawn over C002's painted scenes (hotspot `art` keys). Only present once painted. */
 const OVERLAYS = [
-  "figure_tom", "figure_howard", "figure_ferris", "figure_gordon_custody", "figure_nora", "figure_ruth", "figure_laura", "figure_gordon", "figure_diane",
+  "figure_tom", "figure_howard", "figure_ferris", "figure_gordon_custody", "figure_nora", "figure_ruth", "figure_laura", "figure_gordon", "figure_gordon_cut", "figure_diane",
   "obj_glasses", "obj_letter", "obj_slip",
 ];
 
@@ -69,6 +71,8 @@ export const buildAssets = (): AssetManifest => ({
     // C002's own version of an office object (Laura's case file) replaces C001's once painted.
     ...Object.fromEntries(OFFICE_OVERLAYS.flatMap((k) => { const u = art(`c002_${k}`) ?? art(`c001_${k}`); return u ? [[`art.${k}`, u]] : []; })),
     ...Object.fromEntries(OVERLAYS.flatMap((k) => (art(`c002_${k}`) ? [[`art.${k}`, art(`c002_${k}`)!]] : []))),
+    // Until his injured figure is painted, the man at the cabin door stays the usual one.
+    ...(!art("c002_figure_gordon_cut") && art("c002_figure_gordon") ? { "art.figure_gordon_cut": art("c002_figure_gordon")! } : {}),
   },
   audio: placeholders.audio,
 });
