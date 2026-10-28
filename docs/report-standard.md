@@ -1,16 +1,32 @@
 # Final Report Standard
 
-How every Blackwood case judges a final report. Written Oct 27, 2026 after the first C002 test run, where a correct theory was returned for missing key evidence and nothing told the player the proof hadn't been found yet. The engine supports all of this for every case; each case supplies its own points and numbers in `solution.ts`.
+How every Blackwood case judges a final report. Rewritten Oct 28, 2026: players kept getting stuck at the end, sure they had the right evidence but filing it under the wrong point or picking the wrong few items. The player no longer picks evidence. They answer the questions, and **everything they have collected goes with the report**. The engine does this for every case; each case supplies its own points in `solution.ts`.
 
 ## What the player sees
 
-The evidence section of the report opens with **What the agency needs**:
+The report asks the case's questions (who, why, how, where, and so on), each with an "Unknown" option. The evidence section is read only:
 
-- The points the report must show, one row each.
-- "At least N pieces of key evidence in all. Attach up to M."
-- "Evidence found so far: X of Y", a quiet sign that there is more to find.
+- **What the agency needs:** the points the evidence must prove, one per line. "If any is missing, the report comes back and you keep investigating."
+- "Everything you've collected goes with the report: N pieces so far. Evidence found: X of Y."
+- The collected evidence, each item with Examine.
 
-The player files each piece of evidence under the point they think it proves. A row shows a check when something is filed under it, never whether it is right. Anything else goes under **Supporting material (optional)**. The report can't be reviewed until every point has something filed under it.
+Review report, then Submit Findings, files it.
+
+## How a report is judged
+
+A report is accepted when:
+
+1. every question is answered, none with Unknown;
+2. for every point, at least one piece of evidence the player has collected proves it (any item in that point's `anyOf`);
+3. the answers are right.
+
+What a returned report says, in that order:
+
+1. An answer left as Unknown: "The report leaves at least one question open."
+2. A point with no proof among the collected evidence: "You need to find more evidence. Nothing you've collected yet proves these points: ..." naming each such point by its neutral label. From the second return on, the first missing point's hint is added.
+3. Wrong answers with all the proof in hand: "You have the evidence the agency needs, but the conclusions drawn from it do not hold together. Look again at your answers."
+
+The note never names an item or an answer. Each returned report costs 50 points on the leaderboard (up to 200).
 
 ## The standard points
 
@@ -21,72 +37,38 @@ Every case uses neutral wording that says what kind of proof is needed and never
 3. **Shows how it was done or how it was covered up**
 4. **Tests the story they told: an alibi, a timeline or a statement**
 
-A case may swap one for a point of its own when the story needs it (for example "Shows where the victim was held"). A label must never name a person, an object, a place or a theory: "Staged entry" or "Financial motive" would give the answer away.
-
-## Numbers that scale with the case
-
-- **Key evidence required:** about one for every 5 to 6 pieces of evidence in the case, never fewer than 4. At least one key item per point, so key ≥ number of points.
-- **Most a report can carry:** key + 2 to 4, so there is room for supporting material.
-
-| Case | Evidence | Key required (`minKey`) | Most attached (`maxItems`) |
-| --- | --- | --- | --- |
-| C001 | 16 | 4 | 6 |
-| C002 | 23 | 4 | 8 |
-| C003 | 32 | 6 | 10 |
-| Long-form, 50+ | 50+ | 8 to 9 | 12 to 14 |
+A case may swap one for a point of its own when the story needs it (for example "Shows where the victim was held"). A label must never name a person, an object, a place or a theory: "Staged entry" or "Financial motive" would give the answer away. Because the points are now the whole evidence test, make sure each one needs real investigating: its `anyOf` should not be items the player gets at the start.
 
 ## In `solution.ts`
 
 ```ts
 standard: {
-  minItems: 4,          // usually equal to minKey
-  maxItems: 8,
-  minKey: 4,
   claims: [
     { id: "tie", label: "Places the person you name at the scene, or ties them to that night", anyOf: ["E05", "E14"], hint: "Where to look, never what to find." },
     { id: "why", label: "Shows why they did it", anyOf: ["E03", "E15"], hint: "..." },
     { id: "how", label: "Shows how it was done or how it was covered up", anyOf: ["E01", "E10"], hint: "..." },
     { id: "story", label: "Tests the story they told: an alibi, a timeline or a statement", anyOf: ["E04", "E13"], hint: "..." },
   ],
-  lines: [...],          // kept: lines of inquiry and minLines still apply
-  linkToSuspect: [...],  // kept
-  supporting: [...],
-  maxUnrelated: 2,
   undecided: ["unknown"],
+  // Still in the type and still set by every case, but no longer used to judge a report:
+  // minItems, maxItems, minKey, lines, minLines, linkToSuspect, supporting, maxUnrelated.
 }
 ```
 
-- `anyOf`: every piece of evidence that proves the point. An item may prove more than one point (a bloodied jacket ties the suspect to the night and shows a cover-up); the player files it under one.
-- `hint`: added to a returned report from the second return on, when nothing the player has found proves that point yet. It points at a place or a person ("Eleanor kept careful records; look again at her desk"), never an item.
-- Cases without `claims` keep the older checks and the plain attach list, so nothing breaks while a case is being converted.
-
-## What a returned report says
-
-In the order the reviewer checks:
-
-1. An answer left as Unknown.
-2. A point with no proof filed under it:
-   - proof is attached but filed elsewhere: "something you attached elsewhere might";
-   - proof is among the evidence already collected: "look again at what you have";
-   - nothing found proves it: "key evidence is still out there", plus the point's hint from the second return on.
-3. Too few key items, saying whether enough is in hand or still to be found.
-4. Too few lines of inquiry, too much unrelated evidence, or nothing tying the suspect to the night.
-5. The answers themselves don't hold together.
-
-Each returned report costs 50 points on the leaderboard.
+- `anyOf`: every piece of evidence that proves the point. An item may prove more than one point.
+- `hint`: added from the second return on, when nothing the player has found proves that point. It points at a place or a person ("Eleanor kept careful records; look again at her desk"), never an item.
+- A case without `claims` falls back to its `lines` as the points.
+- The filed report keeps every collected item, sorted under the points it proves (`autoClaims` in `src/game/engine/evaluation.ts`).
 
 ## Testing
 
-`npm run check:case -- CXXX` must cover: a fully supported report accepted; an empty point refused; proof filed under the wrong point pointed out; proof not yet found reported as still out there, with the hint on the second return. All of that is one call: `reportStandardProblems(def, state, rightAnswers, goodEvidence)` in `scripts/report-helpers.ts`, run on every point of the case. `fileUnder(def, evidence)` from the same file files evidence as a player would, for any other report a case's checks submit.
+`npm run check:case -- CXXX` runs `reportStandardProblems(def, state, rightAnswers)` from `scripts/report-helpers.ts`: the right answers with all the evidence are accepted and the filed report carries every item; for each point, an investigation without any of its proof is returned asking for more evidence and naming the point, with the hint on the second return; a wrong answer with all the evidence is returned as not holding together. To check that a particular set of findings is not enough, call `evaluateReport(def, { ...right, evidence: thoseItems }, state)` directly.
 
-## Status
+## C001's points
 
-All three cases are converted (Oct 27, 2026):
-
-| Case | Points | Key | Attach up to |
-| --- | --- | --- | --- |
-| C001 | Ties them to that night; why; how it was done or covered up; tests their story | 4 | 6 |
-| C002 | Ties the person to the crime; why; how it was done; where she was held | 4 | 8 |
-| C003 | Places the people at the first shooting; why the first victims; who was behind it; ties the person to the second deaths; why the second victims; tests their story | 6 | 10 |
-
-A new case adds its `claims` (with hints) from the start and calls `reportStandardProblems` in its checks.
+| Point | Evidence that proves it |
+| --- | --- |
+| Places the person you name at the scene, or ties them to that night | E02, E05, E11, E14, E16 |
+| Shows why they did it | E03, E08, E09, E15 |
+| Shows how it was done or how it was covered up | E01, E05, E06, E07, E10 |
+| Tests the story they told | E04, E12, E13 |

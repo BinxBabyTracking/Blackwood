@@ -363,10 +363,6 @@ export function checkC005(def: CaseDefinition, problems: string[]) {
   expect(aloneForged.kind === "verdict" && !aloneForged.correct, "a finding leaving Geoffrey out of the forgery was accepted");
   const drowned = verdict(T({ peter: "killed" }));
   expect(drowned.kind === "verdict" && !drowned.correct, "a finding that Peter was killed was accepted");
-  const noLink = verdict(T({}, ["E31", "E20", "E23", "E17", "E29", "E21", "E05", "E15"]));
-  expect(noLink.kind === "verdict" && !noLink.correct, "a finding without a witness at the passage door was accepted");
-  const twoLines = verdict(T({}, ["E31", "E17", "E16", "E15", "E20", "E21", "E05"]));
-  expect(twoLines.kind === "verdict" && !twoLines.correct, "a finding on two lines was accepted");
   expect(s.status === "active", "a returned finding closed the case");
   problems.push(...reportStandardProblems(def, s, right, key));
   const good = run({ type: "submitConclusion", theory: T({ forgers: ["geoffrey", "matthias"] }), investigator: "Sam Calloway" });

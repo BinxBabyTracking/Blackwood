@@ -387,12 +387,8 @@ if (id === "C001") {
     try { reduce(def, newState(def), { type: "saveReport", draft: { evidence: [] } }, 1); problems.push("report opened with no investigation"); } catch {}
     if (project(def, newState(def)).conclusion.available) problems.push("report available at the start");
     if (!project(def, s).conclusion.available) problems.push("report not available after investigating");
-    // Only legitimately collected evidence, between four and six items, every section answered
-    rejects(s, right(["E14", "E03", "E13"]), "three items");
-    rejects(s, right(["E01", "E02", "E03", "E04", "E05", "E06", "E07"]), "seven items");
-    rejects({ ...s, evidence: s.evidence.filter((e) => e !== "E05") }, right(["E05", "E03", "E13", "E14"]), "uncollected evidence");
-    rejects(s, right(["E14", "E14", "E03", "E13"]), "duplicate evidence");
-    rejects(s, { ...right(["E14", "E03", "E13", "E15"]), weapon: "spoon" }, "unknown answer id");
+    // Every section answered with a real option. (Evidence is no longer chosen: all of it goes with the report.)
+    rejects(s, { ...right([]), weapon: "spoon" }, "unknown answer id");
     // Drafts are sanitised and survive a reload
     const d = reduce(def, s, { type: "saveReport", draft: { culprit: "robert", motive: "nonsense", evidence: ["E03", "E99", "E03", "E14"] } }, 2).state;
     const dr = normalizeState(def, JSON.parse(JSON.stringify(d))).report.draft;
@@ -412,25 +408,16 @@ if (id === "C001") {
     };
     returned(T("robert", "revenge", "blunt", "kitchen", ["E14", "E03", "E13", "E06"]), "wrong theory", /do not hold together/);
     returned(T("daniel", "financial", "knife", "unknown", ["E14", "E03", "E13", "E15"]), "undecided", /open/);
-    returned(right(["E07", "E01", "E10", "E12"]), "correct guess, a point left unproven", /proves it\. The proof is already among the evidence/);
-    returned(right(["E02", "E03", "E01", "E12"]), "correct guess, nothing linking the suspect", /connects the person/);
-    // A point with nothing filed under it can't be submitted; proof filed under the wrong point is pointed out without naming it.
-    rejects(s, { ...right(["E14", "E03", "E01", "E04"]), "claim:story": [] }, "an empty point");
     {
-      const misfiled = { ...right(["E14", "E03", "E01", "E04"]), "claim:story": ["E01"], "claim:how": ["E04"] };
-      const r = submit(s, misfiled);
-      if (r.outcome.kind !== "verdict" || r.outcome.correct || !/attached elsewhere/.test(r.outcome.note)) problems.push(`misfiled proof not pointed out: ${r.outcome.kind === "verdict" ? r.outcome.note : r.outcome.kind}`);
-    }
-    {
-      // Proof not found yet: the reviewer says it's still out there, and from the second return adds the point's hint.
+      // Proof not found yet: the reviewer asks for more evidence and names the point, and from the second return adds its hint.
       const lacking = { ...s, evidence: s.evidence.filter((e) => !["E04", "E12", "E13"].includes(e)) };
       const t = right(["E14", "E03", "E01", "E15"]);
       const r1 = submit(lacking, t);
       const n1 = r1.outcome.kind === "verdict" ? r1.outcome.note : "";
-      if (!/still out there/.test(n1) || /Someone's account/.test(n1)) problems.push(`first return for undiscovered proof: "${n1}"`);
+      if (!/find more evidence/.test(n1) || !/Tests the story/.test(n1) || /Someone's account/.test(n1)) problems.push(`first return for undiscovered proof: "${n1}"`);
       const r2 = submit(r1.state, t);
       const n2 = r2.outcome.kind === "verdict" ? r2.outcome.note : "";
-      if (!/still out there/.test(n2) || !/Someone's account/.test(n2)) problems.push(`second return lacks the hint: "${n2}"`);
+      if (!/find more evidence/.test(n2) || !/Someone's account/.test(n2)) problems.push(`second return lacks the hint: "${n2}"`);
     }
     const afterWrong = returned(T("patricia", "financial", "knife", "living_room", ["E14", "E03", "E13", "E01"]), "wrong suspect", /do not hold together/);
     // A returned report can be revised, and several different supported reports are accepted

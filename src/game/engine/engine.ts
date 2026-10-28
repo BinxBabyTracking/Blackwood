@@ -1,4 +1,4 @@
-import { cleanAnswer, cleanClaims, evaluateReport, reportProblem, REVIEW_FEEDBACK } from "./evaluation";
+import { autoClaims, cleanAnswer, cleanClaims, evaluateReport, reportEvidence, reportProblem, REVIEW_FEEDBACK } from "./evaluation";
 import { concepts } from "./matcher";
 import {
   allowance,
@@ -1039,7 +1039,9 @@ function step(
       const t = action.theory;
       const problem = reportProblem(def, s, t);
       if (problem) fail(problem);
-      const theory: Theory = { evidence: [...t.evidence], ...cleanClaims(def, t.evidence, t) };
+      // Everything collected goes with the report, sorted under the points it proves.
+      const evidence = reportEvidence(def, s);
+      const theory: Theory = { evidence, ...autoClaims(def, evidence) };
       for (const c of def.conclusionChoices) theory[c.id] = cleanAnswer(c, t[c.id])!;
       s.attempts += 1;
       s.report.draft = { ...theory, evidence: [...theory.evidence] };

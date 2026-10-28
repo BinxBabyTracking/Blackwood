@@ -43,7 +43,7 @@ Every case runs the same loop until the report is accepted:
 3. Interview people (ask, present evidence)
 4. The world reacts (calls and deliveries)
 5. Murder board (connect clues, get deductions)
-6. File the report (4 to 6 items, 4 answers)
+6. File the report (answer the questions; all collected evidence goes with it)
 7. Accepted: case solved (reconstruction and rank). Returned: keep investigating.
 
 A returned report sends the player back into the field with a reviewer's note; nothing is lost. Exploring and interviewing happen in any order, and events fire from what the player has done, never from the clock.
@@ -152,9 +152,9 @@ Offer more than one pair per deduction, so players reasoning differently still g
 
 ## Final report and the solution standard
 
-A report is accepted when every answer is right and the attached evidence proves each point the agency needs. The reviewer's note never says which answer is wrong and never names an item. The full rules, and how each case sets its numbers, are in **Final Report Standard** (`docs/report-standard.md`, and the project doc of the same name).
+The player answers the report's questions (who, why, how, where, each with an "Unknown" option) and **everything they have collected goes with the report**; they no longer pick or file evidence. A report is accepted when every answer is right and, for each point the agency needs, at least one collected item proves it. Otherwise it comes back: an Unknown answer is pointed out; a point with no proof yet gets "You need to find more evidence", naming the point (with its hint from the second return); wrong answers with all the proof in hand get "the conclusions drawn from it do not hold together". The note never names an item or an answer. The full rules are in **Final Report Standard** (`docs/report-standard.md`, and the project doc of the same name).
 
-The report form (BI-7) asks who, why, how and where, each with an "Unknown" option. Its evidence section opens with **What the agency needs**: the points the report must show, the key evidence required, the most it can carry, and how much of the case's evidence the player has found ("13 of 16"). The player files each piece of evidence under the point they think it proves; a point shows as filled, never as right or wrong. Anything else goes under Supporting. Drafts save as the player goes; in joint play everyone edits the draft and only the host files it.
+The evidence section of the form (BI-7) shows **What the agency needs** (the points), how much has been found ("13 of 16"), and the collected evidence with Examine. Answers save as the player goes; in joint play everyone edits them and only the host files.
 
 **C001's points** (`claims` in `solution.ts`):
 
@@ -165,17 +165,7 @@ The report form (BI-7) asks who, why, how and where, each with an "Unknown" opti
 | Shows how it was done or how it was covered up | E01, E05, E06, E07, E10 |
 | Tests the story they told: an alibi, a timeline or a statement | E04, E12, E13 |
 
-At least 4 key items, at most 6 attached. At least one item must also tie the suspect to the night (E04, E13, E14, E05 or E16).
-
-**What a returned report says**, in the order the reviewer checks:
-
-1. An answer left as Unknown.
-2. A point with no proof filed under it, in one of three ways: the proof is attached but filed under another point; the proof is among the evidence already collected; or nothing found so far proves it, so key evidence is still out there. From the second return on, that last note adds the point's hint, which says where to look without naming anything.
-3. Too few key items, saying whether enough is already in hand or still to be found.
-4. Too few independent lines of inquiry, too much unrelated evidence, or nothing tying the suspect to the night.
-5. The answers themselves don't hold together.
-
-Each returned report costs 50 points on the leaderboard, so the hints are never free.
+Each returned report costs 50 points on the leaderboard (up to 200), so filing early is never free.
 
 When accepted, the case-solved sequence plays: the agency's acceptance, a reconstruction of the night in stages, Bennett's closing call, and the service record (case closed, rank, awards). A replay starts a clean file and keeps the credit.
 

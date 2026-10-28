@@ -16,6 +16,7 @@
  * - the matcher reaches the right answer for everyday phrasings;
  * - nothing secret in the opening view.
  */
+import { evaluateReport } from "../src/game/engine/evaluation";
 import { characterLocation, interviewCandidates, newState, normalizeState, project, reduce } from "../src/game/engine/engine";
 import { bestMatch } from "../src/game/engine/matcher";
 import { questionsLeft } from "../src/game/engine/questions";
@@ -36,7 +37,7 @@ export interface SeriesCaseConfig {
   key: string[];
   /** Wrong answers that must be returned. */
   wrong: [Record<string, string | string[]>, string][];
-  /** Evidence sets that must be returned even with the right answers, and why. */
+  /** Evidence sets that must be returned even with the right answers when they are all the player has found, and why. */
   unsupported?: [string[], string][];
   /** The closing call's character id. */
   caller: string;
@@ -186,9 +187,9 @@ export function checkSeriesCase(id: string, def: CaseDefinition, problems: strin
     s = ready;
   }
   for (const [ev, what] of cfg.unsupported ?? []) {
-    const o = run({ type: "submitConclusion", theory: T({}, ev) });
-    expect(o?.kind === "verdict" && !o.correct, `${what} was accepted${o?.kind === "verdict" ? "" : ` (${errors.at(-1)})`}`);
-    s = ready;
+    // Every collected item goes with a report, so this is the review an investigation that found only these items would get.
+    const r = evaluateReport(def, { ...(cfg.right as Omit<Theory, "evidence">), evidence: ev } as Theory, ready, 0);
+    expect(!r.accepted, `${what} was accepted`);
   }
   expect(s.status === "active", "a returned report closed the case");
   problems.push(...reportStandardProblems(def, s, cfg.right as Omit<Theory, "evidence">, cfg.key));

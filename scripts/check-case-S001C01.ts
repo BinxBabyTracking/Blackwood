@@ -9,6 +9,7 @@
  * player to the series' rolling board.
  * Run through: npm run check:case -- S001C01
  */
+import { evaluateReport } from "../src/game/engine/evaluation";
 import { characterLocation, interviewCandidates, newState, normalizeState, project, reduce } from "../src/game/engine/engine";
 import { bestMatch } from "../src/game/engine/matcher";
 import { questionsLeft } from "../src/game/engine/questions";
@@ -188,8 +189,12 @@ export function checkS001C01(def: CaseDefinition, problems: string[]) {
     const o = verdict(T(over));
     expect(o?.kind === "verdict" && !o.correct, `${what} was accepted`);
   }
-  const noScene = verdict(T({}, ["E011", "E016", "E004", "E003", "E019", "E013", "E015"]));
-  expect(noScene?.kind === "verdict" && !noScene.correct, "a report with nothing placing Reddick at the scene was accepted");
+  {
+    // Every collected item goes with a report: an investigation that never placed Reddick at the scene is returned.
+    const sceneless = ["E011", "E016", "E004", "E003", "E019", "E013", "E015"];
+    const r = evaluateReport(def, { ...right, evidence: sceneless } as Theory, s, 0);
+    expect(!r.accepted, "a report with nothing placing Reddick at the scene was accepted");
+  }
   expect(s.status === "active", "a returned report closed the case");
   problems.push(...reportStandardProblems(def, s, right, key));
   const good = run({ type: "submitConclusion", theory: T({}), investigator: "Sam Calloway" });

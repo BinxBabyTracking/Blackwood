@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useBackdropClose } from "./overlay";
-import { claimKey, type ActionResponse, type ClientView, type GameAction, type ReportDraft, type Theory } from "../engine/types";
+import { type ActionResponse, type ClientView, type GameAction, type ReportDraft, type Theory } from "../engine/types";
 
 type Dispatch = (a: GameAction) => Promise<ActionResponse | null>;
 type Mode = "form" | "review" | "returned";
@@ -55,10 +55,8 @@ export function FinalReport({
     setDraft((mine) => (JSON.stringify(mine) === lastServer.current ? { ...c.draft, evidence: [...c.draft.evidence] } : mine));
     lastServer.current = serverDraft;
   }, [serverDraft, c.draft]);
-  const claims = c.claims ?? [];
-  const pointsFilled = claims.every((cl) => picks(draft[claimKey(cl.id)]).length > 0);
-  const complete =
-    c.choices.every((ch) => picks(draft[ch.id]).length > 0) && draft.evidence.length >= c.minItems && draft.evidence.length <= c.maxItems && pointsFilled;
+  // Only the questions are answered by hand: every piece of evidence collected goes with the report.
+  const complete = c.choices.every((ch) => picks(draft[ch.id]).length > 0);
   const label = (set: string, v?: string | string[]) => {
     const opts = c.choices.find((x) => x.id === set)?.options ?? [];
     const words = picks(v).map((id) => opts.find((o) => o.id === id)?.label ?? id);
@@ -66,7 +64,6 @@ export function FinalReport({
   };
   /** The evidence section comes after the questions: E with four questions, G with six. */
   const evidenceSection = String.fromCharCode(65 + c.choices.length);
-  const evidenceTitle = (id: string) => view.evidence.find((e) => e.id === id)?.title ?? id;
 
   // scrollIntoView returns a Promise in current browsers; an effect must not return it.
   useEffect(() => {
@@ -101,8 +98,8 @@ export function FinalReport({
   });
 
   const submit = async () => {
-    const theory: Theory = { evidence: draft.evidence };
-    for (const cl of claims) theory[claimKey(cl.id)] = picks(draft[claimKey(cl.id)]);
+    // The server attaches every piece of evidence collected.
+    const theory: Theory = { evidence: [] };
     for (const ch of c.choices) theory[ch.id] = ch.multi ? picks(draft[ch.id]) : (draft[ch.id] as string);
     const r = await dispatch({ type: "submitConclusion", theory });
     if (r?.outcome.kind === "verdict" && !r.outcome.correct) setMode("returned");
@@ -160,34 +157,9 @@ export function FinalReport({
                   </div>
                 ))}
                 <div className="grid gap-1 sm:grid-cols-[12rem_1fr]">
-                  <dt className="text-xs uppercase tracking-[0.1em] text-[#231e17]/60">{evidenceSection}. {claims.length ? "The Evidence" : "Supporting Evidence"}</dt>
+                  <dt className="text-xs uppercase tracking-[0.1em] text-[#231e17]/60">{evidenceSection}. The Evidence</dt>
                   <dd>
-                    {claims.length ? (
-                      <div className="space-y-3">
-                        {[...claims.map((cl) => ({ id: cl.id, label: cl.label, ids: picks(draft[claimKey(cl.id)]) })), { id: "support", label: "Supporting", ids: supportingOf(draft, claims) }]
-                          .filter((g) => g.ids.length)
-                          .map((g) => (
-                            <div key={g.id}>
-                              <p className="text-xs italic text-[#231e17]/70">{g.label}</p>
-                              <ul className="space-y-0.5">
-                                {g.ids.map((id) => (
-                                  <li key={id}>
-                                    Exhibit {draft.evidence.indexOf(id) + 1}. {id} {evidenceTitle(id)}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          ))}
-                      </div>
-                    ) : (
-                      <ol className="space-y-0.5">
-                        {draft.evidence.map((id, i) => (
-                          <li key={id}>
-                            Exhibit {i + 1}. {id} {evidenceTitle(id)}
-                          </li>
-                        ))}
-                      </ol>
-                    )}
+                    All {view.evidence.length} {view.evidence.length === 1 ? "piece" : "pieces"} of evidence you&apos;ve collected
                   </dd>
                 </div>
               </dl>
@@ -254,75 +226,16 @@ export function FinalReport({
                 </fieldset>
               ))}
 
-              {claims.length ? (
-                <ProofPoints
-                  section={evidenceSection}
-                  view={view}
-                  draft={shown}
-                  filed={Boolean(filed)}
-                  onChange={(next) => {
-                    setDraft(next);
-                    setSaved("idle");
-                  }}
-                  onExamine={async (id) => {
-                    if (!filed) await save();
-                    onExamine(id);
-                  }}
-                />
-              ) : (
-              <fieldset className="mt-10" disabled={Boolean(filed)}>
-                  <legend className="w-full border-b border-[#231e17]/25 pb-1 font-mono text-sm font-bold tracking-[0.12em]">SECTION {evidenceSection}. SUPPORTING EVIDENCE</legend>
-                  <p className="mt-3 font-serif text-[1.05rem] italic">Which evidence supports your conclusions?</p>
-                  <p className="mt-1 font-mono text-xs text-[#231e17]/65">
-                    Attach between {c.minItems} and {c.maxItems} items from your evidence: the key evidence that proves your findings, plus up to two supporting items or {view.words.photo.toLowerCase()}s if you like. Attached: {shown.evidence.length}.
-                  </p>
-                  {!filed && draft.evidence.length >= c.maxItems ? (
-                    <p className="mt-1 font-mono text-xs font-bold text-[#7d3a33]" role="status">
-                      {c.maxItems} attached, the most a report can carry. Uncheck one to attach a different item.
-                    </p>
-                  ) : null}
-                  {view.evidence.length ? (
-                    <ul className="mt-3 divide-y divide-[#231e17]/10 border-y border-[#231e17]/15 font-mono text-[0.92rem]">
-                      {view.evidence.map((e) => {
-                        const on = shown.evidence.includes(e.id);
-                        const full = !on && draft.evidence.length >= c.maxItems;
-                        return (
-                          <li key={e.id} className="flex items-center gap-3 px-2 py-1.5">
-                            <label className={`flex flex-1 items-baseline gap-3 ${full || filed ? "" : "cursor-pointer"} ${full ? "opacity-45" : ""}`}>
-                              <input
-                                type="checkbox"
-                                className="sr-only"
-                                data-attach={e.id}
-                                checked={on}
-                                disabled={full}
-                                onChange={(ev) => {
-                                  setDraft((d) => ({ ...d, evidence: ev.target.checked ? [...d.evidence, e.id] : d.evidence.filter((x) => x !== e.id) }));
-                                  setSaved("idle");
-                                }}
-                              />
-                              <span aria-hidden className="w-7 shrink-0 font-bold">{on ? "[X]" : "[ ]"}</span>
-                              <span className="text-[#7d3a33]">{e.label}</span>
-                              <span className={on ? "font-bold" : ""}>{e.title}</span>
-                            </label>
-                            <button
-                              type="button"
-                              onClick={async () => {
-                                if (!filed) await save();
-                                onExamine(e.id);
-                              }}
-                              className="shrink-0 text-xs underline underline-offset-4 hover:text-[#7d3a33]"
-                            >
-                              Examine
-                            </button>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  ) : (
-                    <p className="mt-3 text-sm">You have not collected any evidence.</p>
-                  )}
-                </fieldset>
-              )}
+              <ReportEvidence
+                section={evidenceSection}
+                view={view}
+                ids={filed ? filed.theory.evidence : view.evidence.map((e) => e.id)}
+                filed={Boolean(filed)}
+                onExamine={async (id) => {
+                  if (!filed) await save();
+                  onExamine(id);
+                }}
+              />
 
               <Signature name={name} date={c.date} />
 
@@ -341,9 +254,7 @@ export function FinalReport({
                     {saved === "saved" && !dirty
                       ? "Draft saved."
                       : !complete
-                        ? claims.length && !pointsFilled
-                          ? "File evidence under every point, and answer every section, to review the report."
-                          : "Complete every section to review the report."
+                        ? "Answer every section to review the report."
                         : ""}
                   </span>
                 </div>
@@ -397,9 +308,6 @@ function ReturnedMemo({ review, reviewer, onRevise, onLeave }: { review: NonNull
           <span className="font-bold">Reviewer&apos;s note:</span> {review.note}
         </p>
       ) : null}
-      {review.evidence.length ? (
-        <p className="mt-2 font-mono text-xs leading-relaxed text-[#231e17]/70">Evidence attached to this submission: {review.evidence.join(", ")}.</p>
-      ) : null}
       <div className="mt-5 flex flex-wrap gap-3">
         <PaperButton strong onClick={onRevise}>
           Revise the report
@@ -448,146 +356,51 @@ function PaperButton({
   );
 }
 
-type Claims = NonNullable<ClientView["conclusion"]["claims"]>;
-
-/** Attached items not filed under any point: supporting material. */
-function supportingOf(d: ReportDraft, claims: Claims) {
-  const filedIds = new Set(claims.flatMap((cl) => picks(d[claimKey(cl.id)])));
-  return d.evidence.filter((id) => !filedIds.has(id));
-}
-
 /**
- * The evidence section as a case to make: what the agency needs to see, one
- * point per row, and the player files each piece of evidence under the point
- * they think it proves. A row shows when something is filed, never whether it
- * is right; that is judged only when the report is filed.
+ * The evidence section. The player no longer picks or files evidence: every
+ * piece collected goes with the report. The section shows what the agency
+ * needs the evidence to prove, and what is going with the report.
  */
-function ProofPoints({
-  section,
-  view,
-  draft,
-  filed,
-  onChange,
-  onExamine,
-}: {
-  section: string;
-  view: ClientView;
-  draft: ReportDraft;
-  filed: boolean;
-  onChange: (d: ReportDraft) => void;
-  onExamine: (id: string) => void;
-}) {
+function ReportEvidence({ section, view, ids, filed, onExamine }: { section: string; view: ClientView; ids: string[]; filed: boolean; onExamine: (id: string) => void }) {
   const c = view.conclusion;
-  const claims = c.claims;
-  const [picking, setPicking] = useState<string | null>(null);
-  const full = draft.evidence.length >= c.maxItems;
-  const title = (id: string) => view.evidence.find((e) => e.id === id);
-  const loose = view.evidence.filter((e) => !draft.evidence.includes(e.id));
-  const support = supportingOf(draft, claims);
-
-  const add = (slot: string, id: string) => {
-    if (draft.evidence.includes(id) || full) return;
-    const next: ReportDraft = { ...draft, evidence: [...draft.evidence, id] };
-    if (slot !== "support") next[claimKey(slot)] = [...picks(draft[claimKey(slot)]), id];
-    onChange(next);
-    setPicking(null);
-  };
-  const remove = (id: string) => {
-    const next: ReportDraft = { ...draft, evidence: draft.evidence.filter((x) => x !== id) };
-    for (const cl of claims) next[claimKey(cl.id)] = picks(draft[claimKey(cl.id)]).filter((x) => x !== id);
-    onChange(next);
-  };
-
-  const rows = [
-    ...claims.map((cl, i) => ({ id: cl.id, n: String(i + 1), label: cl.label, ids: picks(draft[claimKey(cl.id)]), optional: false })),
-    { id: "support", n: "+", label: `Supporting material (optional): anything else that backs up your findings, ${view.words.photo.toLowerCase()}s included`, ids: support, optional: true },
-  ];
-
+  const claims = c.claims ?? [];
+  const items = ids.map((id) => view.evidence.find((e) => e.id === id)).filter((e): e is ClientView["evidence"][number] => Boolean(e));
   return (
-    <fieldset className="mt-10" disabled={filed}>
-      <legend className="w-full border-b border-[#231e17]/25 pb-1 font-mono text-sm font-bold tracking-[0.12em]">SECTION {section}. THE EVIDENCE</legend>
-      <div className="mt-4 border border-[#231e17]/30 bg-[#f6efdd] px-4 py-3">
-        <p className="font-mono text-xs font-bold tracking-[0.14em] text-[#7d3a33]">WHAT {view.words.reviewer.toUpperCase()} NEEDS</p>
-        <p className="mt-1 font-serif text-[1.02rem] italic">Your report must show each of the points below. File the evidence that proves each one under it.</p>
-        <p className="mt-2 font-mono text-xs leading-relaxed text-[#231e17]/75">
-          At least {c.minKey} pieces of key evidence in all. Attach up to {c.maxItems}. Attached: {draft.evidence.length}. Evidence found so far: {c.found} of {c.total}.
-        </p>
-      </div>
-
-      <ol className="mt-4 space-y-3">
-        {rows.map((r) => {
-          const empty = !r.ids.length;
-          return (
-            <li key={r.id} className={`border px-3 py-2.5 ${empty && !r.optional ? "border-dashed border-[#231e17]/40" : "border-[#231e17]/25 bg-[#231e17]/[0.03]"}`}>
-              <div className="flex items-start gap-3">
-                <span aria-hidden className={`mt-0.5 w-6 shrink-0 font-mono text-sm font-bold ${empty || r.optional ? "text-[#231e17]/50" : "text-[#4f6b4f]"}`}>
-                  {r.optional ? "+" : empty ? `${r.n}.` : "✓"}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className={`font-serif ${r.optional ? "text-sm italic text-[#231e17]/75" : "text-[1.02rem]"}`}>{r.label}</p>
-                  {r.ids.length ? (
-                    <ul className="mt-1.5 space-y-1 font-mono text-[0.88rem]">
-                      {r.ids.map((id) => {
-                        const e = title(id);
-                        return (
-                          <li key={id} className="flex flex-wrap items-baseline gap-x-2">
-                            <span className="text-[#7d3a33]">{e?.label ?? id}</span>
-                            <span className="font-bold">{e?.title ?? id}</span>
-                            <button type="button" onClick={() => onExamine(id)} className="text-xs underline underline-offset-4 hover:text-[#7d3a33]">
-                              Examine
-                            </button>
-                            {filed ? null : (
-                              <button type="button" onClick={() => remove(id)} className="text-xs underline underline-offset-4 hover:text-[#7d3a33]" aria-label={`Remove ${e?.title ?? id}`}>
-                                Remove
-                              </button>
-                            )}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  ) : !r.optional ? (
-                    <p className="mt-1 font-mono text-xs text-[#231e17]/55">Nothing filed here yet.</p>
-                  ) : null}
-                  {filed ? null : picking === r.id ? (
-                    <div className="mt-2 border-t border-[#231e17]/15 pt-2">
-                      {loose.length ? (
-                        <ul className="max-h-64 divide-y divide-[#231e17]/10 overflow-y-auto font-mono text-[0.88rem]">
-                          {loose.map((e) => (
-                            <li key={e.id} className="flex items-center gap-2 py-1">
-                              <button type="button" disabled={full} onClick={() => add(r.id, e.id)} className="flex flex-1 items-baseline gap-2 text-left hover:text-[#7d3a33] disabled:opacity-40" data-file={`${r.id}:${e.id}`}>
-                                <span className="text-[#7d3a33]">{e.label}</span>
-                                <span>{e.title}</span>
-                              </button>
-                              <button type="button" onClick={() => onExamine(e.id)} className="shrink-0 text-xs underline underline-offset-4 hover:text-[#7d3a33]">
-                                Examine
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p className="font-mono text-xs">Everything you&apos;ve collected is already attached.</p>
-                      )}
-                      <button type="button" onClick={() => setPicking(null)} className="mt-1 font-mono text-xs underline underline-offset-4">
-                        Done
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      disabled={full}
-                      onClick={() => setPicking(r.id)}
-                      className="mt-1.5 font-mono text-xs font-bold underline underline-offset-4 hover:text-[#7d3a33] disabled:no-underline disabled:opacity-40"
-                    >
-                      {full ? `${c.maxItems} attached, the most a report can carry` : "+ File evidence here"}
-                    </button>
-                  )}
-                </div>
-              </div>
+    <section className="mt-10" aria-labelledby="report-evidence-h">
+      <h3 id="report-evidence-h" className="w-full border-b border-[#231e17]/25 pb-1 font-mono text-sm font-bold tracking-[0.12em]">
+        SECTION {section}. THE EVIDENCE
+      </h3>
+      {claims.length ? (
+        <div className="mt-4 border border-[#231e17]/30 bg-[#f6efdd] px-4 py-3">
+          <p className="font-mono text-xs font-bold tracking-[0.14em] text-[#7d3a33]">WHAT {view.words.reviewer.toUpperCase()} NEEDS</p>
+          <p className="mt-1 font-serif text-[1.02rem] italic">Your evidence must prove each of these points. If any is missing, the report comes back and you keep investigating.</p>
+          <ol className="mt-2 list-decimal space-y-1 pl-5 font-serif text-[0.98rem]">
+            {claims.map((cl) => (
+              <li key={cl.id}>{cl.label}</li>
+            ))}
+          </ol>
+        </div>
+      ) : null}
+      <p className="mt-4 font-mono text-xs leading-relaxed text-[#231e17]/75">
+        {filed
+          ? `Filed with ${items.length} ${items.length === 1 ? "piece" : "pieces"} of evidence.`
+          : `Everything you've collected goes with the report: ${items.length} ${items.length === 1 ? "piece" : "pieces"} so far. Evidence found: ${c.found} of ${c.total}.`}
+      </p>
+      {items.length ? (
+        <ul className="mt-2 divide-y divide-[#231e17]/10 border-y border-[#231e17]/15 font-mono text-[0.9rem]">
+          {items.map((e) => (
+            <li key={e.id} className="flex items-baseline gap-3 px-2 py-1.5">
+              <span className="text-[#7d3a33]">{e.label}</span>
+              <span className="flex-1">{e.title}</span>
+              <button type="button" onClick={() => onExamine(e.id)} className="shrink-0 text-xs underline underline-offset-4 hover:text-[#7d3a33]">
+                Examine
+              </button>
             </li>
-          );
-        })}
-      </ol>
-      {view.evidence.length === 0 ? <p className="mt-3 text-sm">You have not collected any evidence.</p> : null}
-    </fieldset>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-3 text-sm">You have not collected any evidence.</p>
+      )}
+    </section>
   );
 }
