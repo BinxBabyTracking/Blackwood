@@ -94,8 +94,14 @@ export interface AssetManifest {
 export interface VoiceProfile {
   /** ElevenLabs voice id. Can be overridden per deployment with ELEVENLABS_VOICE_<CHARACTER>. */
   voiceId: string;
-  /** Casting note, for designers. */
+  /**
+   * How the voice should sound. Also the starting description when the voice
+   * is designed on the Admin page (ElevenLabs Voice Design): age, sex, accent,
+   * era, tone, pace and, if it matters, recording quality.
+   */
   direction: string;
+  /** Speaks in another character's voice, whatever that voice is cast as (the same man heard twice). Not cast on its own. */
+  sameAs?: string;
   /** Optional ElevenLabs voice settings that shape the delivery. */
   settings?: { stability?: number; similarity_boost?: number; style?: number; use_speaker_boost?: boolean };
 }

@@ -39,7 +39,7 @@ export const characters: CharacterDef[] = [
     idleLine: "",
     voice: {
       voiceId: "onwK4e9ZLuTAKqWW03F9",
-      direction: "Man in his early forties, a 1920s radio announcer: warm, intimate, unhurried, a smile in the voice. American, Midwestern. Heard on a disc, slightly thin.",
+      direction: "A man in his early forties, a famous 1927 Chicago radio announcer: warm, intimate, unhurried, a smile in the voice, the polished Mid-Atlantic diction of old-time radio. Heard only on a 1927 phonograph disc recording: thin, tinny and slightly muffled, with faint surface crackle.",
       settings: { stability: 0.55, similarity_boost: 0.8, style: 0.3 },
     },
   },
@@ -61,7 +61,7 @@ export const characters: CharacterDef[] = [
     noAnswer: ["I don't know.", "Arthur never told me that.", "I couldn't say."],
     voice: {
       voiceId: "XrExE9yKIg1WjnnlVkGX",
-      direction: "Woman in her late thirties, a piano teacher, composed and grieving, precise diction, warm underneath. American, Chicago, 1920s.",
+      direction: "A woman in her late thirties from Chicago in 1927, a piano teacher: composed, precise and quietly grieving, a cultivated Mid-Atlantic accent of the era, a warm low register, measured pace.",
       settings: { stability: 0.55, similarity_boost: 0.8, style: 0.2 },
     },
     demeanor: [
@@ -88,7 +88,7 @@ export const characters: CharacterDef[] = [
     noAnswer: ["I couldn't tell you that.", "That's a matter for the police, surely.", "I'm afraid I don't follow."],
     voice: {
       voiceId: "nPczCjzI2devNBz1zQrb",
-      direction: "Man in his mid forties, polished and gracious, a deep, controlled, cultured voice; courteous until crossed, then cold. American, 1920s businessman.",
+      direction: "A man in his mid forties, a 1927 Chicago radio station manager: smooth, cultured, deep and controlled, gracious but condescending, the polished Mid-Atlantic accent of a 1920s businessman, unhurried, every word placed.",
       settings: { stability: 0.65, similarity_boost: 0.8, style: 0.15 },
     },
     demeanor: [
@@ -134,7 +134,7 @@ export const characters: CharacterDef[] = [
     noAnswer: ["How would I know that?", "I don't know.", "Ask the station. I only sold the program."],
     voice: {
       voiceId: "CwhRBWXzGAHq8TQ4Fs17",
-      direction: "Man in his early forties, a small-time businessman down on his luck: bitter, quick, defensive, ashamed underneath. American, Chicago, 1920s.",
+      direction: "A man in his early forties from 1927 Chicago, a small-time businessman down on his luck: quick, bitter and defensive with shame underneath, a flat working Chicago Midwestern accent, a slightly hoarse, tired voice.",
       settings: { stability: 0.5, similarity_boost: 0.8, style: 0.25 },
     },
     demeanor: [
@@ -166,7 +166,7 @@ export const characters: CharacterDef[] = [
     noAnswer: ["I don't know, sir.", "I just work the board.", "I wouldn't know that."],
     voice: {
       voiceId: "TX3LPaxmHKxFdv7VOQHJ",
-      direction: "Young man in his late twenties, a radio engineer: earnest, technical, nervous, eager to please, his voice catching when he lies. American, 1920s.",
+      direction: "A young man in his late twenties, a 1927 radio engineer from the Midwest: earnest, technical and nervous, talks a little fast, says sir, an eager, slightly reedy voice with a plain Midwestern accent of the 1920s.",
       settings: { stability: 0.45, similarity_boost: 0.8, style: 0.25 },
     },
     demeanor: [
@@ -198,7 +198,7 @@ export const characters: CharacterDef[] = [
     noAnswer: ["I couldn't say.", "I don't know that.", "That isn't anything I'd see from my desk."],
     voice: {
       voiceId: "cgSgspJ2msm6clMCkdW9",
-      direction: "Woman in her early thirties, an office secretary: careful, soft-spoken, exact, frightened but brave. American, Chicago, 1920s.",
+      direction: "A woman in her early thirties, a 1927 Chicago office secretary: soft-spoken, careful and exact, frightened but brave, a light clear voice with a crisp, proper 1920s American accent.",
       settings: { stability: 0.55, similarity_boost: 0.8, style: 0.2 },
     },
     demeanor: [
@@ -225,7 +225,7 @@ export const characters: CharacterDef[] = [
     noAnswer: ["Never heard of it.", "I run a supper club.", "You'd have to ask somebody who cares."],
     voice: {
       voiceId: "pNInz6obpgDQGcFmaJgB",
-      direction: "Man in his late thirties, a Prohibition supper club owner: amused, unhurried, deep, quietly dangerous, never raises his voice. American, Chicago, 1920s.",
+      direction: "A man in his late thirties, a 1927 Chicago speakeasy owner, Italian-American: deep, unhurried, amused and quietly dangerous, never raises his voice, a smooth South Side Chicago accent with a faint Italian-American color.",
       settings: { stability: 0.6, similarity_boost: 0.8, style: 0.2 },
     },
     demeanor: [
@@ -252,7 +252,7 @@ export const characters: CharacterDef[] = [
     noAnswer: ["I wouldn't know, honey.", "Ask somebody with a desk.", "I just sing the songs."],
     voice: {
       voiceId: "EXAVITQu4vr4xnSDxMaL",
-      direction: "Woman in her late twenties, a 1920s jazz singer: warm, husky, wry, quick, grieving under the wit. American, Chicago.",
+      direction: "A woman in her late twenties, a 1920s Chicago jazz club singer: a warm, husky, smoky alto, wry and quick with grief underneath, relaxed and musical speech, a 1920s Chicago South Side accent.",
       settings: { stability: 0.5, similarity_boost: 0.8, style: 0.35 },
     },
     demeanor: [
@@ -279,7 +279,7 @@ export const characters: CharacterDef[] = [
     noAnswer: ["Nothing in my file on that.", "I can't help you there.", "That's not something I've got."],
     voice: {
       voiceId: "pqHfZKP75CvOlQylNhV4",
-      direction: "Man around fifty, a 1920s Chicago police detective: gravelly, patient, plain-spoken, dry humor, honest. American, Chicago.",
+      direction: "A man around fifty, a 1927 Chicago police detective, Irish-American: gravelly, patient and plain-spoken with dry humor, an old Chicago accent with a faint Irish lilt, a slow, steady pace.",
       settings: { stability: 0.65, similarity_boost: 0.8, style: 0.1 },
     },
     demeanor: [
@@ -305,7 +305,7 @@ export const characters: CharacterDef[] = [
     noAnswer: ["I couldn't say.", "That's no business of mine.", "Ask Mr. Mercer."],
     voice: {
       voiceId: "21m00Tcm4TlvDq8ikWAM",
-      direction: "Woman in her fifties, a Chicago rooming-house landlady: brisk, sharp, practical, protective of her lodgers, a faint Irish lilt. 1920s.",
+      direction: "A woman in her mid fifties, a 1927 Chicago rooming-house landlady, Irish-American widow: brisk, sharp and practical, protective, a strong old-fashioned Chicago Irish accent, quick and clipped.",
       settings: { stability: 0.6, similarity_boost: 0.8, style: 0.2 },
     },
     demeanor: [
@@ -332,7 +332,7 @@ export const characters: CharacterDef[] = [
     noAnswer: ["I don't know.", "Nobody tells me nothing.", "I just count."],
     voice: {
       voiceId: "IKne3meq5aSn9XLyUdCD",
-      direction: "Young man in his mid twenties, a Chicago warehouse clerk: jumpy, fast, decent, scared, ashamed of the job. American, 1920s.",
+      direction: "A young man in his mid twenties, a 1927 Chicago warehouse clerk, Italian-American: jumpy, fast-talking, scared and decent, a thick working-class Chicago accent of the 1920s, a slightly high, nasal voice.",
       settings: { stability: 0.45, similarity_boost: 0.8, style: 0.3 },
     },
     demeanor: [
@@ -356,7 +356,7 @@ export const characters: CharacterDef[] = [
     idleLine: "",
     voice: {
       voiceId: "cjVigY5qzO86Huf0OWal",
-      direction: "Man in his forties, a Chicago hoodlum: flat, low, bored, menacing without trying. American, 1920s.",
+      direction: "A man in his forties, a 1927 Chicago hoodlum: flat, low, bored and menacing without trying, a rough working-class Chicago accent, gravelly, few words.",
       settings: { stability: 0.6, similarity_boost: 0.8, style: 0.15 },
     },
   },
@@ -374,7 +374,7 @@ export const characters: CharacterDef[] = [
     idleLine: "",
     voice: {
       voiceId: "iP95p4xoKVk53GoZ742B",
-      direction: "Man in his thirties, a Chicago warehouse heavy: nasal, complaining, a little dim. American, 1920s.",
+      direction: "A man in his thirties, a 1927 Chicago warehouse heavy: nasal, whiny and complaining, a little dim, a thick working-class Chicago accent.",
       settings: { stability: 0.5, similarity_boost: 0.8, style: 0.2 },
     },
   },
@@ -394,6 +394,7 @@ export const characters: CharacterDef[] = [
     voice: {
       voiceId: "cjVigY5qzO86Huf0OWal",
       direction: "Same man as Sal, on a telephone line: flat, low, bored, menacing.",
+      sameAs: "sal",
       settings: { stability: 0.6, similarity_boost: 0.8, style: 0.15 },
     },
   },

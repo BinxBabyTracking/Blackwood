@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { heldNow, normalizeState, spokenLine } from "@/game/engine/engine";
 import { findInvestigation } from "@/game/persistence";
 import { loadCase } from "@/game/registry";
-import { cachedTiming, castVoice, narrate, NarrationError } from "@/lib/narration/elevenlabs";
+import { cachedTiming, castVoice, narrate, NarrationError, refreshVoices } from "@/lib/narration/elevenlabs";
 import { actingUser, fromGuestScreen } from "@/lib/party";
 
 const recent = new Map<string, number[]>();
@@ -52,6 +52,7 @@ export async function GET(request: NextRequest) {
   if (!def) return fail("Unknown case.", 404);
 
   try {
+    await refreshVoices();
     const loaded = await findInvestigation(user.id, def.id);
     if (!loaded) return fail("Accept the assignment first.", 403);
     const state = normalizeState(def, loaded.state);
@@ -63,8 +64,8 @@ export async function GET(request: NextRequest) {
     const speaker = line.speakerId === "narrator" ? undefined : def.characters.find((c) => c.id === line.speakerId);
     if (p.get("timing") === "1") {
       if (!speaker?.voice) return fail("No timing for this line.", 404);
-      const timing = await cachedTiming(`${def.id}/voices/${speaker.id}`, line.text, castVoice(speaker.id, speaker.voice));
-      return timing ? Response.json(timing, { headers: { "Cache-Control": "private, max-age=86400" } }) : fail("No timing for this line.", 404);
+      const timing = await cachedTiming(`${def.id}/voices/${speaker.id}`, line.text, castVoice(def.id, speaker.voice.sameAs ?? speaker.id, speaker.voice));
+      return timing ? Response.json(timing, { headers: { "Cache-Control": "private, max-age=600" } }) : fail("No timing for this line.", 404);
     }
     let result;
     if (line.speakerId === "narrator") {
@@ -74,7 +75,7 @@ export async function GET(request: NextRequest) {
       if (!speaker?.voice) return fail("This person has no voice assigned.", 404);
       // People with a talking portrait keep the timing of every line, from the same request.
       const timing = Boolean(def.assets.images[`face.${speaker.id}.rest`]);
-      result = await narrate(`${def.id}/voices/${speaker.id}`, line.text, castVoice(speaker.id, speaker.voice), { timing });
+      result = await narrate(`${def.id}/voices/${speaker.id}`, line.text, castVoice(def.id, speaker.voice.sameAs ?? speaker.id, speaker.voice), { timing });
     }
     const { audio, cached } = result;
     recordUsage({
@@ -88,7 +89,7 @@ export async function GET(request: NextRequest) {
       saved: cached,
     });
     return new Response(audio, {
-      headers: { "Content-Type": "audio/mpeg", "Cache-Control": "private, max-age=86400", "X-Voice-Cache": cached ? "hit" : "miss" },
+      headers: { "Content-Type": "audio/mpeg", "Cache-Control": "private, max-age=600", "X-Voice-Cache": cached ? "hit" : "miss" },
     });
   } catch (e) {
     if (e instanceof NarrationError) return fail(e.message, e.status);

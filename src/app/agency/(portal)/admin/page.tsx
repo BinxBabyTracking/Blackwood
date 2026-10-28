@@ -23,6 +23,8 @@ import { allRequests } from "@/lib/early-access";
 import { NameCheck } from "@/components/portal/name-check";
 import { AdminSection } from "@/components/portal/admin-section";
 import { ArtStudio } from "@/components/portal/art-studio";
+import { VoiceStudio } from "@/components/portal/voice-studio";
+import { voiceCases } from "@/lib/voice-studio";
 import { artKeyStatus, artRows, fullPrompt, pricesFor } from "@/lib/art-studio";
 
 export const metadata: Metadata = { title: "Admin", robots: { index: false, follow: false } };
@@ -181,6 +183,7 @@ async function Spending() {
       <InterviewAI />
 
       <Soundtracks />
+      <Voices />
 
       <Artwork />
 
@@ -230,6 +233,24 @@ function Rate({ id, label, value, step = "0.0001" }: { id: string; label: string
 
 function breakdown(m: Money) {
   return `Interviews ${usd(m.claude)} · Voices ${usd(m.tts)} · Push-to-talk ${usd(m.stt)}`;
+}
+
+/** Character voices, designed with ElevenLabs Voice Design from a description and chosen per case. */
+function Voices() {
+  return (
+    <>
+      {voiceCases().map((c) => (
+        <AdminSection key={c.id} id={`voices-${c.id}`} title={`Voices: ${c.id} ${c.title}`} className="max-w-4xl">
+          <p className="mt-2 text-sm text-smoke">
+            Design three voices for a character from the description (it starts as the case&apos;s casting direction), play them, and choose one. The chosen voice is
+            saved to the ElevenLabs account and replaces the case&apos;s own voice for every player within a minute; each line is recorded afresh the first time it&apos;s
+            heard. Designing uses a little ElevenLabs credit, and each chosen voice uses one of the account&apos;s voice slots. The key needs the Voices permission.
+          </p>
+          <VoiceStudio caseId={c.id} count={c.count} />
+        </AdminSection>
+      ))}
+    </>
+  );
 }
 
 /** Music and room sound for each case, made with ElevenLabs. */

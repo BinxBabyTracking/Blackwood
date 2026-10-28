@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { canNarrate, heldNow, normalizeState } from "@/game/engine/engine";
 import { findInvestigation } from "@/game/persistence";
 import { loadCase } from "@/game/registry";
-import { castVoice, narrate, NarrationError } from "@/lib/narration/elevenlabs";
+import { castVoice, narrate, NarrationError, refreshVoices } from "@/lib/narration/elevenlabs";
 import { actingUser, fromGuestScreen } from "@/lib/party";
 
 /** Allow time for a long document's pieces to be voiced. */
@@ -58,6 +58,7 @@ export async function GET(request: NextRequest) {
   if (!def || !ev) return fail("Unknown evidence.", 404);
 
   try {
+    await refreshVoices();
     const loaded = await findInvestigation(user.id, def.id);
     const state = loaded ? normalizeState(def, loaded.state) : null;
     if (!loaded || !state || !canNarrate(def, state, ev.id)) return fail("You have not found that evidence yet.", 403);
@@ -69,7 +70,7 @@ export async function GET(request: NextRequest) {
     // Long documents are voiced in pieces at the same time, then joined: one long request runs past the voice service's time limit.
     const jobs = parts.flatMap((part, i) => {
       const who = part.speakerId ? def.characters.find((c) => c.id === part.speakerId) : undefined;
-      const voice = who?.voice ? castVoice(who.id, who.voice) : undefined;
+      const voice = who?.voice ? castVoice(def.id, who.voice.sameAs ?? who.id, who.voice) : undefined;
       const pieces = chunks(part.text);
       return pieces.map((text, j) => ({
         // A single short read keeps its original cache key, so recordings already made stay valid.
@@ -94,7 +95,7 @@ export async function GET(request: NextRequest) {
       at += c.byteLength;
     }
     return new Response(audio, {
-      headers: { "Content-Type": "audio/mpeg", "Cache-Control": "private, max-age=86400", "X-Narration-Cache": cached ? "hit" : "miss" },
+      headers: { "Content-Type": "audio/mpeg", "Cache-Control": "private, max-age=600", "X-Narration-Cache": cached ? "hit" : "miss" },
     });
   } catch (e) {
     if (e instanceof NarrationError) return fail(e.message, e.status);

@@ -31,8 +31,34 @@ export interface VoiceOptions {
   settings?: { stability?: number; similarity_boost?: number; style?: number; use_speaker_boost?: boolean };
 }
 
-/** A character's voice, allowing a deployment to recast it with ELEVENLABS_VOICE_<CHARACTER>. */
-export function castVoice(characterId: string, voice: VoiceOptions): VoiceOptions {
+/** Voices chosen on the Admin page, by `${caseId}:${characterId}`. Read by refreshVoices. */
+const cast = new Map<string, string>();
+let castCheckedAt = 0;
+
+/**
+ * Picks up voices chosen on the Admin page (the voice_casting table), at most
+ * every 20 seconds. Call before castVoice. Never throws: without it, the
+ * case's own voices are used.
+ */
+export async function refreshVoices(force = false) {
+  if (!force && Date.now() - castCheckedAt < 20000) return;
+  castCheckedAt = Date.now();
+  const db = createAdminClient();
+  if (!db) return;
+  const { data, error } = await db.from("voice_casting").select("case_id, character_id, voice_id").not("voice_id", "is", null);
+  if (error) return;
+  cast.clear();
+  for (const r of (data ?? []) as { case_id: string; character_id: string; voice_id: string }[]) cast.set(`${r.case_id}:${r.character_id}`, r.voice_id);
+}
+
+/**
+ * A character's voice: the one chosen on the Admin page for this case, else a
+ * deployment override (ELEVENLABS_VOICE_<CHARACTER>), else the case's own.
+ * Recordings are cached by voice, so a new voice simply records lines afresh.
+ */
+export function castVoice(caseId: string, characterId: string, voice: VoiceOptions): VoiceOptions {
+  const chosen = cast.get(`${caseId}:${characterId}`);
+  if (chosen) return { ...voice, voiceId: chosen };
   const override = process.env[`ELEVENLABS_VOICE_${characterId.toUpperCase()}`];
   return override ? { ...voice, voiceId: override } : voice;
 }
