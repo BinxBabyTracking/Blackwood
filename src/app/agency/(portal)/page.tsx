@@ -7,6 +7,7 @@ import { Ledger } from "@/components/portal/heading";
 import { SetupNotice } from "@/components/setup-notice";
 import { ButtonLink, EmptyFile, Skeleton } from "@/components/ui";
 import { getFeaturedCase, getNotices, getRanks } from "@/lib/catalog";
+import { viewerCaseStates, type ViewerCaseState } from "@/lib/viewer-cases";
 import { formatDate, formatHours } from "@/lib/format";
 import { getCaseFiles, getServiceRecord, requireInvestigator } from "@/lib/investigator";
 
@@ -62,10 +63,10 @@ async function Welcome() {
 }
 
 async function Featured() {
-  const result = await getFeaturedCase();
+  const [result, mine] = await Promise.all([getFeaturedCase(), viewerCaseStates().catch(() => ({}) as Record<string, ViewerCaseState>)]);
   if (!result.ok) return <SetupNotice reason={result.reason} message={result.message} />;
   if (!result.data) return <EmptyFile title="No assignment is being featured.">Check Available Assignments for open files.</EmptyFile>;
-  return <FeaturedCase c={result.data} href={`/agency/assignments/${result.data.id}`} cta="Review Assignment" headingLevel="h3" />;
+  return <FeaturedCase c={result.data} href={`/agency/assignments/${result.data.id}`} cta="Review Assignment" headingLevel="h3" mine={mine[result.data.id]} />;
 }
 
 async function RecordAndActive() {

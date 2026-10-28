@@ -52,7 +52,7 @@ export function difficultyLabel(d: number | null) {
 export const STATUS_LABELS: Record<CaseStatus, string> = {
   in_development: "In preparation",
   coming_soon: "Coming soon",
-  available: "Open",
+  available: "Available",
   retired: "Archived",
 };
 

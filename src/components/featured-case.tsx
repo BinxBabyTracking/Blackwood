@@ -12,7 +12,10 @@ export function FeaturedCase({
   href,
   cta,
   headingLevel = "h2",
+  mine,
 }: {
+  /** How the case stands for the signed-in investigator. */
+  mine?: "available" | "open" | "solved";
   c: CatalogCase;
   href: string;
   cta: string;
@@ -35,7 +38,7 @@ export function FeaturedCase({
       <div className="flex flex-col p-6 sm:p-8">
         <div className="flex items-start justify-between gap-4">
           <p className="text-sm text-smoke">{locationYear(c)}</p>
-          <StatusTag c={c} />
+          <StatusTag c={c} mine={mine} />
         </div>
         <H className="mt-3 font-display text-4xl leading-[1.05] text-paper sm:text-5xl">{c.title}</H>
         <p className="mt-4 max-w-[52ch] leading-relaxed text-smoke">{c.synopsis}</p>

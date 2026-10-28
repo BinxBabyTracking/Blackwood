@@ -5,11 +5,12 @@ import { AssignmentActions } from "./assignment-actions";
 import { LeaderboardButton } from "./leaderboard";
 import { CaseCover } from "./case-cover";
 import { StatusTag } from "./case-card";
+import { ViewerAvailability, ViewerStatusTag } from "./viewer-status";
 import { Skeleton } from "./ui";
 
 /** Reusable case file template: the dedicated details page for any case. */
 export function CaseFile({ c, topPadding = true }: { c: CatalogCase; topPadding?: boolean }) {
-  const rows: [string, string][] = [
+  const rows: [string, React.ReactNode][] = [
     ["Case number", c.id],
     ["Classification", c.classification],
     ["Location", c.location ?? "Withheld"],
@@ -18,7 +19,12 @@ export function CaseFile({ c, topPadding = true }: { c: CatalogCase; topPadding?
     ["Difficulty", difficultyLabel(c.difficulty)],
     ["Investigators", investigatorLabel(c)],
     ["Price", c.is_preview ? `${formatPrice(c.tier)} (${c.tier.label}, preliminary)` : formatPrice(c.tier)],
-    ["Availability", c.is_preview ? "Preview only" : STATUS_LABELS[c.status]],
+    [
+      "Availability",
+      <Suspense key="availability" fallback={c.is_preview ? "Preview only" : STATUS_LABELS[c.status]}>
+        <ViewerAvailability c={c} />
+      </Suspense>,
+    ],
   ];
 
   return (
@@ -35,7 +41,9 @@ export function CaseFile({ c, topPadding = true }: { c: CatalogCase; topPadding?
           </p>
           <h1 className="mt-4 max-w-[16ch] font-display text-5xl leading-[1] sm:text-7xl">{c.title}</h1>
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            <StatusTag c={c} />
+            <Suspense fallback={<StatusTag c={c} />}>
+              <ViewerStatusTag c={c} />
+            </Suspense>
             {c.is_introductory ? <span className="text-sm text-smoke">Introductory Investigation</span> : null}
           </div>
         </div>

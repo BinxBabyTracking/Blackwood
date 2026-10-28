@@ -6,6 +6,7 @@ import { SetupNotice } from "@/components/setup-notice";
 import { CatalogSkeleton } from "@/components/catalog-skeleton";
 import { SeriesShelf } from "@/components/series-shelf";
 import { getCatalog } from "@/lib/catalog";
+import { viewerCaseStates } from "@/lib/viewer-cases";
 
 export const metadata: Metadata = { title: "Available Investigations" };
 
@@ -26,13 +27,13 @@ export default function InvestigationsPage() {
 }
 
 async function Catalog() {
-  const catalog = await getCatalog();
+  const [catalog, mine] = await Promise.all([getCatalog(), viewerCaseStates().catch(() => ({}))]);
   if (!catalog.ok) return <SetupNotice reason={catalog.reason} message={catalog.message} />;
   // Series cases are shown in their series, in order, rather than as loose cards.
   const series = catalog.data.filter((c) => c.series_id);
   return (
     <>
-      <CatalogBrowser cases={catalog.data.filter((c) => !c.series_id)} hrefBase="/investigations" leaderboards />
+      <CatalogBrowser cases={catalog.data.filter((c) => !c.series_id)} hrefBase="/investigations" leaderboards mine={mine} />
       <SeriesShelf catalog={series} hrefBase="/investigations" />
     </>
   );

@@ -13,8 +13,12 @@ import {
 import { CaseCover } from "./case-cover";
 import { Tag } from "./ui";
 
-export function StatusTag({ c }: { c: Pick<CatalogCase, "status" | "is_preview"> }) {
+/** `mine`: how the case stands for the signed-in investigator, which outranks the catalog status. */
+export function StatusTag({ c, mine }: { c: Pick<CatalogCase, "status" | "is_preview">; mine?: "available" | "open" | "solved" }) {
   if (c.is_preview) return <Tag tone="muted">Preview, not yet available</Tag>;
+  if (mine === "open") return <Tag tone="ok">Open</Tag>;
+  if (mine === "solved") return <Tag tone="ok">Solved</Tag>;
+  if (mine === "available") return <Tag tone="ok">Available</Tag>;
   const tone = c.status === "available" ? "ok" : c.status === "coming_soon" ? "brass" : "muted";
   return <Tag tone={tone}>{STATUS_LABELS[c.status]}</Tag>;
 }
@@ -39,7 +43,7 @@ export function CaseFacts({ c, className = "" }: { c: CatalogCase; className?: s
   );
 }
 
-export function CaseCard({ c, href, leaderboard = false }: { c: CatalogCase; href: string; leaderboard?: boolean }) {
+export function CaseCard({ c, href, leaderboard = false, mine }: { c: CatalogCase; href: string; leaderboard?: boolean; mine?: "available" | "open" | "solved" }) {
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-[var(--radius-file)] border border-rule bg-card transition-colors duration-300 hover:border-brass/60">
       <div className="relative aspect-[5/3]">
@@ -58,7 +62,7 @@ export function CaseCard({ c, href, leaderboard = false }: { c: CatalogCase; hre
             </h3>
             <p className="mt-1 text-sm text-smoke">{locationYear(c)}</p>
           </div>
-          <StatusTag c={c} />
+          <StatusTag c={c} mine={mine} />
         </div>
         <p className="mb-5 mt-3 line-clamp-3 text-sm leading-relaxed text-smoke">{c.synopsis}</p>
         <CaseFacts c={c} className="mt-auto border-t border-rule pt-4" />

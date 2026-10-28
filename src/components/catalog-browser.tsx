@@ -82,7 +82,18 @@ function Select<T extends string>({ label, value, onChange, options }: { label: 
 }
 
 /** `leaderboards` adds a Leaderboard button to every open case (signed-in pages only). */
-export function CatalogBrowser({ cases, hrefBase, leaderboards = false }: { cases: CatalogCase[]; hrefBase: string; leaderboards?: boolean }) {
+export function CatalogBrowser({
+  cases,
+  hrefBase,
+  leaderboards = false,
+  mine,
+}: {
+  cases: CatalogCase[];
+  hrefBase: string;
+  leaderboards?: boolean;
+  /** How each case stands for the signed-in investigator (see viewer-cases.ts). */
+  mine?: Record<string, "available" | "open" | "solved">;
+}) {
   const [filters, setFilters] = useState<Filters>(initial);
   const [sort, setSort] = useState<Sort>("newest");
   // The filters fold away; whether they are open is remembered on this device.
@@ -240,6 +251,7 @@ export function CatalogBrowser({ cases, hrefBase, leaderboards = false }: { case
               c={c}
               href={`${hrefBase}/${c.id}`}
               leaderboard={leaderboards && !c.is_preview && (c.status === "available" || Boolean(c.early_access_open))}
+              mine={mine?.[c.id]}
             />
           ))}
         </div>
