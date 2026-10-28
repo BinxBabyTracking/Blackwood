@@ -6,9 +6,9 @@ import { alive, craneAt, dead } from "./rules";
 /*
  * HALLOW001 interviews, written against docs/HALLOW001-timeline.md.
  *
- * Rules for this file: nobody confesses; Desmond Crane gives his own account,
+ * Rules for this file: nobody confesses; Lucian Marsh gives his own account,
  * lies included; nobody names the killer; nobody says anything from the
- * "Closing report only" list (the shove in 1998, Crane waiting at the panel,
+ * "Closing report only" list (the shove in 1998, Marsh waiting at the panel,
  * the blow, what was said in the study, the folder in the port bins). Times,
  * sums and names agree with the timeline. American spelling, no em dashes.
  */
@@ -63,15 +63,15 @@ export const characters: CharacterDef[] = [
   },
 
   // ---------------------------------------------------------------------
-  // Desmond Crane: moves on his own (adversary.ts)
+  // Lucian Marsh: moves on his own (adversary.ts)
   // ---------------------------------------------------------------------
   {
     id: "crane",
-    name: "Desmond Crane",
+    name: "Lucian Marsh",
     role: "Treasurer and trustee of the Blackthorn Foundation",
     portrait: "char.crane",
     bio: [
-      { text: "Sixty-one. Treasurer and trustee of the Blackthorn Foundation since 1994. Ambrose's partner in Blackthorn & Crane Antiquities until 2009. Lives in Pittsfield." },
+      { text: "Sixty-one. Treasurer and trustee of the Blackthorn Foundation since 1994. Ambrose's partner in Blackthorn & Marsh Antiquities until 2009. Lives in Pittsfield." },
       { text: "Left the dinner table at 10:08 PM, he says to take a call from his Boston office in the conservatory." },
       { text: "Principal of Hollins Ridge Associates, which sold the foundation Ridgeline Road in 1997.", requires: { any: [ev("HE018"), ev("HE019")] } },
       { text: "Arranged the new main switch in the cellar, fitted on October 24.", requires: ev("HE030") },
@@ -98,9 +98,9 @@ export const characters: CharacterDef[] = [
     },
     demeanor: [
       { id: "courteous", label: "Courteous", requires: { always: true } },
-      { id: "careful", label: "Careful", requires: { any: [ev("HE029"), ev("HE028"), ev("HE030")] }, cue: "Desmond Crane's smile stays where it is. He has started to answer more slowly." },
-      { id: "cold", label: "Cold", requires: { deduction: "HD10" }, cue: "Crane sets down his glass and looks at you without any warmth at all." },
-      { id: "refusing", label: "Declining to answer", requires: craneArrested, refuses: "I've asked for my lawyer. Until he's here I have nothing to say to you.", cue: "Crane sits in the gatehouse office with his hands folded, an officer at the door. He looks past you." },
+      { id: "careful", label: "Careful", requires: { any: [ev("HE029"), ev("HE028"), ev("HE030")] }, cue: "Lucian Marsh's smile stays where it is. He has started to answer more slowly." },
+      { id: "cold", label: "Cold", requires: { deduction: "HD10" }, cue: "Marsh sets down his glass and looks at you without any warmth at all." },
+      { id: "refusing", label: "Declining to answer", requires: craneArrested, refuses: "I've asked for my lawyer. Until he's here I have nothing to say to you.", cue: "Marsh sits in the gatehouse office with his hands folded, an officer at the door. He looks past you." },
     ],
   },
 
@@ -155,7 +155,7 @@ export const characters: CharacterDef[] = [
     onBoard: true,
     defaultEvidenceReply: "I don't see what that has to do with me.",
     idleLine: "I'd like a little time to myself, please.",
-    noAnswer: ["I have no idea.", "Ambrose never told me that sort of thing.", "Ask Desmond. He knew everything Ambrose did."],
+    noAnswer: ["I have no idea.", "Ambrose never told me that sort of thing.", "Ask Lucian. He knew everything Ambrose did."],
     voice: {
       voiceId: "XrExE9yKIg1WjnnlVkGX",
       direction: "Woman in her early sixties, old Berkshires money: cool, dry, sharp-tongued, very composed; brittle when cornered, then quietly candid. Educated New England American.",
@@ -181,7 +181,7 @@ export const characters: CharacterDef[] = [
     onBoard: true,
     defaultEvidenceReply: "No idea. Not my department.",
     idleLine: "I'm not going anywhere. Apparently nobody is.",
-    noAnswer: ["No idea.", "Dad didn't exactly confide in me.", "You'd have to ask Desmond."],
+    noAnswer: ["No idea.", "Dad didn't exactly confide in me.", "You'd have to ask Lucian."],
     voice: {
       voiceId: "TxGEqnHWrfWFTfGW9XjX",
       direction: "Man of about forty, a charming, rattled son of money: quick, defensive, joking when he is scared, grief breaking through. Boston American.",
@@ -282,7 +282,7 @@ export const characters: CharacterDef[] = [
     portrait: "char.bridget",
     bio: [
       { text: "Sixty. Housekeeper at Blackthorn Estate from 1985 to 2004. Married to Amos Duffy." },
-      { text: "Saw Annabel Lisle arguing with Desmond Crane at the library door on Halloween 1998.", requires: { asked: "bridget_1998" } },
+      { text: "Saw Annabel Lisle arguing with Lucian Marsh at the library door on Halloween 1998.", requires: { asked: "bridget_1998" } },
       { text: "Was left an unsigned note in her coat tonight.", requires: ev("HE036") },
     ],
     available: alive("bridget"),
@@ -441,7 +441,7 @@ export const characters: CharacterDef[] = [
 const q = (x: DialogueQuestion) => x;
 
 export const questions: DialogueQuestion[] = [
-  // ---------------- Desmond Crane ----------------
+  // ---------------- Lucian Marsh ----------------
   q({
     id: "crane_evening",
     characterId: "crane",
@@ -452,7 +452,7 @@ export const questions: DialogueQuestion[] = [
       "In the conservatory, on the phone. My office in Boston had a problem with a sale closing in the morning, and the signal's best in there, by the glass.",
       "I left the table at about eight minutes past ten. The lights went out while I was talking. I stood there in the dark like a fool until I heard the scream, and then I came through.",
     ],
-    reveals: "Crane says he was in the conservatory on a call to his Boston office from 10:08 until he heard the scream.",
+    reveals: "Marsh says he was in the conservatory on a call to his Boston office from 10:08 until he heard the scream.",
   }),
   q({
     id: "crane_ambrose",
@@ -461,7 +461,7 @@ export const questions: DialogueQuestion[] = [
     prompt: "What was your relationship with Ambrose?",
     keywords: ["friend", "partner", "relationship", "know him", "ambrose", "how long", "known", "years", "forty years"],
     reply: [
-      "Forty years. We started in antiques together, Blackthorn and Crane, and when the foundation needed a treasurer in 1994 he asked me. I've kept its books ever since.",
+      "Forty years. We started in antiques together, Blackthorn and Marsh, and when the foundation needed a treasurer in 1994 he asked me. I've kept its books ever since.",
       "He was a good man and a nervous one. Lately more nervous than good, if I'm honest. He'd taken to drama.",
     ],
   }),
@@ -497,7 +497,7 @@ export const questions: DialogueQuestion[] = [
     reply: [
       "The old back stair? Of course I know of it. Every child who ever came to this house knew of it. Ambrose had it closed up in the nineties. I haven't set foot in it in twenty-five years.",
     ],
-    reveals: "Crane says he has not been in the back stair in twenty-five years.",
+    reveals: "Marsh says he has not been in the back stair in twenty-five years.",
   }),
   q({
     id: "crane_switch",
@@ -521,7 +521,7 @@ export const questions: DialogueQuestion[] = [
       "Did it? I went down at about seven to look at the wines for dinner. Ambrose's father laid down some port I wanted to see. Wren's people had a board of keys and I took the one the girl handed me.",
       "If it was the wrong key, it was the wrong key. I didn't open any stair with it. I'll find it for you in my coat, I expect.",
     ],
-    reveals: "Crane says he took a key at 7:10 to look at the wines, and never opened any stair.",
+    reveals: "Marsh says he took a key at 7:10 to look at the wines, and never opened any stair.",
   }),
   q({
     id: "crane_terrace",
@@ -534,17 +534,17 @@ export const questions: DialogueQuestion[] = [
       "Did I say I stayed in the conservatory? I meant I was out by it. The signal comes and goes in there, so I stepped out onto the terrace for a bar or two. Then the lights went and I came in.",
       "I'd be careful with Isaac and Constance as witnesses, by the way. Ask them what they were doing in a dark conservatory together.",
     ],
-    reveals: "Crane now says he stepped out onto the terrace for a better signal.",
+    reveals: "Marsh now says he stepped out onto the terrace for a better signal.",
   }),
   q({
     id: "crane_money",
     characterId: "crane",
     topic: "The foundation",
-    prompt: "Tell me about Crane Advisory and the foundation's consulting payments.",
+    prompt: "Tell me about Marsh Advisory and the foundation's consulting payments.",
     keywords: ["crane advisory", "consulting", "invoices", "1,380,000", "payments", "money", "conservation"],
     requires: { any: [ev("HE027"), ev("HE038"), ev("HE031")] },
     reply: [
-      "Crane Advisory is my consultancy. The foundation's properties need a great deal of conservation advice, and I give it. The board approved every invoice, and the auditors have seen every one.",
+      "Marsh Advisory is my consultancy. The foundation's properties need a great deal of conservation advice, and I give it. The board approved every invoice, and the auditors have seen every one.",
       "If Ambrose had questions he might have asked me. He never did.",
     ],
   }),
@@ -571,7 +571,7 @@ export const questions: DialogueQuestion[] = [
       "Not much, I'm afraid. A volunteer in the archive one autumn. Bright, a little full of herself. She was at the party that year and the next day she'd gone. Everyone said she'd run away from home.",
       "It was a sad business. I'm not sure what it has to do with Ambrose.",
     ],
-    reveals: "Crane says he barely knew Annabel Lisle and that everyone said she ran away.",
+    reveals: "Marsh says he barely knew Annabel Lisle and that everyone said she ran away.",
   }),
   q({
     id: "crane_chamber",
@@ -692,7 +692,7 @@ export const questions: DialogueQuestion[] = [
     id: "josie_crane",
     characterId: "josie",
     topic: "Annabel",
-    prompt: "What do you know about Desmond Crane?",
+    prompt: "What do you know about Lucian Marsh?",
     keywords: ["crane", "desmond", "treasurer", "circled"],
     requires: { any: [ev("HE018"), ev("HE034"), { talkedTo: "crane" }] },
     reply: [
@@ -750,17 +750,17 @@ export const questions: DialogueQuestion[] = [
     keywords: ["reveal", "revelation", "10:30", "announcement", "secret", "twenty years"],
     reply: [
       "Something about the foundation, I assumed. Money. It's always money with foundations. I left the board in 2012 because the numbers stopped adding up and nobody would tell me why.",
-      "If you want to know who'd mind the books being opened, ask Desmond. He's kept them for twenty-four years.",
+      "If you want to know who'd mind the books being opened, ask Lucian. He's kept them for twenty-four years.",
     ],
   }),
   q({
     id: "constance_crane",
     characterId: "constance",
-    topic: "Desmond Crane",
-    prompt: "What do you think of Desmond Crane?",
+    topic: "Lucian Marsh",
+    prompt: "What do you think of Lucian Marsh?",
     keywords: ["crane", "desmond", "treasurer", "trust him"],
     reply: [
-      "Desmond keeps the books and Ambrose keeps the peace. That's how it's always been. I never liked him and I never trusted him, and Ambrose would never hear a word against him.",
+      "Lucian keeps the books and Ambrose keeps the peace. That's how it's always been. I never liked him and I never trusted him, and Ambrose would never hear a word against him.",
       "Lately I wondered if that was loyalty or fear.",
     ],
   }),
@@ -775,7 +775,7 @@ export const questions: DialogueQuestion[] = [
       {
         requires: rumor,
         reply: [
-          "At the foot of the table, yes. Desmond's going around saying she's some madwoman who walked in off the road, and half the room believes him.",
+          "At the foot of the table, yes. Lucian's going around saying she's some madwoman who walked in off the road, and half the room believes him.",
           "Ambrose set a place for her. I don't think Ambrose set places for madwomen.",
         ],
       },
@@ -854,11 +854,11 @@ export const questions: DialogueQuestion[] = [
     keywords: ["conservatory", "anyone else", "crane", "came in", "terrace", "phone call", "who came through"],
     requires: ev("HE033"),
     reply: [
-      "Nobody else was in here, and nobody made a telephone call in here. I'd have heard. At about nineteen minutes past, in the dark, the garden door from the terrace opened and Desmond Crane came in from outside, wet through. He said, 'Did the lights go?' and went straight on into the house.",
+      "Nobody else was in here, and nobody made a telephone call in here. I'd have heard. At about nineteen minutes past, in the dark, the garden door from the terrace opened and Lucian Marsh came in from outside, wet through. He said, 'Did the lights go?' and went straight on into the house.",
       "Constance and I will both sign to it. I'll write it now.",
     ],
     effects: [{ giveEvidence: "HE028" }],
-    reveals: "Nobody made a call in the conservatory. Crane came in from the terrace, wet, at about 10:19.",
+    reveals: "Nobody made a call in the conservatory. Marsh came in from the terrace, wet, at about 10:19.",
   }),
 
   // ---------------- Felix ----------------
@@ -913,7 +913,7 @@ export const questions: DialogueQuestion[] = [
     prompt: "Who was the woman you saw in the corridor?",
     keywords: ["woman", "veil", "corridor", "guest wing", "who was she", "saw her"],
     reply: ["The one from the foot of the table, the one in black. She went around the corner into the guest wing like a ghost in a film. I shouted and she didn't stop. I thought she was some act Dad had hired."],
-    variants: [{ requires: rumor, reply: ["The one in black from the foot of the table. Desmond thinks she's some madwoman who walked in off the road. She went around the corner into the guest wing and I lost her."] }],
+    variants: [{ requires: rumor, reply: ["The one in black from the foot of the table. Lucian thinks she's some madwoman who walked in off the road. She went around the corner into the guest wing and I lost her."] }],
   }),
   q({
     id: "felix_stair",
@@ -935,18 +935,18 @@ export const questions: DialogueQuestion[] = [
     keywords: ["print", "fingerprint", "catch", "lab", "thumb"],
     requires: ev("HE009"),
     reply: [
-      "Could be mine or could be Desmond's, the lab says, which means it could be anyone with a thumb like ours. I haven't touched that shelf since I was eighteen.",
+      "Could be mine or could be Lucian's, the lab says, which means it could be anyone with a thumb like ours. I haven't touched that shelf since I was eighteen.",
       "I was at the table at a quarter past ten between Beatrice Holloway and Bridget Duffy, with Oscar Wren standing behind my chair. Ask them.",
     ],
   }),
   q({
     id: "felix_crane",
     characterId: "felix",
-    topic: "Desmond Crane",
-    prompt: "What do you think of Desmond Crane?",
+    topic: "Lucian Marsh",
+    prompt: "What do you think of Lucian Marsh?",
     keywords: ["crane", "desmond", "uncle", "treasurer"],
     reply: [
-      "Uncle Desmond. Smooth as a pond. He's been in this house my whole life, telling Dad what to sign.",
+      "Uncle Lucian. Smooth as a pond. He's been in this house my whole life, telling Dad what to sign.",
       "This last month Dad wouldn't be in a room with him alone. I thought they'd had a row about money. Everything's about money.",
     ],
   }),
@@ -983,7 +983,7 @@ export const questions: DialogueQuestion[] = [
     prompt: "Who left the table before the lights went out?",
     keywords: ["left the table", "who left", "missing", "10:08", "10:11", "before the blackout"],
     reply: [
-      "Mrs. Blackthorn at about five past ten, and Dr. Penrose just after her. Mr. Crane at eight minutes past, for a call. Mr. Blackthorn at eleven minutes past; he went up to his study. The lady in black had gone at twenty past nine.",
+      "Mrs. Blackthorn at about five past ten, and Dr. Penrose just after her. Mr. Marsh at eight minutes past, for a call. Mr. Blackthorn at eleven minutes past; he went up to his study. The lady in black had gone at twenty past nine.",
       "Everyone else was at the table when the lights went. I was counting heads because that's what I do.",
     ],
   }),
@@ -1034,7 +1034,7 @@ export const questions: DialogueQuestion[] = [
     topic: "Tonight",
     prompt: "Where were you at a quarter past ten?",
     keywords: ["where were you", "10:15", "blackout", "lights", "alibi"],
-    reply: ["At the table, between Desmond's empty chair and Amos. When the lights went Maeve Corrigan grabbed my wrist so hard she left a mark. Look."],
+    reply: ["At the table, between Lucian's empty chair and Amos. When the lights went Maeve Corrigan grabbed my wrist so hard she left a mark. Look."],
   }),
   q({
     id: "harriet_foundation",
@@ -1042,7 +1042,7 @@ export const questions: DialogueQuestion[] = [
     topic: "The foundation",
     prompt: "You kept the foundation's books?",
     keywords: ["accountant", "books", "bookkeeper", "foundation", "worked"],
-    reply: ["From 1990 to 2001. Desmond became treasurer in 1994 and I worked for him after that. I left in 2001. I said it was my mother's health. It wasn't only my mother's health."],
+    reply: ["From 1990 to 2001. Lucian became treasurer in 1994 and I worked for him after that. I left in 2001. I said it was my mother's health. It wasn't only my mother's health."],
   }),
   q({
     id: "harriet_1998",
@@ -1071,8 +1071,8 @@ export const questions: DialogueQuestion[] = [
   q({
     id: "harriet_crane",
     characterId: "harriet",
-    topic: "Desmond Crane",
-    prompt: "What did Desmond Crane ask you to do?",
+    topic: "Lucian Marsh",
+    prompt: "What did Lucian Marsh ask you to do?",
     keywords: ["crane", "desmond", "told you", "second appraiser", "change"],
     requires: { asked: "harriet_1998" },
     reply: ["Enter the land at the price he paid for it, not the price it was worth. He said there was a second appraiser. There wasn't. I did as I was told, three times. That's what I'm ashamed of."],
@@ -1081,7 +1081,7 @@ export const questions: DialogueQuestion[] = [
     id: "harriet_consulting",
     characterId: "harriet",
     topic: "The foundation",
-    prompt: "What do you make of the Crane Advisory invoices?",
+    prompt: "What do you make of the Marsh Advisory invoices?",
     keywords: ["crane advisory", "consulting", "invoices", "1,380,000"],
     requires: { any: [ev("HE027"), ev("HE038")] },
     reply: ["It's after my time. But it's the same trick in a new coat, isn't it? Pay yourself for something nobody can check. In 1997 it was land. Now it's advice."],
@@ -1120,7 +1120,7 @@ export const questions: DialogueQuestion[] = [
     prompt: "What do you remember of Halloween 1998?",
     keywords: ["1998", "that night", "carriage house", "volvo", "party", "annabel"],
     reply: [
-      "I was locking the grounds at about twenty past eleven. Mr. Crane's Volvo was backed up to the carriage house doors with no lights. He said he was loading crates for an auction. At that hour.",
+      "I was locking the grounds at about twenty past eleven. Mr. Marsh's Volvo was backed up to the carriage house doors with no lights. He said he was loading crates for an auction. At that hour.",
       "The next week he had masons brick over the old chamber under the inspection pit and told me to keep out. I'll write it down for you, if you want it written.",
     ],
     offers: "amos_statement",
@@ -1146,8 +1146,8 @@ export const questions: DialogueQuestion[] = [
   q({
     id: "amos_crane",
     characterId: "amos",
-    topic: "Desmond Crane",
-    prompt: "What do you think of Desmond Crane?",
+    topic: "Lucian Marsh",
+    prompt: "What do you think of Lucian Marsh?",
     keywords: ["crane", "desmond", "treasurer"],
     reply: ["He paid my wages after Mr. Blackthorn senior died. He always paid on time. I never once wanted to have a beer with him."],
   }),
@@ -1185,11 +1185,11 @@ export const questions: DialogueQuestion[] = [
     keywords: ["1998", "annabel", "lisle", "girl", "library", "argument", "that night"],
     requires: { any: [knows1998, { talkedTo: "amos" }] },
     reply: [
-      "I saw the Lisle girl at the library door with Mr. Crane, at about twenty to nine, with papers in her hand. He said, 'That's not your business, young lady,' very quiet, and she said, 'Then whose is it?'",
+      "I saw the Lisle girl at the library door with Mr. Marsh, at about twenty to nine, with papers in her hand. He said, 'That's not your business, young lady,' very quiet, and she said, 'Then whose is it?'",
       "He took a glass off my tray and said she'd been at the punch. I never saw her again. I've written it down. Here. I should have said it twenty years ago.",
     ],
     effects: [{ giveEvidence: "HE023" }],
-    reveals: "Bridget saw Annabel confront Crane at the library door at about 8:40 PM in 1998.",
+    reveals: "Bridget saw Annabel confront Marsh at the library door at about 8:40 PM in 1998.",
   }),
   q({
     id: "bridget_note",
@@ -1232,10 +1232,10 @@ export const questions: DialogueQuestion[] = [
     requires: { any: [ev("HE014"), ev("HE016"), found, ev("HE034")] },
     reply: [
       "Yes. She's Josie Lisle. Annabel's little sister. I knew her the moment she sat down. She has her mother's mouth.",
-      "I drove Annabel here that night, and Annabel told me she'd found something about Desmond Crane, and I told her not to make a scene. Then I told the police she'd talked about running away. I've written it all out. I'm so sorry.",
+      "I drove Annabel here that night, and Annabel told me she'd found something about Lucian Marsh, and I told her not to make a scene. Then I told the police she'd talked about running away. I've written it all out. I'm so sorry.",
     ],
     effects: [{ giveEvidence: "HE017" }],
-    reveals: "Beatrice identifies the veiled woman as Josie Lisle, and says Annabel told her in 1998 she had found something about Desmond Crane.",
+    reveals: "Beatrice identifies the veiled woman as Josie Lisle, and says Annabel told her in 1998 she had found something about Lucian Marsh.",
   }),
   q({
     id: "beatrice_ambrose",
@@ -1274,7 +1274,7 @@ export const questions: DialogueQuestion[] = [
     prompt: "Which trustee did Ambrose tell about his plans?",
     keywords: ["trustee", "one trustee", "told", "trustees", "board"],
     requires: ev("HE031"),
-    reply: ["He didn't say. But since Constance left the board in 2012 there have been two trustees: Ambrose and Desmond Crane. You can do that arithmetic as well as I can."],
+    reply: ["He didn't say. But since Constance left the board in 2012 there have been two trustees: Ambrose and Lucian Marsh. You can do that arithmetic as well as I can."],
   }),
   q({
     id: "byrne_envelope",
@@ -1384,9 +1384,9 @@ export const questions: DialogueQuestion[] = [
     id: "mahoney_crane",
     characterId: "mahoney",
     topic: "Background",
-    prompt: "What do you have on Desmond Crane?",
+    prompt: "What do you have on Lucian Marsh?",
     keywords: ["crane", "desmond", "background", "record", "run him"],
-    reply: ["No record. Trustee of the foundation, lives in Pittsfield, two companies registered to him: Hollins Ridge Associates, dissolved 2001, and Crane Advisory LLC, registered 2013. Clean as a whistle. Those are the ones I worry about."],
+    reply: ["No record. Trustee of the foundation, lives in Pittsfield, two companies registered to him: Hollins Ridge Associates, dissolved 2001, and Marsh Advisory LLC, registered 2013. Clean as a whistle. Those are the ones I worry about."],
   }),
   q({
     id: "mahoney_lisle",
@@ -1417,9 +1417,9 @@ export const reactions: EvidenceReaction[] = [
   { characterId: "josie", evidenceId: "HE025", reply: ["Her bangle. A.L., sixteen. Mom gave it to her. She's been here the whole time. A mile from home. The whole time."] },
   { characterId: "harriet", evidenceId: "HE020", reply: ["Cost and appraisal agree to the dollar, three times, and no appraiser named. That's what I was told to write. Annabel's card is still in the 1997 volume. Oh, that poor girl."] },
   { characterId: "amos", evidenceId: "HE004", reply: ["Those are my screw holes. Four brass screws, 1999. Somebody's had them out, and lately; look how bright the threads are."] },
-  { characterId: "amos", evidenceId: "HE024", reply: ["They're breaking out the chamber on the fifth. I'd heard. Mr. Crane's masons bricked that in November 1998, the week after the party."] },
+  { characterId: "amos", evidenceId: "HE024", reply: ["They're breaking out the chamber on the fifth. I'd heard. Mr. Marsh's masons bricked that in November 1998, the week after the party."] },
   { characterId: "bridget", evidenceId: "HE018", reply: ["That's her hand. She used to leave notes in the kitchen for me with little circles over the i's."] },
-  { characterId: "wren", evidenceId: "HE029", reply: ["That's my book. D.C., 7:10, lower stair door. My girl shouldn't have issued that key; it's marked sealed. And it's never been signed back in."] },
+  { characterId: "wren", evidenceId: "HE029", reply: ["That's my book. L.M., 7:10, lower stair door. My girl shouldn't have issued that key; it's marked sealed. And it's never been signed back in."] },
   { characterId: "iris", evidenceId: "HE004", reply: ["That's the jib bookcase from the 1903 drawings. The fourth section. It's been opened."] },
   { characterId: "byrne", evidenceId: "HE008", reply: ["E.B. is me. \"Where the world is.\" He meant the library globe. He always called it the world."], effects: [{ setFlag: "globe_known" }] },
   { characterId: "mahoney", evidenceId: "HE015", reply: ["Nobody out the front since 8:41. The lane gate's not on camera. Remember that."] },
@@ -1429,15 +1429,15 @@ export const contradictions: ContradictionDef[] = [
   {
     id: "x_crane_conservatory",
     characterId: "crane",
-    title: "Desmond Crane's whereabouts at 10:13 to 10:19",
-    text: "Crane says he was in the conservatory on a call from 10:08 until he heard the scream. Dr. Penrose and Constance Blackthorn, there from 10:05, say nobody made a call there, and that Crane came in from the terrace at about 10:19, wet from the rain.",
+    title: "Lucian Marsh's whereabouts at 10:13 to 10:19",
+    text: "Marsh says he was in the conservatory on a call from 10:08 until he heard the scream. Dr. Penrose and Constance Blackthorn, there from 10:05, say nobody made a call there, and that Marsh came in from the terrace at about 10:19, wet from the rain.",
     when: { all: [{ asked: "crane_evening" }, ev("HE028")] },
   },
   {
     id: "x_crane_stair",
     characterId: "crane",
-    title: "Desmond Crane and the lower stair door",
-    text: "Crane says he has not been in the back stair in twenty-five years. The key book has him signing out the sealed lower stair door key at 7:10 PM, and it was never signed back in.",
+    title: "Lucian Marsh and the lower stair door",
+    text: "Marsh says he has not been in the back stair in twenty-five years. The key book has him signing out the sealed lower stair door key at 7:10 PM, and it was never signed back in.",
     when: { all: [{ asked: "crane_stair" }, ev("HE029")] },
   },
   {

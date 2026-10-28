@@ -96,7 +96,7 @@ const REVEALS: Record<string, RegExp> = {
   S001C05: /\b(i killed|i hit him|i struck|knox killed|knox struck|marchetti ordered|i swung (?:it|the bookend))\b/i,
   S001C06: /\b(i ordered|i authorized the|i am the architect|i'm the architect|lockhart ordered|i set the fire|i burned)\b/i,
   S001C01: /\b(i killed|i hit him|i struck|reddick killed|reddick struck|holt ordered|i did it|i swung (?:it|the eagle)|i told him to kill)\b/i,
-  HALLOW001: /\b(i killed|i struck him|i hit him|i pushed her|i shoved her|crane killed|desmond killed|i did it|i pulled the switch|i switched off|i turned off the power|i hid her|i hid the body)\b/i,
+  HALLOW001: /\b(i killed|i struck him|i hit him|i pushed her|i shoved her|marsh killed|lucian killed|crane killed|desmond killed|i did it|i pulled the switch|i switched off|i turned off the power|i hid her|i hid the body)\b/i,
   C006: /\b(i killed|i hit her|i pushed her|i struck|wade killed|wade struck|trent killed|i ordered|stroud ordered|i did it|i beat him|i took him)\b/i,
 };
 const spoken = [

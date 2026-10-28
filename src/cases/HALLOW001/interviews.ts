@@ -96,8 +96,8 @@ export const PATIENCE: Record<string, PatienceDef> = {
 };
 
 export const reinterviews: ReinterviewDef[] = [
-  { id: "ri_crane_key", characterId: "crane", when: { hasEvidence: "HE029" }, note: "Desmond Crane will have to explain the key book." },
-  { id: "ri_crane_terrace", characterId: "crane", when: { hasEvidence: "HE028" }, note: "Desmond Crane will have to explain where he really was." },
+  { id: "ri_crane_key", characterId: "crane", when: { hasEvidence: "HE029" }, note: "Lucian Marsh will have to explain the key book." },
+  { id: "ri_crane_terrace", characterId: "crane", when: { hasEvidence: "HE028" }, note: "Lucian Marsh will have to explain where he really was." },
   { id: "ri_beatrice", characterId: "beatrice", when: { any: [{ hasEvidence: "HE016" }, { hasEvidence: "HE014" }] }, note: "Beatrice Holloway knows more about the woman in black than she has said." },
   { id: "ri_penrose", characterId: "penrose", when: { hasEvidence: "HE033" }, note: "Dr. Penrose has some explaining to do about the conservatory." },
   { id: "ri_constance", characterId: "constance", when: { hasEvidence: "HE033" }, note: "Constance Blackthorn has some explaining to do about the conservatory." },

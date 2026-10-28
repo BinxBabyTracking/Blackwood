@@ -2,7 +2,7 @@ import type { AdversaryDef, AdversaryMove, Condition, Effect } from "@/game/engi
 import { alive, craneAt, craneDownstairs, craneFree, craneInDanger, guarded, WITNESSES } from "./rules";
 
 /*
- * Desmond Crane's playbook (docs/HALLOW001-timeline.md, "The killer").
+ * Lucian Marsh's playbook (docs/HALLOW001-timeline.md, "The killer").
  *
  * He learns only what he could see or hear from the main floor of the house:
  * the commotion when the study shelves are opened; an investigator sitting
@@ -33,7 +33,7 @@ const runForTheLane: Effect[] = [
 /** Something an investigator in the room would notice when he starts to fear someone: not proof, just a look. */
 const watching = (name: string, rooms: string[]): Effect => ({
   when: { any: rooms.map((r) => ({ at: r })) },
-  then: [{ message: `Across the room, Desmond Crane is watching ${name}. He looks away when he sees you notice.` }],
+  then: [{ message: `Across the room, Lucian Marsh is watching ${name}. He looks away when he sees you notice.` }],
 });
 
 const attack = (w: (typeof WITNESSES)[number], priority: number): AdversaryMove => ({

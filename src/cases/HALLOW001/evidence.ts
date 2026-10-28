@@ -17,7 +17,7 @@ import type { EvidenceDef } from "@/game/engine/types";
  *   document: HE010 (the case file)
  *   delivery: HE009 (lab), HE037 (Lt. Mahoney)
  *
- * HE036, HE037 and HE038 exist only if Desmond Crane does what makes them.
+ * HE036, HE037 and HE038 exist only if Lucian Marsh does what makes them.
  * HE027 and HE035 can be lost to him. No report point depends on any of these
  * five alone.
  */
@@ -167,7 +167,7 @@ export const evidence: EvidenceDef[] = [
       "MASSACHUSETTS STATE POLICE CRIME LABORATORY, WESTERN MASSACHUSETTS. Latent print report, case 18-B-3317. Requested by Det. Lt. J. Mahoney. Examiner: A. Okafor.",
       "Item 1: one partial latent print, developed with black powder, from the iron catch on the inner face of the hinged shelf section, study, Blackthorn Estate. Fresh; deposited over machine oil.",
       "Item 2: elimination prints taken at the scene from the twelve invited guests, the event staff and the deceased.",
-      "Result: Item 1 is a partial right thumb, double-loop whorl, with eight usable points. It is not sufficient for identification. It is consistent in pattern and ridge count with the elimination prints of two persons: Desmond CRANE and Felix BLACKTHORN. It is excluded for all others, including the deceased. A. Okafor.",
+      "Result: Item 1 is a partial right thumb, double-loop whorl, with eight usable points. It is not sufficient for identification. It is consistent in pattern and ridge count with the elimination prints of two persons: Lucian MARSH and Felix BLACKTHORN. It is excluded for all others, including the deceased. A. Okafor.",
     ),
     discovery: "Lab test print_catch, sent through Lt. Mahoney; delivered to the Morning Room (delivery lab_print).",
     characters: ["crane", "felix", "mahoney"],
@@ -186,7 +186,7 @@ export const evidence: EvidenceDef[] = [
     image: "ev.HE010",
     inspection: P(
       "A photocopy of a sheet of the Blackthorn Foundation's letterhead, in Ambrose's hand, headed \"Halloween. Invited 12 October.\"",
-      "\"1. Desmond Crane\n2. Constance\n3. Felix\n4. Harriet Lowell\n5. Amos Duffy\n6. Bridget Duffy\n7. Dr. Isaac Penrose\n8. Beatrice Holloway\n9. Leonard Corrigan\n10. Maeve Corrigan\n11. Everett Byrne\n12. Iris Kettering\"",
+      "\"1. Lucian Marsh\n2. Constance\n3. Felix\n4. Harriet Lowell\n5. Amos Duffy\n6. Bridget Duffy\n7. Dr. Isaac Penrose\n8. Beatrice Holloway\n9. Leonard Corrigan\n10. Maeve Corrigan\n11. Everett Byrne\n12. Iris Kettering\"",
       "Under the list, in the same pen: \"All here that night but E.B. and I.K. (E.B. to witness, I.K. for the house.) Masks optional. Dinner at nine. Procession at midnight, as Father did it.\"",
       "Twelve names. Byrne's note in the margin: \"This is every invitation he asked me to keep a copy of. E.B.\"",
     ),
@@ -222,7 +222,7 @@ export const evidence: EvidenceDef[] = [
       "\"Mr. Blackthorn booked us on October 3 for dinner for thirteen. I queried it twice, because his guest list had twelve names. Both times he said thirteen. He said one guest would come late and on foot and might not give a name, and that she was to be seated at the foot of the table and not asked anything.",
       "\"A lady in full black with a veil came in at about 8:45 and sat at the foot. I assumed she was the late guest. I did not see her face. She left the table at about 9:20.",
       "\"At 9:50 Mr. Blackthorn gave me a folded note and asked me to give it to 'the lady in black, wherever she is, and nobody else.' I found her in the library and gave it to her at 9:52. I did not read it.",
-      "\"Mr. Crane left the table at 10:08 for a call. Mr. Blackthorn went up at 10:11. The lights went at 10:13. Felix and I went up with our phones when we heard the scream.\"",
+      "\"Mr. Marsh left the table at 10:08 for a call. Mr. Blackthorn went up at 10:11. The lights went at 10:13. Felix and I went up with our phones when we heard the scream.\"",
     ),
     discovery: "Oscar Wren hands it over (question wren_thirteen).",
     characters: ["wren", "ambrose", "josie", "crane", "felix"],
@@ -237,7 +237,7 @@ export const evidence: EvidenceDef[] = [
     image: "ev.HE013",
     inspection: P(
       "A seating plan on card, propped on the sideboard. The table seats six a side with a chair at each end:",
-      "\"Head: Mr. Ambrose Blackthorn.\nRight, from the head: Mrs. Constance Blackthorn, Mr. Desmond Crane, Mrs. Harriet Lowell, Mr. Amos Duffy, Mrs. Maeve Corrigan, Mr. Everett Byrne.\nLeft, from the head: Dr. Isaac Penrose, Mrs. Beatrice Holloway, Mr. Felix Blackthorn, Mrs. Bridget Duffy, Mr. Leonard Corrigan, Ms. Iris Kettering.\nFoot: (guest).\"",
+      "\"Head: Mr. Ambrose Blackthorn.\nRight, from the head: Mrs. Constance Blackthorn, Mr. Lucian Marsh, Mrs. Harriet Lowell, Mr. Amos Duffy, Mrs. Maeve Corrigan, Mr. Everett Byrne.\nLeft, from the head: Dr. Isaac Penrose, Mrs. Beatrice Holloway, Mr. Felix Blackthorn, Mrs. Bridget Duffy, Mr. Leonard Corrigan, Ms. Iris Kettering.\nFoot: (guest).\"",
       "Penciled beside the foot: \"late, on foot, no questions, per A.B.\" Beatrice Holloway's place, second from the head, has a clear view down the table to the foot.",
     ),
     discovery: "Dining room, the sideboard (hotspot dr_chart).",
@@ -254,8 +254,8 @@ export const evidence: EvidenceDef[] = [
     inspection: P(
       "Three prints from Oscar Wren's phone, the camera's times stamped in the corner.",
       "9:05 PM. The table from the side, all thirteen places filled. At the foot, a woman in black lace with a short veil over her eyes and nose, a dark red mouth, black lace gloves. She is looking at the head of the table. Near the head of the table, on the left, Beatrice Holloway is looking down the table at her, not at the camera.",
-      "10:09 PM. The same view. Desmond Crane's chair, second on the right, is empty, his black and silver domino mask on the plate. The foot of the table is empty too.",
-      "10:11 PM. Ambrose's chair at the head is empty. Everyone else is at the table but Crane, the lady in black, Constance Blackthorn and Dr. Penrose.",
+      "10:09 PM. The same view. Lucian Marsh's chair, second on the right, is empty, his black and silver domino mask on the plate. The foot of the table is empty too.",
+      "10:11 PM. Ambrose's chair at the head is empty. Everyone else is at the table but Marsh, the lady in black, Constance Blackthorn and Dr. Penrose.",
     ),
     discovery: "Oscar Wren hands them over (question wren_photos).",
     characters: ["wren", "josie", "crane", "beatrice", "ambrose"],
@@ -302,8 +302,8 @@ export const evidence: EvidenceDef[] = [
     inspection: P(
       "Written out by Beatrice Holloway at the dining table, three pages, signed:",
       "\"The woman in black at the foot of the table is Josephine Lisle. Josie. She was nine when her sister Annabel went missing from this house. I knew her the moment she sat down: she has her mother's mouth and her sister's way of holding her head. I said nothing because I have been ashamed for twenty years.",
-      "\"I drove Annabel to the party in 1998 because her mother had said no and I said yes. At about 8:20 she found me in the hall and said, 'I found something about Mr. Crane. I have to ask him.' She had papers in her hand. I told her not to make a scene in someone else's house. I left at about 9:40, thinking she would get a ride with the Duffys.",
-      "\"When the police asked, I told them she had been fighting with her mother and talked about leaving home. Both things were true. They were not the truth. I never told anyone what she said to me about Mr. Crane, because I could not bear to think what it meant, and because I was the one who brought her.\"",
+      "\"I drove Annabel to the party in 1998 because her mother had said no and I said yes. At about 8:20 she found me in the hall and said, 'I found something about Mr. Marsh. I have to ask him.' She had papers in her hand. I told her not to make a scene in someone else's house. I left at about 9:40, thinking she would get a ride with the Duffys.",
+      "\"When the police asked, I told them she had been fighting with her mother and talked about leaving home. Both things were true. They were not the truth. I never told anyone what she said to me about Mr. Marsh, because I could not bear to think what it meant, and because I was the one who brought her.\"",
     ),
     discovery: "Beatrice Holloway hands it over (question beatrice_truth).",
     characters: ["beatrice", "josie", "annabel", "crane"],
@@ -323,7 +323,7 @@ export const evidence: EvidenceDef[] = [
     inspection: P(
       "A girl's diary, red cloth, the last eleven pages written in, in a round hand with circled dots.",
       "\"Oct. 10, 1998. Mrs. Lowell let me do the 1997 box at the foundation library today. Boring but they pay $5 an hour and Mr. Blackthorn says I have a good eye.\"",
-      "\"Oct. 17. There is a land thing in 1997 called Ridgeline Road. The foundation bought it from a company called Hollins Ridge Associates. Mrs. Lowell's sheet says the land was valued at $95,000. The foundation paid $410,000. Hollins Ridge Associates is Mr. Crane's company. It says so on a letter.\"",
+      "\"Oct. 17. There is a land thing in 1997 called Ridgeline Road. The foundation bought it from a company called Hollins Ridge Associates. Mrs. Lowell's sheet says the land was valued at $95,000. The foundation paid $410,000. Hollins Ridge Associates is Mr. Marsh's company. It says so on a letter.\"",
       "\"Oct. 24. I asked Mrs. Lowell about it and she went white and said the books had been changed and not to say anything to anyone. I don't think she meant me to hear the changed part.\"",
       "\"Oct. 30. Party tomorrow. B. is taking me. Mom doesn't know. I'm going to look at the real papers in the library and if I'm right I'm going to ask him to his face. I'm not scared of him. Josie wants me to bring her a mask.\"",
       "There are no more entries.",
@@ -341,9 +341,9 @@ export const evidence: EvidenceDef[] = [
     image: "ev.HE019",
     inspection: P(
       "A green clothbound ledger, foolscap, \"Blackthorn Foundation, Property Register, 1997\" on the spine label in Harriet Lowell's hand. Inside the front cover: \"My working copy. H.L. Kept because I was asked to forget it.\"",
-      "Entry 97-14, June 9, 1997: \"Ridgeline Road, 31 acres, from Hollins Ridge Associates (D. Crane, principal). Appraised value: $95,000 (Bascombe & Ward, May 1997). Consideration: $410,000. Approved: D. Crane, Treasurer. A. Blackthorn, Chairman.\"",
-      "In the margin, in pencil: \"Asked D.C. about the gap 6/12. Told to enter the appraisal as $410,000 'per the second appraiser.' There was no second appraiser. Entered as told in the bound register. H.L.\"",
-      "In the back pages, two entries she kept on in pencil for 1998 have the same note: Elm Hollow, $72,000 against $260,000; the Patten farm, $140,000 against $385,000. All three from companies with D. Crane as principal.",
+      "Entry 97-14, June 9, 1997: \"Ridgeline Road, 31 acres, from Hollins Ridge Associates (L. Marsh, principal). Appraised value: $95,000 (Bascombe & Ward, May 1997). Consideration: $410,000. Approved: L. Marsh, Treasurer. A. Blackthorn, Chairman.\"",
+      "In the margin, in pencil: \"Asked L.M. about the gap 6/12. Told to enter the appraisal as $410,000 'per the second appraiser.' There was no second appraiser. Entered as told in the bound register. H.L.\"",
+      "In the back pages, two entries she kept on in pencil for 1998 have the same note: Elm Hollow, $72,000 against $260,000; the Patten farm, $140,000 against $385,000. All three from companies with L. Marsh as principal.",
     ),
     discovery: "Harriet Lowell hands it over once she decides to (question harriet_ledger).",
     characters: ["harriet", "crane", "ambrose"],
@@ -391,8 +391,8 @@ export const evidence: EvidenceDef[] = [
     image: "ev.HE022",
     inspection: P(
       "Written out for you by Amos Duffy, slowly, in capitals, and signed:",
-      "\"HALLOWEEN 1998 ABOUT 11:20 PM I WAS LOCKING THE GROUNDS. MR CRANE'S VOLVO WAS BACKED UP TO THE CARRIAGE HOUSE DOORS WITH NO LIGHTS. HE SAID HE WAS LOADING CRATES FOR AN AUCTION. AT THAT HOUR. I THOUGHT HE HAD BEEN DRINKING AND DID NOT WANT TO BE SEEN DRIVING.",
-      "\"THE NEXT WEEK MR CRANE HAD MASONS BRICK OVER THE OLD CHAMBER UNDER THE INSPECTION PIT. HE SAID IT WAS NOT SAFE. IT HAD BEEN THERE SINCE 1903 AND NOBODY EVER FELL IN IT. I WAS TOLD TO KEEP OUT OF THE CARRIAGE HOUSE AFTER THAT. IN 1999 MR BLACKTHORN HAD ME SCREW SHUT THE BOOKCASE DOOR IN HIS STUDY AND PAINT OVER THE DOOR AT THE BOTTOM OF THE BACK STAIR.",
+      "\"HALLOWEEN 1998 ABOUT 11:20 PM I WAS LOCKING THE GROUNDS. MR MARSH'S VOLVO WAS BACKED UP TO THE CARRIAGE HOUSE DOORS WITH NO LIGHTS. HE SAID HE WAS LOADING CRATES FOR AN AUCTION. AT THAT HOUR. I THOUGHT HE HAD BEEN DRINKING AND DID NOT WANT TO BE SEEN DRIVING.",
+      "\"THE NEXT WEEK MR MARSH HAD MASONS BRICK OVER THE OLD CHAMBER UNDER THE INSPECTION PIT. HE SAID IT WAS NOT SAFE. IT HAD BEEN THERE SINCE 1903 AND NOBODY EVER FELL IN IT. I WAS TOLD TO KEEP OUT OF THE CARRIAGE HOUSE AFTER THAT. IN 1999 MR BLACKTHORN HAD ME SCREW SHUT THE BOOKCASE DOOR IN HIS STUDY AND PAINT OVER THE DOOR AT THE BOTTOM OF THE BACK STAIR.",
       "\"TONIGHT AT ABOUT 10:18 I WENT DOWN THE KITCHEN STAIR TO FIND THE MAIN. AT THE BOTTOM I HEARD A DOOR SHUT DOWN THE SERVICE PASSAGE, AND THE OUTSIDE CELLAR DOOR BANG IN THE WIND. I THOUGHT IT WAS A CATERER. THE NEW SWITCH WAS ALL THE WAY DOWN. NOT TRIPPED. DOWN. AMOS DUFFY.\"",
     ),
     discovery: "Amos Duffy hands it over (question amos_statement).",
@@ -408,7 +408,7 @@ export const evidence: EvidenceDef[] = [
     image: "ev.HE023",
     inspection: P(
       "Written for you by Bridget Duffy on the back of a menu card, in a careful hand, signed:",
-      "\"On Halloween 1998 at about twenty to nine I was bringing a tray of glasses to the library. The Lisle girl, Annabel, was in the library doorway with papers in her hand, and Mr. Crane was standing over her. I heard him say, 'That's not your business, young lady,' very quiet. She said, 'Then whose is it?' She looked frightened and angry both.",
+      "\"On Halloween 1998 at about twenty to nine I was bringing a tray of glasses to the library. The Lisle girl, Annabel, was in the library doorway with papers in her hand, and Mr. Marsh was standing over her. I heard him say, 'That's not your business, young lady,' very quiet. She said, 'Then whose is it?' She looked frightened and angry both.",
       "\"When he saw me he smiled and took a glass off my tray and said the young lady had been at the punch. I went on. I never saw her again.",
       "\"When she was in the papers as a runaway, I said nothing. We had the cottage with the job and Amos's knees were bad. I have prayed about it every Halloween since. Bridget Duffy.\"",
     ),
@@ -451,14 +451,14 @@ export const evidence: EvidenceDef[] = [
   }),
   ev({
     id: "HE026",
-    title: "Crane's Note to Ambrose, 1998",
+    title: "Marsh's Note to Ambrose, 1998",
     description: "A note on Hollins Ridge Associates letterhead, kept in Ambrose's trunk in the attic for twenty years.",
     sourceLocationId: "attic",
     image: "ev.HE026",
     inspection: P(
       "Folded twice, on the letterhead of Hollins Ridge Associates, Pittsfield, in a forward-sloping hand in black ink, dated November 2, 1998:",
-      "\"A. The masons come Wednesday. It is done and cannot be undone, and there is nothing to be gained for anyone, least of all the foundation, by going over it again. Burn this. D.\"",
-      "Paper-clipped behind it, a single sheet in Ambrose's hand, never sent: \"D. I have not burned it. I will keep it as long as I keep my silence, so that if I ever break it, the world will know I did not break it alone. A.\"",
+      "\"A. The masons come Wednesday. It is done and cannot be undone, and there is nothing to be gained for anyone, least of all the foundation, by going over it again. Burn this. L.\"",
+      "Paper-clipped behind it, a single sheet in Ambrose's hand, never sent: \"L. I have not burned it. I will keep it as long as I keep my silence, so that if I ever break it, the world will know I did not break it alone. A.\"",
     ),
     discovery: "Attic, Ambrose's tin trunk (hotspot at_trunk).",
     characters: ["crane", "ambrose"],
@@ -471,16 +471,16 @@ export const evidence: EvidenceDef[] = [
   // ---------------------------------------------------------------------
   ev({
     id: "HE027",
-    title: "Ambrose's Folder on Crane Advisory",
+    title: "Ambrose's Folder on Marsh Advisory",
     description: "A buff letter file from Ambrose's desk, pushed in behind the port bins in the cellar.",
     sourceLocationId: "wine_cellar",
     image: "ev.HE027",
     inspection: P(
-      "A buff letter file, \"D.C. / C.A. LLC\" on the tab in Ambrose's hand, wedged behind the 1985 port bins at the back of the cellar. The dust on the bins is undisturbed except where it was pushed in. The file is dry; whoever put it there came in from the rain afterward.",
-      "Inside: forty-one invoices from Crane Advisory LLC, Pittsfield, to the Blackthorn Foundation, March 2014 to August 2018, for \"conservation consulting\" on foundation properties, total $1,380,000. Each approved \"D. Crane, Treasurer.\" Clipped to them, letters from three of the properties' caretakers: no consultant has ever visited.",
+      "A buff letter file, \"L.M. / M.A. LLC\" on the tab in Ambrose's hand, wedged behind the 1985 port bins at the back of the cellar. The dust on the bins is undisturbed except where it was pushed in. The file is dry; whoever put it there came in from the rain afterward.",
+      "Inside: forty-one invoices from Marsh Advisory LLC, Pittsfield, to the Blackthorn Foundation, March 2014 to August 2018, for \"conservation consulting\" on foundation properties, total $1,380,000. Each approved \"L. Marsh, Treasurer.\" Clipped to them, letters from three of the properties' caretakers: no consultant has ever visited.",
       "On top, a sheet in Ambrose's hand dated October 8, 2018: \"He has never stopped. Not in 1997 and not since. I gave him twenty years of silence and he spent them. On the 1st this goes to Byrne with the rest.\"",
     ),
-    discovery: "Wine cellar, the port bins (hotspot wc_bins), unless Crane recovers it first.",
+    discovery: "Wine cellar, the port bins (hotspot wc_bins), unless Marsh recovers it first.",
     characters: ["crane", "ambrose", "byrne"],
     related: ["HE031", "HE019", "HE038"],
     boardable: true,
@@ -494,7 +494,7 @@ export const evidence: EvidenceDef[] = [
     inspection: P(
       "On a sheet of Dr. Penrose's prescription pad, in his hand, signed by him and by Constance Blackthorn:",
       "\"We were together in the conservatory from about 10:05 PM until after the lights came back. Nobody else was in the conservatory in that time, and nobody made a telephone call there.",
-      "\"At about 10:19, in the dark, the garden door from the terrace opened and Desmond Crane came in from outside. His hair and shoulders were wet with rain. He said, 'Did the lights go?' and went on through into the house without waiting for an answer.",
+      "\"At about 10:19, in the dark, the garden door from the terrace opened and Lucian Marsh came in from outside. His hair and shoulders were wet with rain. He said, 'Did the lights go?' and went on through into the house without waiting for an answer.",
       "\"We did not say so before because we did not want to explain why we were there together. I. Penrose. C. Blackthorn.\"",
     ),
     discovery: "Dr. Penrose hands it over once his letters are found (question penrose_conservatory).",
@@ -510,7 +510,7 @@ export const evidence: EvidenceDef[] = [
     image: "ev.HE029",
     inspection: P(
       "A ruled notebook on a string by the steel key cabinet, \"WREN EVENTS: KEYS OUT / IN. Sign every key.\"",
-      "\"6:15 PM, O.W., cellar, out. 6:20 O.W., cellar, in.\n6:25 caterer (M.P.), terrace door, out. 7:40 M.P., terrace door, in.\n7:10 PM, D.C., lower stair door, out (cellar wines).\"",
+      "\"6:15 PM, O.W., cellar, out. 6:20 O.W., cellar, in.\n6:25 caterer (M.P.), terrace door, out. 7:40 M.P., terrace door, in.\n7:10 PM, L.M., lower stair door, out (cellar wines).\"",
       "Nothing signs the lower stair door key back in. Its hook in the cabinet, labeled \"LOWER STAIR (SEALED). DO NOT ISSUE,\" is empty.",
       "Oscar Wren's sign by the cabinet: \"Sealed doors are not to be opened during the event.\"",
     ),
@@ -526,9 +526,9 @@ export const evidence: EvidenceDef[] = [
     sourceLocationId: "gatehouse",
     image: "ev.HE030",
     inspection: P(
-      "Hollins Electric, Pittsfield. Work order 18-1192. Customer: Blackthorn Foundation, for the Blackthorn Estate, Harrow Falls. Requested by: D. Crane, Trustee (estate works).",
+      "Hollins Electric, Pittsfield. Work order 18-1192. Customer: Blackthorn Foundation, for the Blackthorn Estate, Harrow Falls. Requested by: L. Marsh, Trustee (estate works).",
       "\"10/24/18. Remove old main breaker (Square D, 1971). Fit new lever-operated main house disconnect in separate enclosure beside slate board, cellar wall. Label: UP ON, DOWN OFF. Customer asked for a switch 'anyone can throw in an emergency without a ladder or a key.' Gatehouse supply left separate. Customer present for walkthrough and tried the switch twice.\"",
-      "Signed: R. Hollins. \"Approved: D. Crane.\"",
+      "Signed: R. Hollins. \"Approved: L. Marsh.\"",
     ),
     discovery: "Gatehouse, the estate office files (hotspot gh_files).",
     characters: ["crane"],
@@ -592,7 +592,7 @@ export const evidence: EvidenceDef[] = [
     image: "ev.HE034",
     inspection: P(
       "A thick accordion file, much handled, labeled \"ANNABEL\" in a child's marker under an adult's neat label.",
-      "The Harrow Falls Police report of November 1, 1998: \"Missing juvenile, LISLE, Annabel M., 17. Last seen Blackthorn Estate Halloween party. Witness (Holloway) states subject had argued with her mother and spoken of leaving home. Classified: runaway.\" Josie's letters to the police in 2008, 2012 and 2016 asking to reopen it. A list of the 1998 party guests she built from old society pages, with Desmond Crane's name circled twice.",
+      "The Harrow Falls Police report of November 1, 1998: \"Missing juvenile, LISLE, Annabel M., 17. Last seen Blackthorn Estate Halloween party. Witness (Holloway) states subject had argued with her mother and spoken of leaving home. Classified: runaway.\" Josie's letters to the police in 2008, 2012 and 2016 asking to reopen it. A list of the 1998 party guests she built from old society pages, with Lucian Marsh's name circled twice.",
       "On top, a card in Ambrose's hand, postmarked October 14, 2018, with a printed invitation: \"I owe your family the truth. Come on Halloween. Come as you like; I will know you. There will be a place for you at my table. A.B.\" And the note Wren gave her at 9:52: \"10:15. My study, upstairs. A.B.\"",
     ),
     discovery: "Josie Lisle hands it over (question josie_file).",
@@ -608,11 +608,11 @@ export const evidence: EvidenceDef[] = [
     image: "ev.HE035",
     inspection: P(
       "The library's floor globe opens at the equator. Inside, a heavy cream envelope, \"For Everett Byrne. To be opened if I cannot give it to him myself. A.B.\" Inside it, four pages in Ambrose's hand, signed and witnessed by no one, dated October 20, 2018:",
-      "\"On Halloween 1998, at about half past nine, I found Desmond Crane in the service passage under this house. He was shaking. He told me the Lisle girl had found the Ridgeline papers and come at him with them, and that she had fallen on the stone steps at the bottom of the back stair and was dead. He said it was an accident. He said that if it came out, the land purchases would come out with it, and the foundation and both of us with them.",
+      "\"On Halloween 1998, at about half past nine, I found Lucian Marsh in the service passage under this house. He was shaking. He told me the Lisle girl had found the Ridgeline papers and come at him with them, and that she had fallen on the stone steps at the bottom of the back stair and was dead. He said it was an accident. He said that if it came out, the land purchases would come out with it, and the foundation and both of us with them.",
       "\"I went into my study and sat for forty minutes. Then I agreed to help him. I did not go down with him to the carriage house. I let him do it, and I let the masons brick it over, and I let her mother believe she ran away. Afterward I closed the back stair so I would never have to see those steps.",
       "\"I do not know that it was an accident. I have only his word. I have taken his word for twenty years because it was the only thing that let me sleep. I will not take it any longer. Ambrose Blackthorn.\"",
     ),
-    discovery: "Library, the globe (hotspot lib_globe), once its hiding place is known; Crane may take it after a wrong report.",
+    discovery: "Library, the globe (hotspot lib_globe), once its hiding place is known; Marsh may take it after a wrong report.",
     characters: ["ambrose", "crane", "annabel", "byrne"],
     related: ["HE025", "HE026", "HE008"],
     boardable: true,
@@ -628,7 +628,7 @@ export const evidence: EvidenceDef[] = [
       "\"A QUIET HOUSE STAYS A HOUSE. YOU HAVE A COTTAGE AND GRANDCHILDREN. REMEMBER WHAT YOU DIDN'T SEE.\"",
       "Bridget found it in her coat pocket on the stand in the entrance hall, after she had spoken to you. The coats have hung there since 8:30, in the dark from 10:13 to 10:20 and in plain sight since. Anyone at dinner could have reached them.",
     ),
-    discovery: "Bridget Duffy hands it over, only if Crane has left it (question bridget_note).",
+    discovery: "Bridget Duffy hands it over, only if Marsh has left it (question bridget_note).",
     characters: ["bridget"],
     related: ["HE023"],
     boardable: true,
@@ -642,9 +642,9 @@ export const evidence: EvidenceDef[] = [
     inspection: P(
       "MASSACHUSETTS STATE POLICE, BERKSHIRE DETECTIVE UNIT. Supplementary report, case 18-B-3317. Det. Lt. J. Mahoney.",
       "A second attack on a witness took place at the Blackthorn Estate during the investigation of the death of Ambrose Blackthorn, while the guests were held. The witness was one of four people in the house who could speak to the Blackthorn Foundation's books or to Halloween 1998. The attacker struck from behind with a length of brass stair rod taken from the back stairs, and left by the service stair.",
-      "At the scene: a scrap of black satin ribbon with a silver edge, torn from a mask tie, caught on the stair rod's bracket. Of the masks worn at dinner (Wren's photographs), one is black with a silver edge: Desmond Crane's domino.",
+      "At the scene: a scrap of black satin ribbon with a silver edge, torn from a mask tie, caught on the stair rod's bracket. Of the masks worn at dinner (Wren's photographs), one is black with a silver edge: Lucian Marsh's domino.",
     ),
-    discovery: "Delivered by Lt. Mahoney after an attack (delivery mahoney_attack), only if Crane attacks.",
+    discovery: "Delivered by Lt. Mahoney after an attack (delivery mahoney_attack), only if Marsh attacks.",
     characters: ["mahoney", "crane"],
     related: ["HE014"],
     boardable: true,
@@ -660,7 +660,7 @@ export const evidence: EvidenceDef[] = [
       "One corner survived under the grate's edge, brown and brittle: part of a printed invoice heading, \"...ANE ADVISORY LLC, Pittsf...\", and \"...onservation consulting, Q2 20...\". Beside it, a scrap of lined paper with a few words in a small upright hand in blue ink: \"...never stopped. Not in 19...\"",
       "Someone burned Ambrose's file tonight, after the investigation began.",
     ),
-    discovery: "Greenhouse, the stove (hotspot gr_stove), only if Crane has burned the folder.",
+    discovery: "Greenhouse, the stove (hotspot gr_stove), only if Marsh has burned the folder.",
     characters: ["crane", "ambrose"],
     related: ["HE027", "HE031"],
     boardable: true,

@@ -13,7 +13,7 @@ import { alive, craneAt, craneFree } from "./rules";
  * service door, and the servants' stair from the study's hidden shelf or the
  * service corridor's painted-over door.
  *
- * People hotspots follow the characters' locations and moves. Desmond Crane
+ * People hotspots follow the characters' locations and moves. Lucian Marsh
  * is wherever his playbook has taken him (env "crane").
  */
 
@@ -72,8 +72,8 @@ const deskItem = (id: string, label: string, deliveryId: string, evidenceId: str
   interaction: { type: "delivery", deliveryId },
 });
 
-/** Desmond Crane, here while his playbook has him here. */
-const crane = (id: string, loc: string, rect: HotspotDef["rect"]): HotspotDef => person(id, "Desmond Crane", "crane", rect, { all: [craneAt(loc), { not: { flag: "crane_escaped" } }] });
+/** Lucian Marsh, here while his playbook has him here. */
+const crane = (id: string, loc: string, rect: HotspotDef["rect"]): HotspotDef => person(id, "Lucian Marsh", "crane", rect, { all: [craneAt(loc), { not: { flag: "crane_escaped" } }] });
 
 const CALLS = ["call_mahoney_board", "call_mahoney_officers", "call_mahoney_attack_killed", "call_mahoney_attack_stopped", "call_mahoney_escaped", "call_mahoney_caught", "call_mahoney_lab"];
 const DELIVERIES = ["lab_print", "mahoney_attack"];
@@ -280,7 +280,7 @@ export const locations: LocationDef[] = [
       ),
       {
         id: "co_overhear",
-        label: "Desmond Crane, on the phone",
+        label: "Lucian Marsh, on the phone",
         kind: "person",
         rect: { x: 86, y: 30, w: 11, h: 54 },
         visible: { all: [craneAt("conservatory"), { flag: "crane_called" }, { not: { flag: "heard_crane_call" } }, craneFree] },
@@ -671,8 +671,8 @@ export const locations: LocationDef[] = [
         "window",
         { x: 54, y: 10, w: 22, h: 36 },
         "The gatehouse lot",
-        "Through the window, the guests' cars nose-in along the wall in the rain. Desmond Crane's dark gray Lincoln is nearest the gate, backed in, ready to leave.",
-        { textAfter: [{ requires: { moved: "flee_gate" }, text: "Through the window, the guests' cars along the wall in the rain, and a dry rectangle on the gravel nearest the gate where Desmond Crane's Lincoln was." }] },
+        "Through the window, the guests' cars nose-in along the wall in the rain. Lucian Marsh's dark gray Lincoln is nearest the gate, backed in, ready to leave.",
+        { textAfter: [{ requires: { moved: "flee_gate" }, text: "Through the window, the guests' cars along the wall in the rain, and a dry rectangle on the gravel nearest the gate where Lucian Marsh's Lincoln was." }] },
       ),
       crane("gh_crane", "gatehouse", { x: 82, y: 30, w: 11, h: 54 }),
     ],

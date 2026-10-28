@@ -2,14 +2,14 @@
  * HALLOW001 The Thirteenth Guest: the reference checks.
  * Run through: npm run check:case -- HALLOW001
  *
- * 1. The content on its own (Crane holding still): the shared thorough and
+ * 1. The content on its own (Marsh holding still): the shared thorough and
  *    vague playthroughs, the report standard, the matcher, no leaks.
  * 2. The clock: starts at 10:32 PM, moves with actions, shown in the top bar.
- * 3. Crane: learns only what he could see or hear, is turned away by a
+ * 3. Marsh: learns only what he could see or hear, is turned away by a
  *    visible officer and caught by a quiet one, attacks at most once, never
  *    a third death, and every new investigation gets its own seed.
  * 4. A competent investigation can name him without another murder, before
- *    midnight; and across many seeds, whatever Crane does, the case can still
+ *    midnight; and across many seeds, whatever Marsh does, the case can still
  *    be solved and every ending is reachable.
  */
 import { characterLocation, interviewCandidates, newState, project, reduce } from "../src/game/engine/engine";
@@ -22,7 +22,7 @@ import type { CaseDefinition, GameAction, InvestigationState, Theory } from "../
 const RIGHT = { culprit: "crane", method: "stair", blackout: "switched", guest: "josie", annabel: "crane_concealed", why: "silence" };
 const KEY = ["HE029", "HE028", "HE004", "HE006", "HE031", "HE019", "HE023", "HE022", "HE017", "HE016"];
 
-/** Crane holds still: every learn and move removed, so the content is checked on its own. */
+/** Marsh holds still: every learn and move removed, so the content is checked on its own. */
 const still = (def: CaseDefinition): CaseDefinition => ({ ...def, adversary: def.adversary ? { ...def.adversary, learns: [], moves: [] } : undefined });
 
 export const HALLOW001_CHECK: SeriesCaseConfig = {
@@ -49,7 +49,7 @@ export const HALLOW001_CHECK: SeriesCaseConfig = {
     [{ why: "inheritance" }, "a report giving the inheritance as the motive"],
   ],
   unsupported: [
-    [["HE004", "HE006", "HE031", "HE019", "HE023", "HE017", "HE014"], "a report with nothing tying Crane to the stair or the cellar"],
+    [["HE004", "HE006", "HE031", "HE019", "HE023", "HE017", "HE014"], "a report with nothing tying Marsh to the stair or the cellar"],
     [["HE029", "HE028", "HE004", "HE006", "HE023", "HE017"], "a report with nothing showing why"],
     [["HE029", "HE028", "HE004", "HE006", "HE031", "HE023"], "a report that never shows who sat in the thirteenth place"],
   ],
@@ -84,7 +84,7 @@ export const HALLOW001_CHECK: SeriesCaseConfig = {
     ["mahoney", "Can you arrest him?", "mahoney_arrest"],
     ["wren", "Who won the World Series?", null],
   ],
-  secrets: ["Hollins Ridge", "Crane Advisory", "Annabel", "crane_fears", "flee_gate", "stone steps", "Ridgeline"],
+  secrets: ["Hollins Ridge", "Marsh Advisory", "Annabel", "crane_fears", "flee_gate", "stone steps", "Ridgeline"],
   closingSecrets: /crane_fears|flee_|attack_on_/,
 };
 
@@ -151,7 +151,7 @@ export function checkHALLOW001(def: CaseDefinition, problems: string[]) {
     expect(old.clock === undefined && old.seed === undefined && old.adversary === undefined, "a case without a clock or adversary carries them anyway");
   }
 
-  // 3a. Every new investigation gets its own seed; nothing of Crane's mind reaches the browser.
+  // 3a. Every new investigation gets its own seed; nothing of Marsh's mind reaches the browser.
   {
     const seeds = new Set(Array.from({ length: 12 }, () => newState(def, 0).seed));
     expect(seeds.size >= 10, "new investigations share a seed");
@@ -162,7 +162,7 @@ export function checkHALLOW001(def: CaseDefinition, problems: string[]) {
     for (const secret of ["crane_fears", "crane_knows", "Sees an investigator", "\"adversary\"", "\"seed\""]) expect(!view.includes(secret), `the view leaks ${secret}`);
   }
 
-  // 3b. Crane learns only what he could see or hear.
+  // 3b. Marsh learns only what he could see or hear.
   {
     const g = game("blind");
     g.run({ type: "dismissIntro" });
@@ -177,8 +177,8 @@ export function checkHALLOW001(def: CaseDefinition, problems: string[]) {
     g.hot("wc_panel");
     g.hot("wc_bins");
     const learned = g.s.adversary?.learned ?? [];
-    expect(!learned.length, `Crane learned ${learned.join(", ")} from things done in private`);
-    expect(!g.s.flags.some((f) => f.startsWith("crane_fears") || f === "crane_knows_passage"), "Crane fears someone he has no way to know about");
+    expect(!learned.length, `Marsh learned ${learned.join(", ")} from things done in private`);
+    expect(!g.s.flags.some((f) => f.startsWith("crane_fears") || f === "crane_knows_passage"), "Marsh fears someone he has no way to know about");
   }
 
   // 3c. The police: a visible officer turns him away; quiet officers catch him.
@@ -199,8 +199,8 @@ export function checkHALLOW001(def: CaseDefinition, problems: string[]) {
     const a = base();
     a.s.flags.push("police_gate");
     tick(a, 80);
-    expect(!a.s.adversary!.done.includes("flee_gate"), "Crane drove out past the officer at the gate");
-    expect(a.s.flags.includes("crane_escaped") && a.s.adversary!.done.includes("flee_lane"), "Crane never tried the unwatched lane with the gate watched");
+    expect(!a.s.adversary!.done.includes("flee_gate"), "Marsh drove out past the officer at the gate");
+    expect(a.s.flags.includes("crane_escaped") && a.s.adversary!.done.includes("flee_lane"), "Marsh never tried the unwatched lane with the gate watched");
     // Gate and lane watched: caught on the lane.
     const b = base();
     b.s.flags.push("police_gate", "police_lane");
@@ -209,14 +209,14 @@ export function checkHALLOW001(def: CaseDefinition, problems: string[]) {
     // Nothing watched: out of the gate.
     const c = base();
     tick(c, 80);
-    expect(c.s.flags.includes("crane_escaped") && c.s.adversary!.done.includes("flee_gate"), "Crane never drove out of an unwatched gate");
+    expect(c.s.flags.includes("crane_escaped") && c.s.adversary!.done.includes("flee_gate"), "Marsh never drove out of an unwatched gate");
     // Gate watched, no driver called: he cannot leave at all.
     const d = base();
     d.s.flags = d.s.flags.filter((f) => f !== "crane_called");
     d.s.flags.push("police_gate");
     d.s.adversary!.done.push("call_driver");
     tick(d, 80);
-    expect(!d.s.flags.includes("crane_escaped"), "Crane got away with the gate watched and no car waiting");
+    expect(!d.s.flags.includes("crane_escaped"), "Marsh got away with the gate watched and no car waiting");
   }
 
   // 3d. One attack at most; a quiet guard stops it; never a third death; nothing before 11:15 PM.
@@ -229,13 +229,13 @@ export function checkHALLOW001(def: CaseDefinition, problems: string[]) {
       g.s.clock! += 1;
       runAdversary(g.s, def);
     }
-    expect(!g.s.flags.includes("attack_made"), "Crane attacked before 11:15 PM");
+    expect(!g.s.flags.includes("attack_made"), "Marsh attacked before 11:15 PM");
     for (let i = 0; i < 400; i++) {
       g.s.clock! += 1;
       runAdversary(g.s, def);
     }
     const deaths = g.s.flags.filter((f) => f.startsWith("dead_"));
-    expect(g.s.flags.includes("attack_made"), "Crane never attacked anyone he feared, unwatched, after 11:15 PM");
+    expect(g.s.flags.includes("attack_made"), "Marsh never attacked anyone he feared, unwatched, after 11:15 PM");
     expect(deaths.length <= 1, `more than one witness died: ${deaths.join(", ")}`);
     const guarded = game("attack");
     guarded.s = { ...guarded.s, flags: [...guarded.s.flags, "casefile_read", "josie_found", "crane_fears_josie", "crane_knows_passage", "guard_josie", "police_gate", "police_lane"], clock: 23 * 60 + 20, location: "gatehouse" };
@@ -253,7 +253,7 @@ export function checkHALLOW001(def: CaseDefinition, problems: string[]) {
       present.s.clock! += 1;
       runAdversary(present.s, def);
     }
-    expect(!present.s.flags.includes("attack_on_josie"), "Crane attacked Josie with an investigator in the room");
+    expect(!present.s.flags.includes("attack_on_josie"), "Marsh attacked Josie with an investigator in the room");
   }
 
   // 4a. A competent investigation, before midnight, without another murder.
@@ -286,7 +286,7 @@ export function checkHALLOW001(def: CaseDefinition, problems: string[]) {
     for (const [a, b] of [["HE004", "HE021"], ["HE001", "HE004"], ["HE019", "HE031"], ["HE029", "HE005"]]) g.pin(a, b);
     expect(["HD02", "HD03", "HD09", "HD10"].every((d) => g.s.deductions.includes(d)), `competent run deductions: ${g.s.deductions.join(", ")} (${g.errors.slice(-3).join(" | ")})`);
     g.call("call_detain");
-    expect(g.s.flags.includes("crane_arrested") && g.s.flags.includes("arrested_before_midnight"), `Crane was not detained before midnight (clock ${project(def, g.s).clock}, flags ${g.s.flags.filter((f) => f.startsWith("crane") || f.startsWith("dead")).join(",")})`);
+    expect(g.s.flags.includes("crane_arrested") && g.s.flags.includes("arrested_before_midnight"), `Marsh was not detained before midnight (clock ${project(def, g.s).clock}, flags ${g.s.flags.filter((f) => f.startsWith("crane") || f.startsWith("dead")).join(",")})`);
     expect(!g.s.flags.some((f) => f.startsWith("dead_")), "someone died in the competent run");
     g.go("dining_room");
     g.ask("wren", "wren_thirteen");
@@ -299,7 +299,7 @@ export function checkHALLOW001(def: CaseDefinition, problems: string[]) {
     console.log(`competent run: detained at ${project(def, g.s).clock}, ${g.s.evidence.length} evidence, ending ${g.s.ending}`);
   }
 
-  // 4b. Whatever Crane does, the case can be solved; and every ending turns up.
+  // 4b. Whatever Marsh does, the case can be solved; and every ending turns up.
   {
     const endings = new Map<string, number>();
     const policies: Policy[] = [
@@ -313,10 +313,10 @@ export function checkHALLOW001(def: CaseDefinition, problems: string[]) {
         const s = sweep(def, `${p.name}-${n}`, p);
         const deaths = s.flags.filter((f) => f.startsWith("dead_"));
         expect(deaths.length <= 1, `${p.name}/${n}: ${deaths.length} witnesses died`);
-        expect(!(s.flags.includes("crane_escaped") && s.flags.includes("crane_arrested")), `${p.name}/${n}: Crane both escaped and was arrested`);
+        expect(!(s.flags.includes("crane_escaped") && s.flags.includes("crane_arrested")), `${p.name}/${n}: Marsh both escaped and was arrested`);
         if (s.status !== "closed") problems.push(`${p.name}/${n}: the right report was not accepted (${s.report.submissions.at(-1)?.note ?? "never filed"})`);
         endings.set(s.ending ?? "none", (endings.get(s.ending ?? "none") ?? 0) + 1);
-        // Losing endings: Crane got away, or someone else died. Everything else is a solve.
+        // Losing endings: Marsh got away, or someone else died. Everything else is a solve.
         const losing = /^(empty_chair|second_body_)/.test(s.ending ?? "");
         expect(losing === s.flags.includes("case_lost"), `${p.name}/${n}: ending ${s.ending} counted ${s.flags.includes("case_lost") ? "as a loss" : "as a solve"}`);
         expect(losing === Boolean(project(def, s).closure?.lost), `${p.name}/${n}: the closing screen gets the loss wrong for ${s.ending}`);
@@ -332,7 +332,7 @@ export function checkHALLOW001(def: CaseDefinition, problems: string[]) {
 
 /**
  * A methodical investigator who goes everywhere and asks everyone everything,
- * with Crane acting for real, under a policy for the police. Files the right
+ * with Marsh acting for real, under a policy for the police. Files the right
  * report with whatever was found.
  */
 type Policy = { name: string; first: string[]; officers: string[]; cancel: boolean; detain: boolean };

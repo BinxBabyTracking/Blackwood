@@ -19,7 +19,7 @@ import { alive, craneFree, guarded } from "./rules";
  * HALLOW001 story content. Times follow docs/HALLOW001-timeline.md exactly.
  *
  * The clock starts at 10:32 PM and moves with what the investigators do
- * (index.ts). Desmond Crane acts on his own (adversary.ts); these events are
+ * (index.ts). Lucian Marsh acts on his own (adversary.ts); these events are
  * how the house reacts to what he does and to what the investigators ask the
  * police to do. Lt. Mahoney's two officers can each be posted once.
  */
@@ -129,7 +129,7 @@ export const statements: StatementDef[] = [
     audio: "tape.felix",
     transcript: [
       { speakerId: "reyes", speaker: "Officer Reyes", text: "Mr. Blackthorn, I'm sorry about your father. Where were you when the lights went out?" },
-      { speakerId: "felix", speaker: "Felix Blackthorn", text: "At the table. Everybody was. Well, nearly. Desmond had gone to take a call, my mother had gone somewhere, Dr. Penrose too. Dad had gone up." },
+      { speakerId: "felix", speaker: "Felix Blackthorn", text: "At the table. Everybody was. Well, nearly. Lucian had gone to take a call, my mother had gone somewhere, Dr. Penrose too. Dad had gone up." },
       { speakerId: "reyes", speaker: "Officer Reyes", text: "And the woman in the corridor?" },
       { speakerId: "felix", speaker: "Felix Blackthorn", text: "I don't know who she is. She was at dinner, at the bottom of the table, and nobody would say who she was. I thought she was some kind of Halloween act Dad had hired." },
       { speakerId: "reyes", speaker: "Officer Reyes", text: "Did you and your father argue tonight?" },
@@ -182,8 +182,8 @@ export const calls: CallDef[] = [
     title: "Call from Det. Lt. Mahoney",
     lines: [
       "Mahoney. Your instinct was right. The officer you had me put on that witness was there when it happened.",
-      "Desmond Crane came at them on the back stairs with a brass stair rod. The officer had him on the floor before he could swing twice. The witness is shaken and bruised. Alive.",
-      "Crane's in cuffs at the gatehouse and he's asked for a lawyer. I'm sending you the report. Finish the file. I want it airtight.",
+      "Lucian Marsh came at them on the back stairs with a brass stair rod. The officer had him on the floor before he could swing twice. The witness is shaken and bruised. Alive.",
+      "Marsh's in cuffs at the gatehouse and he's asked for a lawyer. I'm sending you the report. Finish the file. I want it airtight.",
     ],
   },
   {
@@ -191,7 +191,7 @@ export const calls: CallDef[] = [
     from: "mahoney",
     title: "Call from Det. Lt. Mahoney",
     lines: [
-      "Mahoney. Desmond Crane is gone. Nobody saw him go.",
+      "Mahoney. Lucian Marsh is gone. Nobody saw him go.",
       "I've got a description out to every cruiser in the county, but in this fog he's got a head start.",
       "If he's the one, I need you to be able to prove it without him. Finish it.",
     ],
@@ -202,7 +202,7 @@ export const calls: CallDef[] = [
     title: "Call from Det. Lt. Mahoney",
     lines: [
       "Mahoney. The officer you put on the back lane just earned her pay.",
-      "Desmond Crane came through the maze and out the lane gate in the rain, toward a car with its lights off. He's in cuffs. The driver says he was hired for midnight and doesn't know anything else.",
+      "Lucian Marsh came through the maze and out the lane gate in the rain, toward a car with its lights off. He's in cuffs. The driver says he was hired for midnight and doesn't know anything else.",
       "A man doesn't run through a hedge maze in October for nothing. Make the case.",
     ],
   },
@@ -315,7 +315,7 @@ export const outgoingCalls: OutgoingCallDef[] = [
   {
     id: "call_detain",
     to: "mahoney",
-    label: "Ask Lt. Mahoney to detain Desmond Crane",
+    label: "Ask Lt. Mahoney to detain Lucian Marsh",
     available: { all: [{ deduction: "HD09" }, { deduction: "HD10" }, craneFree] },
     done: { flag: "crane_arrested" },
     lines: [
@@ -326,7 +326,7 @@ export const outgoingCalls: OutgoingCallDef[] = [
       { setFlag: "crane_arrested" },
       { when: { not: { clockAt: "00:00" } }, then: [{ setFlag: "arrested_before_midnight" }] },
       { setEnv: "crane", to: "gatehouse" },
-      note("crane_detained", "Desmond Crane is detained", "At your request Lt. Mahoney has had Desmond Crane detained and taken to the gatehouse.", "mahoney", true),
+      note("crane_detained", "Lucian Marsh is detained", "At your request Lt. Mahoney has had Lucian Marsh detained and taken to the gatehouse.", "mahoney", true),
     ],
   },
   {
@@ -437,7 +437,7 @@ export const events: ReactiveEventDef[] = [
     ],
     notebook: {
       learned: [
-        { text: "Desmond Crane attacked a witness on the back stairs. The officer you had posted with them stopped him, and he is under arrest." },
+        { text: "Lucian Marsh attacked a witness on the back stairs. The officer you had posted with them stopped him, and he is under arrest." },
       ],
       call: "call_mahoney_attack_stopped",
       delivery: "mahoney_attack",
@@ -446,12 +446,12 @@ export const events: ReactiveEventDef[] = [
   }),
   ev({
     id: "RE05",
-    title: "Desmond Crane is gone",
+    title: "Lucian Marsh is gone",
     characterId: "crane",
     requires: { flag: "crane_escaped" },
     complete: { callAnswered: "call_mahoney_escaped" },
-    onAvailable: [{ incomingCall: "call_mahoney_escaped" }, { message: "Lt. Mahoney is calling. Desmond Crane cannot be found." }],
-    notebook: { learned: [{ text: "Desmond Crane has left the estate. Nobody saw him go." }], call: "call_mahoney_escaped" },
+    onAvailable: [{ incomingCall: "call_mahoney_escaped" }, { message: "Lt. Mahoney is calling. Lucian Marsh cannot be found." }],
+    notebook: { learned: [{ text: "Lucian Marsh has left the estate. Nobody saw him go." }], call: "call_mahoney_escaped" },
   }),
   ev({
     id: "RE06",
@@ -460,7 +460,7 @@ export const events: ReactiveEventDef[] = [
     requires: { flag: "crane_caught_fleeing" },
     complete: { callAnswered: "call_mahoney_caught" },
     onAvailable: [{ incomingCall: "call_mahoney_caught" }, { message: "Lt. Mahoney is calling about the back lane." }],
-    notebook: { learned: [{ text: "Desmond Crane was caught by the officer watching the back lane, running for a waiting car. He is under arrest." }], call: "call_mahoney_caught" },
+    notebook: { learned: [{ text: "Lucian Marsh was caught by the officer watching the back lane, running for a waiting car. He is under arrest." }], call: "call_mahoney_caught" },
   }),
   ev({
     id: "RE07",

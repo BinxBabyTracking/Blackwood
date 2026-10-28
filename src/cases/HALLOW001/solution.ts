@@ -8,7 +8,7 @@ import { dead, WITNESSES } from "./rules";
  * deduction) or closes the case. Deductions follow docs/HALLOW001-timeline.md.
  *
  * Every deduction has more than one pair, so different lines of reasoning get
- * there, and none depends only on evidence Desmond Crane can destroy (HE027,
+ * there, and none depends only on evidence Lucian Marsh can destroy (HE027,
  * HE035) or create (HE036, HE037, HE038).
  */
 
@@ -62,7 +62,7 @@ export const deductions: DeductionDef[] = [
     id: "HD06",
     code: "HD06",
     title: "Annabel Found the Foundation's Secret",
-    text: "In October 1998 Annabel Lisle, working in the foundation's archive, found that it had bought three pieces of land from companies run by its own treasurer, Desmond Crane, at nearly three to more than four times their appraised value, and that the books had been changed to hide it.",
+    text: "In October 1998 Annabel Lisle, working in the foundation's archive, found that it had bought three pieces of land from companies run by its own treasurer, Lucian Marsh, at nearly three to more than four times their appraised value, and that the books had been changed to hide it.",
     connections: [["HE018", "HE019"], ["HE019", "HE020"], ["annabel", "HE019"]],
   },
   {
@@ -82,22 +82,22 @@ export const deductions: DeductionDef[] = [
   {
     id: "HD09",
     code: "HD09",
-    title: "Crane Had Reason to Silence Ambrose",
-    text: "Ambrose meant to give his attorney the foundation's records and a statement about a death in 1998 on November 1, and had told one trustee he would. The records he meant to hand over show Desmond Crane profiting from the foundation he kept the books for.",
+    title: "Marsh Had Reason to Silence Ambrose",
+    text: "Ambrose meant to give his attorney the foundation's records and a statement about a death in 1998 on November 1, and had told one trustee he would. The records he meant to hand over show Lucian Marsh profiting from the foundation he kept the books for.",
     connections: [["HE027", "HE031"], ["HE031", "HE038"], ["HE019", "HE031"], ["HE031", "HE035"], ["HE020", "HE031"]],
   },
   {
     id: "HD10",
     code: "HD10",
-    title: "Crane Could Reach the Study in the Dark",
-    text: "Desmond Crane signed out the key to the stair's sealed lower door at 7:10 PM and never signed it back. That door opens on the servants' stair, which runs up behind the study shelves and was used tonight.",
+    title: "Marsh Could Reach the Study in the Dark",
+    text: "Lucian Marsh signed out the key to the stair's sealed lower door at 7:10 PM and never signed it back. That door opens on the servants' stair, which runs up behind the study shelves and was used tonight.",
     connections: [["HE029", "HE005"], ["HE029", "HE028"], ["HE009", "HE029"], ["HE029", "HE021"]],
   },
   {
     id: "HD11",
     code: "HD11",
-    title: "Crane Killed Ambrose Blackthorn",
-    text: "Desmond Crane pulled the main switch at 10:13, went up the servants' stair in the dark, came through the hinged bookcase into a study Ambrose had bolted against him, and struck him with the brass griffin from the shelf. He went back down the stair, out through the cellar onto the terrace, and in again through the conservatory at 10:19.",
+    title: "Marsh Killed Ambrose Blackthorn",
+    text: "Lucian Marsh pulled the main switch at 10:13, went up the servants' stair in the dark, came through the hinged bookcase into a study Ambrose had bolted against him, and struck him with the brass griffin from the shelf. He went back down the stair, out through the cellar onto the terrace, and in again through the conservatory at 10:19.",
     connections: [["crane", "HE002"], ["crane", "HE005"], ["crane", "HE003"]],
     requires: { all: made("HD01", "HD03", "HD09", "HD10") },
   },
@@ -112,8 +112,8 @@ export const deductions: DeductionDef[] = [
   {
     id: "HD13",
     code: "HD13",
-    title: "Crane Caused Annabel's Death",
-    text: "Annabel Lisle confronted Desmond Crane with the land records and died at the foot of the servants' stair the same night. By Crane's own account to Ambrose, she fell. Her death was hidden, with Ambrose's help, and for twenty years the foundation Crane was robbing called her a runaway.",
+    title: "Marsh Caused Annabel's Death",
+    text: "Annabel Lisle confronted Lucian Marsh with the land records and died at the foot of the servants' stair the same night. By Marsh's own account to Ambrose, she fell. Her death was hidden, with Ambrose's help, and for twenty years the foundation Marsh was robbing called her a runaway.",
     connections: [["HE023", "HE035"], ["HE026", "HE035"], ["crane", "HE035"]],
     requires: { all: made("HD06", "HD07") },
   },
@@ -126,7 +126,7 @@ export const conclusionChoices: CaseDefinition["conclusionChoices"] = [
     title: "The Killer",
     question: "Who killed Ambrose Blackthorn?",
     options: [
-      { id: "crane", label: "Desmond Crane" },
+      { id: "crane", label: "Lucian Marsh" },
       { id: "felix", label: "Felix Blackthorn" },
       { id: "constance", label: "Constance Blackthorn" },
       { id: "josie", label: "Josie Lisle", requires: josieKnown },
@@ -179,7 +179,7 @@ export const conclusionChoices: CaseDefinition["conclusionChoices"] = [
     title: "Halloween 1998",
     question: "What happened in this house on Halloween 1998?",
     options: [
-      { id: "crane_concealed", label: "Annabel Lisle died at the estate after confronting Desmond Crane, and her death was hidden with Ambrose's help", requires: knows1998 },
+      { id: "crane_concealed", label: "Annabel Lisle died at the estate after confronting Lucian Marsh, and her death was hidden with Ambrose's help", requires: knows1998 },
       { id: "ran", label: "Annabel Lisle ran away from home", requires: knows1998 },
       { id: "ambrose", label: "Ambrose Blackthorn killed Annabel Lisle", requires: knows1998 },
       { id: "open_accident", label: "Annabel Lisle died in an accident nobody concealed", requires: knows1998 },
@@ -202,11 +202,11 @@ export const conclusionChoices: CaseDefinition["conclusionChoices"] = [
 ];
 
 /*
- * Canonical solution: Desmond Crane killed Ambrose Blackthorn in the study,
+ * Canonical solution: Lucian Marsh killed Ambrose Blackthorn in the study,
  * coming and going by the servants' stair, after pulling the main switch, to
  * stop him exposing the foundation thefts and Annabel Lisle's death in 1998.
  * The veiled woman was Josie Lisle. Annabel died at the estate after
- * confronting Crane, and Ambrose helped hide it.
+ * confronting Marsh, and Ambrose helped hide it.
  */
 export const solution: CaseDefinition["solution"] = {
   answers: {
@@ -278,40 +278,40 @@ export const solution: CaseDefinition["solution"] = {
     reconstruction: [
       {
         heading: "Ridgeline Road",
-        body: "In 1997 the Blackthorn Foundation bought thirty-one acres on Ridgeline Road from Hollins Ridge Associates for $410,000. It was appraised at $95,000. Hollins Ridge Associates was Desmond Crane, the foundation's treasurer. Elm Hollow and the Patten farm went the same way. Crane had Harriet Lowell enter each at the price paid, citing a second appraiser who never existed, and Ambrose signed what Crane put in front of him.",
+        body: "In 1997 the Blackthorn Foundation bought thirty-one acres on Ridgeline Road from Hollins Ridge Associates for $410,000. It was appraised at $95,000. Hollins Ridge Associates was Lucian Marsh, the foundation's treasurer. Elm Hollow and the Patten farm went the same way. Marsh had Harriet Lowell enter each at the price paid, citing a second appraiser who never existed, and Ambrose signed what Marsh put in front of him.",
       },
       {
         heading: "Halloween 1998",
-        body: "Annabel Lisle, seventeen, was the cleverest of the archive volunteers. In October she found the two figures for Ridgeline Road, and Harriet told her, frightened, that the books had been changed. On Halloween, at 8:15, she found Crane's own letters in the archive. At 8:40 she confronted him at the library door, and Bridget Duffy heard him tell her it was not her business. At 8:47 she went through the library's service door into the passage below the house, and Crane followed her.",
+        body: "Annabel Lisle, seventeen, was the cleverest of the archive volunteers. In October she found the two figures for Ridgeline Road, and Harriet told her, frightened, that the books had been changed. On Halloween, at 8:15, she found Marsh's own letters in the archive. At 8:40 she confronted him at the library door, and Bridget Duffy heard him tell her it was not her business. At 8:47 she went through the library's service door into the passage below the house, and Marsh followed her.",
       },
       {
         heading: "The stone steps",
-        body: "At the foot of the servants' stair, at about 8:51, Crane caught her by the arm and shoved her. She fell backward down the four stone steps and struck her head on the edge of the last one. She died there. Crane carried her into the old coal room and took her papers. At half past nine Ambrose found him in the passage, shaking, and Crane told him she had fallen. After forty minutes alone in his study, Ambrose agreed to help him.",
+        body: "At the foot of the servants' stair, at about 8:51, Marsh caught her by the arm and shoved her. She fell backward down the four stone steps and struck her head on the edge of the last one. She died there. Marsh carried her into the old coal room and took her papers. At half past nine Ambrose found him in the passage, shaking, and Marsh told him she had fallen. After forty minutes alone in his study, Ambrose agreed to help him.",
       },
       {
         heading: "Twenty years",
-        body: "At 11:20 that night Crane backed his Volvo to the carriage house with the lights off, and Annabel was put into the drainage chamber under the inspection pit. On Wednesday the masons bricked it over \"for safety.\" Beatrice Holloway told the police the girl had talked about leaving home, and the case was filed as a runaway. Ambrose closed the back stair in 1999 and kept Crane's note telling him to burn it. Crane kept the books. From 2014 he paid himself $1,380,000 more, as Crane Advisory, for advice nobody received.",
+        body: "At 11:20 that night Marsh backed his Volvo to the carriage house with the lights off, and Annabel was put into the drainage chamber under the inspection pit. On Wednesday the masons bricked it over \"for safety.\" Beatrice Holloway told the police the girl had talked about leaving home, and the case was filed as a runaway. Ambrose closed the back stair in 1999 and kept Marsh's note telling him to burn it. Marsh kept the books. From 2014 he paid himself $1,380,000 more, as Marsh Advisory, for advice nobody received.",
       },
       {
         heading: "The thirteenth place",
-        body: "In October 2018 Ambrose learned that the carriage house renovation would open the chamber on November 5, and that Crane had never stopped stealing. He invited ten people who had been at the 1998 party, with his attorney to witness and a historian for the house, and wrote separately to Josie Lisle, Annabel's sister, to come as she liked and take the thirteenth place. On October 22 he told Crane he would tell the truth on Halloween and give his records to Everett Byrne on November 1. Two days later Crane had the cellar's old main breaker replaced with a lever anyone could throw.",
+        body: "In October 2018 Ambrose learned that the carriage house renovation would open the chamber on November 5, and that Marsh had never stopped stealing. He invited ten people who had been at the 1998 party, with his attorney to witness and a historian for the house, and wrote separately to Josie Lisle, Annabel's sister, to come as she liked and take the thirteenth place. On October 22 he told Marsh he would tell the truth on Halloween and give his records to Everett Byrne on November 1. Two days later Marsh had the cellar's old main breaker replaced with a lever anyone could throw.",
       },
       {
         heading: "7:10 to 10:13 PM",
-        body: "At 7:10 Crane signed the sealed lower stair door key out of Oscar Wren's key book. At 7:15 he took the four brass screws out of the hinged bookcase in the study, oiled its hinge, cut the paint around the door at the foot of the stair, and cut the padlock on the lane gate past the maze, in case he needed another way out. At 10:08 he left the table for \"a call from Boston\" and went down to the cellar. At 10:11 Ambrose went up to his study and bolted the door behind him. At 10:13 Crane pulled the switch, and the house went dark.",
+        body: "At 7:10 Marsh signed the sealed lower stair door key out of Oscar Wren's key book. At 7:15 he took the four brass screws out of the hinged bookcase in the study, oiled its hinge, cut the paint around the door at the foot of the stair, and cut the padlock on the lane gate past the maze, in case he needed another way out. At 10:08 he left the table for \"a call from Boston\" and went down to the cellar. At 10:11 Ambrose went up to his study and bolted the door behind him. At 10:13 Marsh pulled the switch, and the house went dark.",
       },
       {
         heading: "10:15 PM",
-        body: "By penlight Crane went up the servants' stair, pressed the catch, and swung the fourth bookcase into the study. Ambrose turned from his desk toward the shelves. Crane took the brass griffin from the shelf beside the hidden door and struck him once. At the bolted door Josie Lisle, who had come at Ambrose's invitation, heard him cry out and fall, and screamed. Crane took the folder of Crane Advisory invoices from the desk and went back down the stair.",
+        body: "By penlight Marsh went up the servants' stair, pressed the catch, and swung the fourth bookcase into the study. Ambrose turned from his desk toward the shelves. Marsh took the brass griffin from the shelf beside the hidden door and struck him once. At the bolted door Josie Lisle, who had come at Ambrose's invitation, heard him cry out and fall, and screamed. Marsh took the folder of Marsh Advisory invoices from the desk and went back down the stair.",
       },
       {
         heading: "10:16 to 10:20 PM",
-        body: "Felix Blackthorn and Oscar Wren ran up the main stair and saw a veiled woman vanish into the guest wing. Below, Crane pushed the folder in behind the port bins and went out by the cellar's areaway door onto the terrace, as Amos Duffy came down the kitchen stair to find the switch. At 10:19 Crane came in through the conservatory's garden door, wet, past Dr. Penrose and Constance Blackthorn, who were there for reasons of their own. \"Did the lights go?\" At 10:20 Amos put the switch back up.",
+        body: "Felix Blackthorn and Oscar Wren ran up the main stair and saw a veiled woman vanish into the guest wing. Below, Marsh pushed the folder in behind the port bins and went out by the cellar's areaway door onto the terrace, as Amos Duffy came down the kitchen stair to find the switch. At 10:19 Marsh came in through the conservatory's garden door, wet, past Dr. Penrose and Constance Blackthorn, who were there for reasons of their own. \"Did the lights go?\" At 10:20 Amos put the switch back up.",
       },
     ],
     bennett: [
       "Mahoney. Your report's with the DA, and it holds.",
-      "Desmond Crane is charged with the murder of Ambrose Blackthorn. On what you found under the carriage house and in that globe, the DA's looking at manslaughter for Annabel Lisle too, and the Attorney General has the foundation's books.",
+      "Lucian Marsh is charged with the murder of Ambrose Blackthorn. On what you found under the carriage house and in that globe, the DA's looking at manslaughter for Annabel Lisle too, and the Attorney General has the foundation's books.",
       "Josie Lisle asked me to tell you something. She said nobody has said her sister's name out loud in that house for twenty years, and tonight everybody did.",
       "Go home and sleep. It's Halloween for another few hours somewhere.",
     ],
@@ -324,11 +324,11 @@ export const solution: CaseDefinition["solution"] = {
       loss: true,
       when: { all: [{ flag: "crane_escaped" }, { flag: "second_murder" }] },
       accepted:
-        "Your findings have been accepted. The agency has forwarded your report to Det. Lt. Joan Mahoney, Massachusetts State Police. A warrant has been issued for Desmond Crane for two murders. He left the estate during the investigation and has not been found.",
+        "Your findings have been accepted. The agency has forwarded your report to Det. Lt. Joan Mahoney, Massachusetts State Police. A warrant has been issued for Lucian Marsh for two murders. He left the estate during the investigation and has not been found.",
       reconstruction: [
         {
           heading: "The empty chair",
-          body: "Desmond Crane did not only watch. While the investigation went on in other rooms he silenced a witness on the back stairs, and later, when the house knew too much about him, he walked out of it. Nobody saw him go. You know what he did, twice over. You could not keep him in the house long enough to prove it to his face.",
+          body: "Lucian Marsh did not only watch. While the investigation went on in other rooms he silenced a witness on the back stairs, and later, when the house knew too much about him, he walked out of it. Nobody saw him go. You know what he did, twice over. You could not keep him in the house long enough to prove it to his face.",
         },
       ],
       bennett: [
@@ -344,16 +344,16 @@ export const solution: CaseDefinition["solution"] = {
       loss: true,
       when: { flag: "crane_escaped" },
       accepted:
-        "Your findings have been accepted. The agency has forwarded your report to Det. Lt. Joan Mahoney, Massachusetts State Police. A warrant has been issued for Desmond Crane, who left the estate during the investigation and has not been found.",
+        "Your findings have been accepted. The agency has forwarded your report to Det. Lt. Joan Mahoney, Massachusetts State Police. A warrant has been issued for Lucian Marsh, who left the estate during the investigation and has not been found.",
       reconstruction: [
         {
           heading: "The empty chair",
-          body: "Somewhere between the questions, Desmond Crane decided the house knew too much about him and walked out of it. Nobody saw him go. By the time anyone looked, his place at the table was empty for the second time that night, and the road was empty with it. You know what he did. You could not keep him in the house long enough to prove it to his face.",
+          body: "Somewhere between the questions, Lucian Marsh decided the house knew too much about him and walked out of it. Nobody saw him go. By the time anyone looked, his place at the table was empty for the second time that night, and the road was empty with it. You know what he did. You could not keep him in the house long enough to prove it to his face.",
         },
       ],
       bennett: [
         "Mahoney. Your report holds. The warrant's signed: murder, for Ambrose Blackthorn, and the DA wants to talk about Annabel Lisle.",
-        "Crane's car turned up at the train station in Pittsfield at two in the morning. That's all we have. He's sixty-one with a lot of money and a head start.",
+        "Marsh's car turned up at the train station in Pittsfield at two in the morning. That's all we have. He's sixty-one with a lot of money and a head start.",
         "We'll find him. Men like that think they're the only clever person in the room. They get careless.",
         "You did the hard part. Josie Lisle knows what happened to her sister now. That's not nothing.",
       ],
@@ -365,15 +365,15 @@ export const solution: CaseDefinition["solution"] = {
         loss: true,
         when: dead(w.id),
         accepted:
-          "Your findings have been accepted. The agency has forwarded your report to Det. Lt. Joan Mahoney, Massachusetts State Police. Desmond Crane is charged with two murders.",
+          "Your findings have been accepted. The agency has forwarded your report to Det. Lt. Joan Mahoney, Massachusetts State Police. Lucian Marsh is charged with two murders.",
         reconstruction: [
           {
             heading: "The back stairs",
-            body: `While the house was held and the investigation went on in other rooms, Desmond Crane decided ${w.name} knew too much. He found them alone near the back stairs and struck them from behind with a brass stair rod. Nobody was watching them. Nobody could have been everywhere. The case was solved anyway, from what was already found, but two people are dead who were alive at dinner.`,
+            body: `While the house was held and the investigation went on in other rooms, Lucian Marsh decided ${w.name} knew too much. He found them alone near the back stairs and struck them from behind with a brass stair rod. Nobody was watching them. Nobody could have been everywhere. The case was solved anyway, from what was already found, but two people are dead who were alive at dinner.`,
           },
         ],
         bennett: [
-          "Mahoney. Your report holds. Desmond Crane is charged with the murder of Ambrose Blackthorn, and with the murder of " + w.name + ".",
+          "Mahoney. Your report holds. Lucian Marsh is charged with the murder of Ambrose Blackthorn, and with the murder of " + w.name + ".",
           "I keep going over it. Two officers, four witnesses, one man who wanted one of them quiet. There's no shame in it. There's no comfort in it either.",
           "The DA's looking at Annabel Lisle too. Josie Lisle knows what happened to her sister now.",
           "Get some sleep. You'll think about this one for a while. So will I.",
@@ -385,15 +385,15 @@ export const solution: CaseDefinition["solution"] = {
       title: "The Last Witness",
       when: { flag: "attack_interrupted" },
       accepted:
-        "Your findings have been accepted. The agency has forwarded your report to Det. Lt. Joan Mahoney, Massachusetts State Police. Desmond Crane was arrested during an attempt on a witness's life that your officer prevented.",
+        "Your findings have been accepted. The agency has forwarded your report to Det. Lt. Joan Mahoney, Massachusetts State Police. Lucian Marsh was arrested during an attempt on a witness's life that your officer prevented.",
       reconstruction: [
         {
           heading: "The officer on the stair",
-          body: "Desmond Crane decided one of the witnesses had to be silenced, and went after them on the back stairs with a brass stair rod. He did not know an officer had been quietly keeping an eye on them, because you had asked for one, and asked for it quietly. He was on the floor in handcuffs before he could swing twice.",
+          body: "Lucian Marsh decided one of the witnesses had to be silenced, and went after them on the back stairs with a brass stair rod. He did not know an officer had been quietly keeping an eye on them, because you had asked for one, and asked for it quietly. He was on the floor in handcuffs before he could swing twice.",
         },
       ],
       bennett: [
-        "Mahoney. Your report holds. Desmond Crane is charged with the murder of Ambrose Blackthorn and the attempted murder of a witness. My officer's still talking about it.",
+        "Mahoney. Your report holds. Lucian Marsh is charged with the murder of Ambrose Blackthorn and the attempted murder of a witness. My officer's still talking about it.",
         "You put an officer where nobody would think to look for one. That's the whole job, some nights.",
         "The DA's looking at Annabel Lisle too. Josie Lisle knows what happened to her sister now.",
         "Go home. That one's alive because of you.",
@@ -404,11 +404,11 @@ export const solution: CaseDefinition["solution"] = {
       title: "The Truth Before Midnight",
       when: { any: [{ flag: "arrested_before_midnight" }, { not: { clockAt: "00:00" } }] },
       accepted:
-        "Your findings have been accepted. The agency has forwarded your report to Det. Lt. Joan Mahoney, Massachusetts State Police. Desmond Crane was in custody before midnight, and nobody else was hurt.",
+        "Your findings have been accepted. The agency has forwarded your report to Det. Lt. Joan Mahoney, Massachusetts State Police. Lucian Marsh was in custody before midnight, and nobody else was hurt.",
       reconstruction: [
         {
           heading: "Before midnight",
-          body: "Desmond Crane spent the investigation among the other guests, watching, choosing how to save himself. He ran out of time before he could. He was in custody before midnight, before the lanterns went out into the maze, before anyone else in that house was hurt. Ambrose Blackthorn's thirteenth guest heard her sister's name said aloud in his dining room at last, by the police.",
+          body: "Lucian Marsh spent the investigation among the other guests, watching, choosing how to save himself. He ran out of time before he could. He was in custody before midnight, before the lanterns went out into the maze, before anyone else in that house was hurt. Ambrose Blackthorn's thirteenth guest heard her sister's name said aloud in his dining room at last, by the police.",
         },
       ],
     },
@@ -417,11 +417,11 @@ export const solution: CaseDefinition["solution"] = {
       title: "The Long Night",
       when: { always: true },
       accepted:
-        "Your findings have been accepted. The agency has forwarded your report to Det. Lt. Joan Mahoney, Massachusetts State Police. Desmond Crane is in custody, and nobody else was hurt.",
+        "Your findings have been accepted. The agency has forwarded your report to Det. Lt. Joan Mahoney, Massachusetts State Police. Lucian Marsh is in custody, and nobody else was hurt.",
       reconstruction: [
         {
           heading: "After midnight",
-          body: "It took the whole of Halloween night and some of the morning after. Midnight came and went with Desmond Crane still free in the house, still watching, and the witnesses still within his reach. Nobody else was hurt. When he was finally taken out to the cruiser, the rain had stopped and the lanterns were guttering out in the greenhouse.",
+          body: "It took the whole of Halloween night and some of the morning after. Midnight came and went with Lucian Marsh still free in the house, still watching, and the witnesses still within his reach. Nobody else was hurt. When he was finally taken out to the cruiser, the rain had stopped and the lanterns were guttering out in the greenhouse.",
         },
       ],
     },
