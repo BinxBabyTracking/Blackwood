@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CatalogCase } from "@/lib/types";
 import { DIFFICULTY_LABELS, STATUS_LABELS } from "@/lib/format";
-import { CaseCard } from "./case-card";
+import { CaseCard, FeaturedCaseCard } from "./case-card";
 
 type Sort = "newest" | "shortest" | "longest" | "difficulty";
 
@@ -87,12 +87,15 @@ export function CatalogBrowser({
   hrefBase,
   leaderboards = false,
   mine,
+  featured = [],
 }: {
   cases: CatalogCase[];
   hrefBase: string;
   leaderboards?: boolean;
   /** How each case stands for the signed-in investigator (see viewer-cases.ts). */
   mine?: Record<string, "available" | "open" | "solved">;
+  /** Seasonal cases in their month, chosen on the server: shown full width above the list, whatever the filters. */
+  featured?: string[];
 }) {
   const [filters, setFilters] = useState<Filters>(initial);
   const [sort, setSort] = useState<Sort>("newest");
@@ -128,15 +131,26 @@ export function CatalogBrowser({
   const visible = useMemo(
     () =>
       cases
-        .filter((c) => matches(c, filters))
+        .filter((c) => !featured.includes(c.id) && matches(c, filters))
         .sort((a, b) => shelf(a) - shelf(b) || Number(b.is_introductory) - Number(a.is_introductory) || sorters[sort](a, b)),
-    [cases, filters, sort],
+    [cases, filters, sort, featured],
   );
+  const lead = cases.filter((c) => featured.includes(c.id));
   const filtered = JSON.stringify(filters) !== JSON.stringify(initial);
   const active = (Object.keys(initial) as (keyof Filters)[]).filter((k) => filters[k] !== initial[k]).length + (sort !== "newest" ? 1 : 0);
 
   return (
     <div>
+      {lead.map((c) => (
+        <div key={c.id} className="mb-8">
+          <FeaturedCaseCard
+            c={c}
+            href={`${hrefBase}/${c.id}`}
+            leaderboard={leaderboards && !c.is_preview && (c.status === "available" || Boolean(c.early_access_open))}
+            mine={mine?.[c.id]}
+          />
+        </div>
+      ))}
       <div className="border-y border-rule">
         <button
           type="button"

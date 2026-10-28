@@ -78,3 +78,43 @@ export function CaseCard({ c, href, leaderboard = false, mine }: { c: CatalogCas
     </article>
   );
 }
+
+/**
+ * A seasonal case in its month (HALLOW001 in October), shown full width at the
+ * top of the case list: a large cover beside the details.
+ */
+export function FeaturedCaseCard({ c, href, leaderboard = false, mine }: { c: CatalogCase; href: string; leaderboard?: boolean; mine?: "available" | "open" | "solved" }) {
+  return (
+    <article className="group relative grid overflow-hidden rounded-[var(--radius-file)] border border-brass/50 bg-card transition-colors duration-300 hover:border-brass md:grid-cols-[3fr_2fr]">
+      <div className="relative aspect-[3/2] md:aspect-auto md:min-h-[22rem]">
+        <CaseCover c={c} variant="hero" priority className="md:absolute md:inset-0" />
+        <div className="absolute left-4 top-4">
+          <span className="rounded-[2px] bg-brass px-2.5 py-1 font-mono text-xs font-semibold tracking-[0.14em] text-ink">FEATURED · {(seasonLabel(c) ?? "").toUpperCase()}</span>
+        </div>
+        <div className="absolute bottom-3 left-4">
+          <span className="font-mono text-xs tracking-[0.12em] text-brass">{c.id}</span>
+        </div>
+      </div>
+      <div className="flex flex-col p-6 sm:p-8">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h3 className="font-serif text-2xl leading-snug text-paper sm:text-3xl">
+              <Link href={href} className="after:absolute after:inset-0 focus-visible:outline-none">
+                {c.title}
+              </Link>
+            </h3>
+            <p className="mt-1 text-sm text-smoke">{locationYear(c)}</p>
+          </div>
+          <StatusTag c={c} mine={mine} />
+        </div>
+        <p className="mb-6 mt-4 text-base leading-relaxed text-paper/85">{c.synopsis}</p>
+        <CaseFacts c={c} className="mt-auto border-t border-rule pt-4" />
+        {leaderboard ? (
+          <div className="mt-4 border-t border-rule pt-3">
+            <LeaderboardButton caseId={c.id} title={c.title} />
+          </div>
+        ) : null}
+      </div>
+    </article>
+  );
+}

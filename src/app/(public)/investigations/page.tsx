@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { connection } from "next/server";
 import { CatalogBrowser } from "@/components/catalog-browser";
 import { PageIntro } from "@/components/page-intro";
 import { SetupNotice } from "@/components/setup-notice";
@@ -7,6 +8,7 @@ import { CatalogSkeleton } from "@/components/catalog-skeleton";
 import { SeriesShelf } from "@/components/series-shelf";
 import { getCatalog } from "@/lib/catalog";
 import { viewerCaseStates } from "@/lib/viewer-cases";
+import { inSeason } from "@/lib/season";
 
 export const metadata: Metadata = { title: "Available Investigations" };
 
@@ -31,9 +33,12 @@ async function Catalog() {
   if (!catalog.ok) return <SetupNotice reason={catalog.reason} message={catalog.message} />;
   // Series cases are shown in their series, in order, rather than as loose cards.
   const series = catalog.data.filter((c) => c.series_id);
+  // A seasonal case in its month (HALLOW001 in October) is featured at the top. Today's date is read at request time.
+  await connection();
+  const featured = catalog.data.filter((c) => !c.series_id && c.available_month && inSeason(c)).map((c) => c.id);
   return (
     <>
-      <CatalogBrowser cases={catalog.data.filter((c) => !c.series_id)} hrefBase="/investigations" leaderboards mine={mine} />
+      <CatalogBrowser cases={catalog.data.filter((c) => !c.series_id)} hrefBase="/investigations" leaderboards mine={mine} featured={featured} />
       <SeriesShelf catalog={series} hrefBase="/investigations" />
     </>
   );
