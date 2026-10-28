@@ -87,15 +87,14 @@ export function FeaturedCaseCard({ c, href, leaderboard = false, mine }: { c: Ca
   return (
     <article className="group relative grid overflow-hidden rounded-[var(--radius-file)] border border-brass/50 bg-card transition-colors duration-300 hover:border-brass md:grid-cols-[3fr_2fr]">
       <div className="relative aspect-[3/2] md:aspect-auto md:min-h-[22rem]">
-        <CaseCover c={c} variant="hero" priority className="md:absolute md:inset-0" />
-        <div className="absolute left-4 top-4">
-          <span className="rounded-[2px] bg-brass px-2.5 py-1 font-mono text-xs font-semibold tracking-[0.14em] text-ink">FEATURED · {(seasonLabel(c) ?? "").toUpperCase()}</span>
-        </div>
+        {/* Anchored left so a painted title in the cover's top left corner stays in the frame. */}
+        <CaseCover c={c} variant="hero" priority className="object-left md:absolute md:inset-0" />
         <div className="absolute bottom-3 left-4">
           <span className="font-mono text-xs tracking-[0.12em] text-brass">{c.id}</span>
         </div>
       </div>
       <div className="flex flex-col p-6 sm:p-8">
+        <p className="mb-3 font-mono text-xs font-semibold tracking-[0.16em] text-brass">FEATURED · {(seasonLabel(c) ?? "").toUpperCase()}</p>
         <div className="flex items-start justify-between gap-3">
           <div>
             <h3 className="font-serif text-2xl leading-snug text-paper sm:text-3xl">
