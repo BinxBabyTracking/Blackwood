@@ -18,13 +18,13 @@
       "size": "1024x1536",
       "quality": "high",
       "background": "transparent",
-      "suffix": "The same person as the reference portrait, shown full length from head to toe, standing naturally, turned three-quarters toward the viewer, lit warmly from the upper left. Isolated cut-out on a fully transparent background: no floor, no backdrop, only a faint contact shadow at the feet."
+      "suffix": "The same person as the reference portrait, shown full length from head to toe, standing naturally, turned three-quarters toward the viewer, lit warmly from the upper left. Isolated cut-out on a fully transparent background: no floor, no ground, no backdrop, no shadow and no painted patch beneath the feet; nothing in the image except the person."
     },
     "sprite": {
       "size": "1024x1024",
       "quality": "medium",
       "background": "transparent",
-      "suffix": "A single isolated object, centered, entirely in frame, seen at a three-quarter angle from slightly above as it would sit in a room, lit warmly from the upper left to match a painted scene. Isolated cut-out on a fully transparent background with only a soft contact shadow; nothing else in the image."
+      "suffix": "A single isolated object, centered, entirely in frame, seen at a three-quarter angle from slightly above as it would sit in a room, lit warmly from the upper left to match a painted scene. Isolated cut-out on a fully transparent background: no surface, no shadow and no painted patch beneath it; nothing in the image except the object."
     },
     "evidence": {
       "size": "1024x1024",

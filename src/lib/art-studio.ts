@@ -247,9 +247,34 @@ async function blendFace(id: string, edit: Buffer, base: Buffer) {
 }
 
 /** Crops and sizes an image for its kind, cutting people and objects out of their backdrop, as webp. */
+/**
+ * Removes the pale, see-through "contact shadow" an image model likes to paint
+ * under a cut-out person or object. On a dark scene it reads as a white smear.
+ * Only semi-transparent, light, colorless pixels in the lower part of the
+ * picture go; the subject itself is solid and keeps every pixel.
+ */
+async function clearShadow(input: Buffer) {
+  const { data, info } = await sharp(input).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const { width: w, height: h } = info;
+  for (let y = Math.floor(h * 0.6); y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 4;
+      const a = data[i + 3];
+      if (a === 0 || a > 235) continue;
+      const r = data[i], g = data[i + 1], b = data[i + 2];
+      const hi = Math.max(r, g, b), lo = Math.min(r, g, b);
+      const light = (r + g + b) / 3 > 120;
+      const gray = hi === 0 || (hi - lo) / hi < 0.22;
+      if (light && gray) data[i + 3] = 0;
+    }
+  }
+  return sharp(data, { raw: { width: w, height: h, channels: 4 } }).png().toBuffer();
+}
+
 async function finish(kind: string, input: Buffer) {
   if (kind === "figure" || kind === "sprite" || kind === "strip") {
-    const trimmed = await sharp(await cutOut(input)).trim({ threshold: 1 }).toBuffer();
+    const cut = await cutOut(input);
+    const trimmed = await sharp(kind === "strip" ? cut : await clearShadow(cut)).trim({ threshold: 1 }).toBuffer();
     const [mw, mh] = kind === "strip" ? [2400, 1350] : [1024, 1536];
     return sharp(trimmed).resize({ width: mw, height: mh, fit: "inside", withoutEnlargement: true }).webp({ quality: 86, alphaQuality: 90 }).toBuffer();
   }
