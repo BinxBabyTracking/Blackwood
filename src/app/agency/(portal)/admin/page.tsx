@@ -18,6 +18,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getFeedback } from "@/lib/feedback";
 import { allEntries } from "@/lib/leaderboard";
 import { adminRemoveEntry } from "@/app/actions/leaderboard";
+import { adminDecideEarlyAccess } from "@/app/actions/early-access";
+import { allRequests } from "@/lib/early-access";
 import { NameCheck } from "@/components/portal/name-check";
 import { AdminSection } from "@/components/portal/admin-section";
 import { ArtStudio } from "@/components/portal/art-studio";
@@ -68,6 +70,7 @@ async function Spending() {
 
   return (
     <div className="space-y-14">
+      <EarlyAccessAdmin />
       <AdminSection id="totals" title="Totals" defaultOpen>
         <Ledger
           items={[
@@ -508,5 +511,67 @@ async function Artwork() {
         );
       })}
     </>
+  );
+}
+
+/** Requests for early access to Coming Soon cases: approve to let the player in now, deny to make them wait for release. */
+async function EarlyAccessAdmin() {
+  const rows = await allRequests().catch(() => null);
+  if (!rows) return null;
+  const pending = rows.filter((r) => r.status === "pending").length;
+  const button = (id: number, approve: boolean, label: string, tone: string) => (
+    <form action={adminDecideEarlyAccess}>
+      <input type="hidden" name="id" value={id} />
+      <input type="hidden" name="approve" value={approve ? "1" : "0"} />
+      <button type="submit" className={`text-xs underline-offset-4 hover:underline ${tone}`}>
+        {label}
+      </button>
+    </form>
+  );
+  return (
+    <AdminSection id="early" title={pending ? `Early access requests (${pending} waiting)` : "Early access requests"} className="max-w-4xl" defaultOpen={pending > 0}>
+      <p className="mt-2 text-sm text-smoke">
+        A Coming Soon case opens for requests once you have solved it on imbush89@gmail.com: its page shows the leaderboard and a Request Early Access button.
+        Approve lets the player in now (an early-access grant). Deny leaves them to play it once it is released. Either can be changed later.
+      </p>
+      {rows.length === 0 ? (
+        <p className="mt-4 border-y border-rule py-5 text-sm text-smoke">No requests yet.</p>
+      ) : (
+        <div className="mt-4 overflow-x-auto border-y border-rule">
+          <table className="w-full min-w-[40rem] text-left text-sm">
+            <thead className="text-xs text-smoke">
+              <tr className="border-b border-rule">
+                {["Case", "Investigator", "Requested", "Status", ""].map((h) => (
+                  <th key={h} scope="col" className="px-3 py-3 font-normal first:pl-0">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-rule/70">
+              {rows.map((r) => (
+                <tr key={r.id}>
+                  <td className="py-2 pl-0 pr-3 font-mono text-brass">{r.caseId}</td>
+                  <td className="px-3 py-2">
+                    <span className="block">{r.name ?? "No display name"}</span>
+                    <span className="block text-xs text-smoke">{r.email ?? r.userId}</span>
+                  </td>
+                  <td className="px-3 py-2 font-mono text-xs">{formatDate(r.createdAt)}</td>
+                  <td className={`px-3 py-2 ${r.status === "pending" ? "text-brass" : r.status === "approved" ? "text-[color:var(--color-ok)]" : "text-smoke"}`}>
+                    {r.status === "pending" ? "Waiting" : r.status === "approved" ? "Approved" : "Denied"}
+                  </td>
+                  <td className="px-3 py-2">
+                    <div className="flex gap-4">
+                      {r.status !== "approved" ? button(r.id, true, "Approve", "text-[color:var(--color-ok)]") : null}
+                      {r.status !== "denied" ? button(r.id, false, "Deny", "text-[#e08a7f]") : null}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </AdminSection>
   );
 }

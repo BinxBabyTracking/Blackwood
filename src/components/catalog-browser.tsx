@@ -177,7 +177,7 @@ export function CatalogBrowser({ cases, hrefBase, leaderboards = false }: { case
       {visible.length ? (
         <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {visible.map((c) => (
-            <CaseCard key={c.id} c={c} href={`${hrefBase}/${c.id}`} leaderboard={leaderboards && !c.is_preview && c.status === "available"} />
+            <CaseCard key={c.id} c={c} href={`${hrefBase}/${c.id}`} leaderboard={leaderboards && !c.is_preview && (c.status === "available" || Boolean(c.early_access_open))} />
           ))}
         </div>
       ) : (

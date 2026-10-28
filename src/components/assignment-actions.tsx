@@ -8,6 +8,8 @@ import { formatPrice } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
 import type { CatalogCase } from "@/lib/types";
 import { seriesUnlocked } from "@/series/server";
+import { requestStatus, type RequestStatus } from "@/lib/early-access";
+import { EarlyAccessButton } from "./early-access-button";
 import { buttonClass } from "./ui";
 
 /** Reads the visitor's session, so render inside <Suspense>. */
@@ -19,6 +21,7 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
   let session: "active" | "closed" | null = null;
   let teamOpen = false;
   let seriesLockedBy: string | null = null;
+  let request: RequestStatus | null = null;
 
   if (supabase) {
     const { data } = await supabase.auth.getUser();
@@ -42,6 +45,7 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
       session = statuses.includes("active") ? "active" : statuses.includes("closed") ? "closed" : null;
       const unlock = await seriesUnlocked(data.user.id, c.id).catch(() => ({ ok: true as const }));
       if (!unlock.ok) seriesLockedBy = unlock.previous;
+      if (c.status === "coming_soon" && c.early_access_open && !earlyAccess) request = await requestStatus(data.user.id, c.id).catch(() => null);
     }
   }
 
@@ -62,12 +66,23 @@ export async function AssignmentActions({ c }: { c: CatalogCase }) {
             Coming Soon
           </p>
           <p className="mt-3 max-w-[44ch] text-sm text-smoke">
-            The investigation desk for this case is being prepared. It will open here when it is ready.
+            {c.early_access_open
+              ? "The agency has worked this case. Request early access to play it before it's released."
+              : "The investigation desk for this case is being prepared. It will open here when it is ready."}
           </p>
-          {!signedIn ? (
-            <Link href="/join" className={buttonClass("secondary", "mt-5")}>
-              Join the Agency
-            </Link>
+          {c.early_access_open && signedIn && c.status === "coming_soon" ? (
+            <EarlyAccessButton caseId={c.id} initial={request} />
+          ) : !signedIn ? (
+            <div className="mt-5 flex flex-wrap gap-3">
+              {c.early_access_open ? (
+                <Link href={`/login?next=/agency/assignments/${c.id}`} className={buttonClass("primary")}>
+                  Sign in to request early access
+                </Link>
+              ) : null}
+              <Link href="/join" className={buttonClass("secondary")}>
+                Join the Agency
+              </Link>
+            </div>
           ) : null}
         </div>
       );

@@ -37,6 +37,8 @@ export interface CaseRecord {
   hero_image_url: string | null;
   released_at: string | null;
   catalog_order: number;
+  /** A Coming Soon case the agency's owner has solved: players can see its leaderboard and request early access. */
+  early_access_open?: boolean;
   /** The series a case belongs to (S001), and its place in it. Null for standalone cases. */
   series_id?: string | null;
   series_order?: number | null;

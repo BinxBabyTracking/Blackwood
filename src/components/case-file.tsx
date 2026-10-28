@@ -64,7 +64,7 @@ export function CaseFile({ c, topPadding = true }: { c: CatalogCase; topPadding?
                 <AssignmentActions c={c} />
               </Suspense>
             </div>
-            {!c.is_preview && c.status === "available" ? (
+            {!c.is_preview && (c.status === "available" || c.early_access_open) ? (
               <div className="border-t border-rule px-5 py-4">
                 <LeaderboardButton caseId={c.id} title={c.title} />
                 <p className="mt-1 text-xs text-smoke">Top investigators and groups for this case.</p>
