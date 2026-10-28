@@ -10,21 +10,32 @@ import { screenName } from "@/lib/moderation";
  * board, solo or as a named group. Every run gets an Investigator Score out
  * of 1,000: points come off for time spent, questions asked and reports sent
  * back. Asking fewer, sharper questions is the detective skill being rewarded.
+ *
+ * Time and questions are measured against the case's own length (its
+ * estimated minutes on the `cases` row), so a long case scores on the same
+ * scale as a short one. Par for a case is its estimated minutes and half that
+ * many questions. Each of time and questions can cost up to 400 points,
+ * reached at three times par; each report sent back costs 50, up to 200.
  */
 
-export const SCORE = { start: 1000, perMinute: 4, perQuestion: 5, perReturn: 50 };
+export const SCORE = { start: 1000, timeMax: 400, questionsMax: 400, parQuestionsPerMinute: 0.5, overPar: 3, perReturn: 50, returnsMax: 200 };
 
 export type Mode = "solo" | "group";
 export type Board = "score" | "fastest" | "questions" | "firsttry";
 
-export interface Run {
+export interface Stats {
   seconds: number;
   questions: number;
   returned: number;
   score: number;
 }
 
-export interface Entry extends Run {
+export interface Run extends Stats {
+  /** What each part cost, for the closing screen. */
+  cost: { time: number; questions: number; returned: number };
+}
+
+export interface Entry extends Stats {
   id: number;
   name: string;
   mode: Mode;
@@ -44,12 +55,27 @@ export function questionsAsked(s: InvestigationState) {
   return Object.values(s.conversations).reduce((n, lines) => n + lines.filter((l) => l.speaker === "you" && l.kind === "question").length, 0);
 }
 
-export function runOf(s: InvestigationState): Run {
+/** The case's par: its estimated minutes, and half that many questions. */
+export async function parOf(caseId: string) {
+  const { data } = await db().from("cases").select("est_minutes").eq("id", caseId).maybeSingle();
+  const minutes = Math.max(15, Number((data as { est_minutes: number } | null)?.est_minutes) || 60);
+  return { minutes, questions: Math.max(10, Math.round(minutes * SCORE.parQuestionsPerMinute)) };
+}
+
+export function scoreOf(seconds: number, questions: number, returned: number, par: { minutes: number; questions: number }) {
+  const cost = {
+    time: Math.round(SCORE.timeMax * Math.min(1, seconds / 60 / (par.minutes * SCORE.overPar))),
+    questions: Math.round(SCORE.questionsMax * Math.min(1, questions / (par.questions * SCORE.overPar))),
+    returned: Math.min(SCORE.returnsMax, returned * SCORE.perReturn),
+  };
+  return { cost, score: Math.max(0, SCORE.start - cost.time - cost.questions - cost.returned) };
+}
+
+export function runOf(s: InvestigationState, par: { minutes: number; questions: number }): Run {
   const seconds = Math.max(0, Math.round(s.activeSeconds));
   const questions = questionsAsked(s);
   const returned = s.report.submissions.filter((x) => !x.accepted).length;
-  const score = Math.max(0, Math.min(SCORE.start, Math.round(SCORE.start - (seconds / 60) * SCORE.perMinute - questions * SCORE.perQuestion - returned * SCORE.perReturn)));
-  return { seconds, questions, returned, score };
+  return { seconds, questions, returned, ...scoreOf(seconds, questions, returned, par) };
 }
 
 
@@ -77,7 +103,7 @@ const toEntry = (r: Row, me: string | null): Entry => ({
 });
 
 /** The better of two runs on a board (true when `a` places above `b`). */
-function better(board: Board, a: Run, b: Run) {
+function better(board: Board, a: Stats, b: Stats) {
   const k = board === "fastest" ? (["seconds", "score"] as const) : board === "questions" ? (["questions", "score"] as const) : (["score", "seconds"] as const);
   for (const key of k) {
     if (a[key] === b[key]) continue;
@@ -112,12 +138,12 @@ export async function boards(caseId: string, me: string | null) {
 }
 
 /** Where a run would place on each board of its mode, counting only the entries already there. */
-async function placesFor(caseId: string, mode: Mode, run: Run, excludeSession?: string) {
+async function placesFor(caseId: string, mode: Mode, run: Stats, excludeSession?: string) {
   let q = db().from("leaderboard_entries").select("active_seconds, questions, returned, score, session_id").eq("case_id", caseId).eq("mode", mode).eq("hidden", false).limit(5000);
   if (excludeSession) q = q.neq("session_id", excludeSession);
   const { data } = await q;
   const others = ((data ?? []) as { active_seconds: number; questions: number; returned: number; score: number }[]).map((r) => ({ seconds: r.active_seconds, questions: r.questions, returned: r.returned, score: r.score }));
-  const place = (board: Board, pool: Run[]) => pool.filter((o) => better(board, o, run)).length + 1;
+  const place = (board: Board, pool: Stats[]) => pool.filter((o) => better(board, o, run)).length + 1;
   return {
     score: place("score", others),
     fastest: place("fastest", others),
@@ -160,7 +186,7 @@ export async function myResult(def: CaseDefinition, userId: string, displayName:
   if (!save) return null;
   const s = normalizeState(def, (save as { state: InvestigationState }).state);
   if (s.status !== "closed") return null;
-  const run = runOf(s);
+  const run = runOf(s, await parOf(def.id));
   const group = await groupOf(sessionId);
   const mode: Mode = group ? "group" : "solo";
   const { data: existing } = await db().from("leaderboard_entries").select("name, hidden").eq("session_id", sessionId).maybeSingle();
@@ -188,7 +214,7 @@ export async function submit(def: CaseDefinition, userId: string, rawName: strin
   if (!save) return { error: "That investigation could not be found." };
   const s = normalizeState(def, (save as { state: InvestigationState }).state);
   if (s.status !== "closed") return { error: "Close the case first." };
-  const run = runOf(s);
+  const run = runOf(s, await parOf(def.id));
   const group = await groupOf(sessionId);
   const row = {
     case_id: def.id,

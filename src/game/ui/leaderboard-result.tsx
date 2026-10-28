@@ -38,9 +38,9 @@ export function LeaderboardResult({ caseId, title }: { caseId: string; title: st
   const group = r.mode === "group";
   const minus = (n: number) => (n ? `-${n}` : "0");
   const lines = [
-    { label: "Time investigating", value: clock(r.run.seconds), cost: Math.round((r.run.seconds / 60) * 4) },
-    { label: group ? "Questions asked by the table" : "Questions asked", value: String(r.run.questions), cost: r.run.questions * 5 },
-    { label: "Reports sent back", value: String(r.run.returned), cost: r.run.returned * 50 },
+    { label: "Time investigating", value: clock(r.run.seconds), cost: r.run.cost.time },
+    { label: group ? "Questions asked by the table" : "Questions asked", value: String(r.run.questions), cost: r.run.cost.questions },
+    { label: "Reports sent back", value: String(r.run.returned), cost: r.run.cost.returned },
   ];
   const places = [
     { label: "Top score", place: r.places.score },
