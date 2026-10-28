@@ -14,12 +14,16 @@ const MONTHS = ["January", "February", "March", "April", "May", "June", "July", 
 
 type Seasonal = Pick<CaseRecord, "available_month">;
 
-export function easternMonth(now = new Date()) {
-  return Number(new Intl.DateTimeFormat("en-US", { timeZone: TZ, month: "numeric" }).format(now));
+export function easternMonth(now?: Date) {
+  return Number(new Intl.DateTimeFormat("en-US", { timeZone: TZ, month: "numeric" }).format(now ?? new Date()));
 }
 
-/** True for any non-seasonal case, and for a seasonal case during its month. */
-export function inSeason(c: Seasonal, now = new Date()) {
+/**
+ * True for any non-seasonal case, and for a seasonal case during its month.
+ * The clock is read only for a seasonal case, so pages built ahead of time
+ * (which may not read the clock) can show ordinary cases.
+ */
+export function inSeason(c: Seasonal, now?: Date) {
   return !c.available_month || easternMonth(now) === c.available_month;
 }
 
@@ -28,7 +32,7 @@ export function isSeasonTester(email: string | null | undefined) {
 }
 
 /** Seasonal and closed for this viewer right now. */
-export function offSeasonFor(c: Seasonal, email: string | null | undefined, now = new Date()) {
+export function offSeasonFor(c: Seasonal, email: string | null | undefined, now?: Date) {
   return !inSeason(c, now) && !isSeasonTester(email);
 }
 
@@ -47,8 +51,8 @@ export function returnsLabel(c: Seasonal) {
 }
 
 /** "October 31" */
-export function lastDayLabel(c: Seasonal, now = new Date()) {
+export function lastDayLabel(c: Seasonal, now?: Date) {
   if (!c.available_month) return "";
-  const year = Number(new Intl.DateTimeFormat("en-US", { timeZone: TZ, year: "numeric" }).format(now));
+  const year = Number(new Intl.DateTimeFormat("en-US", { timeZone: TZ, year: "numeric" }).format(now ?? new Date()));
   return `${monthName(c.available_month)} ${new Date(year, c.available_month, 0).getDate()}`;
 }
