@@ -50,7 +50,7 @@ export const characters: CharacterDef[] = [
     portrait: "char.annabel",
     known: knows1998,
     bio: [
-      { text: "Seventeen in 1998, a senior at Harrow Falls Regional High School and a paid volunteer at the Blackthorn Foundation's archive. Last seen at the foundation's Halloween party at the house on October 31, 1998. Filed as a runaway." },
+      { text: "Seventeen in 1998, a junior at Harrow Falls Regional High School and a paid volunteer at the Blackthorn Foundation's archive. Last seen at the foundation's Halloween party at the house on October 31, 1998. Filed as a runaway." },
       { text: "Josie Lisle's older sister.", requires: { talkedTo: "josie" } },
       { text: "Her remains were found in the bricked chamber under the carriage house.", requires: ev("HE025") },
     ],
@@ -685,7 +685,7 @@ export const questions: DialogueQuestion[] = [
     keywords: ["hide", "ran", "rose room", "run away", "guest wing", "afraid"],
     reply: [
       "Because I'm a stranger in a veil who walked in off the road, standing outside a dead man's door. Who would you have believed?",
-      "I heard them coming up the stairs and I ran round the corner into the first room that wasn't locked. I dropped a glove; I felt it go. I've been sitting on the floor of that room ever since.",
+      "I heard them coming up the stairs and I ran around the corner into the first room that wasn't locked. I dropped a glove; I felt it go. I've been sitting on the floor of that room ever since.",
     ],
   }),
   q({
@@ -697,7 +697,7 @@ export const questions: DialogueQuestion[] = [
     requires: { any: [ev("HE018"), ev("HE034"), { talkedTo: "crane" }] },
     reply: [
       "His name is in her diary. Hollins Ridge Associates. He kept the foundation's books, and she found something in them.",
-      "He was at the party in 1998 and he's at the table tonight. He looked at me through the whole soup course as if I were a bad smell. That's all I know. That's all I'll say I know.",
+      "He was at the party in 1998 and he's at the table tonight. He hardly looked at me all through dinner, which is a kind of looking too. That's all I know. That's all I'll say I know.",
     ],
   }),
   q({
@@ -721,7 +721,7 @@ export const questions: DialogueQuestion[] = [
     prompt: "Where were you when the lights went out?",
     keywords: ["where were you", "10:13", "blackout", "lights", "alibi", "left the table"],
     reply: [
-      "I'd stepped out of the dining room for some air before the cheese. Ambrose's dinners always ran long and I've heard all his stories.",
+      "I'd stepped out of the dining room for some air after the cheese. Ambrose's dinners always ran long and I've heard all his stories.",
       "I was in here when the lights went. I stayed put. It seemed the sensible thing.",
     ],
     variants: [
@@ -844,7 +844,7 @@ export const questions: DialogueQuestion[] = [
     topic: "Ambrose",
     prompt: "How had Ambrose been lately?",
     keywords: ["health", "mood", "sleeping", "lately", "frightened", "pills"],
-    reply: ["Anxious. Not sleeping. I gave him something mild for it a fortnight ago. He told me he had to do something he should have done a long time ago, and asked me to come tonight and be a witness to it."],
+    reply: ["Anxious. Not sleeping. I gave him something mild for it two weeks ago. He told me he had to do something he should have done a long time ago, and asked me to come tonight and be a witness to it."],
   }),
   q({
     id: "penrose_conservatory",
@@ -869,8 +869,8 @@ export const questions: DialogueQuestion[] = [
     prompt: "Where were you at a quarter past ten?",
     keywords: ["where were you", "10:15", "blackout", "lights", "alibi", "table"],
     reply: [
-      "At the table, next to Oscar, in the dark, saying something stupid about the electric bill. Then the scream. Oscar and I went up with our phones.",
-      "Ask him. Ask any of them. I didn't move until we ran.",
+      "At the table, between Mrs. Holloway and Bridget Duffy, in the dark, saying something stupid about the electric bill. Oscar was at the sideboard right behind me. Then the scream, and Oscar and I went up with our phones.",
+      "Ask them. Ask any of them. I didn't move until we ran.",
     ],
   }),
   q({
@@ -912,8 +912,8 @@ export const questions: DialogueQuestion[] = [
     topic: "Tonight",
     prompt: "Who was the woman you saw in the corridor?",
     keywords: ["woman", "veil", "corridor", "guest wing", "who was she", "saw her"],
-    reply: ["The one from the foot of the table, the one in black. She went round the corner into the guest wing like a ghost in a film. I shouted and she didn't stop. I thought she was some act Dad had hired."],
-    variants: [{ requires: rumor, reply: ["The one in black from the foot of the table. Desmond thinks she's some madwoman who walked in off the road. She went round the corner into the guest wing and I lost her."] }],
+    reply: ["The one from the foot of the table, the one in black. She went around the corner into the guest wing like a ghost in a film. I shouted and she didn't stop. I thought she was some act Dad had hired."],
+    variants: [{ requires: rumor, reply: ["The one in black from the foot of the table. Desmond thinks she's some madwoman who walked in off the road. She went around the corner into the guest wing and I lost her."] }],
   }),
   q({
     id: "felix_stair",
@@ -936,7 +936,7 @@ export const questions: DialogueQuestion[] = [
     requires: ev("HE009"),
     reply: [
       "Could be mine or could be Desmond's, the lab says, which means it could be anyone with a thumb like ours. I haven't touched that shelf since I was eighteen.",
-      "I was at the table at a quarter past ten with Oscar Wren's elbow in my ribs. Ask him.",
+      "I was at the table at a quarter past ten between Beatrice Holloway and Bridget Duffy, with Oscar Wren standing behind my chair. Ask them.",
     ],
   }),
   q({
@@ -994,7 +994,7 @@ export const questions: DialogueQuestion[] = [
     prompt: "What was in the note you gave the lady in black?",
     keywords: ["note", "folded note", "gave her", "message", "9:52", "library"],
     requires: { asked: "wren_thirteen" },
-    reply: ["I didn't read it. Mr. Blackthorn folded it twice and said, 'Give this to the lady in black, wherever she is, and nobody else.' I found her alone in the library at about 9:52 and gave it to her. She read it and put it in her glove."],
+    reply: ["I didn't read it. Mr. Blackthorn folded it twice and said, 'Give this to the lady in black, wherever she is, and nobody else.' I found her alone in the library at about 9:52 and gave it to her. She read it and tucked it into her sleeve."],
   }),
   q({
     id: "wren_keys",
@@ -1024,7 +1024,7 @@ export const questions: DialogueQuestion[] = [
     topic: "The dinner",
     prompt: "Did you hear Felix argue with his father?",
     keywords: ["felix", "argument", "argue", "hall", "money", "9:30"],
-    reply: ["At half past nine, in the hall, yes. Felix wanted money and his father said no, not tonight, he had bigger things to put right first. Felix said something unkind and went back to the table. He sat next to me from then on, and he was next to me when the lights went."],
+    reply: ["At half past nine, in the hall, yes. Felix wanted money and his father said no, not tonight, he had bigger things to put right first. Felix said something unkind and went back to his seat. I was at the sideboard right behind him from then on, and he was in that chair when the lights went."],
   }),
 
   // ---------------- Harriet Lowell ----------------
@@ -1213,7 +1213,7 @@ export const questions: DialogueQuestion[] = [
     topic: "Tonight",
     prompt: "Where were you at a quarter past ten?",
     keywords: ["where were you", "10:15", "blackout", "lights", "alibi"],
-    reply: ["At the table. Then on the stairs behind Felix and Mr. Wren. I saw her go round the corner at the end of the corridor. I didn't say anything."],
+    reply: ["At the table. Then on the stairs behind Felix and Mr. Wren. I saw her go around the corner at the end of the corridor. I didn't say anything."],
   }),
   q({
     id: "beatrice_veil",
@@ -1243,7 +1243,7 @@ export const questions: DialogueQuestion[] = [
     topic: "Ambrose",
     prompt: "Why do you think Ambrose invited you?",
     keywords: ["invited", "why you", "ambrose", "invitation"],
-    reply: ["Because I was there in 1998. All of us were, the ones who matter. He looked round the table at nine o'clock like a man counting witnesses."],
+    reply: ["Because I was there in 1998. Nearly all of us at that table were. He looked around it at nine o'clock like a man counting witnesses."],
   }),
 
   // ---------------- Everett Byrne ----------------
@@ -1282,9 +1282,9 @@ export const questions: DialogueQuestion[] = [
     topic: "Ambrose",
     prompt: "Ambrose's note mentions an envelope for you, \"where the world is.\"",
     keywords: ["envelope", "where the world is", "world", "hidden", "statement", "globe"],
-    requires: { any: [ev("HE008"), { asked: "byrne_letter" }] },
+    requires: ev("HE008"),
     reply: [
-      "\"Where the world is.\" He used to say that about the library. His father bought the great globe for it in 1910 and Ambrose said he kept the world in the library.",
+      "\"Where the world is.\" He used to say that about the library. His grandfather bought the great globe for it in 1910 and Ambrose said he kept the world in the library.",
       "The globe opens at the equator. I'd look there.",
     ],
     effects: [{ setFlag: "globe_known" }],
@@ -1326,7 +1326,7 @@ export const questions: DialogueQuestion[] = [
     prompt: "What's happening with the carriage house?",
     keywords: ["carriage house", "renovation", "drainage", "november 5", "chamber", "pit"],
     reply: [
-      "New drainage and a slab, starting November fifth. The architects are breaking out a bricked-over chamber under the old inspection pit. Bricked in 1998, which is odd for a building listed in 1903.",
+      "New drainage and a slab, starting November fifth. The architects are breaking out a bricked-over chamber under the old inspection pit. Bricked in 1998, which is odd for a building put up in 1903 and never touched since.",
       "Ambrose read that sheet for a long time. He wrote on it.",
     ],
   }),
@@ -1336,7 +1336,7 @@ export const questions: DialogueQuestion[] = [
     topic: "The house",
     prompt: "Where are the house's old papers kept?",
     keywords: ["papers", "attic", "trunk", "archive", "old letters", "records"],
-    reply: ["The foundation's in the library. The family's are in the attic: trunks and trunks. Ambrose wouldn't let me catalogue those. He said some of them weren't history yet."],
+    reply: ["The foundation's in the library. The family's are in the attic: trunks and trunks. Ambrose wouldn't let me catalog those. He said some of them weren't history yet."],
     effects: [{ setFlag: "attic_known" }],
   }),
   q({
@@ -1413,7 +1413,7 @@ export const reactions: EvidenceReaction[] = [
   { characterId: "felix", evidenceId: "HE032", reply: ["Going through my bag. Lovely. Yes, I owe them. No, I didn't kill my father for it."] },
   { characterId: "beatrice", evidenceId: "HE016", reply: ["J. Lisle. Her mother sewed those tags in everything, both girls. Oh, God."] },
   { characterId: "beatrice", evidenceId: "HE014", reply: ["That's me, looking at her. Yes. I knew her. I knew her the moment she sat down."] },
-  { characterId: "josie", evidenceId: "HE016", reply: ["My glove. That tag was on Annabel's mittens. I sewed it in myself. I wanted something of hers with me tonight."] },
+  { characterId: "josie", evidenceId: "HE016", reply: ["My glove. That tag was on my mittens when I was nine; Mom sewed them on everything, both of us. I sewed it in myself. I wanted something from then with me tonight."] },
   { characterId: "josie", evidenceId: "HE025", reply: ["Her bangle. A.L., sixteen. Mom gave it to her. She's been here the whole time. A mile from home. The whole time."] },
   { characterId: "harriet", evidenceId: "HE020", reply: ["Cost and appraisal agree to the dollar, three times, and no appraiser named. That's what I was told to write. Annabel's card is still in the 1997 volume. Oh, that poor girl."] },
   { characterId: "amos", evidenceId: "HE004", reply: ["Those are my screw holes. Four brass screws, 1999. Somebody's had them out, and lately; look how bright the threads are."] },

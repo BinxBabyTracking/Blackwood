@@ -37,7 +37,7 @@ export const evidence: EvidenceDef[] = [
     inspection: P(
       "The study door: oak, two inches thick, opening inward onto the upstairs corridor. On its inside face, a heavy brass barrel bolt, old and well kept. The bolt is shot fully home. Its keeper has been torn out of the frame with a long splinter of oak still screwed to it, and it lies on the carpet a foot inside the door.",
       "There is no keyhole for the bolt and nothing on the corridor side of the door: no thumb turn, no slot, no scratch on the paint, no mark of string or wire at the gap. The gap under the door is less than a quarter of an inch, over a raised threshold.",
-      "The bolt can only be thrown from inside the room. It was thrown when Felix Blackthorn and Oscar Wren forced the door at 10:21 PM.",
+      "The bolt can only be thrown from inside the room. It was still thrown when Felix Blackthorn and Oscar Wren forced the door at 10:21 PM.",
     ),
     discovery: "Study, the door (hotspot st_door).",
     characters: ["ambrose", "felix", "wren"],
@@ -51,9 +51,9 @@ export const evidence: EvidenceDef[] = [
     sourceLocationId: "study",
     image: "ev.HE002",
     inspection: P(
-      "A cast brass bookend in the form of a seated griffin, about nine inches tall, weighing perhaps six pounds. Its twin still stands on the north shelves, against the far end of the third shelf, holding up a row of auction catalogues. That end of the row has slumped over where this one was.",
+      "A cast brass bookend in the form of a seated griffin, about nine inches tall, weighing perhaps six pounds. Its twin still stands on the north shelves, against the far end of the third shelf, holding up a row of auction catalogs. That end of the row has slumped over where this one was.",
       "This one lay on the carpet between the desk and the north wall, about four feet from Ambrose's body. Blood and two gray hairs are caught in the angle of the griffin's square base. The brass of the griffin's back, where a hand would grip it, is clean and bright, as if it had been wiped.",
-      "Officer Reyes's tag: \"Bagged in place 10:41 PM. Not moved before photographs. D.R.\"",
+      "Officer Reyes's tag: \"Bagged in place 10:30 PM. Not moved before photographs. D.R.\"",
     ),
     discovery: "Study, the floor by the desk (hotspot st_bookend).",
     characters: ["ambrose"],
@@ -85,7 +85,7 @@ export const evidence: EvidenceDef[] = [
     sourceLocationId: "study",
     image: "ev.HE004",
     inspection: P(
-      "The north wall of the study is shelved floor to ceiling in dark oak, in six sections. In front of the fourth section, the varnish of the floorboards carries a pale curved scrape about two feet long, fresh, as if the bottom corner of something heavy had swung across it. There is no dust in the scrape. There is dust everywhere else along the skirting.",
+      "The north wall of the study is shelved floor to ceiling in dark oak, in six sections. In front of the fourth section, the varnish of the floorboards carries a pale curved scrape about two feet long, fresh, as if the bottom corner of something heavy had swung across it. There is no dust in the scrape. There is dust everywhere else along the baseboard.",
       "In the upright between the third and fourth sections are four screw holes, two high and two low, with bright, unweathered threads. The screws are not in them. Below the lowest shelf of the fourth section, the edge of the shelf frame stands about an eighth of an inch proud of the next one.",
       "The fourth section's books are the dullest in the room: bound volumes of a county agricultural society, 1880 to 1931. Nobody has taken one down in years. The section itself has been moved, and recently.",
     ),
@@ -238,7 +238,7 @@ export const evidence: EvidenceDef[] = [
     inspection: P(
       "A seating plan on card, propped on the sideboard. The table seats six a side with a chair at each end:",
       "\"Head: Mr. Ambrose Blackthorn.\nRight, from the head: Mrs. Constance Blackthorn, Mr. Desmond Crane, Mrs. Harriet Lowell, Mr. Amos Duffy, Mrs. Maeve Corrigan, Mr. Everett Byrne.\nLeft, from the head: Dr. Isaac Penrose, Mrs. Beatrice Holloway, Mr. Felix Blackthorn, Mrs. Bridget Duffy, Mr. Leonard Corrigan, Ms. Iris Kettering.\nFoot: (guest).\"",
-      "Penciled beside the foot: \"late, on foot, no questions, per A.B.\" Beatrice Holloway's place faces the foot of the table directly.",
+      "Penciled beside the foot: \"late, on foot, no questions, per A.B.\" Beatrice Holloway's place, second from the head, has a clear view down the table to the foot.",
     ),
     discovery: "Dining room, the sideboard (hotspot dr_chart).",
     characters: ["wren"],
@@ -253,7 +253,7 @@ export const evidence: EvidenceDef[] = [
     image: "ev.HE014",
     inspection: P(
       "Three prints from Oscar Wren's phone, the camera's times stamped in the corner.",
-      "9:05 PM. The table from the side, all thirteen places filled. At the foot, a woman in black lace with a short veil over her eyes and nose, a dark red mouth, black lace gloves. She is looking at the head of the table. Opposite her, at Ambrose's left hand, Beatrice Holloway is looking at her, not at the camera.",
+      "9:05 PM. The table from the side, all thirteen places filled. At the foot, a woman in black lace with a short veil over her eyes and nose, a dark red mouth, black lace gloves. She is looking at the head of the table. Near the head of the table, on the left, Beatrice Holloway is looking down the table at her, not at the camera.",
       "10:09 PM. The same view. Desmond Crane's chair, second on the right, is empty, his black and silver domino mask on the plate. The foot of the table is empty too.",
       "10:11 PM. Ambrose's chair at the head is empty. Everyone else is at the table but Crane, the lady in black, Constance Blackthorn and Dr. Penrose.",
     ),
@@ -270,7 +270,7 @@ export const evidence: EvidenceDef[] = [
     image: "ev.HE015",
     inspection: P(
       "A printout from the gatehouse security system (gate camera and front-door camera, on the gatehouse supply with a battery backup; it did not lose power at 10:13).",
-      "\"6:02 PM caterers' van in. 6:10 Wren Events van in.\n8:00 to 8:35 PM: ten private cars in, all logged by plate, twelve invited guests (list attached).\n8:40 PM: pedestrian in at the gate, female, dark clothing, veiled. Showed a card to the gate. Walked up the drive.\n8:41 PM: front-door camera: same, in at the front door.\n10:13 to 10:20 PM: front-door camera on backup, no movement.\n10:38 PM: Harrow Falls PD cruiser in.\nNo vehicle or person out by the gate or the front door from 8:41 PM to the end of this log.\"",
+      "\"6:02 PM caterers' van in. 6:10 Wren Events van in.\n8:00 to 8:35 PM: ten private cars in, all logged by plate, twelve invited guests (list attached).\n8:40 PM: pedestrian in at the gate, female, dark clothing, veiled. Showed a card to the gate. Walked up the drive.\n8:41 PM: front-door camera: same, in at the front door.\n10:13 to 10:20 PM: front-door camera on backup, no movement.\n10:27 PM: Harrow Falls PD cruiser in.\n10:32 PM: Blackwood Investigations, one car, in.\nNo vehicle or person out by the gate or the front door from 8:41 PM to the end of this log.\"",
       "A note from the guard, Hal Brody: \"Nobody left. I would have seen them. The lane gate past the maze isn't on camera; it's been padlocked for years.\"",
     ),
     discovery: "Gatehouse, the security desk (hotspot gh_monitor).",
@@ -335,7 +335,7 @@ export const evidence: EvidenceDef[] = [
   }),
   ev({
     id: "HE019",
-    title: "Harriet's 1998 Ledger",
+    title: "Harriet's Working Ledger",
     description: "Harriet Lowell's private copy of the foundation's 1997 property ledger, before the entries were changed.",
     sourceLocationId: "library",
     image: "ev.HE019",
@@ -343,7 +343,7 @@ export const evidence: EvidenceDef[] = [
       "A green clothbound ledger, foolscap, \"Blackthorn Foundation, Property Register, 1997\" on the spine label in Harriet Lowell's hand. Inside the front cover: \"My working copy. H.L. Kept because I was asked to forget it.\"",
       "Entry 97-14, June 9, 1997: \"Ridgeline Road, 31 acres, from Hollins Ridge Associates (D. Crane, principal). Appraised value: $95,000 (Bascombe & Ward, May 1997). Consideration: $410,000. Approved: D. Crane, Treasurer. A. Blackthorn, Chairman.\"",
       "In the margin, in pencil: \"Asked D.C. about the gap 6/12. Told to enter the appraisal as $410,000 'per the second appraiser.' There was no second appraiser. Entered as told in the bound register. H.L.\"",
-      "Two more entries in 1997 and 1998 have the same pencil note: Elm Hollow, $72,000 against $260,000; the Patten farm, $140,000 against $385,000. All three from companies with D. Crane as principal.",
+      "In the back pages, two entries she kept on in pencil for 1998 have the same note: Elm Hollow, $72,000 against $260,000; the Patten farm, $140,000 against $385,000. All three from companies with D. Crane as principal.",
     ),
     discovery: "Harriet Lowell hands it over once she decides to (question harriet_ledger).",
     characters: ["harriet", "crane", "ambrose"],
@@ -425,7 +425,7 @@ export const evidence: EvidenceDef[] = [
     image: "ev.HE024",
     inspection: P(
       "A roll of plans weighted open on a trestle in the carriage house. \"Blackthorn Estate. Carriage house conversion: drainage and slab. Thorpe Associates, Lenox. Issued for construction October 1, 2018. Start on site November 5, 2018. Historic consultant: I. Kettering.\"",
-      "Sheet D-2, section through the inspection pit: \"EXISTING: brick infill, c. 1998, over original 1903 drainage chamber (approx. 6 ft x 4 ft x 5 ft deep). REMOVE infill. Inspect chamber. Break out for new drain to soakaway.\"",
+      "Sheet D-2, section through the inspection pit: \"EXISTING: brick infill, c. 1998, over original 1903 drainage chamber (approx. 6 ft x 4 ft x 5 ft deep). REMOVE infill. Inspect chamber. Break out for new drain to drywell.\"",
       "A sticky note on the sheet, in Ambrose's hand: \"Start date stands. A.B. 10/8.\"",
     ),
     discovery: "Carriage house, the trestle (hotspot ch_plans).",
@@ -441,7 +441,7 @@ export const evidence: EvidenceDef[] = [
     image: "ev.HE025",
     inspection: P(
       "Det. Lt. Mahoney's crime scene unit broke through the brick infill under the inspection pit, about eight courses, laid on a bed of rubble.",
-      "In the dry drainage chamber below: the skeletal remains of a young woman, curled on her side, in the rotted remains of a dark velvet dress. A silver bangle on the left wrist, engraved inside: \"A.L. 16.\" Beside her, a small black leather shoulder bag. In it: a Harrow Falls Regional High School student card, \"LISLE, ANNABEL M., Class of 2000,\" a lipstick, a house key, and a folded Blackthorn Foundation archive request card, \"Box 1997-C.\"",
+      "In the dry drainage chamber below: the skeletal remains of a young woman, curled on her side, in the rotted remains of a dark velvet dress. A silver bangle on the left wrist, engraved inside: \"A.L. 16.\" Beside her, a small black leather shoulder bag. In it: a Harrow Falls Regional High School student card, \"LISLE, ANNABEL M., Class of 2000,\" a lipstick, a house key, and a folded scrap of notepaper in her round hand: \"Ridgeline $95,000 / $410,000?? Ask him.\"",
       "The medical examiner's first look, at the scene: a fracture at the back of the skull consistent with a fall backward onto a hard edge. No sign she was shot or stabbed. Placed here after death, and the brick laid over her afterward.",
     ),
     discovery: "Carriage house, the opened chamber, once police have opened it (hotspot ch_chamber).",
@@ -510,7 +510,7 @@ export const evidence: EvidenceDef[] = [
     image: "ev.HE029",
     inspection: P(
       "A ruled notebook on a string by the steel key cabinet, \"WREN EVENTS: KEYS OUT / IN. Sign every key.\"",
-      "\"5:45 PM, O.W., cellar, out. 5:50 O.W., cellar, in.\n6:15 caterer (M.P.), terrace door, out. 7:40 M.P., terrace door, in.\n7:10 PM, D.C., lower stair door, out (cellar wines).\"",
+      "\"6:15 PM, O.W., cellar, out. 6:20 O.W., cellar, in.\n6:25 caterer (M.P.), terrace door, out. 7:40 M.P., terrace door, in.\n7:10 PM, D.C., lower stair door, out (cellar wines).\"",
       "Nothing signs the lower stair door key back in. Its hook in the cabinet, labeled \"LOWER STAIR (SEALED). DO NOT ISSUE,\" is empty.",
       "Oscar Wren's sign by the cabinet: \"Sealed doors are not to be opened during the event.\"",
     ),
@@ -641,7 +641,7 @@ export const evidence: EvidenceDef[] = [
     image: "ev.HE037",
     inspection: P(
       "MASSACHUSETTS STATE POLICE, BERKSHIRE DETECTIVE UNIT. Supplementary report, case 18-B-3317. Det. Lt. J. Mahoney.",
-      "A second attack on a witness took place at the Blackthorn Estate during the investigation of the death of Ambrose Blackthorn, while the guests were held. The witness was one of four who had spoken to the Blackwood investigators about the Blackthorn Foundation or Halloween 1998. The attacker struck from behind with a length of brass stair rod taken from the back stairs, and left by the service stair.",
+      "A second attack on a witness took place at the Blackthorn Estate during the investigation of the death of Ambrose Blackthorn, while the guests were held. The witness was one of four people in the house who could speak to the Blackthorn Foundation's books or to Halloween 1998. The attacker struck from behind with a length of brass stair rod taken from the back stairs, and left by the service stair.",
       "At the scene: a scrap of black satin ribbon with a silver edge, torn from a mask tie, caught on the stair rod's bracket. Of the masks worn at dinner (Wren's photographs), one is black with a silver edge: Desmond Crane's domino.",
     ),
     discovery: "Delivered by Lt. Mahoney after an attack (delivery mahoney_attack), only if Crane attacks.",

@@ -38,7 +38,7 @@ Seasonal: October only (`available_month` 10). 1 to 6 investigators. Tier 2, abo
 
 ## Setting
 
-Blackthorn Estate, Hollins Road, Harrow Falls, Berkshire County, Massachusetts. A Victorian stone house of 1903 with a carriage house, gatehouse, greenhouse and yew maze. Home of Ambrose Blackthorn, antiquarian, chairman of the Blackthorn Foundation (historic preservation grants), which keeps its archive in the house library. Desmond Crane is the foundation's treasurer and trustee since 1994 and was Ambrose's partner in Blackthorn & Crane Antiquities until 2009.
+Blackthorn Estate, Hollins Road, Harrow Falls, Berkshire County, Massachusetts. A Victorian stone house of 1903, built for Ambrose's grandfather H. G. Blackthorn, with a carriage house, gatehouse, greenhouse and yew maze. Home of Ambrose Blackthorn, antiquarian, chairman of the Blackthorn Foundation (historic preservation grants), which keeps its archive in the house library. Desmond Crane is the foundation's treasurer and trustee since 1994 and was Ambrose's partner in Blackthorn & Crane Antiquities until 2009.
 
 Halloween 2018 is a Wednesday. Rain all night, fog on the lawns. Halloween 1998 was a Saturday.
 
@@ -69,7 +69,7 @@ Halloween 2018 is a Wednesday. Rain all night, fog on the lawns. Halloween 1998 
 | --- | --- | --- |
 | Oct 1 (Mon) | The architect's plans for the carriage house renovation show the bricked chamber to be opened on Nov 5 for new drainage. Iris Kettering consulted on the plans. | HE024, Iris |
 | Oct 8 (Mon) | Ambrose finds the foundation has paid Crane Advisory LLC $1,380,000 since 2014 for "conservation consulting" that was never done. | HE027, HE031 |
-| Oct 12 (Fri) | Twelve invitations go out, handwritten (HE010). | Casefile |
+| Oct 12 (Fri) | Twelve invitations go out, handwritten (HE010): ten people who were at the 1998 party, plus Everett Byrne to witness and Iris Kettering for the house. | Casefile |
 | Oct 14 (Sun) | Ambrose sends a thirteenth invitation, separately, to Josie Lisle in Pittsfield, and a letter: "I owe your family the truth. Come on Halloween. Come as you like; I will know you." | Josie (HE034) |
 | Oct 22 (Mon) | At lunch Ambrose tells Crane he will tell the guests the truth on Halloween and give his records to the foundation's attorney on Nov 1. | HE031 ("one trustee has been told"), closing |
 | Oct 24 (Wed) | Crane, as the trustee managing the estate works, has Hollins Electric replace the old main breaker with a lever switch and label the panel. | HE030 |
@@ -79,9 +79,9 @@ Halloween 2018 is a Wednesday. Rain all night, fog on the lawns. Halloween 1998 
 
 | Time | Event | Where it is learned |
 | --- | --- | --- |
-| 6:00 PM | Oscar Wren's event staff and caterers set up. Thirteen places, by Ambrose's order. | Wren (HE012) |
+| 6:00 to 6:10 PM | Caterers (6:02) and Oscar Wren's event staff (6:10) arrive and set up. Thirteen places, by Ambrose's order. | Wren (HE012), HE015 |
 | 7:10 PM | Crane signs the lower stair door key out of the event key book in the service corridor: "D.C. 7:10, lower stair door, cellar wines." He never signs it back. | HE029 |
-| 7:15 PM | Crane takes out the screws holding the hinged shelf in the study and oils its hinge; cuts the paint around the lower door in the service corridor. | HE004 (scrapes), paint cuts (observation), closing |
+| 7:15 PM | Crane takes out the screws holding the hinged shelf in the study and oils its hinge; cuts the paint around the lower door in the service corridor; cuts the padlock on the lane gate past the maze, in case. | HE004 (scrapes), paint cuts (observation), closing |
 | 8:00 to 8:35 PM | The twelve invited guests arrive in ten cars; the gate camera logs each one. Crane parks in the gatehouse lot. | HE015 |
 | 8:40 PM | A woman in black mourning clothes and a veil arrives on foot from Hollins Road and shows an invitation at the gate. | HE015 |
 | 9:00 PM | Dinner. Josie takes the thirteenth place, at the foot of the table. Some guests take her for part of the entertainment. | HE011, HE013, HE014 (Wren's 9:05 photo) |
@@ -97,7 +97,7 @@ Halloween 2018 is a Wednesday. Rain all night, fog on the lawns. Halloween 1998 
 | 10:13 PM | Crane throws the main switch. The house goes dark. (The gatehouse, its cameras and the gate run on their own supply.) | HE006, HE007, HE015 |
 | 10:14 PM | Crane goes through the service corridor door and up the servants' stair by penlight. | HE005 |
 | 10:15 PM | Crane opens the hinged shelf and steps into the study. Ambrose turns from the desk; Crane strikes him once with the brass griffin bookend from the shelf beside the hidden door. Ambrose cries out and falls. At the door Josie hears the cry, a crash, a man's low voice (two or three words she cannot make out) and a creak. She tries the door: bolted. She screams. | HE002, HE003, Josie |
-| 10:16 PM | Crane takes the folder from the desk, steps back through the shelf, pulls it shut and goes down the stair. Felix and Wren run up the main stair with phone lights. At the far end of the corridor they see a veiled woman go round the corner into the guest wing. She hides in the Rose Room. | HE016, statements |
+| 10:16 PM | Crane takes the folder from the desk, steps back through the shelf, pulls it shut and goes down the stair. Felix and Wren run up the main stair with phone lights. At the far end of the corridor they see a veiled woman go around the corner into the guest wing. She hides in the Rose Room. | HE016, statements |
 | 10:17 PM | Crane hides the folder in the wine cellar's port bins and leaves by the outside cellar door to the terrace. | HE027, closing |
 | 10:18 PM | Amos goes down the kitchen stair to find the panel. At the bottom he hears a door shut somewhere in the service corridor. | Amos (HE022, statement) |
 | 10:19 PM | Crane comes in from the terrace through the conservatory's garden door, wet, says "Did the lights go?" and goes on into the house. Penrose and Constance see him. | HE028 |
@@ -105,9 +105,9 @@ Halloween 2018 is a Wednesday. Rain all night, fog on the lawns. Halloween 1998 
 | 10:21 PM | Felix and Wren force the study door; the bolt's keeper splinters out of the frame. | HE001, statements |
 | 10:23 PM | They find Ambrose on the floor by the desk. Dr. Penrose reaches him at 10:24: no pulse. | HE003, Penrose |
 | 10:24 PM | Byrne calls 911, then Blackwood at the Harrow Falls Inn. | Byrne |
-| 10:32 PM | **Blackwood arrives. The case begins.** | |
-| 10:38 PM | Officers Dana Reyes and Tom Kwan of the Harrow Falls Police arrive and hold the guests. Det. Lt. Joan Mahoney of the State Police is on her way and on the phone. | Intro |
-| 10:40 to 10:55 PM | Officer Reyes takes first statements from Oscar Wren, Felix Blackthorn and Amos Duffy. | Statements |
+| 10:27 PM | Officers Dana Reyes and Tom Kwan of the Harrow Falls Police arrive and hold the guests. Det. Lt. Joan Mahoney of the State Police is on her way and on the phone. | Intro, HE015 |
+| 10:28 to 10:31 PM | Officer Reyes takes short first statements from Oscar Wren, Felix Blackthorn and Amos Duffy, and bags the bookend at 10:30. | Statements, HE002 |
+| 10:32 PM | **Blackwood arrives (logged at the gate). The case begins.** | HE015 |
 | 12:00 AM | The masked lantern procession through the maze, planned by Ambrose, is due to begin. | Wren, casefile |
 
 ### Crane's account (his knowledge, lies included)

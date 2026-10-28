@@ -35,7 +35,7 @@ export const intro: CaseDefinition["intro"] = [
     text: "At 10:13 PM, during a masked dinner for twelve guests, every light in the house went out. A scream came from upstairs. When the lights came back seven minutes later, Ambrose Blackthorn was found dead in his study, behind a door bolted from the inside.",
   },
   {
-    text: "The table was set for thirteen. Only twelve guests were invited. Some of them remember a woman in a black mourning veil. Others swear there was no such woman. The gate camera says nobody has left. Whoever killed Ambrose is still in the house.",
+    text: "The table was set for thirteen. Only twelve guests were invited. Some of them remember a woman in a black mourning veil at the foot of the table. Nobody will say who she was. The gate camera says nobody has left. Whoever killed Ambrose is still in the house.",
   },
   {
     text: "The Harrow Falls police are here, two officers. Det. Lt. Joan Mahoney of the State Police is on the phone and on her way, and she has given you the Morning Room. The clock in the top bar is the time in the house: it moves as you work. At midnight there is meant to be a procession.",
@@ -73,8 +73,8 @@ export const documents: DocumentDef[] = [
       {
         heading: "Summary (Everett Byrne, by phone, 10:24 PM, and Officer Reyes)",
         spoken:
-          "Summary. At about ten thirteen tonight, the power failed across Blackthorn Estate during a private Halloween dinner. Guests heard a scream from upstairs. When the lights came back at ten twenty, Felix Blackthorn and the event organizer, Oscar Wren, found the door of Ambrose Blackthorn's study bolted from the inside. They forced it at ten twenty-one and found Mr. Blackthorn on the floor by his desk. Doctor Isaac Penrose, a guest, found no pulse at ten twenty-four. Everett Byrne called nine one one, and then us. Officers Dana Reyes and Tom Kwan of the Harrow Falls police arrived at ten thirty-eight and are holding the guests. The gate camera shows nobody has left.",
-        body: "At about 10:13 PM the power failed across Blackthorn Estate during a private Halloween dinner. Guests heard a scream from upstairs. When the lights came back at 10:20 PM, Felix Blackthorn and the event organizer, Oscar Wren, found the study door bolted from the inside. They forced it at 10:21 and found Ambrose Blackthorn on the floor by his desk. Dr. Isaac Penrose, a guest, found no pulse at 10:24. Everett Byrne called 911, then Blackwood. Officers Dana Reyes and Tom Kwan, Harrow Falls Police, arrived at 10:38 and are holding the guests. The gate camera shows nobody has left.",
+          "Summary. At about ten thirteen tonight, the power failed across Blackthorn Estate during a private Halloween dinner. Guests heard a scream from upstairs. When the lights came back at ten twenty, Felix Blackthorn and the event organizer, Oscar Wren, found the door of Ambrose Blackthorn's study bolted from the inside. They forced it at ten twenty-one and found Mr. Blackthorn on the floor by his desk. Doctor Isaac Penrose, a guest, found no pulse at ten twenty-four. Everett Byrne called nine one one, and then us. Officers Dana Reyes and Tom Kwan of the Harrow Falls police arrived at ten twenty-seven and are holding the guests. The gate camera shows nobody has left.",
+        body: "At about 10:13 PM the power failed across Blackthorn Estate during a private Halloween dinner. Guests heard a scream from upstairs. When the lights came back at 10:20 PM, Felix Blackthorn and the event organizer, Oscar Wren, found the study door bolted from the inside. They forced it at 10:21 and found Ambrose Blackthorn on the floor by his desk. Dr. Isaac Penrose, a guest, found no pulse at 10:24. Everett Byrne called 911, then Blackwood. Officers Dana Reyes and Tom Kwan, Harrow Falls Police, arrived at 10:27 and are holding the guests. The gate camera shows nobody has left.",
       },
       {
         heading: "The victim",
@@ -85,8 +85,8 @@ export const documents: DocumentDef[] = [
       {
         heading: "The dinner",
         spoken:
-          "The dinner. A masked dinner for twelve invited guests, at nine o'clock, organized by Oscar Wren of Wren Events. At nine forty-five Mr. Blackthorn told the table that at half past ten he would tell them why they were there: something that had happened in the house twenty years ago tonight. Some guests say a thirteenth place was set, and that a woman in a black veil sat in it. Others say there was no such woman. A masked lantern procession through the maze was planned for midnight, as Mr. Blackthorn's father used to hold it.",
-        body: "A masked dinner for twelve invited guests at 9:00 PM, organized by Oscar Wren, Wren Events. At 9:45 Mr. Blackthorn told the table that at 10:30 he would explain why they were there: \"something that happened in this house twenty years ago tonight.\" Some guests say a thirteenth place was set and a veiled woman in black sat in it; others say there was no such woman. A masked lantern procession through the maze is planned for midnight.",
+          "The dinner. A masked dinner for twelve invited guests, at nine o'clock, organized by Oscar Wren of Wren Events. At nine forty-five Mr. Blackthorn told the table that at half past ten he would tell them why they were there: something that had happened in the house twenty years ago tonight. A thirteenth place was set, and a woman in a black veil sat in it. Nobody will say who she was. A masked lantern procession through the maze was planned for midnight, as Mr. Blackthorn's father used to hold it.",
+        body: "A masked dinner for twelve invited guests at 9:00 PM, organized by Oscar Wren, Wren Events. At 9:45 Mr. Blackthorn told the table that at 10:30 he would explain why they were there: \"something that happened in this house twenty years ago tonight.\" A thirteenth place was set, and a veiled woman in black sat in it; nobody will say who she was. A masked lantern procession through the maze is planned for midnight.",
       },
       {
         heading: "The house",
@@ -104,11 +104,11 @@ export const documents: DocumentDef[] = [
   },
 ];
 
-/** Officer Reyes's first statements, recorded on her phone between 10:40 and 10:55 PM. */
+/** Officer Reyes's first statements, short ones, recorded on her phone between 10:28 and 10:31 PM. */
 export const statements: StatementDef[] = [
   {
     characterId: "wren",
-    recordedAt: "Wednesday, October 31, 2018, 10:41 PM",
+    recordedAt: "Wednesday, October 31, 2018, 10:28 PM",
     officer: "Officer Dana Reyes, Harrow Falls Police",
     tape: "HFPD 18-1031-07 / Recording 1",
     audio: "tape.wren",
@@ -116,14 +116,14 @@ export const statements: StatementDef[] = [
       { speakerId: "reyes", speaker: "Officer Reyes", text: "Mr. Wren, you were first up the stairs?" },
       { speakerId: "wren", speaker: "Oscar Wren", text: "Felix and I, together. We heard the scream at about a quarter past, from upstairs. We went up with our phones for light." },
       { speakerId: "reyes", speaker: "Officer Reyes", text: "Did you see anyone up there?" },
-      { speakerId: "wren", speaker: "Oscar Wren", text: "A woman, at the far end of the corridor. In black, with a veil. She went round the corner into the guest wing. Felix shouted at her. Then we were at the study door and it wouldn't open." },
+      { speakerId: "wren", speaker: "Oscar Wren", text: "A woman, at the far end of the corridor. In black, with a veil. She went around the corner into the guest wing. Felix shouted at her. Then we were at the study door and it wouldn't open." },
       { speakerId: "reyes", speaker: "Officer Reyes", text: "Locked?" },
-      { speakerId: "wren", speaker: "Oscar Wren", text: "Bolted. You could feel it. When the lights came back we put our shoulders to it. It took two goes." },
+      { speakerId: "wren", speaker: "Oscar Wren", text: "Bolted. You could feel it. When the lights came back we put our shoulders to it. It took two tries." },
     ],
   },
   {
     characterId: "felix",
-    recordedAt: "Wednesday, October 31, 2018, 10:47 PM",
+    recordedAt: "Wednesday, October 31, 2018, 10:29 PM",
     officer: "Officer Dana Reyes, Harrow Falls Police",
     tape: "HFPD 18-1031-07 / Recording 2",
     audio: "tape.felix",
@@ -133,12 +133,12 @@ export const statements: StatementDef[] = [
       { speakerId: "reyes", speaker: "Officer Reyes", text: "And the woman in the corridor?" },
       { speakerId: "felix", speaker: "Felix Blackthorn", text: "I don't know who she is. She was at dinner, at the bottom of the table, and nobody would say who she was. I thought she was some kind of Halloween act Dad had hired." },
       { speakerId: "reyes", speaker: "Officer Reyes", text: "Did you and your father argue tonight?" },
-      { speakerId: "felix", speaker: "Felix Blackthorn", text: "In the hall, before the soup. About money. Ask anyone, they all heard. That's all it was." },
+      { speakerId: "felix", speaker: "Felix Blackthorn", text: "In the hall, after the soup. About money. Ask anyone, they all heard. That's all it was." },
     ],
   },
   {
     characterId: "amos",
-    recordedAt: "Wednesday, October 31, 2018, 10:53 PM",
+    recordedAt: "Wednesday, October 31, 2018, 10:31 PM",
     officer: "Officer Dana Reyes, Harrow Falls Police",
     tape: "HFPD 18-1031-07 / Recording 3",
     audio: "tape.amos",
@@ -172,7 +172,7 @@ export const calls: CallDef[] = [
     title: "Call from Det. Lt. Mahoney",
     lines: [
       "Mahoney. There's been another one. One of your witnesses, at the back stairs, while you were elsewhere in the house.",
-      "Struck from behind. Gone before Reyes got there. Whoever did it used the service stair again.",
+      "Struck from behind. Whoever did it was gone down the back stairs before my officer got there.",
       "I'm sending you what we found. Don't let this be for nothing.",
     ],
   },
@@ -253,7 +253,7 @@ const guardCall = (id: string, who: string, name: string, known: Condition): Out
   available: { all: [briefed, officerFree, known, alive(who), craneFree, { not: guarded(who) }] },
   done: guarded(who),
   lines: [
-    `You want an officer on ${name}, without making a show of it? All right. Kwan's good at looking like furniture.`,
+    `You want an officer on ${name}, without making a show of it? All right. My officer will keep out of sight and keep an eye on them.`,
     "That's one officer you don't have anymore. Spend the other one carefully.",
   ],
   effects: [{ setFlag: `guard_${who}` }, ...useOfficer, note(`guard_${who}`, `An officer keeps watch on ${name}`, `At your request, an officer is quietly keeping watch on ${name}.`, "mahoney")],
@@ -319,7 +319,7 @@ export const outgoingCalls: OutgoingCallDef[] = [
     available: { all: [{ deduction: "HD09" }, { deduction: "HD10" }, craneFree] },
     done: { flag: "crane_arrested" },
     lines: [
-      "A motive in writing and a key in his name to a stair he says he's never seen. And a man who wasn't where he said he was. That's enough to hold him.",
+      "A motive in writing and a key in his name to a stair he says he hasn't set foot in for twenty-five years. And a man who wasn't where he said he was. That's enough to hold him.",
       "Kwan's taking him to the gatehouse now. He's asked for his lawyer, which is his right. You keep building it.",
     ],
     effects: [
@@ -344,7 +344,7 @@ export const deliveries: DeliveryDef[] = [
   {
     id: "lab_print",
     title: "Lab report: the print on the shelf catch",
-    exterior: "A State Police laboratory envelope, faxed through to the gatehouse and brought up by Officer Kwan.",
+    exterior: "A State Police laboratory envelope, faxed through to the gatehouse and brought up by one of the officers.",
     text: "The State Police lab's report on the partial print from the catch inside the hidden shelf, compared with elimination prints from everyone in the house.",
     evidence: ["HE009"],
   },
@@ -416,7 +416,7 @@ export const events: ReactiveEventDef[] = [
     ],
     notebook: {
       learned: [
-        { text: "A second witness has been killed at the back stairs, struck from behind, while the house was held." },
+        { text: "One of the witnesses has been killed at the back stairs, struck from behind, while the house was held." },
         { text: "Lt. Mahoney's report is in the Morning Room.", requires: { deliveryPending: "mahoney_attack" } },
       ],
       call: "call_mahoney_attack_killed",

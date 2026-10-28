@@ -62,14 +62,14 @@ export const deductions: DeductionDef[] = [
     id: "HD06",
     code: "HD06",
     title: "Annabel Found the Foundation's Secret",
-    text: "In October 1998 Annabel Lisle, working in the foundation's archive, found that it had bought three pieces of land from companies run by its own treasurer, Desmond Crane, at three to four times their appraised value, and that the books had been changed to hide it.",
-    connections: [["HE018", "HE019"], ["HE018", "HE020"], ["HE019", "HE020"], ["annabel", "HE020"]],
+    text: "In October 1998 Annabel Lisle, working in the foundation's archive, found that it had bought three pieces of land from companies run by its own treasurer, Desmond Crane, at nearly three to more than four times their appraised value, and that the books had been changed to hide it.",
+    connections: [["HE018", "HE019"], ["HE019", "HE020"], ["annabel", "HE019"]],
   },
   {
     id: "HD07",
     code: "HD07",
     title: "Annabel Died at the Estate in 1998",
-    text: "Annabel Lisle did not run away. She was seen confronting Desmond Crane at the library door at about 8:40 PM on Halloween 1998, and she never left the house alive.",
+    text: "Annabel Lisle did not run away. She died at the estate on Halloween 1998, and her death was hidden.",
     connections: [["HE022", "HE025"], ["HE023", "HE025"], ["HE025", "HE035"], ["HE023", "HE035"], ["HE022", "HE035"], ["HE020", "HE025"]],
   },
   {
@@ -83,15 +83,15 @@ export const deductions: DeductionDef[] = [
     id: "HD09",
     code: "HD09",
     title: "Crane Had Reason to Silence Ambrose",
-    text: "Ambrose meant to give his attorney the foundation's records and a statement about 1998 on November 1, and told one trustee on October 22: Desmond Crane, the only other trustee. Those records showed Crane taking the foundation's money in 1997 and still taking it in 2018.",
+    text: "Ambrose meant to give his attorney the foundation's records and a statement about a death in 1998 on November 1, and had told one trustee he would. The records he meant to hand over show Desmond Crane profiting from the foundation he kept the books for.",
     connections: [["HE027", "HE031"], ["HE031", "HE038"], ["HE019", "HE031"], ["HE031", "HE035"], ["HE020", "HE031"]],
   },
   {
     id: "HD10",
     code: "HD10",
     title: "Crane Could Reach the Study in the Dark",
-    text: "Crane says he was on the phone in the conservatory from 10:08. Nobody called from there, and at 10:19 he came in from the terrace, wet. He had signed out the key to the stair's sealed lower door at 7:10 and never returned it. The lower door opens beside the cellar; the cellar's outside door opens onto the terrace.",
-    connections: [["HE028", "HE029"], ["HE029", "HE005"], ["HE028", "HE005"], ["HE009", "HE028"], ["HE009", "HE029"]],
+    text: "Desmond Crane signed out the key to the stair's sealed lower door at 7:10 PM and never signed it back. That door opens on the servants' stair, which runs up behind the study shelves and was used tonight.",
+    connections: [["HE029", "HE005"], ["HE029", "HE028"], ["HE009", "HE029"], ["HE029", "HE021"]],
   },
   {
     id: "HD11",
@@ -113,8 +113,8 @@ export const deductions: DeductionDef[] = [
     id: "HD13",
     code: "HD13",
     title: "Crane Caused Annabel's Death",
-    text: "Annabel Lisle confronted Desmond Crane with the land records, followed him or was followed into the service passage, and died at the foot of the servants' stair. Crane told Ambrose she fell. Then he hid her, and the papers, and for twenty years the foundation he was robbing called her a runaway.",
-    connections: [["crane", "HE025"], ["HE023", "HE035"], ["HE026", "HE035"], ["crane", "HE035"]],
+    text: "Annabel Lisle confronted Desmond Crane with the land records and died at the foot of the servants' stair the same night. By Crane's own account to Ambrose, she fell. Her death was hidden, with Ambrose's help, and for twenty years the foundation Crane was robbing called her a runaway.",
+    connections: [["HE023", "HE035"], ["HE026", "HE035"], ["crane", "HE035"]],
     requires: { all: made("HD06", "HD07") },
   },
 ];
@@ -294,11 +294,11 @@ export const solution: CaseDefinition["solution"] = {
       },
       {
         heading: "The thirteenth place",
-        body: "In October 2018 Ambrose learned that the carriage house renovation would open the chamber on November 5, and that Crane had never stopped stealing. He invited twelve people who had been at the 1998 party, and wrote separately to Josie Lisle, Annabel's sister, to come as she liked and take the thirteenth place. On October 22 he told Crane he would tell the truth on Halloween and give his records to Everett Byrne on November 1. Two days later Crane had the cellar's old main breaker replaced with a lever anyone could throw.",
+        body: "In October 2018 Ambrose learned that the carriage house renovation would open the chamber on November 5, and that Crane had never stopped stealing. He invited ten people who had been at the 1998 party, with his attorney to witness and a historian for the house, and wrote separately to Josie Lisle, Annabel's sister, to come as she liked and take the thirteenth place. On October 22 he told Crane he would tell the truth on Halloween and give his records to Everett Byrne on November 1. Two days later Crane had the cellar's old main breaker replaced with a lever anyone could throw.",
       },
       {
         heading: "7:10 to 10:13 PM",
-        body: "At 7:10 Crane signed the sealed lower stair door key out of Oscar Wren's key book. At 7:15 he took the four brass screws out of the hinged bookcase in the study, oiled its hinge, and cut the paint around the door at the foot of the stair. At 10:08 he left the table for \"a call from Boston\" and went down to the cellar. At 10:11 Ambrose went up to his study and bolted the door behind him. At 10:13 Crane pulled the switch, and the house went dark.",
+        body: "At 7:10 Crane signed the sealed lower stair door key out of Oscar Wren's key book. At 7:15 he took the four brass screws out of the hinged bookcase in the study, oiled its hinge, cut the paint around the door at the foot of the stair, and cut the padlock on the lane gate past the maze, in case he needed another way out. At 10:08 he left the table for \"a call from Boston\" and went down to the cellar. At 10:11 Ambrose went up to his study and bolted the door behind him. At 10:13 Crane pulled the switch, and the house went dark.",
       },
       {
         heading: "10:15 PM",
@@ -390,7 +390,7 @@ export const solution: CaseDefinition["solution"] = {
         },
       ],
       bennett: [
-        "Mahoney. Your report holds. Desmond Crane is charged with the murder of Ambrose Blackthorn and the attempted murder of a witness. Kwan's still talking about it.",
+        "Mahoney. Your report holds. Desmond Crane is charged with the murder of Ambrose Blackthorn and the attempted murder of a witness. My officer's still talking about it.",
         "You put an officer where nobody would think to look for one. That's the whole job, some nights.",
         "The DA's looking at Annabel Lisle too. Josie Lisle knows what happened to her sister now.",
         "Go home. That one's alive because of you.",
@@ -401,11 +401,11 @@ export const solution: CaseDefinition["solution"] = {
       title: "The Truth Before Midnight",
       when: { any: [{ flag: "arrested_before_midnight" }, { not: { clockAt: "00:00" } }] },
       accepted:
-        "Your findings have been accepted. The agency has forwarded your report to Det. Lt. Joan Mahoney, Massachusetts State Police. Desmond Crane was detained before midnight, and nobody else was hurt.",
+        "Your findings have been accepted. The agency has forwarded your report to Det. Lt. Joan Mahoney, Massachusetts State Police. Desmond Crane was in custody before midnight, and nobody else was hurt.",
       reconstruction: [
         {
           heading: "Before midnight",
-          body: "Desmond Crane spent the investigation among the other guests, watching, choosing how to save himself. He ran out of time before he could. He was detained before midnight, before the lanterns went out into the maze, before anyone else in that house was hurt. Ambrose Blackthorn's thirteenth guest heard her sister's name said aloud in his dining room at last, by the police.",
+          body: "Desmond Crane spent the investigation among the other guests, watching, choosing how to save himself. He ran out of time before he could. He was in custody before midnight, before the lanterns went out into the maze, before anyone else in that house was hurt. Ambrose Blackthorn's thirteenth guest heard her sister's name said aloud in his dining room at last, by the police.",
         },
       ],
     },
