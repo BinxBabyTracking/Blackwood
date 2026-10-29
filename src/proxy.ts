@@ -10,6 +10,15 @@ const GUEST_ONLY = ["/login", "/join"];
  * visitors out of the detective portal.
  */
 export async function proxy(request: NextRequest) {
+  // An emailed link that Supabase sent to the site's home page instead of /auth/confirm (it does that when the
+  // address it was asked for isn't on its approved list): finish signing in there, then carry on as the link meant.
+  const sp = request.nextUrl.searchParams;
+  if (request.nextUrl.pathname !== "/auth/confirm" && !request.nextUrl.pathname.startsWith("/api") && (sp.get("code") || (sp.get("token_hash") && sp.get("type")))) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/confirm";
+    return NextResponse.redirect(url);
+  }
+
   let response = NextResponse.next({ request });
   if (!isSupabaseConfigured) return response;
 
