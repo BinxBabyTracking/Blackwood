@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ResetCaseButton } from "@/components/portal/reset-case-button";
+import { isOwner } from "@/lib/test-reset";
 import { Suspense } from "react";
 import { sessionStatusLabel } from "@/components/portal/active-list";
 import { PortalHeading } from "@/components/portal/heading";
@@ -49,6 +51,7 @@ const SECTIONS: { id: string; title: string; match: (f: CaseFile) => boolean; em
 async function Files() {
   const me = await requireInvestigator();
   const [files, reviewed] = await Promise.all([getCaseFiles(me.id), reviewedCases(me.id).catch(() => new Set<string>())]);
+  const owner = isOwner(me.email);
 
   if (files.length === 0) {
     return (
@@ -71,7 +74,7 @@ async function Files() {
               {s.title}
               <span className="font-mono text-sm text-smoke">{rows.length}</span>
             </h2>
-            {rows.length ? <FileTable rows={rows} reviewed={s.id === "closed" ? reviewed : null} /> : <p className="border-y border-rule py-5 text-sm text-smoke">{s.empty}</p>}
+            {rows.length ? <FileTable rows={rows} reviewed={s.id === "closed" ? reviewed : null} owner={owner} /> : <p className="border-y border-rule py-5 text-sm text-smoke">{s.empty}</p>}
           </section>
         );
       })}
@@ -80,7 +83,7 @@ async function Files() {
 }
 
 /** `reviewed` is set for closed cases, which get a Review column. */
-function FileTable({ rows, reviewed }: { rows: CaseFile[]; reviewed: Set<string> | null }) {
+function FileTable({ rows, reviewed, owner = false }: { rows: CaseFile[]; reviewed: Set<string> | null; owner?: boolean }) {
   const heads = ["Case", "Investigation ID", "Status", "Started", "Last activity", "Completed", "Save reference", "Replay", "Report", ...(reviewed ? ["Review"] : [])];
   return (
     <div className="overflow-x-auto border-y border-rule">
@@ -118,6 +121,11 @@ function FileTable({ rows, reviewed }: { rows: CaseFile[]; reviewed: Set<string>
                     <span className="ml-2 font-serif text-paper">{f.case?.title}</span>
                   </>
                 )}
+                {owner ? (
+                  <span className="mt-2 block">
+                    <ResetCaseButton caseId={f.case_id} />
+                  </span>
+                ) : null}
                 {reviewed ? (
                   <span className="mt-1 block">
                     <LeaderboardButton caseId={f.case_id} title={f.case?.title ?? f.case_id} />
