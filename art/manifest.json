@@ -8730,6 +8730,12 @@
       "subject": "A grand Victorian Gothic stone estate on Halloween night seen from its open wrought-iron front gate, rain falling under a full moon through broken cloud. Steep gables, tall chimneys, ivy on the walls, every window glowing warm amber with candlelight. A wet curving drive reflects the light, low fog drifting across it, one dark late-model sedan parked near the front steps. Carved jack-o'-lanterns line the steps and sit by the gate pillar, a lit iron lantern on the pillar, red and orange autumn leaves overhead and on the ground. No people. No readable text."
     },
     {
+      "id": "hallow001_travel_walk",
+      "kind": "pov",
+      "style": "hallow001",
+      "subject": "Walking down a long wood-paneled hallway of a Victorian country house on Halloween night, looking straight ahead: a worn patterned runner on dark floorboards, candle sconces and a few carved jack-o'-lanterns glowing along the walls, heavy framed portraits, rain streaming down a tall leaded window at the far end with lightning-lit garden beyond. No people."
+    },
+    {
       "id": "hallow001_loc_morning_room",
       "kind": "background",
       "style": "hallow001",
