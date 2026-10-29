@@ -49,6 +49,8 @@ function onPaint(h: Hotspot, fx: number, fy: number, box: { w: number; h: number
   const x = (fx - ox) / iw;
   const y = (fy - oy) / ih;
   if (x < 0 || y < 0 || x >= 1 || y >= 1) return false;
+  // Below the counter's edge the figure is hidden, so it can't be clicked there either.
+  if (h.behind !== null && fy > (h.behind - h.rect.y) / h.rect.h) return false;
   // A little forgiveness around the edges, so thin parts are not fiddly to hit.
   const cx = Math.floor(x * m.w);
   const cy = Math.floor(y * m.h);
@@ -110,7 +112,10 @@ export function SceneHotspot({
     >
       {hotspot.sprite ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={hotspot.sprite} alt="" draggable={false} className={`hotspot-art pointer-events-none h-full w-full object-contain drop-shadow-[0_4px_6px_rgba(0,0,0,0.55)] ${hotspot.figure ? "object-bottom" : ""}`} />
+        <img src={hotspot.sprite} alt="" draggable={false} className={`hotspot-art pointer-events-none h-full w-full object-contain drop-shadow-[0_4px_6px_rgba(0,0,0,0.55)] ${hotspot.figure ? "object-bottom" : ""}`}
+          // Standing behind a counter: cut the figure off at the counter's edge.
+          style={hotspot.behind !== null ? { clipPath: `inset(0 0 ${Math.max(0, ((r.y + r.h - hotspot.behind) / r.h) * 100)}% 0)` } : undefined}
+        />
       ) : null}
       {!painted && !hotspot.attention && !hotspot.pending ? (
         // On a touch screen there is no hover, so every tappable spot carries a soft ring (fainter once examined).

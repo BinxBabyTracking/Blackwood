@@ -332,6 +332,12 @@ export interface HotspotDef {
   sprite?: { image: string; when?: Condition }[];
   /** A subtle cue (a ringing telephone, something new on the desk) while the condition holds. */
   attention?: Condition;
+  /**
+   * For a person standing behind a counter or desk in the painting: the height
+   * in the scene (percent from the top, like rect.y) where the counter's front
+   * edge is. The figure's art below that line is hidden, so the counter hides it.
+   */
+  behind?: number;
   /** A short pointer shown beside the hotspot while the condition holds, e.g. "Tap here to travel". */
   callout?: { text: string; when: Condition };
 }
@@ -1447,7 +1453,7 @@ export interface ClientView {
     subtitle: string;
     background: string;
     ambience: string | null;
-    hotspots: { id: string; label: string; rect: HotspotDef["rect"]; inspected: boolean; collected: boolean; sprite: string | null; figure: boolean; pending: boolean; attention: boolean; callout: string | null; local: "rolling" | null }[];
+    hotspots: { id: string; label: string; rect: HotspotDef["rect"]; inspected: boolean; collected: boolean; sprite: string | null; figure: boolean; behind: number | null; pending: boolean; attention: boolean; callout: string | null; local: "rolling" | null }[];
   };
   map: { id: string; name: string; subtitle: string; area: string | null; available: boolean; visited: boolean; current: boolean; pin: { x: number; y: number } | null; tag: string | null }[];
   /** Optional recordings for travel scenes; when null the game synthesizes the sound. */

@@ -201,13 +201,13 @@ export const locations: LocationDef[] = [
     available: briefed,
     onMap: true,
     hotspots: [
-      person("po_cross", "Det. Helen Cross", "cross", { x: 42, y: 24, w: 13, h: 62 }),
-      person("po_bell", "Marcus Bell, in an interview room", "bell", { x: 78, y: 14, w: 8, h: 32 }, custody),
-      inspect("po_board", "Case board", "corkboard", { x: 0, y: 4, w: 22, h: 42 }, "Det. Cross's case board", "Photos of the CR-V, a street map of Alder with two X's, a printout of the Hart's receipt, and a sticky note in Cross's hand: 'Why leave the wallets?'", {
+      person("po_cross", "Det. Helen Cross", "cross", { x: 35, y: 24, w: 12, h: 56 }),
+      person("po_bell", "Marcus Bell, in an interview room", "bell", { x: 55, y: 22, w: 7, h: 30 }, custody),
+      inspect("po_board", "Case board", "corkboard", { x: 0, y: 4, w: 32, h: 40 }, "Det. Cross's case board", "Photos of the CR-V, a street map of Alder with two X's, a printout of the Hart's receipt, and a sticky note in Cross's hand: 'Why leave the wallets?'", {
         textAfter: [{ requires: found, text: "A second board has gone up beside the first: 409 Alder Street, a map of River Road, two school photos. Cross has drawn a line in red marker between the two boards." }],
       }),
-      inspect("po_impound", "Window over the impound lot", "window", { x: 62, y: 4, w: 26, h: 36 }, "The impound lot", "Through the blinds, the silver CR-V under a blue tarp, its left side to the window. Even from here you can see the dent in the rear quarter."),
-      inspect("po_desk", "Cross's desk", "desk", { x: 64, y: 52, w: 34, h: 22 }, "Cross's desk", "Two binders marked 18-09-1147, a cold coffee, and a child's drawing of a horse taped to the monitor. 'My niece,' Cross says, when she sees you looking."),
+      inspect("po_impound", "Window over the impound lot", "window", { x: 68, y: 12, w: 32, h: 36 }, "The impound lot", "Through the blinds, the silver CR-V under a blue tarp, its left side to the window. Even from here you can see the dent in the rear quarter."),
+      inspect("po_desk", "Cross's desk", "desk", { x: 55, y: 58, w: 45, h: 40 }, "Cross's desk", "Two binders marked 18-09-1147, a cold coffee, and a child's drawing of a horse taped to the monitor. 'My niece,' Cross says, when she sees you looking."),
     ],
   },
   {
@@ -221,11 +221,11 @@ export const locations: LocationDef[] = [
     available: briefed,
     onMap: true,
     hotspots: [
-      person("ha_lena", "Lena Ortiz, behind the counter", "lena", { x: 40, y: 26, w: 12, h: 60 }),
-      inspect("ha_monitor", "Camera monitor in the back office", "tv", { x: 78, y: 18, w: 14, h: 22 }, "The camera monitor", "Through the back office door, a monitor split into four views. Lena has saved the September 14 clip to the desktop and left it ready for you.", { evidence: "E04" }),
-      inspect("ha_pumps", "Pump 3", "pump", { x: 2, y: 20, w: 14, h: 40 }, "Pump 3", "Through the front windows, pump 3, under the canopy lights. Beyond them, at the far edge of the lot, the light runs out."),
-      inspect("ha_lot", "The far side of the lot", "lot", { x: 16, y: 28, w: 16, h: 28 }, "The far side of the lot", "A dark strip of asphalt past the pump lights, next to the dumpster. A car parked there nose out could watch every pump and leave in either direction."),
-      inspect("ha_counter", "Cigarette rack", "rack", { x: 56, y: 12, w: 16, h: 26 }, "Behind the counter", "Cigarettes, lottery tickets, phone chargers. A sign by the register: 'Cash under $5, please.'"),
+      { ...person("ha_lena", "Lena Ortiz, behind the counter", "lena", { x: 39, y: 24.5, w: 11, h: 54 }), behind: 60.5 },
+      inspect("ha_monitor", "Camera monitor in the back office", "tv", { x: 69, y: 31, w: 11, h: 17 }, "The camera monitor", "Through the back office door, a monitor split into four views. Lena has saved the September 14 clip to the desktop and left it ready for you.", { evidence: "E04" }),
+      inspect("ha_pumps", "Pump 3", "pump", { x: 11, y: 30, w: 10, h: 22 }, "Pump 3", "Through the front windows, pump 3, under the canopy lights. Beyond them, at the far edge of the lot, the light runs out."),
+      inspect("ha_lot", "The far side of the lot", "lot", { x: 0, y: 32, w: 11, h: 16 }, "The far side of the lot", "A dark strip of asphalt past the pump lights, next to the dumpster. A car parked there nose out could watch every pump and leave in either direction."),
+      inspect("ha_counter", "Cigarette rack", "rack", { x: 30, y: 10, w: 33, h: 20 }, "Behind the counter", "Cigarettes, lottery tickets, phone chargers. A sign by the register: 'Cash under $5, please.'"),
     ],
   },
   {

@@ -1423,6 +1423,7 @@ function projectState(def: CaseDefinition, s: InvestigationState, now: number, c
         collected: h.interaction.type === "inspect" && Boolean(h.interaction.evidence) && s.evidence.includes(h.interaction.evidence!),
         sprite: hotspotSprite(def, s, h, painted),
         figure: h.interaction.type === "talk",
+        behind: h.behind ?? null,
         // A painted scene whose painting for this person or object has not arrived yet.
         pending: Boolean(h.art && painted && !def.assets.images[h.art] && !h.sprite?.some((x) => check(x.when, s))),
         attention: h.attention ? check(h.attention, s) : false,
