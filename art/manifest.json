@@ -18,7 +18,7 @@
       "size": "1024x1536",
       "quality": "high",
       "background": "transparent",
-      "suffix": "The same person as the reference portrait, shown full length from head to toe, standing naturally, turned three-quarters toward the viewer, lit warmly from the upper left. Isolated cut-out on a fully transparent background: no floor, no ground, no backdrop, no shadow and no painted patch beneath the feet; nothing in the image except the person."
+      "suffix": "The same person as the reference portrait, shown full length from head to toe, standing naturally, turned three-quarters toward the viewer, lit warmly from the upper left. Isolated cut-out on a fully transparent background: no floor, no ground, no backdrop, no shadow and no painted patch beneath the feet; nothing in the image except the person. The whole person fits inside the frame, with empty space above the head and below the shoes: both feet and shoes fully visible, never cropped at the ankles, shins or knees."
     },
     "sprite": {
       "size": "1024x1024",
@@ -1221,7 +1221,7 @@
       "id": "c004_loc_police",
       "kind": "background",
       "style": "c004",
-      "subject": "A 1920s Chicago police detective bureau squad room: rows of wooden desks with typewriters and candlestick telephones, a chalk blackboard on the left wall with case names, filing cabinets, a holding cell door at the far right, gray daylight through tall windows, cigarette smoke."
+      "subject": "A 1920s Chicago police detective bureau squad room: rows of wooden desks with typewriters and candlestick telephones on the left and right, a clear aisle of bare floor running up the middle from the foreground, filing cabinets, a holding cell door at the far right, gray daylight through tall windows, cigarette smoke. On the back wall above the aisle, a chalk blackboard with exactly these words in chalk, one per line, and nothing else: 'VALE, ARTHUR' then '27-10-2117' then 'SUSPECT: MERCER, H.'"
     },
     {
       "id": "c004_loc_warehouse_gate",
@@ -1369,19 +1369,19 @@
       "id": "c004_obj_report_folder",
       "kind": "sprite",
       "style": "c004",
-      "subject": "A closed manila report folder with a typed label, lying flat. Transparent background."
+      "subject": "A closed manila report folder with a blank paper label, lying flat. No readable words or letters anywhere. Transparent background."
     },
     {
       "id": "c004_obj_envelope_sealed",
       "kind": "sprite",
       "style": "c004",
-      "subject": "A sealed cream business envelope from the 1920s, addressed in ink, lying flat. Transparent background."
+      "subject": "A sealed plain cream business envelope from the 1920s, blank, lying flat. No writing, words or letters anywhere. Transparent background."
     },
     {
       "id": "c004_obj_envelope_open",
       "kind": "sprite",
       "style": "c004",
-      "subject": "An opened cream business envelope from the 1920s with a folded letter sticking out, lying flat. Transparent background."
+      "subject": "An opened plain cream business envelope from the 1920s with a folded blank letter sticking out, lying flat. No readable writing, words or letters anywhere. Transparent background."
     },
     {
       "id": "c004_obj_casefile",

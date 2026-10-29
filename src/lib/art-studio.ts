@@ -325,6 +325,19 @@ async function currentBytes(id: string, origin: string) {
   return res?.ok ? Buffer.from(await res.arrayBuffer()) : null;
 }
 
+/**
+ * Whether a finished (trimmed) figure was painted cut off at the bottom, without
+ * its feet: its lowest row is a wide band of legs or coat rather than the
+ * narrow tips of two shoes. Whole figures measure under a quarter of their width there.
+ */
+async function feetCutOff(webp: Buffer) {
+  const { data, info } = await sharp(webp).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const row = (info.height - 1) * info.width;
+  let solid = 0;
+  for (let x = 0; x < info.width; x++) if (data[(row + x) * 4 + 3] > 200) solid++;
+  return solid / info.width > 0.3;
+}
+
 /** Makes one image with OpenAI, finishes it for its kind and keeps it as a new version (not live until chosen). */
 export async function generateImage(id: string, origin: string, tier: Tier = "standard") {
   const img = manifest.images.find((i) => i.id === id);
@@ -339,7 +352,9 @@ export async function generateImage(id: string, origin: string, tier: Tier = "st
   if (img.kind === "face" && !ref) throw new Error(`Make the portrait (${img.reference}) first.`);
 
   const quality = TIERS[tier]?.quality ?? "medium";
-  for (let attempt = 0; attempt < 4; attempt++) {
+  // A figure painted without feet is painted again, up to twice, before it's kept.
+  let footRetries = 0;
+  for (let attempt = 0; attempt < 6; attempt++) {
     const model = modelFor(tier);
     const common = { model, prompt, size: k.size, quality, background: k.background, output_format: "webp", output_compression: 88, n: 1 };
     let res: Response;
@@ -376,6 +391,10 @@ export async function generateImage(id: string, origin: string, tier: Tier = "st
     const b64 = body.data?.[0]?.b64_json;
     if (!b64) throw new Error("OpenAI returned no image.");
     const webp = img.kind === "face" ? await blendFace(id, Buffer.from(b64, "base64"), ref!) : await finish(img.kind, Buffer.from(b64, "base64"));
+    if (img.kind === "figure" && footRetries < 2 && (await feetCutOff(webp))) {
+      footRetries++;
+      continue;
+    }
     const version = await nextVersion(id);
     const cost = costOf(k, model, quality, Boolean(ref));
     const saved = await store(id, version, webp, { source: "generated", model: `${model} (${quality})`, prompt, cost });
