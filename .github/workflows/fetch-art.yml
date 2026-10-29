@@ -2,6 +2,8 @@ name: Fetch live C004 art (temporary)
 on:
   push:
     branches: [art-fetch-c004]
+permissions:
+  contents: write
 jobs:
   fetch:
     runs-on: ubuntu-latest
@@ -46,7 +48,14 @@ jobs:
           curl -sfL -o out/c004_obj_envelope_sealed.webp https://www.blackwoodinvestigation.com/art/live/c004_obj_envelope_sealed || echo missing c004_obj_envelope_sealed
           curl -sfL -o out/c004_obj_envelope_open.webp https://www.blackwoodinvestigation.com/art/live/c004_obj_envelope_open || echo missing c004_obj_envelope_open
           ls -la out
-      - uses: actions/upload-artifact@v4
+      - uses: actions/checkout@v4
         with:
-          name: c004-art
-          path: out
+          path: repo
+      - name: Commit the pictures to this branch
+        run: |
+          mkdir -p repo/fetched && cp out/* repo/fetched/
+          cd repo
+          git config user.name "art-fetch"
+          git config user.email "art-fetch@users.noreply.github.com"
+          git add fetched
+          git commit -m "Fetched C004 art [skip ci]" && git push
