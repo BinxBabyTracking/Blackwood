@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { FeaturedCase } from "@/components/featured-case";
-import { ActiveInvestigations } from "@/components/portal/active-list";
 import { Greeting } from "@/components/portal/greeting";
 import { Ledger } from "@/components/portal/heading";
 import { SetupNotice } from "@/components/setup-notice";
-import { ButtonLink, EmptyFile, Skeleton } from "@/components/ui";
+import { EmptyFile, Skeleton } from "@/components/ui";
 import { getCatalog, getFeaturedCase, getNotices, getRanks } from "@/lib/catalog";
 import { FeaturedRotator } from "@/components/portal/featured-rotator";
 import { viewerCaseStates, type ViewerCaseState } from "@/lib/viewer-cases";
@@ -79,12 +78,19 @@ async function Featured() {
   if (!catalog.ok) return <SetupNotice reason={catalog.reason} message={catalog.message} />;
   const byId = new Map(catalog.data.map((c) => [c.id, c]));
 
+  // Every investigation under way, one card each, the furthest along first.
   const underWay = files
     .filter((f) => (f.status === "active" || f.status === "forming") && f.mode === "solo" && byId.has(f.case_id))
-    .sort((a, b) => (b.progress ?? 0) - (a.progress ?? 0))[0];
-  if (underWay) {
-    const c = byId.get(underWay.case_id)!;
-    return <FeaturedCase c={c} href={`/play/${c.id}`} cta="Resume Investigation" headingLevel="h3" mine="open" progress={underWay.progress ?? 0} />;
+    .sort((a, b) => (b.progress ?? 0) - (a.progress ?? 0));
+  if (underWay.length) {
+    return (
+      <div className="space-y-8">
+        {underWay.map((f) => {
+          const c = byId.get(f.case_id)!;
+          return <FeaturedCase key={f.id} c={c} href={`/play/${c.id}`} cta="Resume Investigation" headingLevel="h3" mine="open" progress={f.progress ?? 0} />;
+        })}
+      </div>
+    );
   }
 
   const open = catalog.data.filter((c) => !c.is_preview && !c.series_id && (!mine[c.id] || mine[c.id] === "available"));
@@ -121,24 +127,6 @@ async function RecordAndActive() {
 
   return (
     <>
-      <section aria-labelledby="active-heading">
-        <div className="mb-5 flex items-baseline justify-between">
-          <h2 id="active-heading" className="font-serif text-xl text-smoke">
-            Active Investigations
-          </h2>
-        </div>
-        {active.length ? (
-          <ActiveInvestigations files={active} />
-        ) : (
-          <EmptyFile
-            title="No open investigations."
-            action={<ButtonLink href="/agency/assignments" variant="secondary">Browse Available Assignments</ButtonLink>}
-          >
-            When you accept an assignment it will be filed here so you can pick it up where you left off.
-          </EmptyFile>
-        )}
-      </section>
-
       <section aria-labelledby="stats-heading">
         <h2 id="stats-heading" className="mb-5 font-serif text-xl text-smoke">
           Agency Statistics
