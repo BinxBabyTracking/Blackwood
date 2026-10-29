@@ -221,7 +221,7 @@ export const locations: LocationDef[] = [
     available: briefed,
     onMap: true,
     hotspots: [
-      { ...person("ha_lena", "Lena Ortiz, behind the counter", "lena", { x: 38.5, y: 31.5, w: 12, h: 48 }), behind: 54.5 },
+      { ...person("ha_lena", "Lena Ortiz, behind the counter", "lena", { x: 41.5, y: 33, w: 7, h: 50 }), behind: 54.5 },
       inspect("ha_monitor", "Camera monitor in the back office", "tv", { x: 69, y: 31, w: 11, h: 17 }, "The camera monitor", "Through the back office door, a monitor split into four views. Lena has saved the September 14 clip to the desktop and left it ready for you.", { evidence: "E04" }),
       inspect("ha_pumps", "Pump 3", "pump", { x: 11, y: 30, w: 10, h: 22 }, "Pump 3", "Through the front windows, pump 3, under the canopy lights. Beyond them, at the far edge of the lot, the light runs out."),
       inspect("ha_lot", "The far side of the lot", "lot", { x: 0, y: 32, w: 11, h: 16 }, "The far side of the lot", "A dark strip of asphalt past the pump lights, next to the dumpster. A car parked there nose out could watch every pump and leave in either direction."),

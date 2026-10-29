@@ -336,6 +336,9 @@ export interface HotspotDef {
    * For a person standing behind a counter or desk in the painting: the height
    * in the scene (percent from the top, like rect.y) where the counter's front
    * edge is. The figure's art below that line is hidden, so the counter hides it.
+   * Such a figure hangs from the top of its rect (the top of the head) and is
+   * sized by the rect's width (shoulder to shoulder), so a whole-body figure and
+   * one cropped at the waist land the same way; make the rect tall and narrow.
    */
   behind?: number;
   /** A short pointer shown beside the hotspot while the condition holds, e.g. "Tap here to travel". */
