@@ -13,7 +13,10 @@ export function FeaturedCase({
   cta,
   headingLevel = "h2",
   mine,
+  progress,
 }: {
+  /** How far the investigator is through it, in percent, for a case under way. */
+  progress?: number;
   /** How the case stands for the signed-in investigator. */
   mine?: "available" | "open" | "solved";
   c: CatalogCase;
@@ -44,6 +47,17 @@ export function FeaturedCase({
         <p className="mt-4 max-w-[52ch] leading-relaxed text-smoke">{c.synopsis}</p>
         <CaseFacts c={c} className="mt-8 border-t border-rule pt-5" />
         <div className="mt-8 lg:mt-auto lg:pt-8">
+          {progress !== undefined ? (
+            <div className="mb-5">
+              <div className="flex items-baseline justify-between text-xs text-smoke">
+                <span>Your progress</span>
+                <span className="font-mono text-paper">{Math.round(progress)}%</span>
+              </div>
+              <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100}>
+                <div className="h-full bg-brass" style={{ width: `${Math.max(2, Math.min(100, progress))}%` }} />
+              </div>
+            </div>
+          ) : null}
           <div className="flex flex-wrap items-center gap-5">
             <Link href={href} className={buttonClass("primary")}>
               {cta}

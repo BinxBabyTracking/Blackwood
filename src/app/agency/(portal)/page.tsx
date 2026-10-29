@@ -6,7 +6,8 @@ import { Greeting } from "@/components/portal/greeting";
 import { Ledger } from "@/components/portal/heading";
 import { SetupNotice } from "@/components/setup-notice";
 import { ButtonLink, EmptyFile, Skeleton } from "@/components/ui";
-import { getFeaturedCase, getNotices, getRanks } from "@/lib/catalog";
+import { getCatalog, getFeaturedCase, getNotices, getRanks } from "@/lib/catalog";
+import { FeaturedRotator } from "@/components/portal/featured-rotator";
 import { viewerCaseStates, type ViewerCaseState } from "@/lib/viewer-cases";
 import { formatDate, formatHours } from "@/lib/format";
 import { getCaseFiles, getServiceRecord, requireInvestigator } from "@/lib/investigator";
@@ -62,11 +63,54 @@ async function Welcome() {
   );
 }
 
+/**
+ * The featured assignment: the investigation the player is furthest along in,
+ * if any is under way. Otherwise it cycles through what they can start: cases
+ * they own (free, bought or early access) and haven't started, then cases on
+ * sale. Falls back to the introductory case.
+ */
 async function Featured() {
-  const [result, mine] = await Promise.all([getFeaturedCase(), viewerCaseStates().catch(() => ({}) as Record<string, ViewerCaseState>)]);
-  if (!result.ok) return <SetupNotice reason={result.reason} message={result.message} />;
-  if (!result.data) return <EmptyFile title="No assignment is being featured.">Check Available Assignments for open files.</EmptyFile>;
-  return <FeaturedCase c={result.data} href={`/agency/assignments/${result.data.id}`} cta="Review Assignment" headingLevel="h3" mine={mine[result.data.id]} />;
+  const me = await requireInvestigator();
+  const [catalog, mine, files] = await Promise.all([
+    getCatalog(),
+    viewerCaseStates().catch(() => ({}) as Record<string, ViewerCaseState>),
+    getCaseFiles(me.id).catch(() => []),
+  ]);
+  if (!catalog.ok) return <SetupNotice reason={catalog.reason} message={catalog.message} />;
+  const byId = new Map(catalog.data.map((c) => [c.id, c]));
+
+  const underWay = files
+    .filter((f) => (f.status === "active" || f.status === "forming") && f.mode === "solo" && byId.has(f.case_id))
+    .sort((a, b) => (b.progress ?? 0) - (a.progress ?? 0))[0];
+  if (underWay) {
+    const c = byId.get(underWay.case_id)!;
+    return <FeaturedCase c={c} href={`/play/${c.id}`} cta="Resume Investigation" headingLevel="h3" mine="open" progress={underWay.progress ?? 0} />;
+  }
+
+  const open = catalog.data.filter((c) => !c.is_preview && !c.series_id && (!mine[c.id] || mine[c.id] === "available"));
+  const owned = open.filter((c) => mine[c.id] === "available" || (c.status === "available" && (c.tier?.price_cents ?? 0) === 0));
+  const onSale = open.filter((c) => c.status === "available" && !owned.includes(c));
+  const slides = [...owned, ...onSale];
+  if (!slides.length) {
+    const result = await getFeaturedCase();
+    if (!result.ok) return <SetupNotice reason={result.reason} message={result.message} />;
+    if (!result.data) return <EmptyFile title="No assignment is being featured.">Check Available Assignments for open files.</EmptyFile>;
+    return <FeaturedCase c={result.data} href={`/agency/assignments/${result.data.id}`} cta="Review Assignment" headingLevel="h3" mine={mine[result.data.id]} />;
+  }
+  return (
+    <FeaturedRotator labels={slides.map((c) => c.title)}>
+      {slides.map((c) => (
+        <FeaturedCase
+          key={c.id}
+          c={c}
+          href={`/agency/assignments/${c.id}`}
+          cta={owned.includes(c) ? "Review Assignment" : "View Case File"}
+          headingLevel="h3"
+          mine={mine[c.id] ?? (owned.includes(c) ? "available" : undefined)}
+        />
+      ))}
+    </FeaturedRotator>
+  );
 }
 
 async function RecordAndActive() {
