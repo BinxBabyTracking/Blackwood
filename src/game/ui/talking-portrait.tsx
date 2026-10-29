@@ -51,8 +51,28 @@ function weight(ch: string) {
   return 1;
 }
 
+/**
+ * Half the mouth movements: every other change of shape is skipped, so the
+ * mouth moves at a natural speed rather than on every letter. A closed mouth
+ * (a pause, or m, b, p) is always kept, so speech still stops and starts.
+ */
+function slower(beats: Beat[]): Beat[] {
+  const out: Beat[] = [];
+  let n = 0;
+  for (const b of beats) {
+    const keep = b.shape === "rest" || n++ % 2 === 0;
+    if (!keep || (out.length && out[out.length - 1].shape === b.shape)) continue;
+    out.push(b);
+  }
+  return out;
+}
+
 /** When each mouth shape starts, from the voice's timing or, without it, from the text spread over the clip. */
 export function beatsFor(text: string, duration: number, timing: Timing | null, hasF: boolean): Beat[] {
+  return slower(rawBeats(text, duration, timing, hasF));
+}
+
+function rawBeats(text: string, duration: number, timing: Timing | null, hasF: boolean): Beat[] {
   const out: Beat[] = [];
   const push = (t: number, shape: FaceShape) => {
     if (out.length && out[out.length - 1].shape === shape) return;
@@ -130,7 +150,7 @@ export function TalkingPortrait({
         const want = b.length && t >= b[0].t ? b[i].shape : "rest";
         // Hold each shape for at least a few frames so the mouth doesn't flutter.
         const now = performance.now();
-        if (want !== shown.current && now - changedAt > 55) {
+        if (want !== shown.current && now - changedAt > 110) {
           changedAt = now;
           show(want);
         }
