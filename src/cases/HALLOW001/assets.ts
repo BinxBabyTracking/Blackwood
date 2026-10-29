@@ -80,6 +80,7 @@ const UI: Record<string, string> = {
   obj_notebook: "hallow001_obj_notebook",
   obj_evidence_bag: "hallow001_obj_evidence_bag",
   obj_phone: "hallow001_obj_phone",
+  obj_casefile: "hallow001_obj_casefile",
 };
 
 /** People with a talking portrait: their portrait plus six frames (docs/artwork-studio.md). */

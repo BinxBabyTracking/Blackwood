@@ -735,6 +735,17 @@ export function InvestigationShell({
 
       {/* Map, notebook and evidence: painted objects in the corner of the scene. The murder board is on the office wall. */}
       <nav aria-label="Investigation" className="pointer-events-none fixed bottom-3 left-3 z-20 flex items-end gap-2 sm:bottom-4 sm:left-4 sm:gap-3">
+        {/* A case that carries its case file keeps it here, first in the corner, readable anywhere. */}
+        {view.caseFileInHud ? (
+          <HudObject
+            label="Case File"
+            image={view.caseArt.obj_casefile ?? null}
+            // The HALLOW001 painting has a phone lying beside the folder: show the folder only.
+            cropAspect="604/638"
+            fallback="casefile"
+            onClick={() => dispatch({ type: "readDocument", documentId: "casefile" })}
+          />
+        ) : null}
         {/* In the office the map and notebook are in the room itself; only the evidence stays in the corner. */}
         {atHome ? null : (
           <>
@@ -1324,11 +1335,14 @@ function HudObject({
   glow,
   callout,
   guide = false,
+  cropAspect,
   onClick,
 }: {
   label: string;
   image: string | null;
-  fallback: "map" | "notebook" | "evidence" | "phone";
+  fallback: "map" | "notebook" | "evidence" | "phone" | "casefile";
+  /** Show only the left part of the painting, at this aspect ratio (e.g. "604/638"). */
+  cropAspect?: string;
   count?: number;
   alert?: boolean;
   /** Something new inside: a warm pulsing light behind it. */
@@ -1368,7 +1382,8 @@ function HudObject({
             src={image}
             alt=""
             draggable={false}
-            className={`relative h-full w-full drop-shadow-[0_6px_8px_rgba(0,0,0,0.75)] ${fallback === "map" ? "rotate-[-6deg] rounded-[3px] border-2 border-[#e8dcc0] object-cover" : "object-contain"}`}
+            style={cropAspect ? { aspectRatio: cropAspect } : undefined}
+            className={`relative drop-shadow-[0_6px_8px_rgba(0,0,0,0.75)] ${cropAspect ? "mx-auto h-full w-auto max-w-full object-cover object-left" : "h-full w-full"} ${fallback === "map" ? "rotate-[-6deg] rounded-[3px] border-2 border-[#e8dcc0] object-cover" : cropAspect ? "" : "object-contain"}`}
           />
         ) : (
           <span className="relative flex h-full w-full items-center justify-center rounded-[4px] border border-white/20 bg-[#161b20]/90 text-paper">
@@ -1384,10 +1399,10 @@ function HudObject({
   );
 }
 
-function HudIcon({ kind }: { kind: "map" | "notebook" | "evidence" | "phone" }) {
+function HudIcon({ kind }: { kind: "map" | "notebook" | "evidence" | "phone" | "casefile" }) {
   return (
     <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
-      {kind === "phone" ? <path d="M8 2h8a1 1 0 011 1v18a1 1 0 01-1 1H8a1 1 0 01-1-1V3a1 1 0 011-1zM11 18h2" /> : kind === "map" ? <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14" /> : kind === "notebook" ? <path d="M6 3h11a1 1 0 011 1v16a1 1 0 01-1 1H6zM6 3v18M9 8h6M9 12h6" /> : <path d="M5 8h14v12H5zM9 8V5h6v3M9 13h6" />}
+      {kind === "phone" ? <path d="M8 2h8a1 1 0 011 1v18a1 1 0 01-1 1H8a1 1 0 01-1-1V3a1 1 0 011-1zM11 18h2" /> : kind === "map" ? <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14" /> : kind === "notebook" ? <path d="M6 3h11a1 1 0 011 1v16a1 1 0 01-1 1H6zM6 3v18M9 8h6M9 12h6" /> : kind === "casefile" ? <path d="M3 6h7l2 2h9v11H3zM3 10h18" /> : <path d="M5 8h14v12H5zM9 8V5h6v3M9 13h6" />}
     </svg>
   );
 }

@@ -863,6 +863,8 @@ export interface CaseDefinition {
    * and texts always get through, so it never blocks the story.
    */
   battery?: BatteryDef;
+  /** The case file is carried in the corner of the screen (beside the evidence) instead of lying on the office desk, and can be read anywhere. */
+  caseFileInHud?: boolean;
   /** Text messages the case can send with the `text` effect. */
   texts?: TextDef[];
   /** The case's status line; the last entry whose condition holds is shown (e.g. "Active homicide"). */
@@ -1493,6 +1495,8 @@ export interface ClientView {
   };
   /** The case's status line, if the case has one. */
   caseStatus: string | null;
+  /** The case file sits in the corner of the screen and opens from anywhere. */
+  caseFileInHud: boolean;
   /** The case clock, e.g. "11:48 PM", in a case with one. */
   clock: string | null;
   /** The case's look and its words for things. */

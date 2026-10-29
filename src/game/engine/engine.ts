@@ -814,7 +814,7 @@ function step(
 
     case "readDocument": {
       const d = def.documents.find((x) => x.id === action.documentId) ?? fail("Unknown document.");
-      if (!inOffice) fail("Your files are at the office.");
+      if (!inOffice && !(def.caseFileInHud && d.id === "casefile")) fail("Your files are at the office.");
       if (!s.readDocuments.includes(d.id)) s.readDocuments.push(d.id);
       apply(d.effectsOnRead, s, def);
       outcome = {
@@ -1489,6 +1489,7 @@ function projectState(def: CaseDefinition, s: InvestigationState, now: number, c
       }),
     },
     caseStatus: [...(def.status ?? [])].reverse().find((x) => check(x.when, s))?.label ?? null,
+    caseFileInHud: Boolean(def.caseFileInHud),
     clock: def.clock ? clockLabel(s.clock ?? clockMinutes(def.clock.start)) : null,
     theme: def.theme ?? "noir",
     words: wordsFor(def),

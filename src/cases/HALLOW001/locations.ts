@@ -100,7 +100,7 @@ export const locations: LocationDef[] = [
     available: { always: true },
     onMap: true,
     hotspots: [
-      { ...panel("mr_casefile", "Case file: Ambrose Blackthorn", "folder", { x: 27, y: 66, w: 15, h: 22 }, "casefile"), art: "art.obj_casefile" },
+      // The case file is carried in the corner of the screen, beside the evidence (caseFileInHud).
       deskItem("mr_lab", "Lab report: the shelf catch", "lab_print", "HE009", LAB_PRINT_RECT, "obj.labfolder"),
       deskItem("mr_report", "Lt. Mahoney's report", "mahoney_attack", "HE037", REPORT_RECT, "obj.report_folder"),
       {

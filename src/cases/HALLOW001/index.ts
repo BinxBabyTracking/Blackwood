@@ -55,6 +55,7 @@ export const HALLOW001: CaseDefinition = {
   boardHint: { evidenceCount: 5, callId: "call_mahoney_board" },
   labs,
   phone: "mobile",
+  caseFileInHud: true,
   texts,
   status: [
     { label: "Active homicide" },
