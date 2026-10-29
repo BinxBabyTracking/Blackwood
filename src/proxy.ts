@@ -18,6 +18,14 @@ export async function proxy(request: NextRequest) {
     url.pathname = "/auth/confirm";
     return NextResponse.redirect(url);
   }
+  // The same kind of link that had already expired or been used: say so on the sign-in page instead of the home page.
+  if (sp.get("error_code") && request.nextUrl.pathname === "/") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    url.search = "";
+    url.searchParams.set("error", "link_invalid");
+    return NextResponse.redirect(url);
+  }
 
   let response = NextResponse.next({ request });
   if (!isSupabaseConfigured) return response;
