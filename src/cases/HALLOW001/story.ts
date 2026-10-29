@@ -219,6 +219,7 @@ export const calls: CallDef[] = [
     lines: [
       "Mahoney. I've still got two officers standing in a hallway waiting for somebody to tell them what to do.",
       "A house this size has more ways out than doors. I'd put one where the house can see her and keep one up my sleeve. But it's your call. You know who's talking to you.",
+      "When you know where you want them, call me back and tell me. One at a time.",
     ],
   },
   {
