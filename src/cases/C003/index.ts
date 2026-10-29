@@ -50,6 +50,8 @@ export const C003: CaseDefinition = {
   boardHint: { evidenceCount: 4, callId: "call_bennett_board" },
   labs,
   phone: "mobile",
+  // A 2018 phone: about 33 call questions or 50 texts on a charge; full at the office, a quarter more on every drive.
+  battery: { perCall: 3, perText: 2, perDrive: 25 },
   texts,
   status: [{ label: "Active homicide" }, { label: "Active multiple homicide", when: { flag: "marshes_found" } }],
   boardSections: [

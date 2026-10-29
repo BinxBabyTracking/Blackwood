@@ -125,7 +125,7 @@ export async function playAction(caseId: string, action: GameAction, asGuest = f
         }
         const text = String(act.text ?? "").slice(0, 300);
         const r = await interpretQuestion(def, current, String(act.characterId ?? ""), text, { userId, sessionId: loaded.sessionId });
-        step = { type: "askFree", characterId: String(act.characterId ?? ""), text, match: r.match, composed: r.composed, facts: r.facts };
+        step = { type: "askFree", characterId: String(act.characterId ?? ""), text, match: r.match, composed: r.composed, facts: r.facts, ...(act.via === "text" ? { via: "text" as const } : {}) };
       }
       const { state, outcome } = reduce(def, current, step, Date.now(), ctx);
       const saved = await saveState(def, loaded, state);

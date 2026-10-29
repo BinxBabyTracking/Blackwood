@@ -165,7 +165,7 @@ function randomWalks() {
     }
     for (const [cid, lines] of Object.entries(w.conversations)) {
       lines.forEach((l, n) => {
-        if (l.speaker !== "you" && l.speaker !== "cue" && spokenLine(def, w, { kind: "conversation", id: cid, n })?.text !== l.text) problems.push("subtitle mismatch in random walk");
+        if (l.speaker !== "you" && l.speaker !== "cue" && !l.via && spokenLine(def, w, { kind: "conversation", id: cid, n })?.text !== l.text) problems.push("subtitle mismatch in random walk");
       });
     }
   }

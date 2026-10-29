@@ -31,6 +31,7 @@ import { InterviewScreen } from "./interview-screen";
 import { SequencePanel } from "./sequence-panel";
 import { ComparisonPanel } from "./comparison-panel";
 import { useTelephoneRing } from "./telephone-ring";
+import { phoneBadges, PhoneDevice } from "./phone-device";
 import { playTravelSound, type TravelMode } from "./travel-audio";
 import { setTravelScenes, TravelScene, useTravelScenes } from "./travel-scene";
 import { TravelMap } from "./travel-map";
@@ -41,7 +42,7 @@ import { HomeScreenSteps, HomeScreenTip, useFullScreen } from "./full-screen";
 
 type Layer =
   | { k: "inspect"; text: string; title: string; evidence: ClientEvidence | null; photo: { hotspotId: string; taken: boolean } | null }
-  | { k: "evidence"; id: string; back: "notebook" | "inventory" | "conclusion" | "scene"; prev?: Layer }
+  | { k: "evidence"; id: string; back: "notebook" | "inventory" | "conclusion" | "scene" | "phone"; prev?: Layer }
   | { k: "panel"; panel: PanelId | "inventory" }
   | { k: "conversation"; data: Extract<ActionOutcome, { kind: "conversation" }> }
   | { k: "document"; data: Extract<ActionOutcome, { kind: "document" }> }
@@ -222,7 +223,8 @@ export function InvestigationShell({
           setLayer({ k: "panel", panel: o.panel });
           break;
         case "conversation":
-          setLayer({ k: "conversation", data: o });
+          // A text is answered in the phone's Messages, not in an interview.
+          if (!(action.type === "askFree" && action.via === "text")) setLayer({ k: "conversation", data: o });
           break;
         case "document":
           setLayer({ k: "document", data: o });
@@ -505,6 +507,8 @@ export function InvestigationShell({
   // The telephone rings only in the office (anywhere, with a mobile phone), and never over an interview, a document or an inspection.
   const phoneHere = atHome || view.phone.mobile;
   const ringing = Boolean(!trip && view.phone.ringing && phoneHere && view.introSeen && (layer === null || panel === "phone") && deferredCall !== view.phone.ringing.id);
+  // Unread texts, unopened mail and a missed call, for the phone's badge.
+  const phoneUnread = view.phone.mobile ? phoneBadges(view, caseId, deferredCall).total : 0;
   useTelephoneRing(ringing, (prefs.masterVolume / 100) * (prefs.sfxVolume / 100), view.theme === "medieval" ? "knock" : "telephone");
   const words = view.words;
   const locked = view.status === "closed";
@@ -763,6 +767,7 @@ export function InvestigationShell({
             image={hudArt(caseId, "obj_phone", view.theme, view.caseArt)}
             fallback="phone"
             alert={Boolean(view.phone.ringing)}
+            count={phoneUnread || undefined}
             onClick={() => setLayer({ k: "panel", panel: "phone" })}
           />
         ) : null}
@@ -831,6 +836,17 @@ export function InvestigationShell({
         </div>
       ) : null}
 
+
+      {/* A call coming in on the mobile phone: a banner at the top of the screen, wherever the investigator is. */}
+      {ringing && view.phone.mobile && view.phone.ringing && panel !== "phone" ? (
+        <IncomingCall
+          from={view.phone.ringing.from}
+          portrait={view.characters.find((c) => c.name === view.phone.ringing!.from)?.portrait}
+          pending={pending}
+          onAnswer={() => dispatch({ type: "answerCall", callId: view.phone.ringing!.id })}
+          onDecline={() => setDeferredCall(view.phone.ringing!.id)}
+        />
+      ) : null}
 
       {/* Layers */}
       {!view.introSeen ? (
@@ -934,6 +950,8 @@ export function InvestigationShell({
                   : "Return to scene"
               : layer.back === "notebook"
                 ? "Back to notebook"
+                : layer.back === "phone"
+                  ? "Back to phone"
                 : layer.back === "conclusion"
                   ? "Back to the report"
                   : "Back to evidence"
@@ -974,7 +992,20 @@ export function InvestigationShell({
       {stamps.length && !trip ? (
         <EvidenceStamp key={`stamp-${stamps[0].id}`} item={stamps[0]} words={words} volume={(prefs.masterVolume / 100) * (prefs.sfxVolume / 100)} reducedMotion={prefs.reducedMotion} onDone={nextStamp} />
       ) : null}
-      {panel === "phone" ? (
+      {panel === "phone" && view.phone.mobile ? (
+        <PhoneDevice
+          caseId={caseId}
+          view={view}
+          dispatch={dispatch}
+          pending={pending}
+          onClose={close}
+          deferredCall={deferredCall}
+          onDecline={(id) => setDeferredCall(id)}
+          onOpenEvidence={(id) => setLayer({ k: "evidence", id, back: "phone" })}
+          onOpenMap={() => setLayer({ k: "panel", panel: "map" })}
+        />
+      ) : null}
+      {panel === "phone" && !view.phone.mobile ? (
         <PhonePanel
           view={view}
           dispatch={dispatch}
@@ -1221,6 +1252,41 @@ function SaveIndicator({ status }: { status: SaveStatus }) {
 function hudArt(caseId: string, name: string, theme: ClientView["theme"] = "noir", caseArt: Record<string, string> = {}) {
   // A medieval case never borrows the agency's modern things: until its own are painted, a drawn icon stands in.
   return caseArt[name] ?? paintedArt(`${caseId.toLowerCase()}_${name}`) ?? (theme === "medieval" ? null : paintedArt(`c001_${name}`));
+}
+
+/** The banner for an incoming call on the mobile phone. The phone buzzes too, where the device can. */
+function IncomingCall({ from, portrait, pending, onAnswer, onDecline }: { from: string; portrait?: string; pending: boolean; onAnswer: () => void; onDecline: () => void }) {
+  useEffect(() => {
+    try {
+      navigator.vibrate?.([400, 250, 400]);
+    } catch {
+      /* no vibration on this device */
+    }
+  }, []);
+  return (
+    <div className="fixed inset-x-0 top-2 z-[45] flex justify-center px-3 game-fade" role="alertdialog" aria-label={`Incoming call from ${from}`}>
+      <div className="flex w-full max-w-md items-center gap-3 rounded-2xl border border-white/10 bg-[#161b20]/95 px-4 py-3 shadow-2xl backdrop-blur">
+        {portrait ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={portrait} alt="" className="h-11 w-11 shrink-0 rounded-full object-cover object-[50%_25%]" draggable={false} />
+        ) : null}
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-semibold">{from}</p>
+          <p className="text-xs text-smoke">Incoming call</p>
+        </div>
+        <button type="button" onClick={onDecline} aria-label="Decline" className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e0483e]">
+          <svg viewBox="0 0 24 24" className="h-5 w-5 rotate-[135deg]" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" />
+          </svg>
+        </button>
+        <button type="button" onClick={onAnswer} disabled={pending} aria-label="Answer" className="flex h-10 w-10 items-center justify-center rounded-full bg-[#2f9e57] disabled:opacity-50">
+          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
 }
 
 function HudObject({

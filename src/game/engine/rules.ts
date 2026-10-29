@@ -72,6 +72,8 @@ export function apply(effects: Effect[] | undefined, s: InvestigationState, def:
         if (!s.notebook.some((n) => n.id === `text:${t.id}`)) {
           s.notebook.push({ id: `text:${t.id}`, kind: "call", title: `Text from ${from}`, text: t.body, characterId: t.from, at: Date.now() });
         }
+        // The text sits in the sender's message thread too, so it can be answered there.
+        (s.conversations[t.from] ??= []).push({ speaker: t.from, text: t.body, kind: "answer", q: `text:${t.id}`, via: "text", at: s.lastActionAt });
       }
     }
     else if ("startLab" in e) {

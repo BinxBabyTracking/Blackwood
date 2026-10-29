@@ -92,6 +92,7 @@ export function newState(def: CaseDefinition, now = Date.now()): InvestigationSt
     readDocuments: [],
     messages: [],
     texts: [],
+    ...(def.battery ? { battery: 100 } : {}),
     sequences: {},
     comparisons: {},
     attempts: 0,
@@ -171,6 +172,36 @@ function phoneInReach(def: CaseDefinition, s: InvestigationState) {
   return mobile(def) || s.location === def.startLocation;
 }
 
+/** Whether a person can be texted now: anyone with a number, in a case with a mobile phone, who can be questioned. */
+function canText(def: CaseDefinition, s: InvestigationState, c: CharacterDef) {
+  if (!mobile(def) || !check(c.available, s) || isDeceased(c, s)) return false;
+  if (!(c.medium === "telephone" || (c.phone && check(c.phone, s)))) return false;
+  return def.questions.some((q) => q.characterId === c.id);
+}
+
+/**
+ * Charges the phone's battery for a question asked by call or text. Refuses
+ * when there isn't enough charge. Does nothing in a case without a battery or
+ * for a question asked face to face.
+ */
+function drainBattery(def: CaseDefinition, s: InvestigationState, how: "call" | "text" | null) {
+  if (!def.battery || !how || !mobile(def)) return;
+  const cost = how === "text" ? def.battery.perText : def.battery.perCall;
+  const before = s.battery ?? 100;
+  if (before < cost) fail("Your phone is dead. Charge it at the office, or in the car on your next drive.");
+  s.battery = Math.max(0, before - cost);
+  if (before > 20 && s.battery <= 20) s.messages.push(`Phone battery at ${s.battery}%.`);
+  else if (before > 5 && s.battery <= 5) s.messages.push(`Phone battery at ${s.battery}%. It will die soon.`);
+}
+
+/** Charges the phone on the way somewhere: fully at the office, partly on a drive between areas. */
+function chargeBattery(def: CaseDefinition, s: InvestigationState, from: LocationDef | undefined, to: LocationDef) {
+  if (!def.battery) return;
+  const before = s.battery ?? 100;
+  if (to.id === def.startLocation) s.battery = 100;
+  else if (from && from.area !== to.area) s.battery = Math.min(100, before + def.battery.perDrive);
+}
+
 /** How the player legitimately uncovered a piece of evidence, or null if they have not. */
 function discoverable(def: CaseDefinition, s: InvestigationState, evidenceId: string): "scene" | "document" | "delivery" | null {
   for (const l of def.locations) {
@@ -211,6 +242,7 @@ export function normalizeState(def: CaseDefinition, raw: InvestigationState): In
   s.conversations ??= {};
   s.eventStates ??= {};
   s.texts ??= [];
+  if (def.battery) s.battery ??= 100;
   s.sequences ??= {};
   s.comparisons ??= {};
   s.report ??= { draft: { evidence: [] }, submissions: [], final: null };
@@ -363,6 +395,7 @@ function clientLines(def: CaseDefinition, s: InvestigationState, characterId: st
     speaker: h.speaker === "you" ? "You" : h.speaker === "cue" ? "" : c?.name ?? h.speaker,
     text: h.text,
     kind: h.kind ?? (h.speaker === "you" ? "question" : h.speaker === "cue" ? "cue" : "answer"),
+    ...(h.via ? { via: h.via } : {}),
   }));
 }
 
@@ -676,6 +709,7 @@ function step(
         if (!way) fail("There's no way through from here.");
       }
       if ((!held || held.seat !== (ctx.seat ?? "host")) && scenes.includes(l.id)) fail("That location is not available yet.");
+      chargeBattery(def, s, loc(def, s.location), l);
       s.location = l.id;
       if (!s.visited.includes(l.id)) s.visited.push(l.id);
       apply(l.effectsOnEnter, s, def);
@@ -819,12 +853,16 @@ function step(
 
     case "askFree": {
       const c = char(def, action.characterId) ?? fail("Unknown person.");
-      if (!characterHere(def, s, c.id)) fail(unreachable(def, s, c));
+      // A text goes to anyone with a number; a spoken question needs them here or on the line.
+      const texting = action.via === "text";
+      if (texting ? !canText(def, s, c) : !characterHere(def, s, c.id)) fail(texting ? `You can't text ${c.name} right now.` : unreachable(def, s, c));
       const text = String(action.text ?? "").replace(/\s+/g, " ").trim().slice(0, 300);
       if (!text) fail("Ask a question first.");
       if (!s.talkedTo.includes(c.id)) s.talkedTo.push(c.id);
+      const firstLine = (s.conversations[c.id] ??= []).length;
       // Every question asked and answered costs one from this person's allowance, whatever the answer.
       const fund = chargeQuestion(def, s, c);
+      drainBattery(def, s, texting ? "text" : reachOf(def, s, c) === "telephone" ? "call" : null);
       // A short yes takes up what the character just offered; otherwise the
       // match chosen on the server from this character's current candidates, checked again here.
       const offered = acceptedOffer(def, s, c.id, text);
@@ -860,6 +898,8 @@ function step(
       // Nothing is volunteered over an open offer, so a following "yes" is never ambiguous.
       if (!s.offers?.[c.id] && questionsLeft(def, s, c.id) !== 0) latest = [...latest, ...volunteerFact(def, s, c.id, text)];
       latest = [...latest, ...patienceLines(def, s, c, fund)];
+      // A text exchange stays in Messages and is never spoken.
+      if (texting) for (const l of s.conversations[c.id].slice(firstLine)) if (l.speaker !== "cue") Object.assign(l, { via: "text", at: now });
       finish(s, def);
       outcome = conversationOutcome(def, s, c.id, latest);
       break;
@@ -871,6 +911,7 @@ function step(
       if (!s.evidence.includes(action.evidenceId)) fail("You do not have that evidence.");
       const ev = def.evidence.find((e) => e.id === action.evidenceId)!;
       const fund = chargeQuestion(def, s, c);
+      drainBattery(def, s, reachOf(def, s, c) === "telephone" ? "call" : null);
       const d = demeanorOf(def, s, c.id);
       const r = d?.refuses ? undefined : [...def.reactions].reverse().find((x) => x.characterId === c.id && x.evidenceId === ev.id && check(x.requires, s));
       const key = `${c.id}:${ev.id}`;
@@ -1439,6 +1480,8 @@ function projectState(def: CaseDefinition, s: InvestigationState, now: number, c
         title: def.calls.find((c) => c.id === id)?.title ?? def.outgoingCalls.find((c) => c.id === id)?.label ?? id,
       })),
       contacts: phoneContacts(def, s),
+      battery: def.battery ? s.battery ?? 100 : null,
+      threads: textThreads(def, s),
       texts: [...(s.texts ?? [])].reverse().flatMap((id) => {
         const t = def.texts?.find((x) => x.id === id);
         return t ? [{ id: t.id, from: char(def, t.from)?.name ?? "Unknown", body: t.body }] : [];
@@ -1577,6 +1620,22 @@ function phoneContacts(def: CaseDefinition, s: InvestigationState) {
     }));
 }
 
+/** Message threads: everyone who has texted or been texted, then anyone else who can be texted now. Most recent first. */
+function textThreads(def: CaseDefinition, s: InvestigationState) {
+  if (!mobile(def)) return [];
+  const known = new Set(knownCharacters(def, s).map((c) => c.id));
+  const threads = def.characters.flatMap((c) => {
+    const log = s.conversations[c.id] ?? [];
+    const lines = log.flatMap((l, n) => (l.via === "text" ? [{ n, mine: l.speaker === "you", text: l.text }] : []));
+    const can = canText(def, s, c) && known.has(c.id);
+    if (!lines.length && !can) return [];
+    const last = Math.max(-1, ...log.filter((l) => l.via === "text").map((l) => l.at ?? 0));
+    return [{ characterId: c.id, name: c.name, portrait: def.assets.images[c.portrait] ?? "", canText: can, lines, last }];
+  });
+  // Most recent first: threads with messages by their newest message, then everyone else by name.
+  return threads.sort((a, b) => b.last - a.last || a.name.localeCompare(b.name)).map(({ characterId, name, portrait, canText: ct, lines }) => ({ characterId, name, portrait, canText: ct, lines }));
+}
+
 function interviewsView(def: CaseDefinition, s: InvestigationState): ClientInterview[] {
   return def.characters
     .filter((c) => def.questions.some((q) => q.characterId === c.id) && (s.talkedTo.includes(c.id) || knownCharacters(def, s).some((k) => k.id === c.id)))
@@ -1623,7 +1682,8 @@ export function spokenLine(
   }
   if (ref.kind === "conversation") {
     const line = s.conversations[ref.id]?.[ref.n];
-    if (!line || line.speaker === "you" || line.speaker === "cue") return null;
+    // Text messages are read, never spoken.
+    if (!line || line.speaker === "you" || line.speaker === "cue" || line.via === "text") return null;
     return { speakerId: line.speaker, text: line.text };
   }
   if (ref.kind === "statement") {

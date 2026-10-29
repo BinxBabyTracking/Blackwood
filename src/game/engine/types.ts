@@ -847,6 +847,13 @@ export interface CaseDefinition {
    * reports can be read from anywhere, and texts arrive. Default: the office telephone only.
    */
   phone?: "office" | "mobile";
+  /**
+   * The mobile phone's battery: each question asked by phone call or by text
+   * costs charge, and at 0% the phone can't call or text until it is charged.
+   * It charges fully at the office and partly on every drive. Incoming calls
+   * and texts always get through, so it never blocks the story.
+   */
+  battery?: BatteryDef;
   /** Text messages the case can send with the `text` effect. */
   texts?: TextDef[];
   /** The case's status line; the last entry whose condition holds is shown (e.g. "Active homicide"). */
@@ -1023,6 +1030,15 @@ export interface ComparisonRegion {
   comment: string;
 }
 
+export interface BatteryDef {
+  /** Percent used by each question asked on a call. */
+  perCall: number;
+  /** Percent used by each text sent. */
+  perText: number;
+  /** Percent gained on every drive between areas (the car charger). */
+  perDrive: number;
+}
+
 export interface TextDef {
   id: string;
   /** Character id of the sender. */
@@ -1103,6 +1119,8 @@ export interface InvestigationState {
   messages: string[];
   /** Text messages received on the investigator's phone, oldest first. */
   texts?: string[];
+  /** The mobile phone's charge, 0 to 100, in a case with a battery. */
+  battery?: number;
   /** Where the player has put each card on each timeline, and the findings it has shown. */
   sequences?: Record<string, { placed: Record<string, { space: string; pos: number }>; findings: string[] }>;
   /** Passages compared: right picks found, and every pick tried (`region:option`). */
@@ -1195,6 +1213,10 @@ export interface ConversationLine {
   kind?: "question" | "answer" | "present" | "reaction" | "refusal" | "cue" | "call";
   /** For the investigator's questions: which allowance paid for it. */
   fund?: QuestionFund;
+  /** Sent or received as a text message rather than said aloud. Never voiced. */
+  via?: "text";
+  /** When a text was sent or received, for ordering message threads. */
+  at?: number;
 }
 
 /** Where a question's cost came from. */
@@ -1253,7 +1275,7 @@ export type GameAction =
    * A question in the player's own words, typed or spoken. The server decides
    * which authored answer it matches (`match`), never the browser.
    */
-  | { type: "askFree"; characterId: string; text: string; match?: string | null; composed?: string | null; facts?: number[] | null }
+  | { type: "askFree"; characterId: string; text: string; match?: string | null; composed?: string | null; facts?: number[] | null; via?: "text" }
   | { type: "present"; characterId: string; evidenceId: string }
   /** Spend five expense credits (an in-world $5) for five more questions with one person. `requestId` makes a retry harmless. */
   | { type: "extendInterview"; characterId: string; requestId: string }
@@ -1336,6 +1358,8 @@ export interface ClientLine {
   speaker: string;
   text: string;
   kind: NonNullable<ConversationLine["kind"]>;
+  /** A text message rather than speech: shown in Messages, never voiced. */
+  via?: "text";
 }
 
 export interface ClientInterview {
@@ -1453,6 +1477,10 @@ export interface ClientView {
     contacts: { id: string; name: string; role: string; note: string }[];
     /** Text messages, newest first. */
     texts: { id: string; from: string; body: string }[];
+    /** The phone's charge, 0 to 100, or null in a case without a battery. */
+    battery: number | null;
+    /** Message threads, most recent first: everyone texted or who has texted, and who can be texted now. */
+    threads: { characterId: string; name: string; portrait: string; canText: boolean; lines: { n: number; mine: boolean; text: string }[] }[];
   };
   /** The case's status line, if the case has one. */
   caseStatus: string | null;

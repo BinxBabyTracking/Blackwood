@@ -5,7 +5,7 @@
  * them behaves as before. Run: npx tsx --conditions=react-server scripts/check-engine.ts
  */
 import { C002 } from "../src/cases/C002";
-import { newState, normalizeState, project, reduce, GameError } from "../src/game/engine/engine";
+import { newState, normalizeState, project, reduce, spokenLine, GameError } from "../src/game/engine/engine";
 import { check } from "../src/game/engine/rules";
 import { evaluateReport, reportProblem } from "../src/game/engine/evaluation";
 import { fileUnder } from "./report-helpers";
@@ -305,6 +305,57 @@ def.solution = { ...right, answers: { culprit: [right.culprit!, "tom"], motive: 
   const old = { ...started(def) } as InvestigationState;
   delete old.chapters;
   expect(normalizeState(def, old).chapters?.current === 1, "an older save did not get chapter 1");
+}
+
+// --- The mobile phone: texting both ways, and the battery -------------------------------
+{
+  const def: CaseDefinition = structuredClone(C002);
+  def.phone = "mobile";
+  def.battery = { perCall: 10, perText: 4, perDrive: 25 };
+  def.texts = [{ id: "t1", from: "ferris", body: "Call me when you can." }];
+  const ferris = def.characters.find((c) => c.id === "ferris")!;
+  ferris.phone = { flag: "casefile_read" };
+  let s = started(def);
+  expect(s.battery === 100 && project(def, s, 5).phone.battery === 100, "the battery does not start full");
+  expect(project(C002, started(C002), 5).phone.battery === null, "a case without a battery shows one");
+  s = reduce(def, s, { type: "travel", locationId: "elm_street" }, 10).state;
+  // Text Ferris from Elm Street: answered in Messages, never voiced, and it costs charge.
+  const q = def.questions.find((x) => x.characterId === "ferris" && !x.requires && !x.requiresEvidence && !x.requiresFlags && !x.requiresDeductions)!;
+  let r = reduce(def, s, { type: "askFree", characterId: "ferris", text: q.prompt, match: q.id, via: "text" }, 20);
+  s = r.state;
+  const thread = project(def, s, 25).phone.threads.find((t) => t.characterId === "ferris");
+  expect(thread && thread.lines.length >= 2 && thread.lines[0].mine && !thread.lines[1].mine, `the text exchange is not in Ferris's thread: ${JSON.stringify(thread)}`);
+  expect(s.conversations.ferris.filter((l) => l.speaker !== "cue").every((l) => l.via === "text"), "a text exchange was not marked as text");
+  expect(s.battery === 96, `a text did not cost 4%: ${s.battery}`);
+  expect(s.asked.includes(q.id), "a text did not count as asking");
+  // Texts are never spoken (no voice cost).
+  expect(spokenLine(def, s, { kind: "conversation", id: "ferris", n: 1 }) === null, "a text message would be voiced");
+  // Nobody without a number can be texted; the dead can't be either.
+  expect(refused(def, s, { type: "askFree", characterId: "tom", text: "Hello?", via: "text" }), "texted someone with no phone");
+  // A call question costs more; at too little charge, the phone refuses.
+  s.battery = 12;
+  r = reduce(def, s, { type: "askFree", characterId: "ferris", text: "Anything new?", composed: "No." }, 30);
+  s = r.state;
+  expect(s.battery === 2 && s.messages.some((m) => m.includes("Phone battery")), `a call did not cost 10% or warn: ${s.battery}`);
+  expect(refused(def, s, { type: "askFree", characterId: "ferris", text: "Hello?", via: "text" }), "a dead phone sent a text");
+  // Incoming texts still arrive on a dead phone, into the sender's thread.
+  def.events.push({ id: "TXT", caseId: def.id, title: "Text", requires: { flag: "txt" }, complete: { always: true }, onActivate: [{ text: "t1" }], notebook: { learned: [] } });
+  s.flags.push("txt");
+  s = reduce(def, s, { type: "checkLabs" }, 40).state;
+  expect(project(def, s, 45).phone.threads[0]?.characterId === "ferris" && s.conversations.ferris.at(-1)?.text === "Call me when you can.", "an incoming text is not at the top of its sender's thread");
+  // A drive between areas charges a quarter; the office charges fully.
+  s = reduce(def, s, { type: "travel", locationId: "ruth_apartment" }, 50).state;
+  expect(s.battery === 27, `a drive did not charge 25%: ${s.battery}`);
+  s = reduce(def, s, { type: "travel", locationId: "office" }, 60).state;
+  expect(s.battery === 100, `the office did not charge fully: ${s.battery}`);
+  const old = structuredClone(s) as InvestigationState;
+  delete old.battery;
+  expect(normalizeState(def, old).battery === 100, "an older save did not get a battery");
+  // Face to face costs nothing.
+  s = reduce(def, s, { type: "travel", locationId: "police_station" }, 70).state;
+  const before = s.battery;
+  s = reduce(def, s, { type: "askFree", characterId: "ferris", text: "Anything?", composed: "No." }, 80).state;
+  expect(s.battery === before, "a question in person used charge");
 }
 
 if (problems.length) {

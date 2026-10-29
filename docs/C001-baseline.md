@@ -251,6 +251,8 @@ Added for C002. Each is off unless a case uses it, so older cases behave exactly
 | `phone: "mobile"` | the case | Added for C003. The investigator carries a phone: calls ring anywhere, telephone contacts and lab reports are reachable from anywhere, and a Phone button sits in the corner. |
 | `phone`, `contact` | a person | In a mobile case, the person can also be called from anywhere while the condition holds; `contact` is the line under their name in the phone. |
 | `texts` and the `text` effect | the case | Text messages that arrive on the phone, kept in its Messages list and the notebook. |
+| `battery` | the case | Mobile phone battery (added for C003): `perCall`, `perText` and `perDrive` percent. Questions by call or text use charge; the office charges it fully and every drive between areas partly. Incoming calls and texts always get through. |
+| Texting people | a person | In a mobile case, anyone with a number (`phone` condition, or a telephone contact) who has questions can be texted from Messages. A text is a question like any other (same limit), answered in writing and never voiced. Incoming `texts` land in the sender's thread. |
 | `deceased` | a person | Once it holds, the person can no longer be interviewed and is listed as deceased; earlier interviews stay. |
 | `status` | the case | A status line in the top bar that events can change (Active homicide, Active multiple homicide). |
 | `boardSections` | the case | Labeled sections of the murder board, opened by a condition. Cards and string can cross them. |

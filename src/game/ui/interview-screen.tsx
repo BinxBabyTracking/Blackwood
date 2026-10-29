@@ -45,7 +45,7 @@ export function InterviewScreen({
   const first = parts[0].endsWith(".") ? parts.slice(-1)[0] : /^(Brother|Sister|Abbot|Novice|Master|Lord|Lady|Father|Mother)$/.test(parts[0]) ? `${parts[0]} ${parts.slice(-1)[0]}` : parts[0];
 
   const srcs = useMemo(
-    () => data.history.map((l) => (l.kind === "question" || l.kind === "present" || l.kind === "cue" ? null : voiceSrc(caseId, "conversation", data.characterId, l.n))),
+    () => data.history.map((l) => (l.kind === "question" || l.kind === "present" || l.kind === "cue" || l.via === "text" ? null : voiceSrc(caseId, "conversation", data.characterId, l.n))),
     [data.history, data.characterId, caseId],
   );
 
