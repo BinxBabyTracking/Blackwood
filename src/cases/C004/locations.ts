@@ -691,6 +691,7 @@ export const locations: LocationDef[] = [
 /** Painted artwork for objects and people, by hotspot. Drawn only over painted scenes. */
 const ART: Record<string, string> = {
   office_casefile: "art.obj_casefile",
+  office_phone: "art.obj_phone",
   office_notebook: "art.obj_notebook",
   office_mail: "art.obj_mailtray",
   vh_louise: "art.figure_louise",
@@ -710,18 +711,20 @@ for (const l of locations) for (const h of l.hotspots) if (ART[h.id]) h.art = AR
 
 /*
  * Where each thing is in the painted scenes, measured on the paintings live on
- * Oct 28, 2026. People stand on open floor: a figure is drawn over the scene,
+ * Oct 28, 2026 (the office repainted Oct 29). People stand on open floor: a figure is drawn over the scene,
  * so it can't stand behind furniture. If a scene is painted again, measure again.
- * The office telephone is part of the painting, so nothing is drawn over it.
+ * The office's telephone, typewriter and desk things are drawn over the painting.
  */
 const RECTS: Record<string, HotspotDef["rect"]> = {
-  office_board: { x: 1.5, y: 5.5, w: 18.5, h: 42 },
-  office_phone: { x: 4.5, y: 49.5, w: 7.5, h: 15 },
-  office_map: { x: 66.5, y: 16.5, w: 10.8, h: 26 },
-  office_recorder: { x: 68, y: 42.5, w: 8.5, h: 9 },
-  office_mail: { x: 60, y: 62, w: 8, h: 7.5 },
-  office_typewriter: { x: 82.5, y: 57, w: 15, h: 14.5 },
-  office_report: { x: 59, y: 82, w: 9, h: 11 },
+  office_casefile: { x: 32, y: 71, w: 15, h: 21 },
+  office_notebook: { x: 18, y: 72, w: 11, h: 15 },
+  office_board: { x: 0, y: 0, w: 19, h: 46 },
+  office_phone: { x: 1.5, y: 57, w: 7.5, h: 25 },
+  office_map: { x: 66.5, y: 18.5, w: 10, h: 22.5 },
+  office_recorder: { x: 68.5, y: 43, w: 8.5, h: 7.5 },
+  office_mail: { x: 74, y: 81, w: 9, h: 9 },
+  office_typewriter: { x: 10, y: 79, w: 9, h: 11 },
+  office_report: { x: 10, y: 79, w: 9, h: 11 },
   sa_door: { x: 6, y: 19, w: 15.5, h: 53 },
   sa_chalk: { x: 12.5, y: 71, w: 46, h: 19 },
   sa_desk: { x: 64, y: 56, w: 34, h: 14 },
