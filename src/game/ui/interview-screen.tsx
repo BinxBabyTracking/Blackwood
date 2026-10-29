@@ -9,7 +9,7 @@ import { TalkingPortrait } from "./talking-portrait";
 
 type Conversation = Extract<ActionOutcome, { kind: "conversation" }>;
 
-export function voiceSrc(caseId: string, kind: "conversation" | "statement" | "call" | "delivery" | "resolution" | "document", id: string, n: number) {
+export function voiceSrc(caseId: string, kind: "conversation" | "statement" | "call" | "delivery" | "resolution" | "document" | "intro", id: string, n: number) {
   return `/api/voice?caseId=${encodeURIComponent(caseId)}&kind=${kind}&id=${encodeURIComponent(id)}&n=${n}`;
 }
 

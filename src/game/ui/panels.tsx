@@ -549,10 +549,18 @@ function Cassette({ label, spinning }: { label: string; spinning: boolean }) {
 // Conclusion and closure
 // ---------------------------------------------------------------------------
 
-export function IntroSequence({ view, onDone, pending }: { view: ClientView; onDone: () => void; pending: boolean }) {
+/** The opening cards. Each is read aloud by the narrator as it appears (when voices are on); moving on stops it. */
+export function IntroSequence({ view, onDone, pending, volume }: { view: ClientView; onDone: () => void; pending: boolean; volume: number }) {
   const [i, setI] = useState(0);
   const last = i === view.intro.length - 1;
   const p = view.intro[i];
+  const player = useLinePlayer(volume);
+  const { play, stop } = player;
+  useEffect(() => {
+    if (!view.voices) return;
+    play(0, [voiceSrc(view.caseId, "intro", "intro", i)]);
+    return () => stop();
+  }, [i, view.voices, view.caseId, play, stop]);
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-gradient-to-t from-black via-black/85 to-black/40 px-6 pb-16 sm:items-center sm:pb-0">
       <div key={i} className="max-w-2xl game-closure">

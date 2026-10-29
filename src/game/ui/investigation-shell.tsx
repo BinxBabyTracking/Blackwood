@@ -861,6 +861,7 @@ export function InvestigationShell({
         <IntroSequence
           view={view}
           pending={pending}
+          volume={dialogueVolume}
           onDone={async () => {
             const r = await dispatch({ type: "dismissIntro" });
             if (r) {

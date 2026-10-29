@@ -1673,8 +1673,13 @@ function interviewsView(def: CaseDefinition, s: InvestigationState): ClientInter
 export function spokenLine(
   def: CaseDefinition,
   s: InvestigationState,
-  ref: { kind: "conversation" | "statement" | "call" | "delivery" | "resolution" | "document"; id: string; n: number },
+  ref: { kind: "conversation" | "statement" | "call" | "delivery" | "resolution" | "document" | "intro"; id: string; n: number },
 ): { speakerId: string; text: string } | null {
+  if (ref.kind === "intro") {
+    // The opening cards, read by the narrator: every player sees them before anything else.
+    const card = def.intro[ref.n];
+    return card ? { speakerId: "narrator", text: card.heading ? `${card.heading}. ${card.text}` : card.text } : null;
+  }
   if (ref.kind === "document") {
     // A document the player has opened can be read aloud by the narrator, page by page.
     const doc = def.documents.find((d) => d.id === ref.id);
