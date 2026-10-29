@@ -12,37 +12,9 @@ jobs:
         run: |
           mkdir out
           curl -sfL -o out/c004_loc_office.webp https://www.blackwoodinvestigation.com/art/live/c004_loc_office || echo missing c004_loc_office
-          curl -sfL -o out/c004_loc_studio_a.webp https://www.blackwoodinvestigation.com/art/live/c004_loc_studio_a || echo missing c004_loc_studio_a
-          curl -sfL -o out/c004_loc_control_room.webp https://www.blackwoodinvestigation.com/art/live/c004_loc_control_room || echo missing c004_loc_control_room
-          curl -sfL -o out/c004_loc_storage.webp https://www.blackwoodinvestigation.com/art/live/c004_loc_storage || echo missing c004_loc_storage
-          curl -sfL -o out/c004_loc_station_office.webp https://www.blackwoodinvestigation.com/art/live/c004_loc_station_office || echo missing c004_loc_station_office
-          curl -sfL -o out/c004_loc_workshop.webp https://www.blackwoodinvestigation.com/art/live/c004_loc_workshop || echo missing c004_loc_workshop
-          curl -sfL -o out/c004_loc_blue_lantern.webp https://www.blackwoodinvestigation.com/art/live/c004_loc_blue_lantern || echo missing c004_loc_blue_lantern
-          curl -sfL -o out/c004_loc_mercer_apartment.webp https://www.blackwoodinvestigation.com/art/live/c004_loc_mercer_apartment || echo missing c004_loc_mercer_apartment
-          curl -sfL -o out/c004_loc_vale_house.webp https://www.blackwoodinvestigation.com/art/live/c004_loc_vale_house || echo missing c004_loc_vale_house
-          curl -sfL -o out/c004_loc_police.webp https://www.blackwoodinvestigation.com/art/live/c004_loc_police || echo missing c004_loc_police
-          curl -sfL -o out/c004_loc_warehouse_gate.webp https://www.blackwoodinvestigation.com/art/live/c004_loc_warehouse_gate || echo missing c004_loc_warehouse_gate
-          curl -sfL -o out/c004_loc_boardinghouse.webp https://www.blackwoodinvestigation.com/art/live/c004_loc_boardinghouse || echo missing c004_loc_boardinghouse
-          curl -sfL -o out/c004_loc_wh_storeroom.webp https://www.blackwoodinvestigation.com/art/live/c004_loc_wh_storeroom || echo missing c004_loc_wh_storeroom
-          curl -sfL -o out/c004_loc_wh_tally.webp https://www.blackwoodinvestigation.com/art/live/c004_loc_wh_tally || echo missing c004_loc_wh_tally
-          curl -sfL -o out/c004_loc_wh_riverdoor.webp https://www.blackwoodinvestigation.com/art/live/c004_loc_wh_riverdoor || echo missing c004_loc_wh_riverdoor
-          curl -sfL -o out/c004_loc_wells_bridge.webp https://www.blackwoodinvestigation.com/art/live/c004_loc_wells_bridge || echo missing c004_loc_wells_bridge
-          curl -sfL -o out/c004_loc_wh_night_gate.webp https://www.blackwoodinvestigation.com/art/live/c004_loc_wh_night_gate || echo missing c004_loc_wh_night_gate
-          curl -sfL -o out/c004_figure_louise.webp https://www.blackwoodinvestigation.com/art/live/c004_figure_louise || echo missing c004_figure_louise
-          curl -sfL -o out/c004_figure_victor.webp https://www.blackwoodinvestigation.com/art/live/c004_figure_victor || echo missing c004_figure_victor
-          curl -sfL -o out/c004_figure_victor_custody.webp https://www.blackwoodinvestigation.com/art/live/c004_figure_victor_custody || echo missing c004_figure_victor_custody
-          curl -sfL -o out/c004_figure_henry.webp https://www.blackwoodinvestigation.com/art/live/c004_figure_henry || echo missing c004_figure_henry
-          curl -sfL -o out/c004_figure_samuel.webp https://www.blackwoodinvestigation.com/art/live/c004_figure_samuel || echo missing c004_figure_samuel
-          curl -sfL -o out/c004_figure_clara.webp https://www.blackwoodinvestigation.com/art/live/c004_figure_clara || echo missing c004_figure_clara
-          curl -sfL -o out/c004_figure_russo.webp https://www.blackwoodinvestigation.com/art/live/c004_figure_russo || echo missing c004_figure_russo
-          curl -sfL -o out/c004_figure_rose.webp https://www.blackwoodinvestigation.com/art/live/c004_figure_rose || echo missing c004_figure_rose
-          curl -sfL -o out/c004_figure_keene.webp https://www.blackwoodinvestigation.com/art/live/c004_figure_keene || echo missing c004_figure_keene
-          curl -sfL -o out/c004_figure_agnes.webp https://www.blackwoodinvestigation.com/art/live/c004_figure_agnes || echo missing c004_figure_agnes
-          curl -sfL -o out/c004_figure_frankie.webp https://www.blackwoodinvestigation.com/art/live/c004_figure_frankie || echo missing c004_figure_frankie
           curl -sfL -o out/c004_obj_casefile.webp https://www.blackwoodinvestigation.com/art/live/c004_obj_casefile || echo missing c004_obj_casefile
           curl -sfL -o out/c004_obj_notebook.webp https://www.blackwoodinvestigation.com/art/live/c004_obj_notebook || echo missing c004_obj_notebook
           curl -sfL -o out/c004_obj_mailtray.webp https://www.blackwoodinvestigation.com/art/live/c004_obj_mailtray || echo missing c004_obj_mailtray
-          curl -sfL -o out/c004_obj_phone.webp https://www.blackwoodinvestigation.com/art/live/c004_obj_phone || echo missing c004_obj_phone
           curl -sfL -o out/c004_obj_labfolder.webp https://www.blackwoodinvestigation.com/art/live/c004_obj_labfolder || echo missing c004_obj_labfolder
           curl -sfL -o out/c004_obj_report_folder.webp https://www.blackwoodinvestigation.com/art/live/c004_obj_report_folder || echo missing c004_obj_report_folder
           curl -sfL -o out/c004_obj_envelope_sealed.webp https://www.blackwoodinvestigation.com/art/live/c004_obj_envelope_sealed || echo missing c004_obj_envelope_sealed
@@ -53,9 +25,9 @@ jobs:
           path: repo
       - name: Commit the pictures to this branch
         run: |
-          mkdir -p repo/fetched && cp out/* repo/fetched/
+          rm -rf repo/fetched && mkdir -p repo/fetched && cp out/* repo/fetched/
           cd repo
           git config user.name "art-fetch"
           git config user.email "art-fetch@users.noreply.github.com"
-          git add fetched
+          git add -A fetched
           git commit -m "Fetched C004 art [skip ci]" && git push
