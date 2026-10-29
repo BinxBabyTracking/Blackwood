@@ -32,6 +32,7 @@ import { SequencePanel } from "./sequence-panel";
 import { ComparisonPanel } from "./comparison-panel";
 import { useTelephoneRing } from "./telephone-ring";
 import { phoneBadges, PhoneDevice } from "./phone-device";
+import { LaptopPanel } from "./laptop";
 import { playTravelSound, type TravelMode } from "./travel-audio";
 import { setTravelScenes, TravelScene, useTravelScenes } from "./travel-scene";
 import { TravelMap } from "./travel-map";
@@ -42,7 +43,7 @@ import { HomeScreenSteps, HomeScreenTip, useFullScreen } from "./full-screen";
 
 type Layer =
   | { k: "inspect"; text: string; title: string; evidence: ClientEvidence | null; photo: { hotspotId: string; taken: boolean } | null }
-  | { k: "evidence"; id: string; back: "notebook" | "inventory" | "conclusion" | "scene" | "phone"; prev?: Layer }
+  | { k: "evidence"; id: string; back: "notebook" | "inventory" | "conclusion" | "scene" | "phone" | "laptop"; prev?: Layer }
   | { k: "panel"; panel: PanelId | "inventory" }
   | { k: "conversation"; data: Extract<ActionOutcome, { kind: "conversation" }> }
   | { k: "document"; data: Extract<ActionOutcome, { kind: "document" }> }
@@ -297,14 +298,21 @@ export function InvestigationShell({
   );
 
   const close = useCallback(() => setLayer(null), []);
+  // A document or delivery opened from the laptop (or the phone's Mail) goes back there when closed.
+  const returnTo = useRef<PanelId | null>(null);
+  const closeReading = useCallback(() => {
+    const back = returnTo.current;
+    returnTo.current = null;
+    setLayer(back ? { k: "panel", panel: back } : null);
+  }, []);
   const chapterOneOnClose = useRef(false);
   const closeDocument = useCallback(() => {
-    setLayer(null);
+    closeReading();
     if (chapterOneOnClose.current && view.chapter) {
       chapterOneOnClose.current = false;
       setOpening({ number: view.chapter.number, title: view.chapter.title, intro: view.chapter.intro });
     }
-  }, [view.chapter]);
+  }, [view.chapter, closeReading]);
 
   // The evidence bag glows while it holds things the player has not looked through yet.
   // The first time ever, it also says so, to teach where the full details live.
@@ -952,6 +960,8 @@ export function InvestigationShell({
                 ? "Back to notebook"
                 : layer.back === "phone"
                   ? "Back to phone"
+                : layer.back === "laptop"
+                  ? "Back to laptop"
                 : layer.back === "conclusion"
                   ? "Back to the report"
                   : "Back to evidence"
@@ -978,7 +988,7 @@ export function InvestigationShell({
         />
       ) : null}
       {layer?.k === "delivery" ? (
-        <DeliveryPanel caseId={caseId} data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} volume={dialogueVolume} />
+        <DeliveryPanel caseId={caseId} data={layer.data} view={view} dispatch={dispatch} onClose={closeReading} pending={pending} volume={dialogueVolume} />
       ) : null}
 
       {panel === "notebook" ? (
@@ -996,7 +1006,10 @@ export function InvestigationShell({
         <PhoneDevice
           caseId={caseId}
           view={view}
-          dispatch={dispatch}
+          dispatch={(a) => {
+            if (a.type === "openDelivery") returnTo.current = "phone";
+            return dispatch(a);
+          }}
           pending={pending}
           onClose={close}
           deferredCall={deferredCall}
@@ -1015,6 +1028,18 @@ export function InvestigationShell({
             if (view.phone.ringing) setDeferredCall(view.phone.ringing.id);
             close();
           }}
+        />
+      ) : null}
+      {panel === "laptop" ? (
+        <LaptopPanel
+          caseId={caseId}
+          view={view}
+          dispatch={dispatch}
+          pending={pending}
+          volume={dialogueVolume}
+          onClose={close}
+          onOpenEvidence={(id) => setLayer({ k: "evidence", id, back: "laptop" })}
+          onLeaveFor={() => (returnTo.current = "laptop")}
         />
       ) : null}
       {panel === "statements" ? <StatementsPanel caseId={caseId} view={view} onClose={close} volume={dialogueVolume} /> : null}

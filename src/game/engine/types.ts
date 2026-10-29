@@ -337,7 +337,7 @@ export interface HotspotDef {
 }
 
 /** "rolling" is a series' rolling board (S001 and later), opened from the office in a series case. */
-export type PanelId = "casefile" | "board" | "notebook" | "map" | "phone" | "statements" | "delivery" | "conclusion" | "sequence" | "comparison" | "rolling";
+export type PanelId = "casefile" | "board" | "notebook" | "map" | "phone" | "laptop" | "statements" | "delivery" | "conclusion" | "sequence" | "comparison" | "rolling";
 
 export interface LocationDef {
   id: string;

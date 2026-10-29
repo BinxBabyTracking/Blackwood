@@ -122,7 +122,7 @@ export const locations: LocationDef[] = [
         attention: { all: [briefed, { not: { inspected: "office_map" } }] },
         callout: { text: "Tap here to travel", when: { all: [briefed, { not: { inspected: "office_map" } }] } },
       },
-      panel("office_laptop", "Laptop: police interview recordings", "recorder", { x: 74, y: 70, w: 20, h: 24 }, "statements", briefed),
+      panel("office_laptop", "Laptop", "laptop", { x: 74, y: 70, w: 20, h: 24 }, "laptop", briefed),
       panel("office_mail", "Printed lab reports", "tray", { x: 66, y: 66, w: 9, h: 10 }, "delivery", anyDeliveryOpened),
       inspect("office_window", "Window", "window", { x: 40, y: 2, w: 26, h: 40 }, "The window", "Rain on the glass. Eleven floors down, the Monongahela is the color of slate, and a barge is pushing coal toward the Point."),
       {

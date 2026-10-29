@@ -98,7 +98,7 @@ export const locations: LocationDef[] = [
         callout: { text: "Tap here to connect your evidence", when: { all: [{ callAnswered: "call_board" }, { not: { boardConnections: 1 } }] } },
       },
       panel("of_timeline", "Two timelines, 1996 and 2018", "board", { x: 25, y: 6, w: 22, h: 36 }, "sequence", { evidenceCount: 6 }),
-      panel("of_laptop", "Laptop: the 1996 tapes", "laptop", { x: 60, y: 60, w: 14, h: 16 }, "statements"),
+      panel("of_laptop", "Laptop: the 1996 tapes", "laptop", { x: 60, y: 60, w: 14, h: 16 }, "laptop"),
       panel("of_compare", "Light table: page 41", "lamp", { x: 76, y: 56, w: 12, h: 18 }, "comparison", { all: [{ hasEvidence: "E023" }, { hasEvidence: "E032" }] }),
       {
         ...panel("of_mail", "Mail slot and in-tray", "mailtray", { x: 88, y: 60, w: 11, h: 18 }, "delivery"),

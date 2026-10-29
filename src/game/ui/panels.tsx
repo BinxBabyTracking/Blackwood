@@ -396,7 +396,11 @@ export function PhonePanel({ view, dispatch, onClose, pending, onDefer }: { view
 // ---------------------------------------------------------------------------
 
 /** The police tapes: four cassettes, each with its label, status, and a transcript that follows the playback. */
-export function StatementsPanel({ caseId, view, onClose, volume }: { caseId: string; view: ClientView; onClose: () => void; volume: number }) {
+/**
+ * The recorded statements themselves: the list, the player and the transcript.
+ * On paper (cassette, cylinder) in the office; as audio files on a laptop in a modern case.
+ */
+export function StatementsBody({ caseId, view, volume, digital = false }: { caseId: string; view: ClientView; volume: number; digital?: boolean }) {
   const [sel, setSel] = useState(view.statements[0]?.characterId ?? "");
   const st = view.statements.find((s) => s.characterId === sel);
   const player = useLinePlayer(volume);
@@ -404,9 +408,9 @@ export function StatementsPanel({ caseId, view, onClose, volume }: { caseId: str
   const srcs = useMemo(() => (st && voiced ? st.transcript.map((_, i) => voiceSrc(caseId, "statement", st.characterId, i)) : []), [st, voiced, caseId]);
   const playing = player.status === "playing" || player.status === "loading";
   // Before tape, a police statement was cut on a dictating machine's wax cylinder.
-  const media = view.year < 1950 ? "cylinder" : "tape";
+  const media = digital ? "recording" : view.year < 1950 ? "cylinder" : "tape";
   return (
-    <Overlay title="Recorded police statements" onClose={onClose} wide>
+    <>
       {view.statements.length === 0 ? (
         <p className="p-6 text-smoke">Read the case file first; the {media}s are listed in it.</p>
       ) : (
@@ -432,7 +436,7 @@ export function StatementsPanel({ caseId, view, onClose, volume }: { caseId: str
           {st ? (
             <div className="p-5 sm:p-6">
               <div className="flex flex-wrap items-start gap-5">
-                {media === "cylinder" ? <Cylinder label={st.name} spinning={player.status === "playing"} /> : <Cassette label={st.name} spinning={player.status === "playing"} />}
+                {digital ? <AudioFile playing={player.status === "playing"} /> : media === "cylinder" ? <Cylinder label={st.name} spinning={player.status === "playing"} /> : <Cassette label={st.name} spinning={player.status === "playing"} />}
                 <dl className="grid min-w-0 flex-1 grid-cols-[auto_1fr] gap-x-4 gap-y-1 font-mono text-xs">
                   <dt className="text-smoke">Statement of</dt>
                   <dd>{st.name}</dd>
@@ -440,7 +444,7 @@ export function StatementsPanel({ caseId, view, onClose, volume }: { caseId: str
                   <dd>{st.recordedAt}</dd>
                   <dt className="text-smoke">Interviewing officer</dt>
                   <dd>{st.officer}</dd>
-                  <dt className="text-smoke">{media === "cylinder" ? "Cylinder" : "Tape"}</dt>
+                  <dt className="text-smoke">{digital ? "File" : media === "cylinder" ? "Cylinder" : "Tape"}</dt>
                   <dd>{st.tape}</dd>
                   <dt className="text-smoke">Recording status</dt>
                   <dd className="text-brass">{st.status}</dd>
@@ -492,7 +496,28 @@ export function StatementsPanel({ caseId, view, onClose, volume }: { caseId: str
           ) : null}
         </div>
       )}
+    </>
+  );
+}
+
+/** The police recordings in their own window: tapes in the office, cylinders before tape. */
+export function StatementsPanel({ caseId, view, onClose, volume }: { caseId: string; view: ClientView; onClose: () => void; volume: number }) {
+  return (
+    <Overlay title="Recorded police statements" onClose={onClose} wide>
+      <StatementsBody caseId={caseId} view={view} volume={volume} />
     </Overlay>
+  );
+}
+
+/** A recording as a file on a laptop: a waveform that moves while it plays. */
+function AudioFile({ playing }: { playing: boolean }) {
+  const bars = [6, 14, 9, 20, 12, 26, 16, 10, 22, 8, 18, 12, 24, 10, 15, 7];
+  return (
+    <div className="flex h-24 w-40 shrink-0 items-center justify-center gap-[3px] rounded-lg border border-white/10 bg-[#11161b] px-3" aria-hidden>
+      {bars.map((h, i) => (
+        <span key={i} className={`w-1.5 rounded-full bg-brass/80 ${playing ? "animate-pulse" : ""}`} style={{ height: `${h * 2.4}px`, animationDelay: `${(i % 5) * 120}ms` }} />
+      ))}
+    </div>
   );
 }
 
