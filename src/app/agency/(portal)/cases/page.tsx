@@ -98,8 +98,26 @@ function FileTable({ rows, reviewed }: { rows: CaseFile[]; reviewed: Set<string>
           {rows.map((f) => (
             <tr key={f.id}>
               <th scope="row" className="py-3 pl-0 pr-3 font-normal">
-                <span className="font-mono text-brass">{f.case_id}</span>
-                <span className="ml-2 font-serif text-paper">{f.case?.title}</span>
+                {f.status === "active" || f.status === "forming" ? (
+                  // An investigation under way: the title and the button both go straight back into it.
+                  <>
+                    <Link href={`/play/${f.case_id}`} className="group">
+                      <span className="font-mono text-brass">{f.case_id}</span>
+                      <span className="ml-2 font-serif text-paper underline-offset-4 group-hover:underline">{f.case?.title}</span>
+                    </Link>
+                    <Link
+                      href={`/play/${f.case_id}`}
+                      className="mt-2 flex w-fit items-center gap-1.5 rounded-[2px] bg-brass px-3 py-1.5 text-xs font-semibold text-ink hover:bg-[#d4b585]"
+                    >
+                      Resume Investigation
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <span className="font-mono text-brass">{f.case_id}</span>
+                    <span className="ml-2 font-serif text-paper">{f.case?.title}</span>
+                  </>
+                )}
                 {reviewed ? (
                   <span className="mt-1 block">
                     <LeaderboardButton caseId={f.case_id} title={f.case?.title ?? f.case_id} />
