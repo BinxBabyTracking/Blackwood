@@ -62,7 +62,13 @@ export async function proxy(request: NextRequest) {
     return redirectTo("/login", true);
   }
   if (signedIn && GUEST_ONLY.includes(path)) {
-    return redirectTo("/agency");
+    // A token can still look valid after its session has ended (a password change or sign-out elsewhere).
+    // Check with the server before sending the visitor on, or the Agency pages would send them straight
+    // back here and the two would bounce forever.
+    const { data: live } = await supabase.auth.getUser();
+    if (live.user) return redirectTo("/agency");
+    await supabase.auth.signOut({ scope: "local" });
+    return response;
   }
   return response;
 }
