@@ -7,6 +7,9 @@ import { Avatar } from "@/components/portal/avatar";
 import { getNotices } from "@/lib/catalog";
 import { getSettings, requireInvestigator } from "@/lib/investigator";
 import { FullScreenButton } from "@/game/ui/full-screen";
+import { TermsGate } from "@/components/portal/terms-gate";
+import { LEGAL_UPDATED, LEGAL_VERSION, MIN_AGE } from "@/lib/legal";
+import { createClient } from "@/lib/supabase/server";
 
 export default function PortalLayout({ children }: LayoutProps<"/agency">) {
   return (
@@ -53,6 +56,9 @@ export default function PortalLayout({ children }: LayoutProps<"/agency">) {
         <Suspense fallback={null}>
           <Preferences />
         </Suspense>
+        <Suspense fallback={null}>
+          <Terms />
+        </Suspense>
       </div>
     </div>
   );
@@ -79,4 +85,14 @@ async function Preferences() {
   const me = await requireInvestigator(true);
   const settings = await getSettings(me.id);
   return <PreferenceApplier prefs={settings} />;
+}
+
+/** Asks an account that hasn't accepted the current terms to accept them. */
+async function Terms() {
+  const supabase = await createClient();
+  const user = supabase ? (await supabase.auth.getUser()).data.user : null;
+  if (!user) return null;
+  const accepted = (user.user_metadata as { terms_version?: string } | null)?.terms_version;
+  if (accepted === LEGAL_VERSION) return null;
+  return <TermsGate minAge={MIN_AGE} updated={LEGAL_UPDATED} changed={Boolean(accepted)} />;
 }

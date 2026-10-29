@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 import { guestStatus, joinParty, leaveParty } from "@/app/actions/party";
 import { SubmitButton } from "@/components/form";
+import { MIN_AGE } from "@/lib/legal";
 import { Seal } from "@/components/wordmark";
 
 export function PartyFrame({ title, kicker, children }: { title: string; kicker?: string; children: React.ReactNode }) {
@@ -37,6 +38,11 @@ export function JoinForm({ code, joinKey }: { code: string; joinKey: string }) {
       <SubmitButton pending="Joining" className="w-full justify-center">
         Join the investigation
       </SubmitButton>
+      <p className="text-xs leading-relaxed text-smoke">
+        By joining you confirm you are {MIN_AGE} or older and agree to the{" "}
+        <a href="/terms" target="_blank" className="underline underline-offset-2">Terms of Service</a> and{" "}
+        <a href="/privacy" target="_blank" className="underline underline-offset-2">Privacy Policy</a>.
+      </p>
     </form>
   );
 }

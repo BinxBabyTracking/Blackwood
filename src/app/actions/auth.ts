@@ -1,5 +1,6 @@
 "use server";
 
+import { LEGAL_VERSION, MIN_AGE } from "@/lib/legal";
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -41,6 +42,7 @@ export async function signUp(_prev: ActionResult, fd: FormData): Promise<ActionR
   if (!EMAIL_RE.test(email)) fieldErrors.email = "Enter a valid email address.";
   if (password.length < 8) fieldErrors.password = "Use at least 8 characters.";
   if (password !== confirm) fieldErrors.confirm = "Passwords do not match.";
+  if (fd.get("agree") !== "yes") fieldErrors.agree = `Confirm you are ${MIN_AGE} or older and agree to the terms to create an account.`;
   if (Object.keys(fieldErrors).length) return { status: "error", message: "Check the highlighted fields.", fieldErrors };
 
   const supabase = await createClient();
@@ -53,7 +55,11 @@ export async function signUp(_prev: ActionResult, fd: FormData): Promise<ActionR
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { emailRedirectTo: `${origin}/auth/confirm?next=/agency/onboarding` },
+    // The agreement is recorded on the account: which version of the terms, when, and the age confirmation.
+    options: {
+      emailRedirectTo: `${origin}/auth/confirm?next=/agency/onboarding`,
+      data: { terms_version: LEGAL_VERSION, terms_accepted_at: new Date().toISOString(), age_confirmed: MIN_AGE },
+    },
   });
   if (error) return /database error saving new user/i.test(error.message) ? INVITE_ONLY : { status: "error", message: error.message };
 

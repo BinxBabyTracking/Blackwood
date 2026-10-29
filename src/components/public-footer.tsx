@@ -8,6 +8,7 @@ const LINKS = [
   { href: "/contact", label: "Contact" },
   { href: "/privacy", label: "Privacy Policy" },
   { href: "/terms", label: "Terms of Service" },
+  { href: "/billing", label: "Billing and Refunds" },
 ];
 
 export function PublicFooter() {
