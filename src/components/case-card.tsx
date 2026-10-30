@@ -69,9 +69,15 @@ export function CaseCard({ c, href, leaderboard = false, mine }: { c: CatalogCas
         </div>
         <p className="mb-5 mt-3 line-clamp-3 text-sm leading-relaxed text-smoke">{c.synopsis}</p>
         <CaseFacts c={c} className="mt-auto border-t border-rule pt-4" />
-        {leaderboard ? (
-          <div className="mt-4 border-t border-rule pt-3">
-            <LeaderboardButton caseId={c.id} title={c.title} />
+        {leaderboard || (c.status === "coming_soon" && c.early_access_open && !mine) ? (
+          <div className="relative z-10 mt-4 flex flex-wrap items-center gap-3 border-t border-rule pt-3">
+            {leaderboard ? <LeaderboardButton caseId={c.id} title={c.title} /> : null}
+            {/* Open for early access and not yet granted: the request is on the case page. */}
+            {c.status === "coming_soon" && c.early_access_open && !mine ? (
+              <Link href={href} className="inline-flex items-center rounded-[2px] bg-brass px-3 py-1.5 text-sm font-semibold text-ink hover:bg-[#d4b585]">
+                Request Early Access
+              </Link>
+            ) : null}
           </div>
         ) : null}
       </div>
@@ -108,9 +114,15 @@ export function FeaturedCaseCard({ c, href, leaderboard = false, mine }: { c: Ca
         </div>
         <p className="mb-6 mt-4 text-base leading-relaxed text-paper/85">{c.synopsis}</p>
         <CaseFacts c={c} className="mt-auto border-t border-rule pt-4" />
-        {leaderboard ? (
-          <div className="mt-4 border-t border-rule pt-3">
-            <LeaderboardButton caseId={c.id} title={c.title} />
+        {leaderboard || (c.status === "coming_soon" && c.early_access_open && !mine) ? (
+          <div className="relative z-10 mt-4 flex flex-wrap items-center gap-3 border-t border-rule pt-3">
+            {leaderboard ? <LeaderboardButton caseId={c.id} title={c.title} /> : null}
+            {/* Open for early access and not yet granted: the request is on the case page. */}
+            {c.status === "coming_soon" && c.early_access_open && !mine ? (
+              <Link href={href} className="inline-flex items-center rounded-[2px] bg-brass px-3 py-1.5 text-sm font-semibold text-ink hover:bg-[#d4b585]">
+                Request Early Access
+              </Link>
+            ) : null}
           </div>
         ) : null}
       </div>
