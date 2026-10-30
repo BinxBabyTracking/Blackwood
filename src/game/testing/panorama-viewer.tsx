@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { TestHotspot, TestRoom } from "./asylum";
+import type { TestHotspot, TestProp, TestRoom } from "./asylum";
 
 /*
  * A small WebGL viewer for equirectangular panoramas. Every pixel casts a ray
@@ -30,6 +30,35 @@ void main(){
   o = vec4(texture(t, vec2(u, vv)).rgb * fade, 1.);
 }`;
 
+// Cutouts and their floor shadows: flat quads placed in the room, projected with the same camera.
+const SPRITE_VERT = `#version 300 es
+in vec3 pos; in vec2 uv; out vec2 vuv;
+uniform float yaw, pitch, tanHalf, aspect;
+void main(){
+  vuv = uv;
+  float cy = cos(yaw), sy = sin(yaw), cp = cos(pitch), sp = sin(pitch);
+  float x1 = pos.x*cy + pos.z*sy, z1 = -pos.x*sy + pos.z*cy;
+  float y2 = pos.y*cp + z1*sp, z2 = -pos.y*sp + z1*cp;
+  gl_Position = vec4(x1/(tanHalf*aspect), y2/tanHalf, 0., -z2);
+}`;
+
+const SPRITE_FRAG = `#version 300 es
+precision highp float;
+in vec2 vuv; out vec4 o;
+uniform sampler2D t; uniform float fade, shadow;
+void main(){
+  if (shadow > 0.) {
+    vec2 q = (vuv - 0.5) * 2.;
+    float a = smoothstep(1., 0.15, length(q)) * shadow;
+    o = vec4(0., 0., 0., a * fade);
+  } else {
+    vec4 c = texture(t, vuv);
+    o = vec4(c.rgb * fade, c.a);
+  }
+}`;
+
+type LoadedProp = { prop: TestProp; tex: WebGLTexture };
+
 const RAD = Math.PI / 180;
 const clamp = (x: number, a: number, b: number) => Math.min(b, Math.max(a, x));
 const wrap = (deg: number) => ((((deg + 180) % 360) + 360) % 360) - 180;
@@ -41,6 +70,7 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
   const spotRefs = useRef(new Map<string, HTMLButtonElement>());
   const view = useRef<View>({ yaw: 0, pitch: 0, fov: 80, fade: 0 });
   const glRef = useRef<{ gl: WebGL2RenderingContext; tex: WebGLTexture; u: Record<string, WebGLUniformLocation | null> } | null>(null);
+  const propsRef = useRef<{ eye: number; list: LoadedProp[]; token: object }>({ eye: 0.5, list: [], token: {} });
   const gyro = useRef<{ on: boolean; heading0: number | null; yaw0: number }>({ on: false, heading0: null, yaw0: 0 });
   const busy = useRef(false);
   const readoutRef = useRef<HTMLSpanElement>(null);
@@ -90,6 +120,80 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
     const u = Object.fromEntries(["t", "yaw", "pitch", "tanHalf", "aspect", "fade"].map((n) => [n, gl.getUniformLocation(prog, n)]));
     glRef.current = { gl, tex, u };
 
+    const sprog = gl.createProgram()!;
+    gl.attachShader(sprog, sh(gl.VERTEX_SHADER, SPRITE_VERT));
+    gl.attachShader(sprog, sh(gl.FRAGMENT_SHADER, SPRITE_FRAG));
+    gl.linkProgram(sprog);
+    const su = Object.fromEntries(["t", "yaw", "pitch", "tanHalf", "aspect", "fade", "shadow"].map((n) => [n, gl.getUniformLocation(sprog, n)]));
+    const sbuf = gl.createBuffer();
+    const sPos = gl.getAttribLocation(sprog, "pos");
+    const sUv = gl.getAttribLocation(sprog, "uv");
+    const svao = gl.createVertexArray();
+    gl.bindVertexArray(svao);
+    gl.bindBuffer(gl.ARRAY_BUFFER, sbuf);
+    gl.enableVertexAttribArray(sPos);
+    gl.vertexAttribPointer(sPos, 3, gl.FLOAT, false, 20, 0);
+    gl.enableVertexAttribArray(sUv);
+    gl.vertexAttribPointer(sUv, 2, gl.FLOAT, false, 20, 12);
+    gl.bindVertexArray(null);
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+    // Four corners (bottom-left, bottom-right, top-left, top-right) with their texture coordinates.
+    const quad = (c: number[][]) =>
+      new Float32Array([...c[0], 0, 1, ...c[1], 1, 1, ...c[2], 0, 0, ...c[3], 1, 0]);
+    const drawProps = (v: View, tanHalf: number, aspect: number) => {
+      const { eye, list } = propsRef.current;
+      if (!list.length) return;
+      gl.useProgram(sprog);
+      gl.bindVertexArray(svao);
+      gl.bindBuffer(gl.ARRAY_BUFFER, sbuf);
+      gl.enable(gl.BLEND);
+      gl.uniform1f(su.yaw, v.yaw * RAD);
+      gl.uniform1f(su.pitch, v.pitch * RAD);
+      gl.uniform1f(su.tanHalf, tanHalf);
+      gl.uniform1f(su.aspect, aspect);
+      gl.uniform1f(su.fade, v.fade);
+      const floor = -eye;
+      // Farthest first, so nearer pieces cover farther ones.
+      const sorted = [...list].sort((a, b) => Math.hypot(b.prop.x, b.prop.z) - Math.hypot(a.prop.x, a.prop.z));
+      for (const { prop: p, tex: t } of sorted) {
+        const d = Math.hypot(p.x, p.z) || 1;
+        const fx = p.x / d, fz = p.z / d; // away from the viewer
+        const rx = -fz, rz = fx; // the viewer's right, looking at it
+        if (p.shadow) {
+          const cx = p.x + fx * p.shadow.back, cz = p.z + fz * p.shadow.back;
+          const hw = p.shadow.width / 2, hd = p.shadow.depth / 2;
+          const y = floor + 0.001;
+          gl.bufferData(gl.ARRAY_BUFFER, quad([
+            [cx - rx * hw - fx * hd, y, cz - rz * hw - fz * hd],
+            [cx + rx * hw - fx * hd, y, cz + rz * hw - fz * hd],
+            [cx - rx * hw + fx * hd, y, cz - rz * hw + fz * hd],
+            [cx + rx * hw + fx * hd, y, cz + rz * hw + fz * hd],
+          ]), gl.DYNAMIC_DRAW);
+          gl.uniform1f(su.shadow, p.shadow.strength ?? 0.75);
+          gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        }
+        const hw = p.width / 2;
+        gl.bufferData(gl.ARRAY_BUFFER, quad([
+          [p.x - rx * hw, floor, p.z - rz * hw],
+          [p.x + rx * hw, floor, p.z + rz * hw],
+          [p.x - rx * hw, floor + p.height, p.z - rz * hw],
+          [p.x + rx * hw, floor + p.height, p.z + rz * hw],
+        ]), gl.DYNAMIC_DRAW);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, t);
+        gl.uniform1i(su.t, 0);
+        gl.uniform1f(su.shadow, 0);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      }
+      gl.disable(gl.BLEND);
+      gl.bindVertexArray(null);
+      gl.useProgram(prog);
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bindTexture(gl.TEXTURE_2D, glRef.current!.tex);
+    };
+
     let raf = 0;
     const frame = () => {
       raf = requestAnimationFrame(frame);
@@ -110,6 +214,7 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
       gl.uniform1f(u.aspect, aspect);
       gl.uniform1f(u.fade, v.fade);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      drawProps(v, tanHalf, aspect);
 
       // Place hotspots: world direction into camera space, then onto the screen.
       const cy = Math.cos(v.yaw * RAD), sy = Math.sin(v.yaw * RAD);
@@ -148,15 +253,38 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
     view.current.pitch = r.startPitch ?? 0;
     view.current.fov = 80;
     gyro.current.heading0 = null;
+    let cancelled = false;
+    const token = {};
+    propsRef.current = { eye: r.eye ?? 0.5, list: [], token };
+    for (const prop of r.props ?? []) {
+      const pimg = new Image();
+      pimg.onload = () => {
+        // Only the latest room load may add pieces (a room can load twice, and an old load must not add a copy).
+        if (cancelled || propsRef.current.token !== token || propsRef.current.list.some((l) => l.prop.id === prop.id)) return;
+        const { gl } = g;
+        const t = gl.createTexture()!;
+        gl.bindTexture(gl.TEXTURE_2D, t);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, pimg);
+        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.bindTexture(gl.TEXTURE_2D, g.tex);
+        propsRef.current.list.push({ prop, tex: t });
+      };
+      pimg.src = prop.image;
+    }
     if (!r.image) {
       queueMicrotask(() => {
         setLoading(false);
         setError(null);
       });
       view.current.fade = 0;
-      return;
+      return () => {
+        cancelled = true;
+      };
     }
-    let cancelled = false;
     queueMicrotask(() => setLoading(true));
     const img = new Image();
     img.onload = () => {
