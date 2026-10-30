@@ -186,9 +186,9 @@ Marsh's place is env `crane` (dining room at the start). He notices only what he
 | Recover the folder | He knows the stair is found, the folder not yet found | He takes it from the cellar |
 | Burn the folder | After recovering it | HE038 in the greenhouse stove |
 | Take the globe envelope | A report came back wrong, the envelope not yet found | HE035 lost |
-| Attack a witness | 11:20 PM on, he is cornered (below), he fears that witness, nobody from Blackwood is in the room with them, nobody has been attacked | Unguarded: killed (Ending C). Quietly guarded: interrupted and arrested (Ending B). One attack at most; there is never a third death. |
-| Escape by the gate | 11:40 PM on, he is cornered, no officer at the gate | Gone (Ending D) |
-| Escape by the lane | He is cornered, the gate is watched, he has called his driver; 11:40 PM on, or during the procession | Officer on the lane: caught and arrested. Otherwise gone. |
+| Attack a witness | 11:59 PM on, he is cornered (below), he fears that witness, nobody from Blackwood is in the room with them, nobody has been attacked | Unguarded: killed (Ending C). Quietly guarded: interrupted and arrested (Ending B). One attack at most; there is never a third death. |
+| Escape by the gate | 11:59 PM on, he is cornered, no officer at the gate | Gone (Ending D) |
+| Escape by the lane | He is cornered, the gate is watched, he has called his driver; 11:59 PM on, or during the procession | Officer on the lane: caught and arrested. Otherwise gone. |
 
 **Cornered** means the police have opened the carriage house chamber, or he knows the stair has been found and fears at least one witness. Each open move has its own chance each tick (an action that moves the clock), rolled from the investigation's seed.
 

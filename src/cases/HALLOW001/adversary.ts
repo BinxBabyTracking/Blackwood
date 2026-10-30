@@ -42,7 +42,7 @@ const attack = (w: (typeof WITNESSES)[number], priority: number): AdversaryMove 
   priority,
   chance: 15,
   // Only once he is cornered: the net is closing, and this witness is part of it.
-  when: { all: [craneInDanger, learned(`fears_${w.id}`), alive(w.id), { not: { flag: "attack_made" } }, { clockAt: "23:20" }, { not: { at: w.at } }] },
+  when: { all: [craneInDanger, learned(`fears_${w.id}`), alive(w.id), { not: { flag: "attack_made" } }, { clockAt: "23:59" }, { not: { at: w.at } }] },
   effects: [
     { setFlag: "attack_made" },
     { setFlag: `attack_on_${w.id}` },
@@ -120,7 +120,7 @@ export const adversary: AdversaryDef = {
       note: "Walks out to his car in the gatehouse lot and drives out of the front gate.",
       priority: 99,
       chance: 25,
-      when: { all: [craneInDanger, { not: { flag: "police_gate" } }, { clockAt: "23:40" }] },
+      when: { all: [craneInDanger, { not: { flag: "police_gate" } }, { clockAt: "23:59" }] },
       effects: [{ setFlag: "crane_escaped" }, { setEnv: "crane", to: "gone" }],
     },
     {
@@ -128,7 +128,7 @@ export const adversary: AdversaryDef = {
       note: "Sees the officer at the gate and goes out through the maze to his driver on the lane instead.",
       priority: 98,
       chance: 30,
-      when: { all: [craneInDanger, { flag: "police_gate" }, { flag: "crane_called" }, { clockAt: "23:40" }] },
+      when: { all: [craneInDanger, { flag: "police_gate" }, { flag: "crane_called" }, { clockAt: "23:59" }] },
       effects: runForTheLane,
     },
     // Silencing a witness: the one he fears most first.
