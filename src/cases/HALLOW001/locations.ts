@@ -128,7 +128,7 @@ export const locations: LocationDef[] = [
         "The window",
         "Rain on the old glass, and the drive below going down through the fog to the gatehouse lights. A carved pumpkin on the sill has burned down to a stub. Somewhere in this house, somebody is waiting to see what you find.",
       ),
-      person("mr_josie", "Josie Lisle", "josie", { x: 72, y: 44, w: 11, h: 26 }, { all: [{ flag: "josie_found" }, alive("josie")] }),
+      person("mr_josie", "Josie Lisle", "josie", { x: 69, y: 30, w: 15, h: 56 }, { all: [{ flag: "josie_found" }, alive("josie")] }),
     ],
   },
 
@@ -389,15 +389,15 @@ export const locations: LocationDef[] = [
     onMap: false,
     hotspots: [
       door("gw_back", "Back to the corridor", "upstairs_corridor", { x: 0, y: 18, w: 8, h: 62 }),
-      // Where Constance and Iris say it is: the narrow stair at the end of the guest wing (it also opens off the corridor).
-      door("gw_attic", "The attic stair", "attic", { x: 86, y: 18, w: 12, h: 62 }, { flag: "attic_known" }),
-      inspect("gw_felix", "Felix's room", "door", { x: 10, y: 18, w: 14, h: 60 }, "Felix's room", "Felix's room: an overnight bag on the bed.", { evidence: "HE032" }),
-      inspect("gw_penrose", "Dr. Penrose's room", "door", { x: 28, y: 18, w: 14, h: 60 }, "Dr. Penrose's room", "Dr. Penrose's room: a medical journal on the night table.", { evidence: "HE033" }),
+      // Where Constance and Iris say it is: the narrow opening at the far end of the hall, on the right (it also opens off the corridor).
+      door("gw_attic", "The attic stair", "attic", { x: 61.5, y: 21, w: 5, h: 41 }, { flag: "attic_known" }),
+      inspect("gw_felix", "Felix's room", "door", { x: 10, y: 6, w: 12, h: 79 }, "Felix's room", "Felix's room: an overnight bag on the bed.", { evidence: "HE032" }),
+      inspect("gw_penrose", "Dr. Penrose's room", "door", { x: 27, y: 15, w: 7.5, h: 57 }, "Dr. Penrose's room", "Dr. Penrose's room: a medical journal on the night table.", { evidence: "HE033" }),
       inspect(
         "gw_harriet",
         "Mrs. Lowell's room",
         "door",
-        { x: 46, y: 18, w: 14, h: 60 },
+        { x: 37.5, y: 21, w: 5.5, h: 43 },
         "Mrs. Lowell's room",
         "A neat room: a cardigan folded on the chair, a library book on the pillow, a framed photograph of a cat. Her handbag isn't here. She keeps it with her.",
       ),
@@ -405,7 +405,7 @@ export const locations: LocationDef[] = [
         "gw_rose",
         "The Rose Room",
         "door",
-        { x: 66, y: 18, w: 16, h: 60 },
+        { x: 70, y: 10, w: 19.5, h: 70 },
         "The Rose Room",
         "The last door, painted with faded roses. Locked from inside. You knock. Nobody answers, but you can hear someone on the other side holding their breath, and a faint smell of lilies. Whoever it is won't open the door to a stranger. If you knew who she was, you could call her by name.",
         {
