@@ -18,6 +18,8 @@ const FRAG = `#version 300 es
 precision highp float;
 in vec2 v; out vec4 o;
 uniform sampler2D t; uniform float yaw, pitch, tanHalf, aspect, fade;
+// Box rooms: half width, half depth, ceiling and floor heights relative to the eye; and the room light.
+uniform float boxOn, light, lightStrength; uniform vec4 box; uniform vec3 lightPos, lightCol;
 const float PI = 3.14159265359;
 void main(){
   vec3 d = normalize(vec3(v.x*tanHalf*aspect, v.y*tanHalf, -1.));
@@ -27,7 +29,21 @@ void main(){
   vec3 w = vec3(a.x*cy - a.z*sy, a.y, a.x*sy + a.z*cy);
   float u = 0.5 + atan(w.x, -w.z)/(2.*PI);
   float vv = 0.5 - asin(clamp(w.y,-1.,1.))/PI;
-  o = vec4(texture(t, vec2(u, vv)).rgb * fade, 1.);
+  vec3 col = texture(t, vec2(u, vv)).rgb;
+  if (boxOn > 0.5 && light > 0.001) {
+    // Where this ray meets the box, and which way that surface faces.
+    float tx = abs(w.x) > 1e-5 ? (w.x > 0. ? box.x : -box.x) / w.x : 1e9;
+    float tz = abs(w.z) > 1e-5 ? (w.z > 0. ? box.y : -box.y) / w.z : 1e9;
+    float ty = abs(w.y) > 1e-5 ? (w.y > 0. ? box.z : box.w) / w.y : 1e9;
+    float tt = min(tx, min(ty, tz));
+    vec3 n = tt == tx ? vec3(-sign(w.x), 0., 0.) : (tt == ty ? vec3(0., -sign(w.y), 0.) : vec3(0., 0., -sign(w.z)));
+    vec3 pt = w * tt;
+    vec3 L = lightPos - pt; float d = length(L);
+    float lam = max(dot(n, L / d), 0.);
+    float att = 1. / (1. + 5. * d * d);
+    col *= 1. + light * lightCol * (lightStrength * lam * att + 0.35);
+  }
+  o = vec4(col * fade, 1.);
 }`;
 
 // Cutouts and their floor shadows: flat quads placed in the room, projected with the same camera.
@@ -45,15 +61,19 @@ void main(){
 const SPRITE_FRAG = `#version 300 es
 precision highp float;
 in vec2 vuv; out vec4 o;
-uniform sampler2D t; uniform float fade, shadow;
+uniform sampler2D t; uniform float fade, shadow, glow; uniform vec3 mul, glowCol;
 void main(){
-  if (shadow > 0.) {
+  if (glow > 0.) {
+    vec2 q = (vuv - 0.5) * 2.; float r2 = dot(q, q);
+    float a = (exp(-r2 * 9.) + 0.35 * exp(-r2 * 2.5)) * glow;
+    o = vec4(glowCol * a * fade, 1.);
+  } else if (shadow > 0.) {
     vec2 q = (vuv - 0.5) * 2.;
     float a = smoothstep(1., 0.15, length(q)) * shadow;
     o = vec4(0., 0., 0., a * fade);
   } else {
     vec4 c = texture(t, vuv);
-    o = vec4(c.rgb * fade, c.a);
+    o = vec4(c.rgb * mul * fade, c.a);
   }
 }`;
 
@@ -70,7 +90,15 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
   const spotRefs = useRef(new Map<string, HTMLButtonElement>());
   const view = useRef<View>({ yaw: 0, pitch: 0, fov: 80, fade: 0 });
   const glRef = useRef<{ gl: WebGL2RenderingContext; tex: WebGLTexture; u: Record<string, WebGLUniformLocation | null> } | null>(null);
-  const propsRef = useRef<{ eye: number; list: LoadedProp[]; token: object }>({ eye: 0.5, list: [], token: {} });
+  const propsRef = useRef<{
+    eye: number;
+    list: LoadedProp[];
+    token: object;
+    box?: [number, number, number, number];
+    light?: { pos: [number, number, number]; color: [number, number, number]; strength: number };
+  }>({ eye: 0.5, list: [], token: {} });
+  /** 0 = off, 1 = on; animated, so the bulb can flicker when switched on. */
+  const lightLevel = useRef(0);
   const gyro = useRef<{ on: boolean; heading0: number | null; yaw0: number }>({ on: false, heading0: null, yaw0: 0 });
   const busy = useRef(false);
   const readoutRef = useRef<HTMLSpanElement>(null);
@@ -82,6 +110,7 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
   const [gyroOn, setGyroOn] = useState(false);
   const [showPos, setShowPos] = useState(false);
   const [webglFailed, setWebglFailed] = useState(false);
+  const [lightOn, setLightOn] = useState(false);
 
   const room = rooms.find((r) => r.id === roomId) ?? rooms[0];
 
@@ -117,14 +146,14 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 1, 1, 0, gl.RGB, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0]));
-    const u = Object.fromEntries(["t", "yaw", "pitch", "tanHalf", "aspect", "fade"].map((n) => [n, gl.getUniformLocation(prog, n)]));
+    const u = Object.fromEntries(["t", "yaw", "pitch", "tanHalf", "aspect", "fade", "boxOn", "light", "lightStrength", "box", "lightPos", "lightCol"].map((n) => [n, gl.getUniformLocation(prog, n)]));
     glRef.current = { gl, tex, u };
 
     const sprog = gl.createProgram()!;
     gl.attachShader(sprog, sh(gl.VERTEX_SHADER, SPRITE_VERT));
     gl.attachShader(sprog, sh(gl.FRAGMENT_SHADER, SPRITE_FRAG));
     gl.linkProgram(sprog);
-    const su = Object.fromEntries(["t", "yaw", "pitch", "tanHalf", "aspect", "fade", "shadow"].map((n) => [n, gl.getUniformLocation(sprog, n)]));
+    const su = Object.fromEntries(["t", "yaw", "pitch", "tanHalf", "aspect", "fade", "shadow", "glow", "mul", "glowCol"].map((n) => [n, gl.getUniformLocation(sprog, n)]));
     const sbuf = gl.createBuffer();
     const sPos = gl.getAttribLocation(sprog, "pos");
     const sUv = gl.getAttribLocation(sprog, "uv");
@@ -143,8 +172,9 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
     const quad = (c: number[][]) =>
       new Float32Array([...c[0], 0, 1, ...c[1], 1, 1, ...c[2], 0, 0, ...c[3], 1, 0]);
     const drawProps = (v: View, tanHalf: number, aspect: number) => {
-      const { eye, list } = propsRef.current;
-      if (!list.length) return;
+      const { eye, list, light } = propsRef.current;
+      const lv = light ? lightLevel.current : 0;
+      if (!list.length && !lv) return;
       gl.useProgram(sprog);
       gl.bindVertexArray(svao);
       gl.bindBuffer(gl.ARRAY_BUFFER, sbuf);
@@ -171,7 +201,8 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
             [cx - rx * hw + fx * hd, y, cz - rz * hw + fz * hd],
             [cx + rx * hw + fx * hd, y, cz + rz * hw + fz * hd],
           ]), gl.DYNAMIC_DRAW);
-          gl.uniform1f(su.shadow, p.shadow.strength ?? 0.75);
+          gl.uniform1f(su.glow, 0);
+          gl.uniform1f(su.shadow, Math.min(1, (p.shadow.strength ?? 0.75) * (1 + lv * 0.25)));
           gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
         }
         const hw = p.width / 2;
@@ -186,7 +217,36 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
         gl.bindTexture(gl.TEXTURE_2D, t);
         gl.uniform1i(su.t, 0);
         gl.uniform1f(su.shadow, 0);
+        gl.uniform1f(su.glow, 0);
+        // Light the cutout the way the shader lights the walls, at its middle, facing the viewer.
+        let m: [number, number, number] = [1, 1, 1];
+        if (light && lv > 0.001) {
+          const cx = p.x + fx * 0.08, cy = floor + p.height * 0.6, cz = p.z + fz * 0.08;
+          const Lx = light.pos[0] - cx, Ly = light.pos[1] - cy, Lz = light.pos[2] - cz;
+          const d = Math.hypot(Lx, Ly, Lz) || 1;
+          const lam = Math.max(0, (-fx * Lx + -fz * Lz) / d) * 0.6 + Math.max(0, Ly / d) * 0.5;
+          const att = 1 / (1 + 5 * d * d);
+          m = light.color.map((c) => 1 + lv * c * (light.strength * lam * att + 0.35)) as [number, number, number];
+        }
+        gl.uniform3f(su.mul, m[0], m[1], m[2]);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      }
+      // The bulb itself: a soft glow at the light, added on top.
+      if (light && lv > 0.001) {
+        const [lx, ly, lz] = light.pos;
+        // Facing the viewer: build the quad from the view's right and up directions.
+        const ry = v.yaw * RAD, rp = v.pitch * RAD;
+        const right = [Math.cos(ry), 0, Math.sin(ry)];
+        const up = [-Math.sin(ry) * Math.sin(rp), Math.cos(rp), Math.cos(ry) * Math.sin(rp)];
+        const s2 = 0.09;
+        const c = (a: number, b: number) => [lx + right[0] * a * s2 + up[0] * b * s2, ly + right[1] * a * s2 + up[1] * b * s2, lz + right[2] * a * s2 + up[2] * b * s2];
+        gl.bufferData(gl.ARRAY_BUFFER, quad([c(-1, -1), c(1, -1), c(-1, 1), c(1, 1)]), gl.DYNAMIC_DRAW);
+        gl.blendFunc(gl.ONE, gl.ONE);
+        gl.uniform1f(su.shadow, 0);
+        gl.uniform1f(su.glow, lv);
+        gl.uniform3f(su.glowCol, light.color[0], light.color[1], light.color[2]);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
       }
       gl.disable(gl.BLEND);
       gl.bindVertexArray(null);
@@ -214,6 +274,15 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
       gl.uniform1f(u.tanHalf, tanHalf);
       gl.uniform1f(u.aspect, aspect);
       gl.uniform1f(u.fade, v.fade);
+      const R = propsRef.current;
+      gl.uniform1f(u.boxOn, R.box ? 1 : 0);
+      gl.uniform1f(u.light, R.light ? lightLevel.current : 0);
+      if (R.box) gl.uniform4f(u.box, R.box[0], R.box[1], R.box[2], R.box[3]);
+      if (R.light) {
+        gl.uniform3f(u.lightPos, R.light.pos[0], R.light.pos[1], R.light.pos[2]);
+        gl.uniform3f(u.lightCol, ...R.light.color);
+        gl.uniform1f(u.lightStrength, R.light.strength);
+      }
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       drawProps(v, tanHalf, aspect);
 
@@ -256,7 +325,17 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
     gyro.current.heading0 = null;
     let cancelled = false;
     const token = {};
-    propsRef.current = { eye: r.eye ?? 0.5, list: [], token };
+    const eye = r.eye ?? 0.5;
+    propsRef.current = {
+      eye,
+      list: [],
+      token,
+      // Box rooms are 1.5 wide and deep and 1 high, as built from their six images.
+      box: r.eye != null ? [0.75, 0.75, 1 - eye, -eye] : undefined,
+      light: r.light ? { pos: [r.light.x, r.light.y - eye, r.light.z], color: r.light.color, strength: r.light.strength } : undefined,
+    };
+    lightLevel.current = 0;
+    queueMicrotask(() => setLightOn(false));
     for (const prop of r.props ?? []) {
       const pimg = new Image();
       pimg.onload = () => {
@@ -420,6 +499,10 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
   const go = useCallback(
     (spot: TestHotspot) => {
       if (busy.current) return;
+      if (spot.kind === "switch") {
+        flipLight();
+        return;
+      }
       if (spot.kind === "inspect") {
         setInspect(spot);
         return;
@@ -469,7 +552,7 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
               className="group absolute -translate-x-1/2 -translate-y-1/2"
             >
               <span className={`block h-9 w-9 rounded-full border-2 ${h.kind === "exit" ? "border-paper/80" : "border-brass/80"} bg-black/30 shadow-[0_0_18px_rgba(0,0,0,0.8)] backdrop-blur-[1px] transition group-hover:scale-110`}>
-                <span className="grid h-full w-full place-items-center text-sm">{h.kind === "exit" ? "➜" : "?"}</span>
+                <span className="grid h-full w-full place-items-center text-sm">{h.kind === "exit" ? "➜" : h.kind === "switch" ? (lightOn ? "●" : "○") : "?"}</span>
               </span>
               <span className="absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap rounded-[2px] bg-black/70 px-2 py-0.5 text-xs">{h.label}</span>
             </button>
@@ -520,6 +603,26 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
       ) : null}
     </div>
   );
+
+  /** On with a short flicker, like an old bulb catching; off at once. */
+  function flipLight() {
+    const turningOn = lightLevel.current < 0.5;
+    setLightOn(turningOn);
+    if (!turningOn) {
+      lightLevel.current = 0;
+      return;
+    }
+    const steps: [number, number][] = [[0, 0.7], [60, 0.1], [130, 0.85], [190, 0.2], [320, 1]];
+    const t0 = performance.now();
+    const tick = (now: number) => {
+      const t = now - t0;
+      let level = 0;
+      for (const [at, l] of steps) if (t >= at) level = l;
+      lightLevel.current = level;
+      if (t < 320) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
 
   function animate(to: Partial<View>, ms: number) {
     const from = { ...view.current };

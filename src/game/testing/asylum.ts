@@ -9,7 +9,12 @@
 
 export type TestHotspot =
   | { kind: "exit"; id: string; yaw: number; pitch: number; label: string; to: string }
-  | { kind: "inspect"; id: string; yaw: number; pitch: number; label: string; text: string; image?: string };
+  | { kind: "inspect"; id: string; yaw: number; pitch: number; label: string; text: string; image?: string }
+  /** Turns the room's ceiling light on and off. */
+  | { kind: "switch"; id: string; yaw: number; pitch: number; label: string };
+
+/** A light drawn by the viewer in a box room (no extra artwork): position in room units, height above the floor (room height 1). */
+export type TestLight = { x: number; y: number; z: number; color: [number, number, number]; strength: number };
 
 /**
  * A cutout standing in a box room (a transparent image, always facing the
@@ -43,6 +48,7 @@ export type TestRoom = {
   /** For rooms built as a box: the eye height above the floor, in the same units as prop positions (room height is 1). */
   eye?: number;
   props?: TestProp[];
+  light?: TestLight;
 };
 
 export const ASYLUM_TEST = {
@@ -77,12 +83,15 @@ export const ASYLUM_TEST = {
       image: "/testing/asylum/isolation.webp",
       startYaw: 0,
       eye: 0.55,
+      // The ceiling fitting in the middle of the ceiling image, hanging a little below it. Warm, like an old incandescent bulb.
+      light: { x: 0, y: 0.9, z: 0, color: [1.0, 0.78, 0.52], strength: 3.2 },
       props: [
         // The corner table, back right as seen facing the door (the room is 1.5 wide and deep, 1 high; that corner is at x -0.75, z 0.75).
         { id: "iso-table", image: "/testing/asylum/props/iso_table.webp", x: -0.6, z: 0.6, width: 0.4, height: 0.39, sink: 0.06, shadow: { width: 0.46, depth: 0.36, back: 0.1, strength: 0.9 } },
       ],
       hotspots: [
         { kind: "exit", id: "iso-door", yaw: -166, pitch: -8, label: "Ward Room", to: "ward" },
+        { kind: "switch", id: "iso-switch", yaw: -148, pitch: -6, label: "Light switch" },
         { kind: "inspect", id: "iso-vent", yaw: -90, pitch: -24, label: "Vent", text: "Test hotspot. Something has scratched the paint around the grate from the inside." },
         { kind: "inspect", id: "iso-window", yaw: 22, pitch: 6, label: "Window", text: "Test hotspot. The sash is painted shut. Through the glass, the grounds are perfectly still." },
       ],
