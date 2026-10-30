@@ -32,6 +32,8 @@ export type TestProp = {
   height: number;
   /** How far to lower the cutout below the floor line, when its feet look like they float (room units). */
   sink?: number;
+  /** Brightness of the cutout's own image before the room's light is applied (for rooms lit in code). */
+  gain?: number;
   /** A soft shadow on the floor: its size, and how far behind the cutout's base its center sits. */
   shadow?: { width: number; depth: number; back: number; strength?: number };
 };
@@ -49,6 +51,14 @@ export type TestRoom = {
   eye?: number;
   props?: TestProp[];
   light?: TestLight;
+  /**
+   * Rooms lit in code: the image is the room in plain light, and this second image says where moonlight falls
+   * (red) and which pixels are inside the room rather than the view outside (green). Made by the bake script.
+   */
+  lightmap?: string;
+  /** The night level inside the room with no lights, and the moonlight's color. */
+  ambient?: [number, number, number];
+  moon?: [number, number, number];
 };
 
 export const ASYLUM_TEST = {
@@ -80,14 +90,17 @@ export const ASYLUM_TEST = {
       // Built from six separate images (four walls, floor, ceiling) placed as a box around the camera.
       id: "steel_room",
       name: "Isolation Room",
-      image: "/testing/asylum/isolation.webp",
+      image: "/testing/asylum/iso2.webp",
+      lightmap: "/testing/asylum/iso2_light.webp",
+      ambient: [0.2, 0.25, 0.36],
+      moon: [0.48, 0.56, 0.78],
       startYaw: 0,
       eye: 0.55,
       // The ceiling fitting in the middle of the ceiling image, hanging a little below it. Warm, like an old incandescent bulb.
       light: { x: 0, y: 0.9, z: 0, color: [1.0, 0.78, 0.52], strength: 3.2 },
       props: [
         // The corner table, back right as seen facing the door (the room is 1.5 wide and deep, 1 high; that corner is at x -0.75, z 0.75).
-        { id: "iso-table", image: "/testing/asylum/props/iso_table.webp", x: -0.6, z: 0.6, width: 0.4, height: 0.39, sink: 0.06, shadow: { width: 0.46, depth: 0.36, back: 0.1, strength: 0.9 } },
+        { id: "iso-table", image: "/testing/asylum/props/iso_table.webp", x: -0.6, z: 0.6, width: 0.4, height: 0.39, sink: 0.06, gain: 2.4, shadow: { width: 0.46, depth: 0.36, back: 0.1, strength: 0.9 } },
       ],
       hotspots: [
         { kind: "exit", id: "iso-door", yaw: -166, pitch: -8, label: "Ward Room", to: "ward" },

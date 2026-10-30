@@ -20,6 +20,8 @@ in vec2 v; out vec4 o;
 uniform sampler2D t; uniform float yaw, pitch, tanHalf, aspect, fade;
 // Box rooms: half width, half depth, ceiling and floor heights relative to the eye; and the room light.
 uniform float boxOn, light, lightStrength; uniform vec4 box; uniform vec3 lightPos, lightCol;
+// Rooms lit in code: the light map (r = moonlight, g = inside the room), the night level and the moon.
+uniform sampler2D lm; uniform float lmOn, moonLevel; uniform vec3 ambient, moonCol;
 const float PI = 3.14159265359;
 void main(){
   vec3 d = normalize(vec3(v.x*tanHalf*aspect, v.y*tanHalf, -1.));
@@ -30,6 +32,9 @@ void main(){
   float u = 0.5 + atan(w.x, -w.z)/(2.*PI);
   float vv = 0.5 - asin(clamp(w.y,-1.,1.))/PI;
   vec3 col = texture(t, vec2(u, vv)).rgb;
+  vec4 lmv = lmOn > 0.5 ? texture(lm, vec2(u, vv)) : vec4(0.);
+  float inside = lmOn > 0.5 ? lmv.g : 1.;
+  vec3 bulb = vec3(0.);
   if (boxOn > 0.5 && light > 0.001) {
     // Where this ray meets the box, and which way that surface faces.
     float tx = abs(w.x) > 1e-5 ? (w.x > 0. ? box.x : -box.x) / w.x : 1e9;
@@ -41,7 +46,15 @@ void main(){
     vec3 L = lightPos - pt; float d = length(L);
     float lam = max(dot(n, L / d), 0.);
     float att = 1. / (1. + 5. * d * d);
-    col *= 1. + light * lightCol * (lightStrength * lam * att + 0.35);
+    bulb = light * lightCol * (lightStrength * lam * att + 0.35);
+  }
+  if (lmOn > 0.5) {
+    vec3 lit = col * (ambient + moonCol * lmv.r * moonLevel + bulb * 0.45);
+    // The view through the windows keeps its own light, a little darker with the moon hidden.
+    vec3 outside = col * (0.45 + 0.55 * moonLevel);
+    col = mix(outside, lit, inside);
+  } else {
+    col *= 1. + bulb;
   }
   o = vec4(col * fade, 1.);
 }`;
@@ -97,6 +110,10 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
     box?: [number, number, number, number];
     light?: { pos: [number, number, number]; color: [number, number, number]; strength: number };
   }>({ eye: 0.5, list: [], token: {} });
+  const lmTexRef = useRef<WebGLTexture | null>(null);
+  /** The room's code lighting, when it has a light map. */
+  const lit = useRef<{ on: boolean; ambient: [number, number, number]; moon: [number, number, number] }>({ on: false, ambient: [1, 1, 1], moon: [1, 1, 1] });
+  const moonLevel = useRef(1);
   /** 0 = off, 1 = on; animated, so the bulb can flicker when switched on. */
   const lightLevel = useRef(0);
   const gyro = useRef<{ on: boolean; heading0: number | null; yaw0: number }>({ on: false, heading0: null, yaw0: 0 });
@@ -111,6 +128,7 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
   const [showPos, setShowPos] = useState(false);
   const [webglFailed, setWebglFailed] = useState(false);
   const [lightOn, setLightOn] = useState(false);
+  const [moonOn, setMoonOn] = useState(true);
 
   const room = rooms.find((r) => r.id === roomId) ?? rooms[0];
 
@@ -146,7 +164,16 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 1, 1, 0, gl.RGB, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0]));
-    const u = Object.fromEntries(["t", "yaw", "pitch", "tanHalf", "aspect", "fade", "boxOn", "light", "lightStrength", "box", "lightPos", "lightCol"].map((n) => [n, gl.getUniformLocation(prog, n)]));
+    const u = Object.fromEntries(["t", "yaw", "pitch", "tanHalf", "aspect", "fade", "boxOn", "light", "lightStrength", "box", "lightPos", "lightCol", "lm", "lmOn", "moonLevel", "ambient", "moonCol"].map((n) => [n, gl.getUniformLocation(prog, n)]));
+    const lmTex = gl.createTexture()!;
+    gl.bindTexture(gl.TEXTURE_2D, lmTex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 1, 1, 0, gl.RGB, gl.UNSIGNED_BYTE, new Uint8Array([0, 255, 0]));
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    lmTexRef.current = lmTex;
     glRef.current = { gl, tex, u };
 
     const sprog = gl.createProgram()!;
@@ -219,14 +246,20 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
         gl.uniform1f(su.shadow, 0);
         gl.uniform1f(su.glow, 0);
         // Light the cutout the way the shader lights the walls, at its middle, facing the viewer.
-        let m: [number, number, number] = [1, 1, 1];
+        const LT = lit.current;
+        let m: [number, number, number] = LT.on ? [...LT.ambient] : [1, 1, 1];
         if (light && lv > 0.001) {
           const cx = p.x + fx * 0.08, cy = floor + p.height * 0.6, cz = p.z + fz * 0.08;
           const Lx = light.pos[0] - cx, Ly = light.pos[1] - cy, Lz = light.pos[2] - cz;
           const d = Math.hypot(Lx, Ly, Lz) || 1;
           const lam = Math.max(0, (-fx * Lx + -fz * Lz) / d) * 0.6 + Math.max(0, Ly / d) * 0.5;
           const att = 1 / (1 + 5 * d * d);
-          m = light.color.map((c) => 1 + lv * c * (light.strength * lam * att + 0.35)) as [number, number, number];
+          const add = light.color.map((c) => lv * c * (light.strength * lam * att + 0.35));
+          m = LT.on ? (m.map((x, i) => x + add[i] * 0.45) as [number, number, number]) : (add.map((x) => 1 + x) as [number, number, number]);
+        }
+        if (LT.on) {
+          // A little moonlight on it, and its own brightness, since cutouts come in darker than the room's plain light.
+          m = m.map((x, i) => (x + LT.moon[i] * 0.12 * moonLevel.current) * (p.gain ?? 1)) as [number, number, number];
         }
         gl.uniform3f(su.mul, m[0], m[1], m[2]);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -276,6 +309,16 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
       gl.uniform1f(u.fade, v.fade);
       const R = propsRef.current;
       gl.uniform1f(u.boxOn, R.box ? 1 : 0);
+      const LT = lit.current;
+      gl.uniform1f(u.lmOn, LT.on ? 1 : 0);
+      gl.uniform1f(u.moonLevel, moonLevel.current);
+      gl.uniform3f(u.ambient, ...LT.ambient);
+      gl.uniform3f(u.moonCol, ...LT.moon);
+      gl.uniform1i(u.t, 0);
+      gl.uniform1i(u.lm, 1);
+      gl.activeTexture(gl.TEXTURE1);
+      gl.bindTexture(gl.TEXTURE_2D, lmTexRef.current);
+      gl.activeTexture(gl.TEXTURE0);
       gl.uniform1f(u.light, R.light ? lightLevel.current : 0);
       if (R.box) gl.uniform4f(u.box, R.box[0], R.box[1], R.box[2], R.box[3]);
       if (R.light) {
@@ -335,7 +378,24 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
       light: r.light ? { pos: [r.light.x, r.light.y - eye, r.light.z], color: r.light.color, strength: r.light.strength } : undefined,
     };
     lightLevel.current = 0;
-    queueMicrotask(() => setLightOn(false));
+    moonLevel.current = 1;
+    queueMicrotask(() => {
+      setLightOn(false);
+      setMoonOn(true);
+    });
+    lit.current = { on: false, ambient: r.ambient ?? [1, 1, 1], moon: r.moon ?? [1, 1, 1] };
+    if (r.lightmap && lmTexRef.current) {
+      const limg = new Image();
+      limg.onload = () => {
+        if (cancelled) return;
+        const { gl } = g;
+        gl.bindTexture(gl.TEXTURE_2D, lmTexRef.current);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, limg);
+        gl.bindTexture(gl.TEXTURE_2D, g.tex);
+        lit.current.on = true;
+      };
+      limg.src = r.lightmap;
+    }
     for (const prop of r.props ?? []) {
       const pimg = new Image();
       pimg.onload = () => {
@@ -583,6 +643,18 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
         <button onClick={toggleGyro} className={`border px-3 py-1.5 ${gyroOn ? "border-brass text-brass" : "border-rule bg-black/50"}`}>
           {gyroOn ? "Tilt to look: on" : "Tilt to look"}
         </button>
+        {room.lightmap ? (
+          <button
+            onClick={() => {
+              const on = moonLevel.current < 0.5;
+              setMoonOn(on);
+              animateMoon(on ? 1 : 0);
+            }}
+            className={`border px-3 py-1.5 ${moonOn ? "border-[#9fb6d8] text-[#cfdcf0]" : "border-rule bg-black/50"}`}
+          >
+            {moonOn ? "Moon: out" : "Moon: behind clouds"}
+          </button>
+        ) : null}
         <button onClick={() => setShowPos((s) => !s)} className={`border px-3 py-1.5 ${showPos ? "border-fault text-paper" : "border-rule bg-black/50"}`}>
           {showPos ? "Hide position" : "Show position"}
         </button>
@@ -603,6 +675,18 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
       ) : null}
     </div>
   );
+
+  /** Clouds drift over the moon (or clear) over about two seconds. */
+  function animateMoon(to: number) {
+    const from = moonLevel.current;
+    const t0 = performance.now();
+    const step = (now: number) => {
+      const k = clamp((now - t0) / 2000, 0, 1);
+      moonLevel.current = from + (to - from) * (k * k * (3 - 2 * k));
+      if (k < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
 
   /** On with a short flicker, like an old bulb catching; off at once. */
   function flipLight() {
