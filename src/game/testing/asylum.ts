@@ -26,7 +26,7 @@ export const ASYLUM_TEST = {
   id: "asylum-360",
   title: "Asylum 360° Prototype",
   blurb: "Look around a room in 360°, up and down, and walk to the next room through its doors.",
-  start: "ward",
+  start: "steel_room",
   rooms: [
     {
       id: "ward",
