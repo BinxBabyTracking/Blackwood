@@ -1013,6 +1013,7 @@ function step(
       if (!s.board.items.some((i) => i.id === action.itemId)) {
         s.board.items.push({ id: action.itemId, x: clamp(action.x), y: clamp(action.y) });
       }
+      outcome = boardDeductions(def, s) ?? outcome;
       break;
     }
 
@@ -1033,16 +1034,7 @@ function step(
       const onBoard = (id: string) => s.board.items.some((i) => i.id === id);
       if (a === b || !onBoard(a) || !onBoard(b)) fail("Pin both items to the board first.");
       if (!s.board.connections.some(([x, y]) => (x === a && y === b) || (x === b && y === a))) s.board.connections.push([a, b]);
-      for (const d of def.deductions) {
-        if (s.deductions.includes(d.id)) continue;
-        const match = d.connections.some(([x, y]) => (x === a && y === b) || (x === b && y === a));
-        if (!match || !check(d.requires, s)) continue;
-        s.deductions.push(d.id);
-        apply([{ note: { id: `deduction:${d.id}`, kind: "event", title: `Deduction: ${d.title}`, text: d.text } }], s, def);
-        apply(d.effects, s, def);
-        outcome = { kind: "deduction", id: d.id, title: d.title, text: d.text };
-        break;
-      }
+      outcome = boardDeductions(def, s) ?? outcome;
       break;
     }
 
@@ -1819,4 +1811,42 @@ function postingsView(def: CaseDefinition, s: InvestigationState): ClientView["p
     canPost: check(pd.free, s),
     posts: pd.posts.filter((x) => check(x.available, s) || check(x.done, s)).map((x) => ({ id: x.id, label: x.label, detail: x.detail ?? null, done: check(x.done, s) })),
   };
+}
+
+
+/**
+ * Makes every deduction the board now supports. Two items count as linked when a
+ * string joins them directly, or when both are strung to the same person: a
+ * player who ties the key book and the stair prints to the suspect has made the
+ * same connection as one who ties them to each other.
+ */
+function boardDeductions(def: CaseDefinition, s: InvestigationState): ActionOutcome | null {
+  const people = new Set(def.characters.map((c) => c.id));
+  const neighbors = new Map<string, Set<string>>();
+  for (const [x, y] of s.board.connections) {
+    if (!neighbors.has(x)) neighbors.set(x, new Set());
+    if (!neighbors.has(y)) neighbors.set(y, new Set());
+    neighbors.get(x)!.add(y);
+    neighbors.get(y)!.add(x);
+  }
+  const linked = (x: string, y: string) => {
+    const nx = neighbors.get(x);
+    const ny = neighbors.get(y);
+    if (!nx || !ny) return false;
+    if (nx.has(y)) return true;
+    for (const hub of nx) if (people.has(hub) && ny.has(hub)) return true;
+    return false;
+  };
+  const made: { id: string; title: string; text: string }[] = [];
+  for (const d of def.deductions) {
+    if (s.deductions.includes(d.id)) continue;
+    if (!d.connections.some(([x, y]) => linked(x, y)) || !check(d.requires, s)) continue;
+    s.deductions.push(d.id);
+    apply([{ note: { id: `deduction:${d.id}`, kind: "event", title: `Deduction: ${d.title}`, text: d.text } }], s, def);
+    apply(d.effects, s, def);
+    made.push({ id: d.id, title: d.title, text: d.text });
+  }
+  if (!made.length) return null;
+  const title = made.length === 1 ? made[0].title : `${made.slice(0, -1).map((m) => m.title).join(", ")} and ${made[made.length - 1].title}`;
+  return { kind: "deduction", id: made[0].id, title, text: made.map((m) => m.text).join("\n\n") };
 }

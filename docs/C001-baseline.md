@@ -135,7 +135,7 @@ The world reacts to what the player has done, never to the clock. Each reactive 
 
 ## Murder board and deductions
 
-Players pin evidence, photos and people on the board, then connect two items with string. A connection that matches a deduction reveals it; wrong connections do nothing and cost nothing. On phones the tray of items sits along the bottom with a Back button. The board is a large cork panel (twice the old width and height): zoom with the - / + buttons, a pinch or Ctrl and the wheel, and drag empty cork to move around, so big cases have room. String runs over the cards, pin to pin.
+Players pin evidence, photos and people on the board, then connect two items with string. A connection that matches a deduction reveals it; wrong connections do nothing and cost nothing. Two items also count as connected when both are strung to the same person, so a player who strings every clue to their suspect gets the same deductions as one who strings the clues to each other (`boardDeductions` in `src/game/engine/engine.ts`, checked after every connection and every pin). On phones the tray of items sits along the bottom with a Back button. The board is a large cork panel (twice the old width and height): zoom with the - / + buttons, a pinch or Ctrl and the wheel, and drag empty cork to move around, so big cases have room. String runs over the cards, pin to pin.
 
 | Deduction | Any one of these connections |
 | --- | --- |
