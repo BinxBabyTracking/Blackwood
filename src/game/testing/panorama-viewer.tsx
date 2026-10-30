@@ -175,11 +175,12 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
           gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
         }
         const hw = p.width / 2;
+        const base = floor - (p.sink ?? 0);
         gl.bufferData(gl.ARRAY_BUFFER, quad([
-          [p.x - rx * hw, floor, p.z - rz * hw],
-          [p.x + rx * hw, floor, p.z + rz * hw],
-          [p.x - rx * hw, floor + p.height, p.z - rz * hw],
-          [p.x + rx * hw, floor + p.height, p.z + rz * hw],
+          [p.x - rx * hw, base, p.z - rz * hw],
+          [p.x + rx * hw, base, p.z + rz * hw],
+          [p.x - rx * hw, base + p.height, p.z - rz * hw],
+          [p.x + rx * hw, base + p.height, p.z + rz * hw],
         ]), gl.DYNAMIC_DRAW);
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, t);

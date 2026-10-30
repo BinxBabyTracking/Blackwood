@@ -25,6 +25,8 @@ export type TestProp = {
   z: number;
   width: number;
   height: number;
+  /** How far to lower the cutout below the floor line, when its feet look like they float (room units). */
+  sink?: number;
   /** A soft shadow on the floor: its size, and how far behind the cutout's base its center sits. */
   shadow?: { width: number; depth: number; back: number; strength?: number };
 };
@@ -77,7 +79,7 @@ export const ASYLUM_TEST = {
       eye: 0.55,
       props: [
         // The corner table, back right as seen facing the door (the room is 1.5 wide and deep, 1 high; that corner is at x -0.75, z 0.75).
-        { id: "iso-table", image: "/testing/asylum/props/iso_table.webp", x: -0.6, z: 0.6, width: 0.4, height: 0.39, shadow: { width: 0.46, depth: 0.36, back: 0.1, strength: 0.9 } },
+        { id: "iso-table", image: "/testing/asylum/props/iso_table.webp", x: -0.6, z: 0.6, width: 0.4, height: 0.39, sink: 0.06, shadow: { width: 0.46, depth: 0.36, back: 0.1, strength: 0.9 } },
       ],
       hotspots: [
         { kind: "exit", id: "iso-door", yaw: -166, pitch: -8, label: "Ward Room", to: "ward" },
