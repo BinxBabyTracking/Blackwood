@@ -389,6 +389,8 @@ export const locations: LocationDef[] = [
     onMap: false,
     hotspots: [
       door("gw_back", "Back to the corridor", "upstairs_corridor", { x: 0, y: 18, w: 8, h: 62 }),
+      // Where Constance and Iris say it is: the narrow stair at the end of the guest wing (it also opens off the corridor).
+      door("gw_attic", "The attic stair", "attic", { x: 86, y: 18, w: 12, h: 62 }, { flag: "attic_known" }),
       inspect("gw_felix", "Felix's room", "door", { x: 10, y: 18, w: 14, h: 60 }, "Felix's room", "Felix's room: an overnight bag on the bed.", { evidence: "HE032" }),
       inspect("gw_penrose", "Dr. Penrose's room", "door", { x: 28, y: 18, w: 14, h: 60 }, "Dr. Penrose's room", "Dr. Penrose's room: a medical journal on the night table.", { evidence: "HE033" }),
       inspect(

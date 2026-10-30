@@ -790,7 +790,7 @@ export const questions: DialogueQuestion[] = [
     reply: [
       "His father's tin trunk, in the attic. Ambrose kept every letter anyone ever sent him and couldn't bear to throw any of them away. The attic's up the narrow stair at the end of the guest wing. It's never locked.",
     ],
-    effects: [{ setFlag: "attic_known" }],
+    effects: [{ setFlag: "attic_known" }, { message: "The attic stair is now open to you: at the end of the guest wing, and off the upstairs corridor." }],
   }),
   q({
     id: "constance_penrose",
@@ -1337,7 +1337,7 @@ export const questions: DialogueQuestion[] = [
     prompt: "Where are the house's old papers kept?",
     keywords: ["papers", "attic", "trunk", "archive", "old letters", "records"],
     reply: ["The foundation's in the library. The family's are in the attic: trunks and trunks. Ambrose wouldn't let me catalog those. He said some of them weren't history yet."],
-    effects: [{ setFlag: "attic_known" }],
+    effects: [{ setFlag: "attic_known" }, { message: "The attic stair is now open to you: at the end of the guest wing, and off the upstairs corridor." }],
   }),
   q({
     id: "iris_why",
