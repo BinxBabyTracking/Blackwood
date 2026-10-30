@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { TestHotspot, TestProp, TestRoom } from "./asylum";
+import type { TestHotspot, TestProp, TestRoom } from "./current-test";
 
 /*
  * A small WebGL viewer for equirectangular panoramas. Every pixel casts a ray

@@ -1,5 +1,5 @@
 /*
- * Test rooms for the 360° asylum prototype (owner only, from the Testing Zone).
+ * Test rooms for the 360° viewer (owner only, from the Testing Zone).
  *
  * Each room is one equirectangular panorama (2:1). Positions are in degrees:
  * yaw 0 is the middle of the image, -180/180 its left/right edges; pitch 0 is
@@ -61,53 +61,19 @@ export type TestRoom = {
   moon?: [number, number, number];
 };
 
-export const ASYLUM_TEST = {
-  id: "asylum-360",
-  title: "Asylum 360° Prototype",
-  blurb: "Look around a room in 360°, up and down, and walk to the next room through its doors.",
-  start: "steel_room",
+/** The current test: the Whitmore File's office, rebuilt as a 360° room. Its art is still being made. */
+export const CURRENT_TEST = {
+  id: "c001-office-360",
+  title: "The Whitmore File: Detective's Office (360°)",
+  blurb: "The office rebuilt as a room you can look around in, lit in code. Waiting for its artwork.",
+  start: "office",
   rooms: [
     {
-      id: "ward",
-      name: "Ward Room",
-      image: "/testing/asylum/ward.webp",
+      id: "office",
+      name: "Detective's Office",
       startYaw: 0,
-      hotspots: [
-        { kind: "exit", id: "ward-corridor", yaw: -152, pitch: -4, label: "Corridor", to: "corridor" },
-        { kind: "exit", id: "ward-steel", yaw: 119, pitch: -2, label: "Steel door", to: "steel_room" },
-        {
-          kind: "inspect",
-          id: "ward-cabinet",
-          yaw: -112,
-          pitch: -12,
-          label: "Cabinet",
-          text: "Test hotspot. The drawers are rusted shut. A real case would open a close-up image here.",
-        },
-      ],
-    },
-    { id: "corridor", name: "Corridor", startYaw: 0, hotspots: [{ kind: "exit", id: "corridor-back", yaw: 180, pitch: -4, label: "Ward Room", to: "ward" }] },
-    {
-      // Built from six separate images (four walls, floor, ceiling) placed as a box around the camera.
-      id: "steel_room",
-      name: "Isolation Room",
-      image: "/testing/asylum/iso2.webp",
-      lightmap: "/testing/asylum/iso2_light.webp",
-      ambient: [0.2, 0.25, 0.36],
-      moon: [0.48, 0.56, 0.78],
-      startYaw: 0,
-      eye: 0.55,
-      // The ceiling fitting in the middle of the ceiling image, hanging a little below it. Warm, like an old incandescent bulb.
-      light: { x: 0, y: 0.9, z: 0, color: [1.0, 0.78, 0.52], strength: 3.2 },
-      props: [
-        // The corner table, back right as seen facing the door (the room is 1.5 wide and deep, 1 high; that corner is at x -0.75, z 0.75).
-        { id: "iso-table", image: "/testing/asylum/props/iso_table.webp", x: -0.6, z: 0.6, width: 0.4, height: 0.39, sink: 0.06, gain: 2.4, shadow: { width: 0.46, depth: 0.36, back: 0.1, strength: 0.9 } },
-      ],
-      hotspots: [
-        { kind: "exit", id: "iso-door", yaw: -166, pitch: -8, label: "Ward Room", to: "ward" },
-        { kind: "switch", id: "iso-switch", yaw: -148, pitch: -6, label: "Light switch" },
-        { kind: "inspect", id: "iso-vent", yaw: -90, pitch: -24, label: "Vent", text: "Test hotspot. Something has scratched the paint around the grate from the inside." },
-        { kind: "inspect", id: "iso-window", yaw: 22, pitch: 6, label: "Window", text: "Test hotspot. The sash is painted shut. Through the glass, the grounds are perfectly still." },
-      ],
+      eye: 0.45,
+      hotspots: [],
     },
   ] satisfies TestRoom[] as TestRoom[],
 };
