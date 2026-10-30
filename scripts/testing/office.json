@@ -1,13 +1,47 @@
 {
-  "width": 1.7768, "depth": 1.7768, "eye": 0.45,
-  "faces": {
-    "front": {"file": "office_window_keyed.png", "level": 0.3},
-    "back":  {"file": "/mnt/user-data/uploads/404c1343-image.png", "mirror": true, "level": 0.3},
-    "left":  {"file": "/mnt/user-data/uploads/3e742187-image.png", "level": 0.3},
-    "right": {"file": "/mnt/user-data/uploads/0351299f-image.png", "level": 0.3},
-    "floor": {"file": "/mnt/user-data/uploads/9df1dbf2-image.png", "level": 0.3},
-    "ceil":  {"file": "/mnt/user-data/uploads/707511cc-image.png", "level": 0.55}
+ "width": 1.7768,
+ "depth": 1.7768,
+ "eye": 0.45,
+ "faces": {
+  "front": {
+   "file": "office_window_keyed.png",
+   "level": 0.3
   },
-  "outside": {"file": "/mnt/user-data/uploads/7632d370-image.png", "distance": 4.0, "width": 9.5, "center": [0.3, 0.2], "brightness": 1.0},
-  "light": {"azimuth": -7, "elevation": -3, "softness": 2.0}
+  "back": {
+   "file": "/mnt/user-data/uploads/404c1343-image.png",
+   "mirror": true,
+   "level": 0.3
+  },
+  "left": {
+   "file": "/mnt/user-data/uploads/3e742187-image.png",
+   "level": 0.3
+  },
+  "right": {
+   "file": "/home/claude/work/right_wall_composed.png",
+   "level": 0.316
+  },
+  "floor": {
+   "file": "/mnt/user-data/uploads/9df1dbf2-image.png",
+   "level": 0.3
+  },
+  "ceil": {
+   "file": "/mnt/user-data/uploads/707511cc-image.png",
+   "level": 0.55
+  }
+ },
+ "outside": {
+  "file": "/mnt/user-data/uploads/7632d370-image.png",
+  "distance": 4.0,
+  "width": 9.5,
+  "center": [
+   0.3,
+   0.2
+  ],
+  "brightness": 1.0
+ },
+ "light": {
+  "azimuth": -7,
+  "elevation": -3,
+  "softness": 2.0
+ }
 }

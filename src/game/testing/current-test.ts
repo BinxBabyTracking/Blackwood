@@ -120,6 +120,11 @@ export const CURRENT_TEST = {
         { id: "mailtray", image: "/testing/office/props/mailtray.webp", x: 0.2, z: -0.545, width: 0.095, height: 0.0617, sink: -0.29, gain: 1.3, layer: 1 },
         { id: "labfolder", image: "/testing/office/props/labfolder.webp", x: 0.2, z: -0.545, width: 0.06, height: 0.043, sink: -0.302, gain: 1.3, layer: 2 },
         { id: "recorder", image: "/testing/office/props/recorder.webp", x: 0.225, z: -0.545, width: 0.085, height: 0.058, sink: -0.232, gain: 1.3, layer: 2 },
+        // Furniture around the room (the room is about 16 feet square; its walls are 0.888 from the middle).
+        { id: "cabinet", image: "/testing/office/props/cabinet.webp", x: 0.72, z: -0.72, width: 0.251, height: 0.633, gain: 1.4, shadow: { width: 0.3, depth: 0.22, back: 0.05 } },
+        { id: "typing-table", image: "/testing/office/props/typing_table.webp", x: -0.76, z: 0, width: 0.6, height: 0.42, gain: 1.4, shadow: { width: 0.6, depth: 0.2, back: 0.04 } },
+        { id: "chair", image: "/testing/office/props/chair.webp", x: -0.72, z: 0.45, width: 0.272, height: 0.355, gain: 1.4, shadow: { width: 0.3, depth: 0.25, back: 0.05 } },
+        { id: "coat-rack", image: "/testing/office/props/coat_rack.webp", x: 0.72, z: 0.72, width: 0.236, height: 0.667, gain: 1.4, shadow: { width: 0.22, depth: 0.2, back: 0.02 } },
         // Deliveries: they arrive at the front of the desk, over the file, and come and go with the case (test buttons).
         { id: "envelope-sealed", image: "/testing/office/props/envelope_sealed.webp", x: -0.07, z: -0.545, width: 0.1, height: 0.0694, sink: -0.222, gain: 1.3, layer: 3, when: { toggle: "envelope", state: "sealed" } },
         { id: "envelope-open", image: "/testing/office/props/envelope_open.webp", x: -0.07, z: -0.545, width: 0.1, height: 0.0711, sink: -0.222, gain: 1.3, layer: 3, when: { toggle: "envelope", state: "opened" } },
@@ -145,6 +150,10 @@ export const CURRENT_TEST = {
         { kind: "inspect", id: "office-notebook", yaw: 12.4, pitch: -17.7, label: "Notebook", text: "Test hotspot. In the case this opens your notebook." },
         { kind: "inspect", id: "office-recorder", yaw: 22.4, pitch: -17.8, label: "Police interview tapes", text: "Test hotspot. In the case this plays the interview tapes." },
         { kind: "inspect", id: "office-mail", yaw: 23.5, pitch: -11.2, label: "Opened mail", text: "Test hotspot. In the case this shows the mail you have opened." },
+        { kind: "inspect", id: "office-board", yaw: 96.4, pitch: 8.1, label: "Murder board", text: "Test hotspot. In the case this opens the murder board." },
+        { kind: "inspect", id: "office-map", yaw: 59.6, pitch: 7.1, label: "Street map of Los Angeles", text: "Test hotspot. In the case this opens the map to travel." },
+        { kind: "inspect", id: "office-typewriter", yaw: -90, pitch: -9.7, label: "Typewriter: final report", text: "Test hotspot. In the case this is where you type the final report." },
+        { kind: "inspect", id: "office-cabinet", yaw: 45, pitch: -9.2, label: "Filing cabinet", text: "Test hotspot. Old case files." },
         { kind: "inspect", id: "office-envelope", yaw: -7.3, pitch: -19.3, label: "Manila envelope", text: "Test hotspot. In the case Patricia's envelope is opened here.", when: { toggle: "envelope", state: "sealed" } },
         { kind: "inspect", id: "office-envelope-open", yaw: -7.3, pitch: -19.3, label: "Envelope from Patricia Wells", text: "Test hotspot. In the case this shows the torn bank statement.", when: { toggle: "envelope", state: "opened" } },
         { kind: "inspect", id: "office-bag", yaw: 7.3, pitch: -19.5, label: "Police evidence bag", text: "Test hotspot. In the case the evidence bag is opened here.", when: { toggle: "bag", state: "sealed" } },
