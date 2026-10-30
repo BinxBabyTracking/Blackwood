@@ -373,8 +373,7 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
       eye,
       list: [],
       token,
-      // Box rooms are 1.5 wide and deep and 1 high, as built from their six images.
-      box: r.eye != null ? [0.75, 0.75, 1 - eye, -eye] : undefined,
+      box: r.eye != null ? [(r.size?.[0] ?? 1.5) / 2, (r.size?.[1] ?? 1.5) / 2, 1 - eye, -eye] : undefined,
       light: r.light ? { pos: [r.light.x, r.light.y - eye, r.light.z], color: r.light.color, strength: r.light.strength } : undefined,
     };
     lightLevel.current = 0;
@@ -643,7 +642,7 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
         <button onClick={toggleGyro} className={`border px-3 py-1.5 ${gyroOn ? "border-brass text-brass" : "border-rule bg-black/50"}`}>
           {gyroOn ? "Tilt to look: on" : "Tilt to look"}
         </button>
-        {room.lightmap ? (
+        {room.lightmap && room.outsideToggle ? (
           <button
             onClick={() => {
               const on = moonLevel.current < 0.5;
@@ -652,7 +651,7 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
             }}
             className={`border px-3 py-1.5 ${moonOn ? "border-[#9fb6d8] text-[#cfdcf0]" : "border-rule bg-black/50"}`}
           >
-            {moonOn ? "Moon: out" : "Moon: behind clouds"}
+            {room.outsideToggle}: {moonOn ? "on" : "off"}
           </button>
         ) : null}
         <button onClick={() => setShowPos((s) => !s)} className={`border px-3 py-1.5 ${showPos ? "border-fault text-paper" : "border-rule bg-black/50"}`}>
@@ -676,7 +675,7 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
     </div>
   );
 
-  /** Clouds drift over the moon (or clear) over about two seconds. */
+  /** The light from outside fades out (or back in) over about two seconds. */
   function animateMoon(to: number) {
     const from = moonLevel.current;
     const t0 = performance.now();

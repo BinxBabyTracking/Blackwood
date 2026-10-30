@@ -51,6 +51,10 @@ export type TestRoom = {
   eye?: number;
   props?: TestProp[];
   light?: TestLight;
+  /** Box rooms: width and depth in room units (the height is 1). Defaults to 1.5 by 1.5. */
+  size?: [number, number];
+  /** Show the test button that hides and brings back the light from outside (the moon). */
+  outsideToggle?: string;
   /**
    * Rooms lit in code: the image is the room in plain light, and this second image says where moonlight falls
    * (red) and which pixels are inside the room rather than the view outside (green). Made by the bake script.
@@ -69,11 +73,20 @@ export const CURRENT_TEST = {
   start: "office",
   rooms: [
     {
+      // About 16 feet square with a 9-foot ceiling (the walls are 16:9). The player sits at the desk in the middle, facing the window.
       id: "office",
       name: "Detective's Office",
+      image: "/testing/office/office.webp",
+      lightmap: "/testing/office/office_light.webp",
+      size: [1.7768, 1.7768],
       startYaw: 0,
       eye: 0.45,
-      hotspots: [],
+      ambient: [0.32, 0.34, 0.42],
+      // The city's glow through the blinds, warm like sodium streetlights.
+      moon: [0.95, 0.7, 0.45],
+      outsideToggle: "City glow",
+      light: { x: 0, y: 0.96, z: 0, color: [1.0, 0.8, 0.55], strength: 8 },
+      hotspots: [{ kind: "switch", id: "office-switch", yaw: 157.5, pitch: 3.6, label: "Light switch" }],
     },
   ] satisfies TestRoom[] as TestRoom[],
 };
