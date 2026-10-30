@@ -851,7 +851,7 @@ export const questions: DialogueQuestion[] = [
     characterId: "penrose",
     topic: "Tonight",
     prompt: "Was anyone else in the conservatory with you and Constance?",
-    keywords: ["conservatory", "anyone else", "crane", "came in", "terrace", "phone call", "who came through"],
+    keywords: ["conservatory", "anyone else", "crane", "marsh", "came in", "terrace", "phone call", "who came through", "who did you see", "who you saw", "see anyone", "saw anyone", "anyone come"],
     requires: ev("HE033"),
     reply: [
       "Nobody else was in here, and nobody made a telephone call in here. I'd have heard. At about nineteen minutes past, in the dark, the garden door from the terrace opened and Lucian Marsh came in from outside, wet through. He said, 'Did the lights go?' and went straight on into the house.",
@@ -1409,7 +1409,16 @@ export const reactions: EvidenceReaction[] = [
   { characterId: "crane", evidenceId: "HE035", reply: ["That's Ambrose's version of a night twenty years ago, written by a frightened old man who was drinking. It isn't evidence of anything. I'd like my lawyer now."] },
   { characterId: "crane", evidenceId: "HE025", reply: ["God. That poor child. I had no idea. I had a pit bricked over. That's all I did."] },
   { characterId: "constance", evidenceId: "HE033", reply: ["Well. You've been in Isaac's room. Yes. For a year. That's why I lied about the conservatory. Ask him; he'll tell you who came through it."] },
-  { characterId: "penrose", evidenceId: "HE033", reply: ["Ah. Yes. Constance and I. I'm sorry I wasn't straight with you. Ask me again where I was, and who I saw, and I'll answer properly."] },
+  {
+    characterId: "penrose",
+    evidenceId: "HE033",
+    reply: [
+      "Ah. Yes. Constance and I. I'm sorry I wasn't straight with you. We were in the conservatory together from about five past ten, and nobody made a telephone call in there. I'd have heard.",
+      "At about nineteen minutes past, in the dark, the garden door from the terrace opened and Lucian Marsh came in from outside, wet through. He said, 'Did the lights go?' and went straight on into the house. Constance and I will both sign to it. I'll write it now.",
+    ],
+    effects: [{ giveEvidence: "HE028" }],
+    reveals: "Penrose was with Constance in the conservatory. Nobody made a call there. Marsh came in from the terrace, wet, at about 10:19.",
+  },
   { characterId: "felix", evidenceId: "HE032", reply: ["Going through my bag. Lovely. Yes, I owe them. No, I didn't kill my father for it."] },
   { characterId: "beatrice", evidenceId: "HE016", reply: ["J. Lisle. Her mother sewed those tags in everything, both girls. Oh, God."] },
   { characterId: "beatrice", evidenceId: "HE014", reply: ["That's me, looking at her. Yes. I knew her. I knew her the moment she sat down."] },

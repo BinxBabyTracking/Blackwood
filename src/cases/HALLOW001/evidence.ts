@@ -497,7 +497,7 @@ export const evidence: EvidenceDef[] = [
       "\"At about 10:19, in the dark, the garden door from the terrace opened and Lucian Marsh came in from outside. His hair and shoulders were wet with rain. He said, 'Did the lights go?' and went on through into the house without waiting for an answer.",
       "\"We did not say so before because we did not want to explain why we were there together. I. Penrose. C. Blackthorn.\"",
     ),
-    discovery: "Dr. Penrose hands it over once his letters are found (question penrose_conservatory).",
+    discovery: "Dr. Penrose hands it over when shown his letters (HE033), or when asked who came through the conservatory afterward (question penrose_conservatory).",
     characters: ["penrose", "constance", "crane"],
     related: ["HE033", "HE014", "HE029"],
     boardable: true,
