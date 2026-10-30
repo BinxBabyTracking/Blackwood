@@ -501,14 +501,14 @@ export const locations: LocationDef[] = [
     available: { always: true },
     onMap: false,
     hotspots: [
-      door("sc_cellar", "To the wine cellar", "wine_cellar", { x: 0, y: 18, w: 8, h: 62 }),
-      door("sc_library", "Up to the library", "library", { x: 10, y: 18, w: 8, h: 62 }),
-      inspect("sc_keys", "Key cabinet", "cabinet", { x: 24, y: 24, w: 12, h: 36 }, "The key cabinet", "A steel key cabinet on the wall, with a notebook on a string.", { evidence: "HE029" }),
+      door("sc_cellar", "To the wine cellar", "wine_cellar", { x: 3, y: 6, w: 14, h: 82 }),
+      door("sc_library", "Up to the library", "library", { x: 20, y: 8, w: 14, h: 70 }),
+      inspect("sc_keys", "Key cabinet", "cabinet", { x: 35, y: 21, w: 12, h: 30 }, "The key cabinet", "A steel key cabinet on the wall, with a notebook on a string.", { evidence: "HE029" }),
       inspect(
         "sc_paneling",
         "Paneling at the end",
         "wall",
-        { x: 70, y: 14, w: 16, h: 66 },
+        { x: 75, y: 14, w: 11, h: 62 },
         "The end of the passage",
         "Painted tongue-and-groove paneling, the same cream as the rest of the passage. Old, and dull.",
         {
@@ -521,12 +521,12 @@ export const locations: LocationDef[] = [
           effects: [{ when: { any: [{ flag: "passage_told" }, { hasEvidence: "HE021" }, { asked: "felix_stair" }, shelfOpen] }, then: [{ setFlag: "lower_door_found" }] }],
         },
       ),
-      door("sc_stair", "The hidden door", "servants_stair", { x: 88, y: 14, w: 10, h: 66 }, lowerDoorFound),
+      door("sc_stair", "The hidden door", "servants_stair", { x: 86, y: 16, w: 9, h: 66 }, lowerDoorFound),
       inspect(
         "sc_coal",
         "Old coal room",
         "door",
-        { x: 42, y: 18, w: 14, h: 62 },
+        { x: 49, y: 21, w: 16, h: 56 },
         "The old coal room",
         "A low brick room off the passage, empty for fifty years: whitewashed walls gone gray, a floor of old brick, a hook in the ceiling. Cold, and very quiet. You don't want to stay in it.",
       ),
