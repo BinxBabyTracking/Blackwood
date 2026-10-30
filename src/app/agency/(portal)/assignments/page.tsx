@@ -6,6 +6,7 @@ import { CatalogSkeleton } from "@/components/catalog-skeleton";
 import { SeriesShelf } from "@/components/series-shelf";
 import { PortalHeading } from "@/components/portal/heading";
 import { SetupNotice } from "@/components/setup-notice";
+import { TestingZone } from "@/components/testing-zone";
 import { getCatalog } from "@/lib/catalog";
 import { viewerCaseStates, viewerFailures } from "@/lib/viewer-cases";
 import { inSeason } from "@/lib/season";
@@ -20,6 +21,9 @@ export default function AssignmentsPage() {
       </PortalHeading>
       <Suspense fallback={<CatalogSkeleton />}>
         <Catalog />
+      </Suspense>
+      <Suspense fallback={null}>
+        <TestingZone />
       </Suspense>
     </>
   );
