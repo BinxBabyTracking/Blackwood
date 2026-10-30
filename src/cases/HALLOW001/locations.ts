@@ -1,6 +1,7 @@
 import type { Condition, HotspotDef, LocationDef } from "@/game/engine/types";
 import { LAB_PRINT_RECT, REPORT_RECT } from "./desk";
 import { alive, craneAt, craneFree } from "./rules";
+import { reportAvailable } from "./story";
 
 /*
  * Scene layout for HALLOW001. Hotspot rectangles are percentages of a 16:9
@@ -101,6 +102,13 @@ export const locations: LocationDef[] = [
     onMap: true,
     hotspots: [
       // The case file is carried in the corner of the screen, beside the evidence (caseFileInHud).
+      // The final report: on the desk once there is enough to write it.
+      {
+        ...panel("mr_final_report", "Final report", "sprite", { x: 27, y: 68, w: 14, h: 20 }, "conclusion", reportAvailable),
+        sprite: [{ image: "obj.report_folder" }],
+        attention: { all: [reportAvailable, { not: { flag: "case_closed" } }] },
+        callout: { text: "File your final report here", when: { all: [reportAvailable, { not: { attempts: 1 } }] } },
+      },
       deskItem("mr_lab", "Lab report: the shelf catch", "lab_print", "HE009", LAB_PRINT_RECT, "obj.labfolder"),
       deskItem("mr_report", "Lt. Mahoney's report", "mahoney_attack", "HE037", REPORT_RECT, "obj.report_folder"),
       {

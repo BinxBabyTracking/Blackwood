@@ -514,7 +514,7 @@ export const objectives: ObjectiveDef[] = [
   { id: "obj_1998", text: "Learn what happened in this house on Halloween 1998.", visible: { any: [{ hasEvidence: "HE008" }, { talkedTo: "josie" }, { talkedTo: "beatrice" }] }, done: { deduction: "HD07" } },
   { id: "obj_safe", text: "Keep the witnesses safe. You have two officers to place.", visible: { talkedTo: "harriet" }, done: { env: "officers", is: "C" } },
   { id: "obj_midnight", text: "Decide what to do about the midnight procession.", visible: briefed, done: { any: [{ flag: "procession_canceled" }, { clockAt: "00:00" }] } },
-  { id: "obj_report", text: "File your report with Lt. Mahoney.", visible: { any: [{ deduction: "HD10" }, { flag: "crane_arrested" }, { flag: "crane_escaped" }] }, done: { flag: "case_closed" } },
+  { id: "obj_report", text: "File your final report from the folder on the Morning Room desk.", visible: { any: [{ deduction: "HD10" }, { flag: "crane_arrested" }, { flag: "crane_escaped" }] }, done: { flag: "case_closed" } },
 ];
 
 export const reportAvailable: Condition = { any: [{ deduction: "HD10" }, { deduction: "HD11" }, { flag: "crane_arrested" }, { flag: "crane_escaped" }] };

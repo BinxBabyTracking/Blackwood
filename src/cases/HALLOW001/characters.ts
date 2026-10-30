@@ -1213,7 +1213,7 @@ export const questions: DialogueQuestion[] = [
     topic: "Tonight",
     prompt: "Where were you at a quarter past ten?",
     keywords: ["where were you", "10:15", "blackout", "lights", "alibi"],
-    reply: ["At the table. Then on the stairs behind Felix and Mr. Wren. I saw her go around the corner at the end of the corridor. I didn't say anything."],
+    reply: ["At the table when the lights went out. When they came back on I followed Felix and Mr. Wren up the stairs. The woman in black, the one in the veil from the foot of the table, was at the far end of the corridor, and I saw her go around the corner into the guest wing. I didn't say anything."],
   }),
   q({
     id: "beatrice_veil",

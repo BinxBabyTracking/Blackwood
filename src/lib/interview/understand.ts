@@ -161,7 +161,7 @@ export async function interpretQuestion(
       const detail = (await res.text().catch(() => "")).replace(/sk-ant-[A-Za-z0-9_-]+/g, "[key]").slice(0, 200);
       throw new Error(`Anthropic returned ${res.status}: ${detail}`);
     }
-    const body = (await res.json()) as { content?: { type: string; text?: string }[]; usage?: { input_tokens?: number; output_tokens?: number }; model?: string };
+    const body = (await res.json()) as { content?: { type: string; text?: string }[]; usage?: { input_tokens?: number; output_tokens?: number }; model?: string; stop_reason?: string };
     if (ctx) {
       recordUsage({
         userId: ctx.userId,
@@ -183,6 +183,11 @@ export async function interpretQuestion(
       return { match: entry[1], composed: null };
     }
     const answer = /^ANSWER\s*:?\s*([\s\S]+?)\s*(?:\n\s*USED\b\s*:?\s*([^\n]*))?\s*$/i.exec(out);
+    // A reply that ran out of room, or that thinks out loud about its instructions, never reaches the player.
+    if (answer && (body.stop_reason === "max_tokens" || answer[2] === undefined || leaksInstructions(answer[1]))) {
+      after(() => noteFailure(`Discarded an interview reply that broke format: ${answer[1].slice(0, 160)}`).catch(() => undefined));
+      return { match: local, composed: null };
+    }
     if (answer) {
       const allowed = new Set(facts.map((x) => x.index));
       const used = [...(answer[2] ?? "").matchAll(/\d+/g)].map((m) => Number(m[0])).filter((n) => allowed.has(n));
@@ -196,6 +201,19 @@ export async function interpretQuestion(
     after(() => noteFailure((e as Error).message).catch(() => undefined));
     return { match: local, composed: null };
   }
+}
+
+/**
+ * True when a composed reply talks about the engine instead of answering in
+ * character: the format words, the rules, or the model reconsidering itself.
+ */
+export function leaksInstructions(reply: string) {
+  return (
+    /\b(ANSWER|USED|ENTRY|FACTS)\b/.test(reply) ||
+    /\b(instructions?|the rules?|the format|authored entr|in character|the facts (listed|given|provided)|not covered by|reconsider|let me (think|check|re)|hmm,? wait)\b/i.test(reply) ||
+    // Answers are one to three spoken sentences.
+    (reply.match(/[.!?](\s|$)/g) ?? []).length > 5
+  );
 }
 
 /** Admin check: one tiny call to the interview model, reporting exactly what comes back. Never returns the key. */
