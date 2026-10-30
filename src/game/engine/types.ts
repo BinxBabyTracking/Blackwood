@@ -805,6 +805,8 @@ export interface EndingDef {
    * fresh one. Once a case is passed, replays work as in every other case.
    */
   loss?: boolean;
+  /** For a losing ending: one short line on why the investigation failed, shown on the case card ("Lucian Marsh walked out before you could prove it."). */
+  lossReason?: string;
 }
 
 export interface CaseDefinition {

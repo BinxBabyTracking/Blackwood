@@ -87,6 +87,7 @@ export function CatalogBrowser({
   hrefBase,
   leaderboards = false,
   mine,
+  failed,
   featured = [],
 }: {
   cases: CatalogCase[];
@@ -94,6 +95,8 @@ export function CatalogBrowser({
   leaderboards?: boolean;
   /** How each case stands for the signed-in investigator (see viewer-cases.ts). */
   mine?: Record<string, "available" | "open" | "solved">;
+  /** Cases whose last attempt ended in a losing ending. */
+  failed?: Record<string, { title: string; reason: string }>;
   /** Seasonal cases in their month, chosen on the server: shown full width above the list, whatever the filters. */
   featured?: string[];
 }) {
@@ -148,6 +151,7 @@ export function CatalogBrowser({
             href={`${hrefBase}/${c.id}`}
             leaderboard={leaderboards && !c.is_preview && (c.status === "available" || Boolean(c.early_access_open))}
             mine={mine?.[c.id]}
+              failure={failed?.[c.id]}
           />
         </div>
       ))}
@@ -266,6 +270,7 @@ export function CatalogBrowser({
               href={`${hrefBase}/${c.id}`}
               leaderboard={leaderboards && !c.is_preview && (c.status === "available" || Boolean(c.early_access_open))}
               mine={mine?.[c.id]}
+              failure={failed?.[c.id]}
             />
           ))}
         </div>

@@ -11,6 +11,10 @@ import {
   locationYear,
 } from "@/lib/format";
 import { CaseCover } from "./case-cover";
+import { FailedBadge } from "./failed-badge";
+
+/** The investigator's last attempt at a case ended in a losing ending. */
+type CaseFailure = { title: string; reason: string };
 import { Tag } from "./ui";
 import { inSeason, returnsLabel, seasonLabel } from "@/lib/season";
 
@@ -46,7 +50,7 @@ export function CaseFacts({ c, className = "" }: { c: CatalogCase; className?: s
   );
 }
 
-export function CaseCard({ c, href, leaderboard = false, mine }: { c: CatalogCase; href: string; leaderboard?: boolean; mine?: "available" | "open" | "solved" }) {
+export function CaseCard({ c, href, leaderboard = false, mine, failure }: { c: CatalogCase; href: string; leaderboard?: boolean; mine?: "available" | "open" | "solved"; failure?: CaseFailure }) {
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-[var(--radius-file)] border border-rule bg-card transition-colors duration-300 hover:border-brass/60">
       <div className="relative aspect-[5/3]">
@@ -69,7 +73,7 @@ export function CaseCard({ c, href, leaderboard = false, mine }: { c: CatalogCas
         </div>
         <p className="mb-5 mt-3 line-clamp-3 text-sm leading-relaxed text-smoke">{c.synopsis}</p>
         <CaseFacts c={c} className="mt-auto border-t border-rule pt-4" />
-        {leaderboard || (c.status === "coming_soon" && c.early_access_open && !mine) ? (
+        {leaderboard || failure || (c.status === "coming_soon" && c.early_access_open && !mine) ? (
           <div className="relative z-10 mt-4 flex flex-wrap items-center gap-3 border-t border-rule pt-3">
             {leaderboard ? <LeaderboardButton caseId={c.id} title={c.title} /> : null}
             {/* Open for early access and not yet granted: the request is on the case page. */}
@@ -77,6 +81,12 @@ export function CaseCard({ c, href, leaderboard = false, mine }: { c: CatalogCas
               <Link href={href} className="inline-flex items-center rounded-[2px] bg-brass px-3 py-1.5 text-sm font-semibold text-ink hover:bg-[#d4b585]">
                 Request Early Access
               </Link>
+            ) : null}
+            {/* The last attempt ended in a losing ending: Failed, with why and a fresh try. */}
+            {failure ? (
+              <div className="ml-auto">
+                <FailedBadge caseId={c.id} title={failure.title} reason={failure.reason} />
+              </div>
             ) : null}
           </div>
         ) : null}
@@ -89,7 +99,7 @@ export function CaseCard({ c, href, leaderboard = false, mine }: { c: CatalogCas
  * A seasonal case in its month (HALLOW001 in October), shown full width at the
  * top of the case list: a large cover beside the details.
  */
-export function FeaturedCaseCard({ c, href, leaderboard = false, mine }: { c: CatalogCase; href: string; leaderboard?: boolean; mine?: "available" | "open" | "solved" }) {
+export function FeaturedCaseCard({ c, href, leaderboard = false, mine, failure }: { c: CatalogCase; href: string; leaderboard?: boolean; mine?: "available" | "open" | "solved"; failure?: CaseFailure }) {
   return (
     <article className="group relative grid overflow-hidden rounded-[var(--radius-file)] border border-brass/50 bg-card transition-colors duration-300 hover:border-brass md:grid-cols-[3fr_2fr]">
       <div className="relative aspect-[3/2] md:aspect-auto md:min-h-[22rem]">
@@ -114,7 +124,7 @@ export function FeaturedCaseCard({ c, href, leaderboard = false, mine }: { c: Ca
         </div>
         <p className="mb-6 mt-4 text-base leading-relaxed text-paper/85">{c.synopsis}</p>
         <CaseFacts c={c} className="mt-auto border-t border-rule pt-4" />
-        {leaderboard || (c.status === "coming_soon" && c.early_access_open && !mine) ? (
+        {leaderboard || failure || (c.status === "coming_soon" && c.early_access_open && !mine) ? (
           <div className="relative z-10 mt-4 flex flex-wrap items-center gap-3 border-t border-rule pt-3">
             {leaderboard ? <LeaderboardButton caseId={c.id} title={c.title} /> : null}
             {/* Open for early access and not yet granted: the request is on the case page. */}
@@ -122,6 +132,12 @@ export function FeaturedCaseCard({ c, href, leaderboard = false, mine }: { c: Ca
               <Link href={href} className="inline-flex items-center rounded-[2px] bg-brass px-3 py-1.5 text-sm font-semibold text-ink hover:bg-[#d4b585]">
                 Request Early Access
               </Link>
+            ) : null}
+            {/* The last attempt ended in a losing ending: Failed, with why and a fresh try. */}
+            {failure ? (
+              <div className="ml-auto">
+                <FailedBadge caseId={c.id} title={failure.title} reason={failure.reason} />
+              </div>
             ) : null}
           </div>
         ) : null}
