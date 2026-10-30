@@ -104,8 +104,9 @@ export const locations: LocationDef[] = [
       // The case file is carried in the corner of the screen, beside the evidence (caseFileInHud).
       // The final report: on the desk once there is enough to write it.
       {
-        ...panel("mr_final_report", "Final report", "sprite", { x: 27, y: 68, w: 14, h: 20 }, "conclusion", reportAvailable),
-        sprite: [{ image: "obj.report_folder" }],
+        ...panel("mr_final_report", "Final report", "sprite", { x: 21, y: 50, w: 12, h: 17 }, "conclusion", reportAvailable),
+        // Blackwood's own report folder (C001's painting), not the State Police folder Lt. Mahoney's report comes in.
+        sprite: [{ image: "obj.final_report" }],
         attention: { all: [reportAvailable, { not: { flag: "case_closed" } }] },
         callout: { text: "File your final report here", when: { all: [reportAvailable, { not: { attempts: 1 } }] } },
       },

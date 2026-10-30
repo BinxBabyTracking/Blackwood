@@ -109,8 +109,17 @@ export function CaseResolution({
         <div key="accepted" className="w-full max-w-2xl bg-[#efe8d6] px-6 py-9 text-[#231e17] shadow-2xl sm:px-12 game-closure">
           <Letterhead />
           <p className="mt-8 text-center font-mono text-sm font-bold tracking-[0.24em] text-[#4f6b4f]">REPORT ACCEPTED</p>
+          {closure.lost ? <p className="mt-2 text-center font-mono text-sm font-bold tracking-[0.24em] text-[#8b2a1f]">CASE FAILED</p> : null}
           {closure.ending ? <p className="mt-3 text-center font-serif text-lg italic text-[#231e17]/80">{closure.ending}</p> : null}
           <p className="mt-5 text-center font-serif text-xl leading-relaxed">{closure.accepted}</p>
+          {closure.lost ? (
+            <div className="mx-auto mt-6 max-w-md border-y border-[#8b2a1f]/40 py-4 text-center">
+              {closure.lossReason ? <p className="font-serif text-lg leading-relaxed text-[#8b2a1f]">{closure.lossReason}</p> : null}
+              <p className="mt-2 text-sm leading-relaxed text-[#231e17]/75">
+                This investigation does not count as solved. Try again from a fresh start; the killer could do something different each time, so be prepared.
+              </p>
+            </div>
+          ) : null}
           <p className="mt-6 text-center font-mono text-xs tracking-[0.12em] text-[#231e17]/65">
             CASE {view.caseId} · {name.toUpperCase()}
           </p>

@@ -44,6 +44,7 @@ const placeholders: AssetManifest = {
     ...Object.fromEntries(characters.map((k) => [`char.${k}`, `${base}/characters/${k}.svg`])),
     ...Object.fromEntries(evidence.map((k) => [`ev.${k}`, `${base}/evidence/${k.toLowerCase()}.svg`])),
     ...Object.fromEntries(objects.map((k) => [`obj.${k}`, `${base}/objects/${k}.svg`])),
+    "obj.final_report": `${base}/objects/report_folder.svg`,
   },
   audio: {
     // Music and room sound, made on the Admin page and served from storage (see soundtrack.ts).
@@ -63,6 +64,8 @@ const PAINTED: Record<string, string> = {
   ...Object.fromEntries(characters.map((c) => [`char.${c}`, `hallow001_portrait_${c}`])),
   ...Object.fromEntries(evidence.map((e) => [`ev.${e}`, `hallow001_ev_${e.toLowerCase()}`])),
   ...Object.fromEntries(objects.map((o) => [`obj.${o}`, `hallow001_obj_${o}`])),
+  // The final report is Blackwood's own folder, as in C001.
+  "obj.final_report": "c001_obj_report_folder",
 };
 
 /** People drawn in person in the scenes (hotspot `art` keys, see locations.ts). */

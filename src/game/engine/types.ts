@@ -1636,7 +1636,7 @@ export interface ClientView {
   /** Chapters, in a case told in chapters; null otherwise. */
   chapter: ClientChapter | null;
   /** Only present once the case is closed. */
-  closure: (SolutionDef["resolution"] & { final: FinalReport | null; closedAt: number | null; ending?: string; lost?: boolean }) | null;
+  closure: (SolutionDef["resolution"] & { final: FinalReport | null; closedAt: number | null; ending?: string; lost?: boolean; lossReason?: string }) | null;
 }
 
 /** One-off payloads returned alongside the view for the action just taken. */
