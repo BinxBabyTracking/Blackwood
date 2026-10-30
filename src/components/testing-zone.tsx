@@ -9,6 +9,9 @@ export async function TestingZone() {
   if (!supabase) return null;
   const { data } = await supabase.auth.getUser().catch(() => ({ data: { user: null } }));
   if (!isOwner(data.user?.email)) return null;
+  const built = process.env.BUILD_TIME
+    ? new Date(process.env.BUILD_TIME).toLocaleString("en-US", { timeZone: "America/New_York", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) + " ET"
+    : null;
   return (
     <section className="mt-16 border-t border-dashed border-fault/60 pt-8">
       <p className="font-mono text-xs uppercase tracking-[0.2em] text-fault">Testing Zone · only visible to you</p>
@@ -22,6 +25,7 @@ export async function TestingZone() {
           <p className="font-display text-xl text-paper">{ASYLUM_TEST.title}</p>
           <p className="mt-1 text-sm text-smoke">{ASYLUM_TEST.blurb}</p>
           <p className="mt-2 text-sm text-brass">Enter the room →</p>
+          {built ? <p className="mt-2 font-mono text-xs text-smoke">Last updated {built}</p> : null}
         </div>
       </Link>
     </section>
