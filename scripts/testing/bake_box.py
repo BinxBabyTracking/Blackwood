@@ -3,7 +3,8 @@
 # usage: python3 bake_box.py config.json OUT_BASENAME WIDTH HEIGHT
 #
 # Writes OUT.webp (the room in plain light, with the outside view through the window panes) and OUT_light.webp
-# (R = light from outside reaching each surface through the window openings, G = 1 inside the room, 0 for the view out).
+# (R = light from outside reaching each surface through the window openings, G = 1 inside the room, 0 for the view out,
+# B = how open each spot is: darker in corners and along edges where surfaces meet).
 # The viewer combines them at run time with a night level, the outside light on or off, and the room's lamps.
 import sys, json, numpy as np
 from PIL import Image, ImageFilter
@@ -78,11 +79,18 @@ for r0 in range(0, OH, 256):
             ok = (sm > 0) & (qx > -W / 2) & (qx < W / 2) & (qy > 0) & (qy < H)
             qa = sample(FRONT_ALPHA, (qx + W / 2) / W, (H - qy) / H)
             lit[m] = np.where(ok, 1 - qa, 0) * max(0.0, float(np.dot(n, SRC)))
+    # Corners and edges: darker where surfaces meet, each nearby surface taking away some of the light.
+    ao = np.ones(len(t), np.float32)
+    k, r = cfg.get('ao', [0.45, 0.13])
+    for dist in (W / 2 - np.abs(x), D / 2 - np.abs(z), (H - EYE) - y, y + EYE):
+        dd = np.maximum(dist, 0)
+        ao *= np.where(dd < 1e-4, 1.0, 1 - k * np.exp(-dd / r))
+    light[r0:r1, :, 2] = ao.reshape(r1 - r0, OW)
     albedo[r0:r1] = col.reshape(r1 - r0, OW, 3)
     light[r0:r1, :, 0] = lit.reshape(r1 - r0, OW); light[r0:r1, :, 1] = inside.reshape(r1 - r0, OW)
 
 peak = light[..., 0].max()
 if peak > 0: light[..., 0] /= peak
 Image.fromarray((np.clip(albedo, 0, 1) * 255).astype(np.uint8)).save(OUT + '.webp', quality=cfg.get('quality', 82))
-Image.fromarray((np.clip(light, 0, 1) * 255).astype(np.uint8)).save(OUT + '_light.webp', quality=92)
+Image.fromarray((np.clip(light, 0, 1) * 255).astype(np.uint8)).save(OUT + '_light.webp', lossless=True)
 print('light dir', SRC.round(3), 'peak', round(float(peak), 3))

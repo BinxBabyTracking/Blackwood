@@ -46,10 +46,21 @@ void main(){
     vec3 L = lightPos - pt; float d = length(L);
     float lam = max(dot(n, L / d), 0.);
     float att = 1. / (1. + 5. * d * d);
-    bulb = light * lightCol * (lightStrength * lam * att + 0.35);
+    // A ceiling fixture throws most of its light downward, so the tops of the walls stay dimmer.
+    float down = clamp(-L.y / d, 0., 1.);
+    float emit = 0.3 + 0.7 * down;
+    // On the ceiling, a bright ring around the fixture that fades out.
+    float halo = 0.;
+    if (n.y < -0.5) {
+      vec2 r = pt.xz - lightPos.xz; float r2 = dot(r, r);
+      halo = 1.6 * exp(-r2 * 18.) + 0.35 * exp(-r2 * 3.);
+    }
+    bulb = light * lightCol * (lightStrength * lam * att * emit + 0.25 + halo);
   }
   if (lmOn > 0.5) {
-    vec3 lit = col * (ambient + moonCol * lmv.r * moonLevel + bulb * 0.45);
+    // Blue channel: how open this spot is (darker in corners and where surfaces meet).
+    float ao = lmv.b;
+    vec3 lit = col * (ambient * ao + moonCol * lmv.r * moonLevel + bulb * 0.45 * mix(1., ao, 0.6));
     // The view through the windows keeps its own light, a little darker with the moon hidden.
     vec3 outside = col * (0.45 + 0.55 * moonLevel);
     col = mix(outside, lit, inside);
@@ -255,7 +266,7 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
           const lam = Math.max(0, (-fx * Lx + -fz * Lz) / d) * 0.6 + Math.max(0, Ly / d) * 0.5;
           const att = 1 / (1 + 5 * d * d);
           const add = light.color.map((c) => lv * c * (light.strength * lam * att + 0.35));
-          m = LT.on ? (m.map((x, i) => x + add[i] * 0.45) as [number, number, number]) : (add.map((x) => 1 + x) as [number, number, number]);
+          m = LT.on ? (m.map((x, i) => x + add[i] * 0.3) as [number, number, number]) : (add.map((x) => 1 + x) as [number, number, number]);
         }
         if (LT.on) {
           // A little moonlight on it, and its own brightness, since cutouts come in darker than the room's plain light.

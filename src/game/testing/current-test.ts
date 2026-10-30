@@ -85,7 +85,11 @@ export const CURRENT_TEST = {
       // The city's glow through the blinds, warm like sodium streetlights.
       moon: [0.95, 0.7, 0.45],
       outsideToggle: "City glow",
-      light: { x: 0, y: 0.96, z: 0, color: [1.0, 0.8, 0.55], strength: 8 },
+      light: { x: 0, y: 0.96, z: 0, color: [1.0, 0.84, 0.64], strength: 8 },
+      props: [
+        // The desk, right in front of the chair: its far edge about 4 feet away, the near edge in your lap.
+        { id: "desk", image: "/testing/office/props/desk.webp", x: 0, z: -0.45, width: 1.075, height: 0.436, sink: 0.115, gain: 1.46 },
+      ],
       hotspots: [{ kind: "switch", id: "office-switch", yaw: 157.5, pitch: 3.6, label: "Light switch" }],
     },
   ] satisfies TestRoom[] as TestRoom[],
