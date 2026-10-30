@@ -32,6 +32,8 @@ export type TestProp = {
   height: number;
   /** How far to lower the cutout below the floor line, when its feet look like they float (room units). */
   sink?: number;
+  /** Drawn over lower layers whatever their distance: 1 for things that sit on top of furniture (desk items). */
+  layer?: number;
   /** Brightness of the cutout's own image before the room's light is applied (for rooms lit in code). */
   gain?: number;
   /** A soft shadow on the floor: its size, and how far behind the cutout's base its center sits. */
@@ -95,8 +97,16 @@ export const CURRENT_TEST = {
         // The desk, right in front of the chair: its far edge about 4 feet away, the near edge in your lap.
         // The desk, its front about 5 feet in front of the chair: about 6 feet wide, the top about 2½ feet off the floor.
         { id: "desk", image: "/testing/office/props/desk.webp", x: 0, z: -0.55, width: 0.667, height: 0.347, gain: 1.6 },
-        // The green banker's lamp, on the far left corner of the desktop (drawn just in front of the desk, at its scale).
-        { id: "lamp", image: "/testing/office/props/lamp.webp", x: -0.165, z: -0.54, width: 0.092, height: 0.094, sink: -0.3, gain: 1.5 },
+        // On the desk (layer 1, so always drawn over it). Positions are on the desk's picture: the desktop runs from its
+        // far edge down to the near edge; "sink" (negative) lifts each item's bottom up to its spot on the desktop.
+        // The green banker's lamp, far left corner.
+        { id: "lamp", image: "/testing/office/props/lamp.webp", x: -0.16, z: -0.545, width: 0.092, height: 0.0939, sink: -0.295, gain: 1.5, layer: 1 },
+        // The telephone, front left.
+        { id: "phone", image: "/testing/office/props/phone.webp", x: -0.2, z: -0.545, width: 0.075, height: 0.0508, sink: -0.232, gain: 1.4, layer: 1 },
+        // Det. Bennett's case file, in the middle.
+        { id: "casefile", image: "/testing/office/props/casefile.webp", x: 0, z: -0.545, width: 0.1, height: 0.0665, sink: -0.243, gain: 1.3, layer: 1 },
+        // The notebook and pencil, right of the file.
+        { id: "notebook", image: "/testing/office/props/notebook.webp", x: 0.175, z: -0.545, width: 0.058, height: 0.0574, sink: -0.243, gain: 1.3, layer: 1 },
       ],
       // Under the lamp's shade, on the desk's far left corner; warm and focused.
       lamp: {
@@ -105,7 +115,10 @@ export const CURRENT_TEST = {
       },
       hotspots: [
         { kind: "switch", id: "office-switch", yaw: 157.5, pitch: 3.6, label: "Light switch" },
-        { kind: "switch", id: "office-lamp", target: "lamp", yaw: -15, pitch: -10, label: "Desk lamp" },
+        { kind: "switch", id: "office-lamp", target: "lamp", yaw: -16.4, pitch: -10.8, label: "Desk lamp" },
+        { kind: "inspect", id: "office-phone", yaw: -20.2, pitch: -18.4, label: "Telephone", text: "Test hotspot. In the case this opens the phone." },
+        { kind: "inspect", id: "office-casefile", yaw: 0, pitch: -17.7, label: "Case file from Det. Bennett", text: "Test hotspot. In the case this opens the case file." },
+        { kind: "inspect", id: "office-notebook", yaw: 17.8, pitch: -17.3, label: "Notebook", text: "Test hotspot. In the case this opens your notebook." },
       ],
     },
   ] satisfies TestRoom[] as TestRoom[],

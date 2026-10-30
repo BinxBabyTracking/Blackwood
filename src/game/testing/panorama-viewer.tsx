@@ -237,8 +237,8 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
       gl.uniform1f(su.aspect, aspect);
       gl.uniform1f(su.fade, v.fade);
       const floor = -eye;
-      // Farthest first, so nearer pieces cover farther ones.
-      const sorted = [...list].sort((a, b) => Math.hypot(b.prop.x, b.prop.z) - Math.hypot(a.prop.x, a.prop.z));
+      // Lower layers first (furniture, then what sits on it); within a layer, farthest first so nearer pieces cover farther ones.
+      const sorted = [...list].sort((a, b) => (a.prop.layer ?? 0) - (b.prop.layer ?? 0) || Math.hypot(b.prop.x, b.prop.z) - Math.hypot(a.prop.x, a.prop.z));
       for (const { prop: p, tex: t } of sorted) {
         const d = Math.hypot(p.x, p.z) || 1;
         const fx = p.x / d, fz = p.z / d; // away from the viewer
