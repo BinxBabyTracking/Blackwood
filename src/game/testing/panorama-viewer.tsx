@@ -20,6 +20,8 @@ in vec2 v; out vec4 o;
 uniform sampler2D t; uniform float yaw, pitch, tanHalf, aspect, fade;
 // Box rooms: half width, half depth, ceiling and floor heights relative to the eye; and the room light.
 uniform float boxOn, light, lightStrength; uniform vec4 box; uniform vec3 lightPos, lightCol;
+// A second light (a desk lamp): its light goes mostly down from under its shade.
+uniform float lamp, lampStrength; uniform vec3 lampPos, lampCol;
 // Rooms lit in code: the light map (r = moonlight, g = inside the room), the night level and the moon.
 uniform sampler2D lm; uniform float lmOn, moonLevel; uniform vec3 ambient, moonCol;
 const float PI = 3.14159265359;
@@ -35,7 +37,7 @@ void main(){
   vec4 lmv = lmOn > 0.5 ? texture(lm, vec2(u, vv)) : vec4(0.);
   float inside = lmOn > 0.5 ? lmv.g : 1.;
   vec3 bulb = vec3(0.);
-  if (boxOn > 0.5 && light > 0.001) {
+  if (boxOn > 0.5 && (light > 0.001 || lamp > 0.001)) {
     // Where this ray meets the box, and which way that surface faces.
     float tx = abs(w.x) > 1e-5 ? (w.x > 0. ? box.x : -box.x) / w.x : 1e9;
     float tz = abs(w.z) > 1e-5 ? (w.z > 0. ? box.y : -box.y) / w.z : 1e9;
@@ -56,6 +58,14 @@ void main(){
       halo = 1.6 * exp(-r2 * 18.) + 0.35 * exp(-r2 * 3.);
     }
     bulb = light * lightCol * (lightStrength * lam * att * emit + 0.25 + halo);
+    if (lamp > 0.001) {
+      vec3 K = lampPos - pt; float kd = length(K);
+      float klam = max(dot(n, K / kd), 0.);
+      float kdown = clamp(-K.y / kd, 0., 1.);
+      // The shade: almost nothing goes up or sideways; a little warm bounce fills the room.
+      float shade = kdown * kdown * kdown;
+      bulb += lamp * lampCol * (lampStrength * klam * shade / (1. + 9. * kd * kd) + 0.07);
+    }
   }
   if (lmOn > 0.5) {
     // Blue channel: how open this spot is (darker in corners and where surfaces meet).
@@ -120,6 +130,7 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
     token: object;
     box?: [number, number, number, number];
     light?: { pos: [number, number, number]; color: [number, number, number]; strength: number };
+    lamp?: { pos: [number, number, number]; color: [number, number, number]; strength: number; pool?: NonNullable<TestRoom["lamp"]>["pool"] };
   }>({ eye: 0.5, list: [], token: {} });
   const lmTexRef = useRef<WebGLTexture | null>(null);
   /** The room's code lighting, when it has a light map. */
@@ -127,6 +138,7 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
   const moonLevel = useRef(1);
   /** 0 = off, 1 = on; animated, so the bulb can flicker when switched on. */
   const lightLevel = useRef(0);
+  const lampLevel = useRef(0);
   const gyro = useRef<{ on: boolean; heading0: number | null; yaw0: number }>({ on: false, heading0: null, yaw0: 0 });
   const busy = useRef(false);
   const readoutRef = useRef<HTMLSpanElement>(null);
@@ -139,6 +151,7 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
   const [showPos, setShowPos] = useState(false);
   const [webglFailed, setWebglFailed] = useState(false);
   const [lightOn, setLightOn] = useState(false);
+  const [lampOn, setLampOn] = useState(false);
   const [moonOn, setMoonOn] = useState(true);
 
   const room = rooms.find((r) => r.id === roomId) ?? rooms[0];
@@ -175,7 +188,7 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 1, 1, 0, gl.RGB, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0]));
-    const u = Object.fromEntries(["t", "yaw", "pitch", "tanHalf", "aspect", "fade", "boxOn", "light", "lightStrength", "box", "lightPos", "lightCol", "lm", "lmOn", "moonLevel", "ambient", "moonCol"].map((n) => [n, gl.getUniformLocation(prog, n)]));
+    const u = Object.fromEntries(["t", "yaw", "pitch", "tanHalf", "aspect", "fade", "boxOn", "light", "lightStrength", "box", "lightPos", "lightCol", "lm", "lmOn", "moonLevel", "ambient", "moonCol", "lamp", "lampStrength", "lampPos", "lampCol"].map((n) => [n, gl.getUniformLocation(prog, n)]));
     const lmTex = gl.createTexture()!;
     gl.bindTexture(gl.TEXTURE_2D, lmTex);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
@@ -210,9 +223,10 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
     const quad = (c: number[][]) =>
       new Float32Array([...c[0], 0, 1, ...c[1], 1, 1, ...c[2], 0, 0, ...c[3], 1, 0]);
     const drawProps = (v: View, tanHalf: number, aspect: number) => {
-      const { eye, list, light } = propsRef.current;
+      const { eye, list, light, lamp } = propsRef.current;
       const lv = light ? lightLevel.current : 0;
-      if (!list.length && !lv) return;
+      const kv = lamp ? lampLevel.current : 0;
+      if (!list.length && !lv && !kv) return;
       gl.useProgram(sprog);
       gl.bindVertexArray(svao);
       gl.bindBuffer(gl.ARRAY_BUFFER, sbuf);
@@ -268,12 +282,38 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
           const add = light.color.map((c) => lv * c * (light.strength * lam * att + 0.35));
           m = LT.on ? (m.map((x, i) => x + add[i] * 0.3) as [number, number, number]) : (add.map((x) => 1 + x) as [number, number, number]);
         }
+        if (lamp && kv > 0.001) {
+          // The lamp warms whatever sits near and below it; the pool of light on the desk is drawn separately.
+          const cx = p.x, cy = floor - (p.sink ?? 0) + p.height * 0.6, cz = p.z;
+          const d = Math.hypot(lamp.pos[0] - cx, lamp.pos[1] - cy, lamp.pos[2] - cz) || 1;
+          const add = lamp.color.map((c) => kv * c * (lamp.strength * 0.35 / (1 + 9 * d * d) + 0.07));
+          m = m.map((x, i) => x + add[i] * (LT.on ? 1 : 2)) as [number, number, number];
+        }
         if (LT.on) {
           // A little moonlight on it, and its own brightness, since cutouts come in darker than the room's plain light.
           m = m.map((x, i) => (x + LT.moon[i] * 0.12 * moonLevel.current) * (p.gain ?? 1)) as [number, number, number];
         }
         gl.uniform3f(su.mul, m[0], m[1], m[2]);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      }
+      // The lamp's warm pool of light on the desk, added on top, centered on its base point.
+      if (lamp?.pool && kv > 0.001) {
+        const P = lamp.pool;
+        const d = Math.hypot(P.x, P.z) || 1;
+        const fx = P.x / d, fz = P.z / d, rx = -fz, rz = fx;
+        const hw = P.width / 2, b = floor + P.lift - P.height / 2;
+        gl.bufferData(gl.ARRAY_BUFFER, quad([
+          [P.x - rx * hw, b, P.z - rz * hw],
+          [P.x + rx * hw, b, P.z + rz * hw],
+          [P.x - rx * hw, b + P.height, P.z - rz * hw],
+          [P.x + rx * hw, b + P.height, P.z + rz * hw],
+        ]), gl.DYNAMIC_DRAW);
+        gl.blendFunc(gl.ONE, gl.ONE);
+        gl.uniform1f(su.shadow, 0);
+        gl.uniform1f(su.glow, kv * P.strength);
+        gl.uniform3f(su.glowCol, lamp.color[0], lamp.color[1], lamp.color[2]);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
       }
       // The bulb itself: a soft glow at the light, added on top.
       if (light && lv > 0.001) {
@@ -332,6 +372,12 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
       gl.activeTexture(gl.TEXTURE0);
       gl.uniform1f(u.light, R.light ? lightLevel.current : 0);
       if (R.box) gl.uniform4f(u.box, R.box[0], R.box[1], R.box[2], R.box[3]);
+      gl.uniform1f(u.lamp, R.lamp ? lampLevel.current : 0);
+      if (R.lamp) {
+        gl.uniform3f(u.lampPos, R.lamp.pos[0], R.lamp.pos[1], R.lamp.pos[2]);
+        gl.uniform3f(u.lampCol, ...R.lamp.color);
+        gl.uniform1f(u.lampStrength, R.lamp.strength);
+      }
       if (R.light) {
         gl.uniform3f(u.lightPos, R.light.pos[0], R.light.pos[1], R.light.pos[2]);
         gl.uniform3f(u.lightCol, ...R.light.color);
@@ -386,11 +432,14 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
       token,
       box: r.eye != null ? [(r.size?.[0] ?? 1.5) / 2, (r.size?.[1] ?? 1.5) / 2, 1 - eye, -eye] : undefined,
       light: r.light ? { pos: [r.light.x, r.light.y - eye, r.light.z], color: r.light.color, strength: r.light.strength } : undefined,
+      lamp: r.lamp ? { pos: [r.lamp.x, r.lamp.y - eye, r.lamp.z], color: r.lamp.color, strength: r.lamp.strength, pool: r.lamp.pool } : undefined,
     };
     lightLevel.current = 0;
+    lampLevel.current = 0;
     moonLevel.current = 1;
     queueMicrotask(() => {
       setLightOn(false);
+      setLampOn(false);
       setMoonOn(true);
     });
     lit.current = { on: false, ambient: r.ambient ?? [1, 1, 1], moon: r.moon ?? [1, 1, 1] };
@@ -570,7 +619,8 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
     (spot: TestHotspot) => {
       if (busy.current) return;
       if (spot.kind === "switch") {
-        flipLight();
+        if (spot.target === "lamp") flipLamp();
+        else flipLight();
         return;
       }
       if (spot.kind === "inspect") {
@@ -622,7 +672,7 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
               className="group absolute -translate-x-1/2 -translate-y-1/2"
             >
               <span className={`block h-9 w-9 rounded-full border-2 ${h.kind === "exit" ? "border-paper/80" : "border-brass/80"} bg-black/30 shadow-[0_0_18px_rgba(0,0,0,0.8)] backdrop-blur-[1px] transition group-hover:scale-110`}>
-                <span className="grid h-full w-full place-items-center text-sm">{h.kind === "exit" ? "➜" : h.kind === "switch" ? (lightOn ? "●" : "○") : "?"}</span>
+                <span className="grid h-full w-full place-items-center text-sm">{h.kind === "exit" ? "➜" : h.kind === "switch" ? ((h.target === "lamp" ? lampOn : lightOn) ? "●" : "○") : "?"}</span>
               </span>
               <span className="absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap rounded-[2px] bg-black/70 px-2 py-0.5 text-xs">{h.label}</span>
             </button>
@@ -696,6 +746,13 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
       if (k < 1) requestAnimationFrame(step);
     };
     requestAnimationFrame(step);
+  }
+
+  /** The desk lamp: a quick click on, no flicker. */
+  function flipLamp() {
+    const on = lampLevel.current < 0.5;
+    setLampOn(on);
+    lampLevel.current = on ? 1 : 0;
   }
 
   /** On with a short flicker, like an old bulb catching; off at once. */

@@ -11,7 +11,7 @@ export type TestHotspot =
   | { kind: "exit"; id: string; yaw: number; pitch: number; label: string; to: string }
   | { kind: "inspect"; id: string; yaw: number; pitch: number; label: string; text: string; image?: string }
   /** Turns the room's ceiling light on and off. */
-  | { kind: "switch"; id: string; yaw: number; pitch: number; label: string };
+  | { kind: "switch"; id: string; yaw: number; pitch: number; label: string; target?: "ceiling" | "lamp" };
 
 /** A light drawn by the viewer in a box room (no extra artwork): position in room units, height above the floor (room height 1). */
 export type TestLight = { x: number; y: number; z: number; color: [number, number, number]; strength: number };
@@ -51,6 +51,11 @@ export type TestRoom = {
   eye?: number;
   props?: TestProp[];
   light?: TestLight;
+  /**
+   * A second light, like a desk lamp, with its own switch. Its light goes mostly down. "pool" is the warm patch it
+   * throws on the cutout under it (a desk): a soft glow placed like a cutout, at its base point and size.
+   */
+  lamp?: TestLight & { pool?: { x: number; z: number; lift: number; width: number; height: number; strength: number } };
   /** Box rooms: width and depth in room units (the height is 1). Defaults to 1.5 by 1.5. */
   size?: [number, number];
   /** Show the test button that hides and brings back the light from outside (the moon). */
@@ -88,9 +93,20 @@ export const CURRENT_TEST = {
       light: { x: 0, y: 0.96, z: 0, color: [1.0, 0.84, 0.64], strength: 8 },
       props: [
         // The desk, right in front of the chair: its far edge about 4 feet away, the near edge in your lap.
-        { id: "desk", image: "/testing/office/props/desk.webp", x: 0, z: -0.45, width: 1.075, height: 0.436, sink: 0.115, gain: 1.46 },
+        // The desk, its front about 5 feet in front of the chair: about 6 feet wide, the top about 2½ feet off the floor.
+        { id: "desk", image: "/testing/office/props/desk.webp", x: 0, z: -0.55, width: 0.667, height: 0.347, gain: 1.6 },
+        // The green banker's lamp, on the far left corner of the desktop (drawn just in front of the desk, at its scale).
+        { id: "lamp", image: "/testing/office/props/lamp.webp", x: -0.165, z: -0.54, width: 0.092, height: 0.094, sink: -0.3, gain: 1.5 },
       ],
-      hotspots: [{ kind: "switch", id: "office-switch", yaw: 157.5, pitch: 3.6, label: "Light switch" }],
+      // Under the lamp's shade, on the desk's far left corner; warm and focused.
+      lamp: {
+        x: -0.3, y: 0.4, z: -0.82, color: [1.0, 0.82, 0.5], strength: 2.5,
+        pool: { x: -0.07, z: -0.535, lift: 0.27, width: 0.36, height: 0.11, strength: 0.55 },
+      },
+      hotspots: [
+        { kind: "switch", id: "office-switch", yaw: 157.5, pitch: 3.6, label: "Light switch" },
+        { kind: "switch", id: "office-lamp", target: "lamp", yaw: -15, pitch: -10, label: "Desk lamp" },
+      ],
     },
   ] satisfies TestRoom[] as TestRoom[],
 };
