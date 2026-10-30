@@ -100,13 +100,18 @@ export const CURRENT_TEST = {
         // On the desk (layer 1, so always drawn over it). Positions are on the desk's picture: the desktop runs from its
         // far edge down to the near edge; "sink" (negative) lifts each item's bottom up to its spot on the desktop.
         // The green banker's lamp, far left corner.
-        { id: "lamp", image: "/testing/office/props/lamp.webp", x: -0.16, z: -0.545, width: 0.092, height: 0.0939, sink: -0.295, gain: 1.5, layer: 1 },
+        { id: "lamp", image: "/testing/office/props/lamp.webp", x: -0.15, z: -0.545, width: 0.138, height: 0.141, sink: -0.295, gain: 1.5, layer: 1 },
         // The telephone, front left.
-        { id: "phone", image: "/testing/office/props/phone.webp", x: -0.2, z: -0.545, width: 0.075, height: 0.0508, sink: -0.232, gain: 1.4, layer: 1 },
+        { id: "phone", image: "/testing/office/props/phone.webp", x: -0.2, z: -0.545, width: 0.1125, height: 0.0762, sink: -0.232, gain: 1.4, layer: 1 },
         // Det. Bennett's case file, in the middle.
         { id: "casefile", image: "/testing/office/props/casefile.webp", x: 0, z: -0.545, width: 0.1, height: 0.0665, sink: -0.243, gain: 1.3, layer: 1 },
         // The notebook and pencil, right of the file.
-        { id: "notebook", image: "/testing/office/props/notebook.webp", x: 0.175, z: -0.545, width: 0.058, height: 0.0574, sink: -0.243, gain: 1.3, layer: 1 },
+        { id: "notebook", image: "/testing/office/props/notebook.webp", x: 0.12, z: -0.545, width: 0.058, height: 0.0574, sink: -0.243, gain: 1.3, layer: 1 },
+        // The wire mail tray, back right; the lab folder lies in it, and the tape recorder sits in front of it
+        // (one layer up from the tray, so the tray never covers them).
+        { id: "mailtray", image: "/testing/office/props/mailtray.webp", x: 0.2, z: -0.545, width: 0.095, height: 0.0617, sink: -0.29, gain: 1.3, layer: 1 },
+        { id: "labfolder", image: "/testing/office/props/labfolder.webp", x: 0.2, z: -0.545, width: 0.06, height: 0.043, sink: -0.302, gain: 1.3, layer: 2 },
+        { id: "recorder", image: "/testing/office/props/recorder.webp", x: 0.225, z: -0.545, width: 0.085, height: 0.058, sink: -0.232, gain: 1.3, layer: 2 },
       ],
       // Under the lamp's shade, on the desk's far left corner; warm and focused.
       lamp: {
@@ -115,10 +120,13 @@ export const CURRENT_TEST = {
       },
       hotspots: [
         { kind: "switch", id: "office-switch", yaw: 157.5, pitch: 3.6, label: "Light switch" },
-        { kind: "switch", id: "office-lamp", target: "lamp", yaw: -16.4, pitch: -10.8, label: "Desk lamp" },
-        { kind: "inspect", id: "office-phone", yaw: -20.2, pitch: -18.4, label: "Telephone", text: "Test hotspot. In the case this opens the phone." },
+        { kind: "switch", id: "office-lamp", target: "lamp", yaw: -12.4, pitch: -8.2, label: "Desk lamp" },
+        { kind: "inspect", id: "office-phone", yaw: -20.2, pitch: -17.2, label: "Telephone", text: "Test hotspot. In the case this opens the phone." },
         { kind: "inspect", id: "office-casefile", yaw: 0, pitch: -17.7, label: "Case file from Det. Bennett", text: "Test hotspot. In the case this opens the case file." },
-        { kind: "inspect", id: "office-notebook", yaw: 17.8, pitch: -17.3, label: "Notebook", text: "Test hotspot. In the case this opens your notebook." },
+        { kind: "inspect", id: "office-notebook", yaw: 12.4, pitch: -17.7, label: "Notebook", text: "Test hotspot. In the case this opens your notebook." },
+        { kind: "inspect", id: "office-recorder", yaw: 22.4, pitch: -17.8, label: "Police interview tapes", text: "Test hotspot. In the case this plays the interview tapes." },
+        { kind: "inspect", id: "office-mail", yaw: 23.5, pitch: -11.2, label: "Opened mail", text: "Test hotspot. In the case this shows the mail you have opened." },
+        { kind: "inspect", id: "office-labfolder", yaw: 18.5, pitch: -13, label: "Lab results", text: "Test hotspot. In the case lab results arrive here when the police lab is done." },
       ],
     },
   ] satisfies TestRoom[] as TestRoom[],
