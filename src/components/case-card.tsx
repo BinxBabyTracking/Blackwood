@@ -11,7 +11,7 @@ import {
   locationYear,
 } from "@/lib/format";
 import { CaseCover } from "./case-cover";
-import { FailedBadge } from "./failed-badge";
+import { FailedBadge, FailedRetry } from "./failed-badge";
 
 /** The investigator's last attempt at a case ended in a losing ending. */
 type CaseFailure = { title: string; reason: string };
@@ -85,9 +85,10 @@ export function CaseCard({ c, href, leaderboard = false, mine, failure }: { c: C
             {/* The last attempt ended in a losing ending: Failed, with why and a fresh try. */}
             {failure ? (
               <div className="ml-auto">
-                <FailedBadge caseId={c.id} title={failure.title} reason={failure.reason} />
+                <FailedBadge />
               </div>
             ) : null}
+            {failure ? <FailedRetry caseId={c.id} title={failure.title} reason={failure.reason} /> : null}
           </div>
         ) : null}
       </div>
@@ -136,9 +137,10 @@ export function FeaturedCaseCard({ c, href, leaderboard = false, mine, failure }
             {/* The last attempt ended in a losing ending: Failed, with why and a fresh try. */}
             {failure ? (
               <div className="ml-auto">
-                <FailedBadge caseId={c.id} title={failure.title} reason={failure.reason} />
+                <FailedBadge />
               </div>
             ) : null}
+            {failure ? <FailedRetry caseId={c.id} title={failure.title} reason={failure.reason} /> : null}
           </div>
         ) : null}
       </div>
