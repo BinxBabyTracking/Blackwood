@@ -32,7 +32,7 @@ Seasonal: October only (`available_month` 10). 1 to 6 investigators. Tier 2, abo
 - **Evidence ids** are HE001 to HE036, deductions HD01 to HD13. Two more items exist only if the killer acts: HE037 (the report of a second attack) and HE038 (burned papers in the greenhouse stove).
 - **The study is upstairs.** The design put the study on the main floor but has the scream, and the thirteenth guest, in the upstairs corridor. The study is at the end of the upstairs corridor. The servants' stair runs from behind its shelves down to the old service corridor in the lower level, ending in the short flight of stone steps where Annabel fell in 1998.
 - **Blackwood's base** is the Morning Room on the main floor, given to the agency by the police as an incident room (case file, board, phone, map). Every investigator carries a phone (`phone: "mobile"`).
-- **The clock** runs on what the investigators do (travel 3 minutes, examining something new 1, each question or presentation 1, each call 1), starting at 10:32 PM. Real time plays no part.
+- **The clock** runs on what the investigators do (travel takes no time, examining something new 1, each question or presentation 1, each call 1), starting at 10:32 PM. Real time plays no part.
 - **Escape and the midnight procession.** Marsh can only leave by the front gate (his car is in the gatehouse lot) or by the back lane past the maze, and only by the lane if he has called his driver. Investigators can overhear that call.
 - **Ending E (the wrong accusation)** is not a terminal ending: the engine returns a wrong report, as in every case. A returned report emboldens Marsh (he may take the envelope from the library globe before it is found) and costs leaderboard points.
 

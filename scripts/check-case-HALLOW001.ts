@@ -140,13 +140,13 @@ export function checkHALLOW001(def: CaseDefinition, problems: string[]) {
     g.run({ type: "readDocument", documentId: "casefile" });
     expect(g.s.clock === 22 * 60 + 32, "reading the case file took time");
     g.go("dining_room");
-    expect(g.s.clock === 22 * 60 + 35, `travel took ${g.s.clock! - (22 * 60 + 32)} minutes, not 3`);
+    expect(g.s.clock === 22 * 60 + 32, `travel took ${g.s.clock! - (22 * 60 + 32)} minutes, not 0`);
     g.hot("dr_thirteenth");
-    expect(g.s.clock === 22 * 60 + 36, "examining something new did not take a minute");
+    expect(g.s.clock === 22 * 60 + 33, "examining something new did not take a minute");
     g.hot("dr_thirteenth");
-    expect(g.s.clock === 22 * 60 + 36, "looking at the same thing again took time");
+    expect(g.s.clock === 22 * 60 + 33, "looking at the same thing again took time");
     g.ask("wren", "wren_thirteen");
-    expect(g.s.clock === 22 * 60 + 37, "a question did not take a minute");
+    expect(g.s.clock === 22 * 60 + 34, "a question did not take a minute");
     const old = newState({ ...def, clock: undefined, adversary: undefined }, 0);
     expect(old.clock === undefined && old.seed === undefined && old.adversary === undefined, "a case without a clock or adversary carries them anyway");
   }

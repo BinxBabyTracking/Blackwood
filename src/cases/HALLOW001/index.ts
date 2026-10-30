@@ -76,7 +76,7 @@ export const HALLOW001: CaseDefinition = {
     { label: "Victim", value: "Ambrose Blackthorn" },
   ],
   speech: SPEECH,
-  clock: { start: "22:32", costs: { travel: 3, inspect: 1, question: 1, call: 1 } },
+  clock: { start: "22:32", costs: { travel: 0, inspect: 1, question: 1, call: 1 } },
   adversary,
 };
 
