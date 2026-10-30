@@ -544,14 +544,14 @@ export const locations: LocationDef[] = [
     // Once anyone from Blackwood is in the stair, both ends are open and the police tape them.
     effectsOnEnter: [{ setEnv: "study_shelf", to: "B" }, { setFlag: "lower_door_found" }],
     hotspots: [
-      door("ss_up", "Up to the study", "study", { x: 40, y: 2, w: 20, h: 18 }),
-      door("ss_down", "Down to the service corridor", "service_corridor", { x: 40, y: 82, w: 20, h: 16 }),
-      inspect("ss_dust", "The steps", "stair", { x: 30, y: 24, w: 40, h: 30 }, "The steps", "Narrow wooden steps, thick with dust.", { evidence: "HE005" }),
+      door("ss_up", "Up to the study", "study", { x: 19, y: 0, w: 11, h: 52 }),
+      door("ss_down", "Down to the service corridor", "service_corridor", { x: 45, y: 30, w: 16, h: 30 }),
+      inspect("ss_dust", "Footprints in the dust", "stair", { x: 40, y: 72, w: 28, h: 26 }, "The steps", "Narrow wooden steps, thick with dust.", { evidence: "HE005" }),
       inspect(
         "ss_catch",
         "The catch inside the shelf",
         "latch",
-        { x: 62, y: 4, w: 12, h: 14 },
+        { x: 30, y: 28, w: 6, h: 14 },
         "The catch",
         "An iron catch on the back of the hinged shelf section, oiled and bright, with a smudge on it where a thumb pressed it down to open the shelf from this side. A partial print, maybe. Lt. Mahoney's lab could lift it.",
       ),
@@ -559,7 +559,7 @@ export const locations: LocationDef[] = [
         "ss_steps",
         "The stone steps",
         "stair",
-        { x: 30, y: 60, w: 40, h: 20 },
+        { x: 42, y: 60, w: 24, h: 11 },
         "The stone steps at the bottom",
         "Four worn granite steps at the foot of the stair, just inside the lower door. The bottom step has a chip out of its front edge the size of a thumbnail, old and dark. In the joint below it, an old brown stain that years of cleaning have never quite reached.",
       ),
