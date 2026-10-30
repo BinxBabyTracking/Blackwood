@@ -7,11 +7,15 @@
  * readout gives the yaw and pitch at the crosshair, for placing new hotspots.
  */
 
-export type TestHotspot =
+/** Shown only while a test toggle is in this state (see TestRoom.toggles). */
+export type TestWhen = { toggle: string; state: string };
+
+export type TestHotspot = { when?: TestWhen } & (
   | { kind: "exit"; id: string; yaw: number; pitch: number; label: string; to: string }
   | { kind: "inspect"; id: string; yaw: number; pitch: number; label: string; text: string; image?: string }
   /** Turns the room's ceiling light on and off. */
-  | { kind: "switch"; id: string; yaw: number; pitch: number; label: string; target?: "ceiling" | "lamp" };
+  | { kind: "switch"; id: string; yaw: number; pitch: number; label: string; target?: "ceiling" | "lamp" }
+);
 
 /** A light drawn by the viewer in a box room (no extra artwork): position in room units, height above the floor (room height 1). */
 export type TestLight = { x: number; y: number; z: number; color: [number, number, number]; strength: number };
@@ -34,6 +38,8 @@ export type TestProp = {
   sink?: number;
   /** Drawn over lower layers whatever their distance: 1 for things that sit on top of furniture (desk items). */
   layer?: number;
+  /** Shown only while a test toggle is in this state. */
+  when?: TestWhen;
   /** Brightness of the cutout's own image before the room's light is applied (for rooms lit in code). */
   gain?: number;
   /** A soft shadow on the floor: its size, and how far behind the cutout's base its center sits. */
@@ -62,6 +68,8 @@ export type TestRoom = {
   size?: [number, number];
   /** Show the test button that hides and brings back the light from outside (the moon). */
   outsideToggle?: string;
+  /** Test buttons that cycle through states, for things that come and go in the case (deliveries on the desk). */
+  toggles?: { id: string; label: string; states: string[] }[];
   /**
    * Rooms lit in code: the image is the room in plain light, and this second image says where moonlight falls
    * (red) and which pixels are inside the room rather than the view outside (green). Made by the bake script.
@@ -102,7 +110,7 @@ export const CURRENT_TEST = {
         // The green banker's lamp, far left corner.
         { id: "lamp", image: "/testing/office/props/lamp.webp", x: -0.15, z: -0.545, width: 0.138, height: 0.141, sink: -0.295, gain: 1.5, layer: 1 },
         // The telephone, front left.
-        { id: "phone", image: "/testing/office/props/phone.webp", x: -0.2, z: -0.545, width: 0.1125, height: 0.0762, sink: -0.232, gain: 1.4, layer: 1 },
+        { id: "phone", image: "/testing/office/props/phone.webp", x: -0.2, z: -0.545, width: 0.1125, height: 0.0762, sink: -0.232, gain: 1.4, layer: 2 },
         // Det. Bennett's case file, in the middle.
         { id: "casefile", image: "/testing/office/props/casefile.webp", x: 0, z: -0.545, width: 0.1, height: 0.0665, sink: -0.243, gain: 1.3, layer: 1 },
         // The notebook and pencil, right of the file.
@@ -112,6 +120,17 @@ export const CURRENT_TEST = {
         { id: "mailtray", image: "/testing/office/props/mailtray.webp", x: 0.2, z: -0.545, width: 0.095, height: 0.0617, sink: -0.29, gain: 1.3, layer: 1 },
         { id: "labfolder", image: "/testing/office/props/labfolder.webp", x: 0.2, z: -0.545, width: 0.06, height: 0.043, sink: -0.302, gain: 1.3, layer: 2 },
         { id: "recorder", image: "/testing/office/props/recorder.webp", x: 0.225, z: -0.545, width: 0.085, height: 0.058, sink: -0.232, gain: 1.3, layer: 2 },
+        // Deliveries: they arrive at the front of the desk, over the file, and come and go with the case (test buttons).
+        { id: "envelope-sealed", image: "/testing/office/props/envelope_sealed.webp", x: -0.07, z: -0.545, width: 0.1, height: 0.0694, sink: -0.222, gain: 1.3, layer: 3, when: { toggle: "envelope", state: "sealed" } },
+        { id: "envelope-open", image: "/testing/office/props/envelope_open.webp", x: -0.07, z: -0.545, width: 0.1, height: 0.0711, sink: -0.222, gain: 1.3, layer: 3, when: { toggle: "envelope", state: "opened" } },
+        { id: "bag-sealed", image: "/testing/office/props/evidencebag_sealed.webp", x: 0.07, z: -0.545, width: 0.085, height: 0.0693, sink: -0.222, gain: 1.3, layer: 3, when: { toggle: "bag", state: "sealed" } },
+        { id: "bag-open", image: "/testing/office/props/evidencebag_open.webp", x: 0.07, z: -0.545, width: 0.085, height: 0.0649, sink: -0.222, gain: 1.3, layer: 3, when: { toggle: "bag", state: "opened" } },
+        { id: "report", image: "/testing/office/props/report.webp", x: 0, z: -0.545, width: 0.1, height: 0.069, sink: -0.215, gain: 1.4, layer: 4, when: { toggle: "report", state: "shown" } },
+      ],
+      toggles: [
+        { id: "envelope", label: "Envelope", states: ["none", "sealed", "opened"] },
+        { id: "bag", label: "Evidence bag", states: ["none", "sealed", "opened"] },
+        { id: "report", label: "Final report", states: ["none", "shown"] },
       ],
       // Under the lamp's shade, on the desk's far left corner; warm and focused.
       lamp: {
@@ -126,6 +145,11 @@ export const CURRENT_TEST = {
         { kind: "inspect", id: "office-notebook", yaw: 12.4, pitch: -17.7, label: "Notebook", text: "Test hotspot. In the case this opens your notebook." },
         { kind: "inspect", id: "office-recorder", yaw: 22.4, pitch: -17.8, label: "Police interview tapes", text: "Test hotspot. In the case this plays the interview tapes." },
         { kind: "inspect", id: "office-mail", yaw: 23.5, pitch: -11.2, label: "Opened mail", text: "Test hotspot. In the case this shows the mail you have opened." },
+        { kind: "inspect", id: "office-envelope", yaw: -7.3, pitch: -19.3, label: "Manila envelope", text: "Test hotspot. In the case Patricia's envelope is opened here.", when: { toggle: "envelope", state: "sealed" } },
+        { kind: "inspect", id: "office-envelope-open", yaw: -7.3, pitch: -19.3, label: "Envelope from Patricia Wells", text: "Test hotspot. In the case this shows the torn bank statement.", when: { toggle: "envelope", state: "opened" } },
+        { kind: "inspect", id: "office-bag", yaw: 7.3, pitch: -19.5, label: "Police evidence bag", text: "Test hotspot. In the case the evidence bag is opened here.", when: { toggle: "bag", state: "sealed" } },
+        { kind: "inspect", id: "office-bag-open", yaw: 7.3, pitch: -19.5, label: "The windbreaker", text: "Test hotspot. In the case this shows the bloodstained jacket.", when: { toggle: "bag", state: "opened" } },
+        { kind: "inspect", id: "office-report", yaw: 0, pitch: -20.2, label: "Final report folder", text: "Test hotspot. In the case this opens the final report.", when: { toggle: "report", state: "shown" } },
         { kind: "inspect", id: "office-labfolder", yaw: 18.5, pitch: -13, label: "Lab results", text: "Test hotspot. In the case lab results arrive here when the police lab is done." },
       ],
     },

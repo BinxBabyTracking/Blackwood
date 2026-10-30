@@ -152,6 +152,9 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
   const [webglFailed, setWebglFailed] = useState(false);
   const [lightOn, setLightOn] = useState(false);
   const [lampOn, setLampOn] = useState(false);
+  // Test toggles (deliveries that come and go): current state of each, read by the drawing loop through a ref.
+  const [toggles, setToggles] = useState<Record<string, string>>({});
+  const togglesRef = useRef<Record<string, string>>({});
   const [moonOn, setMoonOn] = useState(true);
 
   const room = rooms.find((r) => r.id === roomId) ?? rooms[0];
@@ -240,6 +243,7 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
       // Lower layers first (furniture, then what sits on it); within a layer, farthest first so nearer pieces cover farther ones.
       const sorted = [...list].sort((a, b) => (a.prop.layer ?? 0) - (b.prop.layer ?? 0) || Math.hypot(b.prop.x, b.prop.z) - Math.hypot(a.prop.x, a.prop.z));
       for (const { prop: p, tex: t } of sorted) {
+        if (p.when && (togglesRef.current[p.when.toggle] ?? "") !== p.when.state) continue;
         const d = Math.hypot(p.x, p.z) || 1;
         const fx = p.x / d, fz = p.z / d; // away from the viewer
         const rx = -fz, rz = fx; // the viewer's right, looking at it
@@ -440,6 +444,9 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
     queueMicrotask(() => {
       setLightOn(false);
       setLampOn(false);
+      const first = Object.fromEntries((r.toggles ?? []).map((t) => [t.id, t.states[0]]));
+      togglesRef.current = first;
+      setToggles(first);
       setMoonOn(true);
     });
     lit.current = { on: false, ambient: r.ambient ?? [1, 1, 1], moon: r.moon ?? [1, 1, 1] };
@@ -658,7 +665,7 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
       ) : null}
 
       {room.image && !error
-        ? room.hotspots.map((h) => (
+        ? room.hotspots.filter((h) => !h.when || toggles[h.when.toggle] === h.when.state).map((h) => (
             <button
               key={`${room.id}-${h.id}`}
               ref={(el) => {
@@ -703,6 +710,23 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
         <button onClick={toggleGyro} className={`border px-3 py-1.5 ${gyroOn ? "border-brass text-brass" : "border-rule bg-black/50"}`}>
           {gyroOn ? "Tilt to look: on" : "Tilt to look"}
         </button>
+        {(room.toggles ?? []).map((t) => {
+          const state = toggles[t.id] ?? t.states[0];
+          return (
+            <button
+              key={t.id}
+              onClick={() => {
+                const next = t.states[(t.states.indexOf(state) + 1) % t.states.length];
+                const all = { ...togglesRef.current, [t.id]: next };
+                togglesRef.current = all;
+                setToggles(all);
+              }}
+              className={`border px-3 py-1.5 ${state !== t.states[0] ? "border-brass text-brass" : "border-rule bg-black/50"}`}
+            >
+              {t.label}: {state}
+            </button>
+          );
+        })}
         {room.lightmap && room.outsideToggle ? (
           <button
             onClick={() => {
