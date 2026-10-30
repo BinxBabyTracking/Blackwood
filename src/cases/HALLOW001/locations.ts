@@ -367,7 +367,7 @@ export const locations: LocationDef[] = [
         "You put your shoulder to the fourth section, where the scrapes are. It swings out on a silent, oiled hinge, books and all, onto a narrow stair going down inside the wall. Cold air, and the smell of dust and machine oil.",
         { visible: { all: [shelfFindable, { not: shelfOpen }] }, effects: [{ setEnv: "study_shelf", to: "B" }] },
       ),
-      door("st_stair", "The hidden stair", "servants_stair", { x: 91, y: 6, w: 8, h: 64 }, shelfOpen),
+      door("st_stair", "The hidden stair", "servants_stair", { x: 75.5, y: 12, w: 12, h: 66 }, shelfOpen),
       inspect(
         "st_window",
         "Windows",
