@@ -320,9 +320,9 @@ export const locations: LocationDef[] = [
     available: { always: true },
     onMap: true,
     hotspots: [
-      inspect("uc_glove", "Something on the runner", "glove", { x: 70, y: 76, w: 10, h: 10 }, "A glove", "A woman's black lace glove on the runner.", { evidence: "HE016" }),
+      inspect("uc_glove", "Something on the runner", "glove", { x: 79, y: 69, w: 11, h: 10 }, "A glove", "A woman's black lace glove on the runner.", { evidence: "HE016" }),
       door("uc_study", "The study door", "study", { x: 40, y: 18, w: 14, h: 62 }),
-      door("uc_guest_wing", "The guest wing", "guest_wing", { x: 82, y: 18, w: 12, h: 62 }),
+      door("uc_guest_wing", "The guest wing", "guest_wing", { x: 82, y: 14, w: 12, h: 54 }),
       door("uc_attic", "The attic stair", "attic", { x: 4, y: 18, w: 10, h: 62 }, { flag: "attic_known" }),
       inspect(
         "uc_portraits",
