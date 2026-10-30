@@ -405,7 +405,7 @@ export const locations: LocationDef[] = [
         "door",
         { x: 66, y: 18, w: 16, h: 60 },
         "The Rose Room",
-        "The last door, painted with faded roses. Locked from inside. You knock. Nobody answers, but you can hear someone on the other side holding their breath, and a faint smell of lilies.",
+        "The last door, painted with faded roses. Locked from inside. You knock. Nobody answers, but you can hear someone on the other side holding their breath, and a faint smell of lilies. Whoever it is won't open the door to a stranger. If you knew who she was, you could call her by name.",
         {
           textAfter: [
             {
