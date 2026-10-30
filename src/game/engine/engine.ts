@@ -316,6 +316,13 @@ function sceneBackground(def: CaseDefinition, s: InvestigationState, l: Location
   return typeof l.background === "string" ? l.background : l.background.states[s.env[l.background.env] ?? "A"] ?? Object.values(l.background.states)[0];
 }
 
+/** Where a piece of evidence falls in the case's numbering: its number, else its place in the case's list. */
+function evidenceOrder(def: CaseDefinition, id: string) {
+  const n = /(\d+)$/.exec(id);
+  const i = def.evidence.findIndex((e) => e.id === id);
+  return n ? Number(n[1]) * 10000 + i : 1e9 + i;
+}
+
 /** The painted object or person drawn over the scene for this hotspot, if any. */
 function hotspotSprite(def: CaseDefinition, s: InvestigationState, h: HotspotDef, painted: boolean) {
   const sp = h.sprite?.find((x) => check(x.when, s));
@@ -1445,7 +1452,8 @@ function projectState(def: CaseDefinition, s: InvestigationState, now: number, c
         pin: x.mapPin ?? null,
         tag: x.mapTag ?? null,
       })),
-    evidence: [...s.evidence.map((id) => evidenceView(def, s, id)!), ...s.photos.map((p) => photoView(def, s, p))],
+    // In the case's own numbering (E01, E02... HE001, HE002...), not the order collected; photographs after.
+    evidence: [...[...s.evidence].sort((a, b) => evidenceOrder(def, a) - evidenceOrder(def, b)).map((id) => evidenceView(def, s, id)!), ...s.photos.map((p) => photoView(def, s, p))],
     characters: knownCharacters(def, s).map((c) => ({
       id: c.id,
       name: c.name,
