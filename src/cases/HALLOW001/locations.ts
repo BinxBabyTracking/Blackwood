@@ -428,7 +428,9 @@ export const locations: LocationDef[] = [
     background: "loc.attic",
     ambience: "amb.attic",
     available: { flag: "attic_known" },
-    onMap: false,
+    // On the map's list once someone has mentioned it (no pin: the painted map has no attic), and still reached by its stair.
+    onMap: true,
+    secret: true,
     hotspots: [
       door("at_down", "Down to the corridor", "upstairs_corridor", { x: 0, y: 30, w: 8, h: 60 }),
       inspect("at_trunk", "A tin trunk", "trunk", { x: 40, y: 54, w: 20, h: 28 }, "A tin trunk", "His father's tin trunk, its lid unlocked.", { evidence: "HE026" }),
