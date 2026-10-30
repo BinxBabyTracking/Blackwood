@@ -362,6 +362,8 @@ export interface LocationDef {
   mapPin?: { x: number; y: number };
   /** A label always shown above the pin on the map, e.g. "CRIME SCENE", to draw players there. */
   mapTag?: string;
+  /** Labels that replace mapTag once something happens there (e.g. "SECOND MURDER"); the last whose condition holds is shown. */
+  mapTags?: { text: string; when: Condition }[];
   /** Kept off the map (and out of the browser) until it can be visited, so its name doesn't give the story away. */
   secret?: boolean;
   /** Neighborhood. Travel within one area is on foot; between areas, by car. */

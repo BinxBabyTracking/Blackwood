@@ -105,7 +105,7 @@ export const deductions: DeductionDef[] = [
     id: "HD12",
     code: "HD12",
     title: "The Killer Turned on a Witness",
-    text: "During the investigation the killer went after one of the people who could expose him: a warning left in a witness's coat, or an attack on the back stairs.",
+    text: "During the investigation the killer went after one of the people who could expose him: a warning left in a witness's coat, or an attack on a witness left alone.",
     connections: [["HE036", "crane"], ["HE037", "crane"], ["HE036", "HE023"], ["HE037", "HE014"]],
     requires: { any: [{ flag: "bridget_threatened" }, { flag: "attack_made" }] },
   },

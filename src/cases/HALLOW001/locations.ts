@@ -1,6 +1,6 @@
 import type { Condition, HotspotDef, LocationDef } from "@/game/engine/types";
 import { LAB_PRINT_RECT, REPORT_RECT } from "./desk";
-import { alive, craneAt, craneFree } from "./rules";
+import { alive, craneAt, craneFree, dead, WITNESSES } from "./rules";
 import { reportAvailable } from "./story";
 
 /*
@@ -686,3 +686,14 @@ export const locations: LocationDef[] = [
     ],
   },
 ];
+
+/* Where a witness was attacked is marked on the map: a second murder, or an attack the guard stopped. */
+for (const w of WITNESSES) {
+  const loc = locations.find((l) => l.id === w.at);
+  if (!loc) continue;
+  loc.mapTags = [
+    ...(loc.mapTags ?? []),
+    { text: "ATTACK", when: { all: [{ flag: `attack_on_${w.id}` }, { flag: "attack_interrupted" }] } },
+    { text: "SECOND MURDER", when: dead(w.id) },
+  ];
+}

@@ -1450,7 +1450,7 @@ function projectState(def: CaseDefinition, s: InvestigationState, now: number, c
         visited: s.visited.includes(x.id),
         current: x.id === s.location,
         pin: x.mapPin ?? null,
-        tag: x.mapTag ?? null,
+        tag: [...(x.mapTags ?? [])].reverse().find((m) => check(m.when, s))?.text ?? x.mapTag ?? null,
       })),
     // In the case's own numbering (E01, E02... HE001, HE002...), not the order collected; photographs after.
     evidence: [...[...s.evidence].sort((a, b) => evidenceOrder(def, a) - evidenceOrder(def, b)).map((id) => evidenceView(def, s, id)!), ...s.photos.map((p) => photoView(def, s, p))],
