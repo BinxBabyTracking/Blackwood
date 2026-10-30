@@ -775,7 +775,7 @@ function step(
       }
       if (!s.inspected.includes(h.id)) s.inspected.push(h.id);
       apply(it.effects, s, def);
-      const text = [...(it.textAfter ?? [])].reverse().find((t) => check(t.requires, s))?.text ?? it.text;
+      const text = withClock(def, s, [...(it.textAfter ?? [])].reverse().find((t) => check(t.requires, s))?.text ?? it.text);
       const ev = it.evidence ? evidenceView(def, s, it.evidence) : null;
       outcome = {
         kind: "inspect",
@@ -806,7 +806,7 @@ function step(
       const id = `PH_${h.id}`;
       if (s.photos.some((p) => p.id === id)) fail("You already have a photograph of that.");
       const it = h.interaction;
-      const text = [...(it.textAfter ?? [])].reverse().find((t) => check(t.requires, s))?.text ?? it.text;
+      const text = withClock(def, s, [...(it.textAfter ?? [])].reverse().find((t) => check(t.requires, s))?.text ?? it.text);
       const bgKey = sceneBackground(def, s, l);
       const bgUrl = def.assets.images[bgKey] ?? "";
       const sprite = hotspotSprite(def, s, h, !bgUrl.endsWith(".svg"));
@@ -1090,6 +1090,16 @@ function step(
       const draft: InvestigationState["report"]["draft"] = { evidence, ...cleanClaims(def, evidence, d) };
       for (const c of def.conclusionChoices) draft[c.id] = cleanAnswer(c, d[c.id]);
       s.report.draft = draft;
+      break;
+    }
+
+    case "post": {
+      const pd = def.postings ?? fail("There is no one to post.");
+      if (!check(pd.visible, s)) fail("You can't post officers yet.");
+      const post = pd.posts.find((x) => x.id === action.postId && check(x.available, s)) ?? fail("That isn't a place you can post anyone.");
+      if (check(post.done, s)) fail("An officer is already posted there.");
+      if (!check(pd.free, s)) fail("There are no officers left to post.");
+      apply(post.effects, s, def);
       break;
     }
 
@@ -1499,6 +1509,7 @@ function projectState(def: CaseDefinition, s: InvestigationState, now: number, c
     caseStatus: [...(def.status ?? [])].reverse().find((x) => check(x.when, s))?.label ?? null,
     caseFileInHud: Boolean(def.caseFileInHud),
     clock: def.clock ? clockLabel(s.clock ?? clockMinutes(def.clock.start)) : null,
+    postings: postingsView(def, s),
     theme: def.theme ?? "noir",
     words: wordsFor(def),
     caseArt: Object.fromEntries(Object.entries(def.assets.images).flatMap(([k, v]) => (k.startsWith("ui.") && v ? [[k.slice(3), v]] : []))),
@@ -1789,4 +1800,23 @@ function developmentsView(def: CaseDefinition, s: InvestigationState): ClientDev
         note: delivery ? { title: delivery.title, text: delivery.text } : null,
       };
     });
+}
+
+/** "{clock}" in a description reads the case clock as it stands, e.g. a clock in the room showing the time. */
+function withClock(def: CaseDefinition, s: InvestigationState, text: string) {
+  return def.clock && text.includes("{clock}") ? text.replaceAll("{clock}", clockLabel(s.clock ?? clockMinutes(def.clock.start))) : text;
+}
+
+/** The officers the player can post from the map, once the case shows the list. */
+function postingsView(def: CaseDefinition, s: InvestigationState): ClientView["postings"] {
+  const pd = def.postings;
+  if (!pd || !check(pd.visible, s)) return null;
+  const leftKey = pd.left ? (s.env[pd.left.env] ?? "A") : null; // every environment starts in state A
+  return {
+    title: pd.title,
+    note: pd.note,
+    left: pd.left && leftKey !== null ? (pd.left.values[leftKey] ?? null) : null,
+    canPost: check(pd.free, s),
+    posts: pd.posts.filter((x) => check(x.available, s) || check(x.done, s)).map((x) => ({ id: x.id, label: x.label, detail: x.detail ?? null, done: check(x.done, s) })),
+  };
 }

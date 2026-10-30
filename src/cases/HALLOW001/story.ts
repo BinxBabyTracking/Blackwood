@@ -8,6 +8,7 @@ import type {
   LabDef,
   ObjectiveDef,
   OutgoingCallDef,
+  PostingsDef,
   ReactiveEventDef,
   StatementDef,
   TextDef,
@@ -259,6 +260,67 @@ const guardCall = (id: string, who: string, name: string, known: Condition): Out
   ],
   effects: [{ setFlag: `guard_${who}` }, ...useOfficer, note(`guard_${who}`, `An officer keeps watch on ${name}`, `At your request, an officer is quietly keeping watch on ${name}.`, "mahoney")],
 });
+
+/** A post that changes nothing in the night: it spends an officer, so a careless choice costs the player. */
+const decoy = (id: string, label: string, detail: string, text: string) => ({
+  id,
+  label,
+  detail,
+  done: { flag: `post_${id}` },
+  effects: [{ setFlag: `post_${id}` }, ...useOfficer, note(`post_${id}`, `An officer at ${label.replace(/^The /, "the ")}`, text, "mahoney")],
+});
+
+/**
+ * Posting officers from the map: the same choices Lt. Mahoney offers by phone,
+ * among places that make no difference. Each officer goes once.
+ */
+export const postings: PostingsDef = {
+  title: "Post your officers",
+  note: "You have two officers, Reyes and Kwan. Once officers are placed they can't be moved.",
+  visible: briefed,
+  free: { all: [officerFree, craneFree] },
+  left: { env: "officers", values: { A: 2, B: 1, C: 0 } },
+  posts: [
+    {
+      id: "gate",
+      label: "The front gate, in plain sight",
+      detail: "The cruiser at the gate with its lights on, where the whole house can see it.",
+      available: craneFree,
+      done: { flag: "police_gate" },
+      effects: [{ setFlag: "police_gate" }, ...useOfficer, note("police_gate", "An officer at the front gate", "Officer Reyes is posted at the front gate with the cruiser's lights on, in plain view of the house.", "mahoney")],
+    },
+    decoy("front_door", "The front door", "Inside the entrance hall, by the camera.", "An officer is standing just inside the front door, by the camera."),
+    decoy("dining", "The Grand Dining Room", "With the guests at the table.", "An officer is standing at the dining room door, where the guests are being held."),
+    decoy("stairs", "The upstairs corridor", "Outside the study, where it happened.", "An officer is posted in the upstairs corridor outside the study."),
+    decoy("cellar", "The wine cellar stairs", "At the top of the cellar steps, by the main switch.", "An officer is posted at the top of the wine cellar stairs."),
+    decoy("conservatory", "The conservatory terrace door", "The glass door out to the terrace.", "An officer is watching the conservatory's terrace door."),
+    decoy("greenhouse", "The greenhouse", "With the lanterns for the procession.", "An officer is posted at the greenhouse with the procession lanterns."),
+    decoy("carriage", "The carriage house", "Out on the grounds, under renovation.", "An officer is posted at the carriage house."),
+    {
+      id: "lane",
+      label: "The back lane past the maze, out of sight",
+      detail: "In the trees with the lights off. Nobody in the house would know.",
+      available: { all: [craneFree, { any: [{ inspected: "gm_gate" }, { hasEvidence: "HE015" }, { flag: "heard_crane_call" }] }] },
+      done: { flag: "police_lane" },
+      effects: [{ setFlag: "police_lane" }, ...useOfficer, note("police_lane", "An officer on the back lane", "An officer is watching the back lane past the maze from the trees, lights off. Nobody in the house has been told.", "mahoney")],
+    },
+    ...(
+      [
+        ["harriet", "Harriet Lowell", { talkedTo: "harriet" }],
+        ["amos", "Amos Duffy", { talkedTo: "amos" }],
+        ["bridget", "Bridget Duffy", { talkedTo: "bridget" }],
+        ["josie", "Josie Lisle", { flag: "josie_found" }],
+      ] as [string, string, Condition][]
+    ).map(([who, name, known]) => ({
+      id: `guard_${who}`,
+      label: `Quietly with ${name}`,
+      detail: "Out of sight, keeping an eye on them.",
+      available: { all: [known, alive(who), craneFree] },
+      done: guarded(who),
+      effects: [{ setFlag: `guard_${who}` }, ...useOfficer, note(`guard_${who}`, `An officer keeps watch on ${name}`, `At your request, an officer is quietly keeping watch on ${name}.`, "mahoney")],
+    })),
+  ],
+};
 
 export const outgoingCalls: OutgoingCallDef[] = [
   {

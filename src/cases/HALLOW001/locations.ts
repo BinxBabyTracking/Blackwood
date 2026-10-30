@@ -171,7 +171,7 @@ export const locations: LocationDef[] = [
         "clock",
         { x: 86, y: 14, w: 10, h: 60 },
         "The tall clock",
-        "A long-case clock, wound by hand, still right to the minute. It did not stop at 10:13. Only the things with plugs did.",
+        "A long-case clock, wound by hand, still right to the minute. It says {clock}. It did not stop at 10:13. Only the things with plugs did.",
       ),
     ],
   },

@@ -1009,7 +1009,7 @@ export function InvestigationShell({
       {panel === "inventory" ? (
         <EvidenceInventory items={view.evidence} onOpen={(id) => setLayer({ k: "evidence", id, back: "inventory" })} onClose={close} />
       ) : null}
-      {panel === "map" ? <TravelMap view={view} onTravel={(id) => travelTo(id)} onClose={close} pending={pending} /> : null}
+      {panel === "map" ? <TravelMap view={view} onTravel={(id) => travelTo(id)} onClose={close} pending={pending} onPost={(postId) => void dispatch({ type: "post", postId })} /> : null}
       {trip ? <TravelScene caseId={caseId} theme={view.theme} art={view.caseArt} area={trip.area} mode={trip.mode} to={trip.to} subtitle={trip.subtitle} reducedMotion={prefs.reducedMotion} onSkip={() => skipTrip.current?.()} /> : null}
       {stamps.length && !trip ? (
         <EvidenceStamp key={`stamp-${stamps[0].id}`} item={stamps[0]} words={words} volume={(prefs.masterVolume / 100) * (prefs.sfxVolume / 100)} reducedMotion={prefs.reducedMotion} onDone={nextStamp} />

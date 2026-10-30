@@ -82,7 +82,7 @@ const ACTIONS = new Set<GameAction["type"]>([
   // Interviews are asked in the player's own words ("askFree"); authored question ids are never accepted from the browser.
   "dismissIntro", "travel", "hotspot", "collect", "photograph", "checkLabs", "readDocument", "talk", "askFree", "present", "extendInterview", "answerCall", "placeCall",
   "openDelivery", "boardAdd", "boardMove", "boardRemove", "connect", "disconnect", "saveNotes", "saveEvidenceNote", "setNarration", "setVoices",
-  "dismissMessages", "chapterContinue", "saveReport", "submitConclusion", "takeCaptiveRole", "goAlone",
+  "dismissMessages", "chapterContinue", "saveReport", "submitConclusion", "post", "takeCaptiveRole", "goAlone",
 ]);
 
 /** `saved: false` means progress may not have been written; a rule refusal changes nothing and keeps `saved: true`. */

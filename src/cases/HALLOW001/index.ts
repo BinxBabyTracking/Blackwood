@@ -10,7 +10,7 @@ import { SPEECH } from "./knowledge";
 import { locations } from "./locations";
 import { SOUNDTRACK } from "./soundtrack";
 import { conclusionChoices, deductions, solution } from "./solution";
-import { calls, deliveries, documents, events, intro, labs, objectives, outgoingCalls, reportAvailable, statements, texts, timeline } from "./story";
+import { calls, deliveries, documents, events, intro, labs, objectives, outgoingCalls, postings, reportAvailable, statements, texts, timeline } from "./story";
 
 /*
  * HALLOW001, The Thirteenth Guest. Blackthorn Estate, Harrow Falls,
@@ -41,6 +41,7 @@ export const HALLOW001: CaseDefinition = {
   statements,
   calls,
   outgoingCalls,
+  postings,
   deliveries,
   events,
   deductions,

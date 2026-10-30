@@ -411,6 +411,37 @@ export interface CallDef {
   overheard?: boolean;
 }
 
+/**
+ * Places the player can post officers, listed under the map. Each post is
+ * chosen once and can't be undone; some may be decoys that change nothing.
+ */
+export interface PostingsDef {
+  /** e.g. "Post your officers". */
+  title: string;
+  /** e.g. "Once officers are placed they can't be moved." */
+  note: string;
+  /** When the list is shown at all. */
+  visible: Condition;
+  /** While this holds, another officer can be posted. */
+  free: Condition;
+  /** How many officers are left, read from an env value: { env: "officers", values: { A: 2, B: 1, C: 0 } }. */
+  left?: { env: string; values: Record<string, number> };
+  posts: PostDef[];
+}
+
+export interface PostDef {
+  id: string;
+  /** The place or person, e.g. "The front gate, in plain sight". */
+  label: string;
+  /** One line under it. */
+  detail?: string;
+  /** When it appears in the list (default: always, once the list is shown). */
+  available?: Condition;
+  /** Once true it shows as posted. */
+  done: Condition;
+  effects: Effect[];
+}
+
 export interface OutgoingCallDef {
   id: string;
   to: string; // character id
@@ -896,6 +927,8 @@ export interface CaseDefinition {
   chapters?: ChapterDef[];
   /** A clock that the investigators' actions move on; see ClockDef. */
   clock?: ClockDef;
+  /** Officers the player can post from the map, once each (added for HALLOW001). */
+  postings?: PostingsDef;
   /** Someone who acts on their own; see AdversaryDef. */
   adversary?: AdversaryDef;
 }
@@ -1321,7 +1354,9 @@ export type GameAction =
   /** Says what differs at one passage of a comparison. */
   | { type: "compare"; comparisonId: string; regionId: string; optionId: string }
   /** `investigator` is set by the server from the signed-in profile, never by the browser. */
-  | { type: "submitConclusion"; theory: Theory; investigator?: string };
+  | { type: "submitConclusion"; theory: Theory; investigator?: string }
+  /** Post an officer from the list under the map (a case with postings). */
+  | { type: "post"; postId: string };
 
 /** A filed report: an answer per report question (a list for multi-select), and the attached evidence. */
 export interface Theory {
@@ -1503,6 +1538,15 @@ export interface ClientView {
   caseFileInHud: boolean;
   /** The case clock, e.g. "11:48 PM", in a case with one. */
   clock: string | null;
+  /** Officers to post from the map, in a case with postings, once the list is shown. */
+  postings: {
+    title: string;
+    note: string;
+    /** Officers still to post, or null when the case doesn't count them. */
+    left: number | null;
+    canPost: boolean;
+    posts: { id: string; label: string; detail: string | null; done: boolean }[];
+  } | null;
   /** The case's look and its words for things. */
   theme: "noir" | "medieval";
   words: CaseWords;
