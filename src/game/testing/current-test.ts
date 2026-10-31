@@ -108,18 +108,18 @@ export const CURRENT_TEST = {
         // On the desk (layer 1, so always drawn over it). Positions are on the desk's picture: the desktop runs from its
         // far edge down to the near edge; "sink" (negative) lifts each item's bottom up to its spot on the desktop.
         // The green banker's lamp, far left corner.
-        { id: "lamp", image: "/testing/office/props/lamp.webp", x: -0.1898, z: -0.395, width: 0.1746, height: 0.1784, sink: -0.3778, gain: 1.5, layer: 1 },
+        { id: "lamp", image: "/testing/office/props/lamp.webp", x: -0.2, z: -0.395, width: 0.1397, height: 0.1427, sink: -0.3778, gain: 1.5, layer: 1 },
         // The telephone, front left.
-        { id: "phone", image: "/testing/office/props/phone.webp", x: -0.253, z: -0.395, width: 0.1424, height: 0.0964, sink: -0.3277, gain: 1.4, layer: 2 },
+        { id: "phone", image: "/testing/office/props/phone.webp", x: -0.29, z: -0.395, width: 0.1139, height: 0.0771, sink: -0.3277, gain: 1.4, layer: 2 },
         // Det. Bennett's case file, in the middle.
-        { id: "casefile", image: "/testing/office/props/casefile.webp", x: 0, z: -0.395, width: 0.1265, height: 0.0842, sink: -0.3365, gain: 1.3, layer: 1 },
+        { id: "casefile", image: "/testing/office/props/casefile.webp", x: -0.075, z: -0.395, width: 0.1265, height: 0.0842, sink: -0.3365, gain: 1.3, layer: 1 },
         // The notebook and pencil, right of the file.
         { id: "notebook", image: "/testing/office/props/notebook.webp", x: 0.1518, z: -0.395, width: 0.0734, height: 0.0726, sink: -0.3365, gain: 1.3, layer: 1 },
         // The wire mail tray, back right; the lab folder lies in it, and the tape recorder sits in front of it
         // (one layer up from the tray, so the tray never covers them).
         { id: "mailtray", image: "/testing/office/props/mailtray.webp", x: 0.253, z: -0.395, width: 0.1202, height: 0.0781, sink: -0.3737, gain: 1.3, layer: 1 },
         { id: "labfolder", image: "/testing/office/props/labfolder.webp", x: 0.253, z: -0.395, width: 0.0759, height: 0.0544, sink: -0.3833, gain: 1.3, layer: 2 },
-        { id: "recorder", image: "/testing/office/props/recorder.webp", x: 0.2846, z: -0.395, width: 0.1075, height: 0.0734, sink: -0.3277, gain: 1.3, layer: 2 },
+        { id: "recorder", image: "/testing/office/props/recorder.webp", x: 0.305, z: -0.395, width: 0.1075, height: 0.0734, sink: -0.315, gain: 1.3, layer: 2 },
         // Furniture around the room (the room is about 16 feet square; its walls are 0.888 from the middle).
         { id: "cabinet", image: "/testing/office/props/cabinet.webp", x: 0.72, z: -0.72, width: 0.251, height: 0.633, gain: 1.4, shadow: { width: 0.3, depth: 0.22, back: 0.05 } },
         { id: "typing-table", image: "/testing/office/props/typing_table.webp", x: -0.76, z: 0, width: 0.6, height: 0.42, gain: 1.4, shadow: { width: 0.6, depth: 0.2, back: 0.04 } },
@@ -139,16 +139,16 @@ export const CURRENT_TEST = {
       ],
       // Under the lamp's shade, on the desk's far left corner; warm and focused.
       lamp: {
-        x: -0.3795, y: 0.506, z: -0.67, color: [1.0, 0.82, 0.5], strength: 2.5,
+        x: -0.36, y: 0.48, z: -0.67, color: [1.0, 0.82, 0.5], strength: 2.5,
         pool: { x: -0.0885, z: -0.385, lift: 0.3579, width: 0.4554, height: 0.0874, strength: 0.55 },
       },
       hotspots: [
         { kind: "switch", id: "office-switch", yaw: 157.5, pitch: 3.6, label: "Light switch" },
-        { kind: "switch", id: "office-lamp", target: "lamp", yaw: -21.0, pitch: 3.0, label: "Desk lamp" },
-        { kind: "inspect", id: "office-phone", yaw: -32.6, pitch: -9.0, label: "Telephone", text: "Test hotspot. In the case this opens the phone." },
-        { kind: "inspect", id: "office-casefile", yaw: 0.0, pitch: -10.2, label: "Case file from Det. Bennett", text: "Test hotspot. In the case this opens the case file." },
+        { kind: "switch", id: "office-lamp", target: "lamp", yaw: -23.2, pitch: 0.5, label: "Desk lamp" },
+        { kind: "inspect", id: "office-phone", yaw: -36.3, pitch: -9.7, label: "Telephone", text: "Test hotspot. In the case this opens the phone." },
+        { kind: "inspect", id: "office-casefile", yaw: -10.8, pitch: -10.1, label: "Case file from Det. Bennett", text: "Test hotspot. In the case this opens the case file." },
         { kind: "inspect", id: "office-notebook", yaw: 21.0, pitch: -10.3, label: "Notebook", text: "Test hotspot. In the case this opens your notebook." },
-        { kind: "inspect", id: "office-recorder", yaw: 35.8, pitch: -10.0, label: "Police interview tapes", text: "Test hotspot. In the case this plays the interview tapes." },
+        { kind: "inspect", id: "office-recorder", yaw: 37.7, pitch: -11.1, label: "Police interview tapes", text: "Test hotspot. In the case this plays the interview tapes." },
         { kind: "inspect", id: "office-mail", yaw: 36.2, pitch: -3.0, label: "Opened mail", text: "Test hotspot. In the case this shows the mail you have opened." },
         { kind: "inspect", id: "office-board", yaw: 96.4, pitch: 8.1, label: "Murder board", text: "Test hotspot. In the case this opens the murder board." },
         { kind: "inspect", id: "office-map", yaw: 59.6, pitch: 7.1, label: "Street map of Los Angeles", text: "Test hotspot. In the case this opens the map to travel." },
