@@ -253,7 +253,9 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
       for (const { prop: p, tex: t } of sorted) {
         if (p.when && (togglesRef.current[p.when.toggle] ?? "") !== p.when.state) continue;
         const d = Math.hypot(p.x, p.z) || 1;
-        const fx = p.x / d, fz = p.z / d; // away from the viewer
+        // Away from the viewer, or, for pieces set flat against a wall, straight into that wall.
+        const fx = p.facing != null ? Math.sin(p.facing * RAD) : p.x / d;
+        const fz = p.facing != null ? -Math.cos(p.facing * RAD) : p.z / d;
         const rx = -fz, rz = fx; // the viewer's right, looking at it
         if (p.shadow) {
           const cx = p.x + fx * p.shadow.back, cz = p.z + fz * p.shadow.back;

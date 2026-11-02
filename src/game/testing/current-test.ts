@@ -36,6 +36,12 @@ export type TestProp = {
   height: number;
   /** How far to lower the cutout below the floor line, when its feet look like they float (room units). */
   sink?: number;
+  /**
+   * Stands flat, parallel to a wall, instead of turning to face the viewer: the direction (yaw, degrees) you would look
+   * to see it straight on. 0 = against the front wall, 90 = the right wall, -90 = the left wall, 180 = the back wall.
+   * For furniture drawn straight on from the front.
+   */
+  facing?: number;
   /** Drawn over lower layers whatever their distance: 1 for things that sit on top of furniture (desk items). */
   layer?: number;
   /** Shown only while a test toggle is in this state. */
