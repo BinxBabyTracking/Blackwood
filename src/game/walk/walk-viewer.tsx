@@ -32,42 +32,54 @@ function wallFrame(r: WalkRoomDef, side: Side) {
   return { pos: [cx + w / 2, cz], rot: -Math.PI / 2, width: d, normal: [-1, 0] };
 }
 
-/** A window screen with an L-shaped cut, the edges bent away from the room. */
-function screenTexture() {
+/** A window screen of wm by hm metres with an L-shaped cut, left of the faucet so it can be seen over it. */
+function screenTexture(wm: number, hm: number) {
+  const W = 1024, H = Math.round((W * hm) / wm);
   const c = document.createElement("canvas");
-  c.width = c.height = 512;
+  c.width = W;
+  c.height = H;
   const g = c.getContext("2d")!;
-  g.clearRect(0, 0, 512, 512);
-  g.strokeStyle = "rgba(70,74,78,0.55)";
+  g.strokeStyle = "rgba(55,58,62,0.7)";
   g.lineWidth = 1;
-  for (let i = 0; i < 512; i += 4) {
+  const step = W / (wm * 160); // about 6 mm between wires
+  for (let x = 0; x < W; x += step) {
     g.beginPath();
-    g.moveTo(i + 0.5, 0);
-    g.lineTo(i + 0.5, 512);
-    g.stroke();
-    g.beginPath();
-    g.moveTo(0, i + 0.5);
-    g.lineTo(512, i + 0.5);
+    g.moveTo(Math.round(x) + 0.5, 0);
+    g.lineTo(Math.round(x) + 0.5, H);
     g.stroke();
   }
-  // The cut: down from near the top left, then across the bottom.
+  for (let y = 0; y < H; y += step) {
+    g.beginPath();
+    g.moveTo(0, Math.round(y) + 0.5);
+    g.lineTo(W, Math.round(y) + 0.5);
+    g.stroke();
+  }
+  g.strokeStyle = "rgba(50,54,58,0.85)";
+  g.lineWidth = 3;
+  g.strokeRect(1.5, 1.5, W - 3, H - 3);
+  // The cut: down from near the top, then across toward the middle. The flap curls out to the yard.
+  const x0 = W * 0.2, y0 = H * 0.14, y1 = H * 0.78, x1 = W * 0.4;
   g.globalCompositeOperation = "destination-out";
-  g.lineWidth = 9;
+  g.lineWidth = 18;
   g.beginPath();
-  g.moveTo(150, 90);
-  g.lineTo(150, 360);
-  g.lineTo(390, 360);
+  g.moveTo(x0, y0);
+  g.lineTo(x0, y1);
+  g.lineTo(x1, y1);
   g.stroke();
   g.globalCompositeOperation = "source-over";
-  g.strokeStyle = "rgba(40,42,45,0.9)";
+  // Bent wire ends along both sides of the cut, catching the light.
+  g.strokeStyle = "rgba(205,205,200,0.75)";
   g.lineWidth = 2;
-  g.beginPath();
-  g.moveTo(144, 90);
-  g.lineTo(144, 366);
-  g.lineTo(390, 366);
-  g.stroke();
+  for (const d of [-10, 10]) {
+    g.beginPath();
+    g.moveTo(x0 + d, y0);
+    g.lineTo(x0 + d, y1 + d);
+    g.lineTo(x1, y1 + d);
+    g.stroke();
+  }
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
   return t;
 }
 
@@ -154,7 +166,8 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
       g.position.set(f.pos[0], 0, f.pos[1]);
       g.rotation.y = f.rot;
       const pt = (u: number, v: number) => new THREE.Vector2((u - 0.5) * f.width, (1 - v) * H);
-      const face = cast(new THREE.Mesh(new THREE.PlaneGeometry(f.width, H), new THREE.MeshLambertMaterial({ map: loadTex(def.tex), alphaTest: def.cutout ? 0.5 : 0, side: def.cutout ? THREE.DoubleSide : THREE.FrontSide })));
+      const tint = r.tint ?? 1;
+      const face = cast(new THREE.Mesh(new THREE.PlaneGeometry(f.width, H), new THREE.MeshLambertMaterial({ map: loadTex(def.tex), color: new THREE.Color(tint, tint, tint), alphaTest: def.cutout ? 0.5 : 0, side: def.cutout ? THREE.DoubleSide : THREE.FrontSide })));
       (face.material as THREE.Material).shadowSide = THREE.DoubleSide;
       face.position.y = H / 2;
       g.add(face);
@@ -173,13 +186,13 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         } else {
           const [u0, u1, v0, v1] = rv.rect;
           const c = [pt(u0, v1), pt(u1, v1), pt(u1, v0), pt(u0, v0)];
-          for (let i = 0; i < 4; i++) strip(g, c[i], c[(i + 1) % 4], i === 0 && rv.sill ? trim : plaster);
+          for (let i = 0; i < 4; i++) strip(g, c[i], c[(i + 1) % 4], rv.wood || (i === 0 && rv.sill) ? trim : plaster);
         }
       }
       if (def.screen) {
         const [u0, u1, v0, v1] = def.screen;
         const a = pt(u0, v1), b = pt(u1, v0);
-        const s = new THREE.Mesh(new THREE.PlaneGeometry(b.x - a.x, b.y - a.y), new THREE.MeshLambertMaterial({ map: screenTexture(), transparent: true, side: THREE.DoubleSide, depthWrite: false }));
+        const s = new THREE.Mesh(new THREE.PlaneGeometry(b.x - a.x, b.y - a.y), new THREE.MeshLambertMaterial({ map: screenTexture(b.x - a.x, b.y - a.y), transparent: true, side: THREE.DoubleSide, depthWrite: false }));
         s.position.set((a.x + b.x) / 2, (a.y + b.y) / 2, -WALL * 0.8);
         g.add(s);
       }
@@ -197,12 +210,13 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     for (const r of house.rooms) {
       const [cx, cz] = r.center;
       const [w, d, H] = r.size;
-      const floor = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshLambertMaterial({ map: loadTex(r.floor.tex, r.floor.repeat ?? 1) }));
+      const tc = new THREE.Color(r.tint ?? 1, r.tint ?? 1, r.tint ?? 1);
+      const floor = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshLambertMaterial({ map: loadTex(r.floor.tex, r.floor.repeat ?? 1), color: tc }));
       floor.rotation.x = -Math.PI / 2;
       floor.position.set(cx, 0, cz);
       floor.receiveShadow = true;
       scene.add(floor);
-      const ceil = cast(new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshLambertMaterial({ map: loadTex(r.ceil.tex) })));
+      const ceil = cast(new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshLambertMaterial({ map: loadTex(r.ceil.tex), color: tc })));
       ceil.rotation.x = Math.PI / 2;
       ceil.position.set(cx, H, cz);
       scene.add(ceil);
@@ -222,6 +236,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
 
     // The floor under each doorway, through the thickness of the wall.
     for (const ps of house.passages) {
+      if (ps.along === "x") continue; // side doorways get a wooden sill from their own reveal
       // Only the part of the passage no room's floor covers: the gap between the two wall faces.
       const mz = (ps.z[0] + ps.z[1]) / 2;
       const z0 = Math.max(ps.z[0], ...house.rooms.map((r) => r.center[1] + r.size[1] / 2).filter((z) => z <= mz + WALL));
@@ -321,7 +336,11 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     // Where you can stand: inside a room or in a passage between rooms, clear of the furniture.
     const areas = [
       ...house.rooms.map((r) => ({ x0: r.center[0] - r.size[0] / 2 + RADIUS, x1: r.center[0] + r.size[0] / 2 - RADIUS, z0: r.center[1] - r.size[1] / 2 + RADIUS, z1: r.center[1] + r.size[1] / 2 - RADIUS })),
-      ...house.passages.map((p) => ({ x0: p.x[0] + RADIUS, x1: p.x[1] - RADIUS, z0: p.z[0], z1: p.z[1] })),
+      ...house.passages.map((p) =>
+        p.along === "x"
+          ? { x0: p.x[0], x1: p.x[1], z0: p.z[0] + RADIUS, z1: p.z[1] - RADIUS }
+          : { x0: p.x[0] + RADIUS, x1: p.x[1] - RADIUS, z0: p.z[0], z1: p.z[1] },
+      ),
     ];
     const free = (x: number, z: number) => {
       if (!areas.some((a) => x >= a.x0 && x <= a.x1 && z >= a.z0 && z <= a.z1)) return false;
@@ -337,6 +356,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     };
     const roomAt = (x: number, z: number) => house.rooms.find((r) => Math.abs(x - r.center[0]) <= r.size[0] / 2 && Math.abs(z - r.center[1]) <= r.size[1] / 2);
     let lastRoom = "";
+    const hotRoom = new Map<string, string>();
 
     // Controls.
     const keys = new Set<string>();
@@ -462,6 +482,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
       }
       const here = roomAt(pos.x, pos.z);
       if (here && here.id !== lastRoom) {
+        for (const hs of house.hotspots) hotRoom.set(hs.id, roomAt(hs.at[0], hs.at[2])?.id ?? "");
         lastRoom = here.id;
         setRoomName(here.name);
       }
@@ -476,7 +497,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         v.set(hs.at[0], hs.at[1], hs.at[2]);
         const dist = v.distanceTo(pos);
         v.project(camera);
-        if (dist > NEAR || v.z > 1 || Math.abs(v.x) > 1.1 || Math.abs(v.y) > 1.1) {
+        if (hotRoom.get(hs.id) !== lastRoom || dist > NEAR || v.z > 1 || Math.abs(v.x) > 1.1 || Math.abs(v.y) > 1.1) {
           el.style.display = "none";
           continue;
         }

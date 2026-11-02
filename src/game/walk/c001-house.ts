@@ -11,7 +11,7 @@ export type WalkWall = {
   tex: string;
   cutout?: boolean;
   /** Openings drawn with the wall's thickness: a window or door (rect u0, u1, v0, v1) or an arch outline. */
-  reveals?: ({ rect: number[]; sill?: boolean } | { arch: number[][] })[];
+  reveals?: ({ rect: number[]; sill?: boolean; wood?: boolean } | { arch: number[][] })[];
   /** A window screen over this opening (u0, u1, v0, v1), with the case's L-shaped cut. */
   screen?: number[];
   outside?: WalkOutside;
@@ -24,6 +24,8 @@ export type WalkRoomDef = {
   floor: { tex: string; repeat?: number };
   ceil: { tex: string };
   light: { id: string; at: number[]; power: number };
+  /** Darkens the room's surfaces a little (1 = as painted), for spaces with no window of their own. */
+  tint?: number;
   walls: Partial<Record<"front" | "back" | "left" | "right", WalkWall>>;
 };
 export type WalkHouse = {
@@ -32,8 +34,8 @@ export type WalkHouse = {
   eye: number;
   wall: number;
   rooms: WalkRoomDef[];
-  /** Openings you walk through from one room to the next (x and z ranges in metres). */
-  passages: { x: number[]; z: number[] }[];
+  /** Openings you walk through from one room to the next (x and z ranges in metres), crossed along z unless said otherwise. */
+  passages: { x: number[]; z: number[]; along?: "x" | "z" }[];
   models: WalkModel[];
   hotspots: WalkHotspot[];
 };
@@ -1134,19 +1136,19 @@ export const C001_HOUSE: WalkHouse = {
      "reveals": [
       {
        "rect": [
-        0.3088,
-        0.6918,
-        0.1157,
-        0.7676
+        0.3051,
+        0.693,
+        0.0788,
+        0.652
        ],
        "sill": true
       }
      ],
      "screen": [
-      0.4237,
-      0.5799,
-      0.5452,
-      0.7556
+      0.3171,
+      0.681,
+      0.4363,
+      0.64
      ],
      "outside": {
       "day": "/rooms/c001-kitchen/walk/outside.webp",
@@ -1154,7 +1156,7 @@ export const C001_HOUSE: WalkHouse = {
       "distance": 2.6,
       "width": 16,
       "u": 0.5,
-      "y": 1.5
+      "y": 1.75
      }
     },
     "right": {
@@ -1170,7 +1172,63 @@ export const C001_HOUSE: WalkHouse = {
      }
     },
     "left": {
-     "tex": "/rooms/c001-kitchen/walk/phone.webp"
+     "tex": "/rooms/c001-kitchen/walk/phone.webp",
+     "cutout": true,
+     "reveals": [
+      {
+       "rect": [
+        0.6426,
+        0.8802,
+        0.14,
+        1.0
+       ],
+       "wood": true
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "hall",
+   "name": "Hallway",
+   "center": [
+    -4.267,
+    3.73
+   ],
+   "size": [
+    3.4,
+    1.4,
+    2.743
+   ],
+   "tint": 0.78,
+   "floor": {
+    "tex": "/rooms/c001-hall/walk/hall_floor.webp"
+   },
+   "ceil": {
+    "tex": "/rooms/c001-hall/walk/hall_ceil.webp"
+   },
+   "light": {
+    "id": "hall",
+    "at": [
+     -4.267,
+     2.6,
+     3.73
+    ],
+    "power": 0
+   },
+   "walls": {
+    "front": {
+     "tex": "/rooms/c001-hall/walk/hall_side_photo.webp"
+    },
+    "back": {
+     "tex": "/rooms/c001-hall/walk/hall_side_plain.webp"
+    },
+    "left": {
+     "tex": "/rooms/c001-hall/walk/hall_end.webp"
+    },
+    "right": {
+     "tex": "/rooms/c001-hall/walk/hall_door_back.webp",
+     "cutout": true
     }
    }
   }
@@ -1185,6 +1243,17 @@ export const C001_HOUSE: WalkHouse = {
     1.837,
     3.167
    ]
+  },
+  {
+   "x": [
+    -2.75,
+    -2.25
+   ],
+   "z": [
+    3.151,
+    4.309
+   ],
+   "along": "x"
   }
  ],
  "models": [
@@ -1574,9 +1643,9 @@ export const C001_HOUSE: WalkHouse = {
    "label": "Wall calendar",
    "text": "Wall calendar: A pharmacy calendar beside the telephone. Friday's square has a penciled note: 'Supper, 7. M, R, P, D.'",
    "at": [
-    -2.397,
-    1.152,
-    5.638
+    -2.407,
+    1.097,
+    6.393
    ]
   },
   {
@@ -1585,9 +1654,9 @@ export const C001_HOUSE: WalkHouse = {
    "label": "Kitchen telephone",
    "text": "Kitchen telephone: A beige wall telephone with a long coiled cord. A pad beside it lists numbers: Patricia (work), Margaret, Hale Automotive, D. Mercer, Mr. Albright.",
    "at": [
-    -2.397,
+    -2.407,
     1.371,
-    4.663
+    5.491
    ]
   },
   {
