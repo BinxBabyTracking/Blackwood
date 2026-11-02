@@ -88,7 +88,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
   const markerRefs = useRef(new Map<string, HTMLButtonElement>());
   const stickRef = useRef<HTMLDivElement>(null);
   const knobRef = useRef<HTMLDivElement>(null);
-  const api = useRef<{ setNight: (n: boolean) => void; setLight: (id: string, on: boolean) => void; release: () => void } | null>(null);
+  const api = useRef<{ setNight: (n: boolean) => void; setLight: (id: string, on: boolean) => void; release: () => void; relock: () => void } | null>(null);
   const [progress, setProgress] = useState(0);
   const [ready, setReady] = useState(false);
   const [night, setNight] = useState(false);
@@ -146,7 +146,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     const plaster = new THREE.MeshLambertMaterial({ color: 0xd8bf98, side: THREE.DoubleSide });
     const trim = new THREE.MeshLambertMaterial({ color: 0x4a2c1a, side: THREE.DoubleSide });
     const outsides: { mat: THREE.MeshBasicMaterial; day: THREE.Texture; night: THREE.Texture }[] = [];
-    const roomLights = new Map<string, { light: THREE.PointLight; glow: THREE.Mesh; power: number }>();
+    const roomLights = new Map<string, { light: THREE.PointLight; ceil: THREE.MeshLambertMaterial; power: number }>();
 
     // The depth of an opening: strips from the wall's face back through its thickness.
     const strip = (parent: THREE.Object3D, a: THREE.Vector2, b: THREE.Vector2, mat: THREE.Material) => {
@@ -216,7 +216,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
       floor.position.set(cx, 0, cz);
       floor.receiveShadow = true;
       scene.add(floor);
-      const ceil = cast(new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshLambertMaterial({ map: loadTex(r.ceil.tex), color: tc })));
+      const ceil = cast(new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshLambertMaterial({ map: loadTex(r.ceil.tex), color: tc, emissive: 0x000000, emissiveMap: r.light.glow ? loadTex(r.light.glow) : null })));
       ceil.rotation.x = Math.PI / 2;
       ceil.position.set(cx, H, cz);
       scene.add(ceil);
@@ -227,11 +227,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
       const light = new THREE.PointLight(0xffd29a, 0, 0, 2);
       light.position.set(r.light.at[0], r.light.at[1], r.light.at[2]);
       scene.add(light);
-      const glow = new THREE.Mesh(new THREE.SphereGeometry(0.09, 16, 12), new THREE.MeshBasicMaterial({ color: 0xffe2b0 }));
-      glow.position.copy(light.position);
-      glow.visible = false;
-      scene.add(glow);
-      roomLights.set(r.light.id, { light, glow, power: r.light.power });
+      roomLights.set(r.light.id, { light, ceil: ceil.material as THREE.MeshLambertMaterial, power: r.light.power });
     }
 
     // The floor under each doorway, through the thickness of the wall.
@@ -532,9 +528,15 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         const l = roomLights.get(id);
         if (!l) return;
         l.light.intensity = on ? l.power : 0;
-        l.glow.visible = on;
+        if (l.ceil.emissiveMap) l.ceil.emissive.setRGB(on ? 1.6 : 0, on ? 1.35 : 0, on ? 0.95 : 0);
       },
       release: () => document.exitPointerLock?.(),
+      // Back to looking around after a close (the close click or key counts as the user's go-ahead).
+      relock: () => {
+        if (window.matchMedia("(pointer: coarse)").matches || document.pointerLockElement === canvas) return;
+        canvas.focus();
+        (canvas.requestPointerLock?.() as Promise<void> | undefined)?.catch?.(() => {});
+      },
     };
     return () => {
       cancelAnimationFrame(raf);
@@ -561,6 +563,26 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     setInspect(hs);
   };
   pressRef.current = press;
+  const close = () => {
+    setInspect(null);
+    api.current?.relock();
+  };
+  useEffect(() => {
+    if (!inspect) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (["KeyE", "Enter", "Escape", "Space"].includes(e.code)) {
+        e.preventDefault();
+        e.stopPropagation();
+        close();
+      }
+    };
+    // Wait a beat so the key that opened the note does not close it straight away.
+    const t = setTimeout(() => document.addEventListener("keydown", onKey, true), 150);
+    return () => {
+      clearTimeout(t);
+      document.removeEventListener("keydown", onKey, true);
+    };
+  });
 
   return (
     <div className="fixed inset-0 select-none overflow-hidden bg-black text-paper">
@@ -636,11 +658,11 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
       </div>
 
       {inspect ? (
-        <div className="absolute inset-0 grid place-items-center bg-black/70 p-6" onClick={() => setInspect(null)}>
+        <div className="absolute inset-0 grid place-items-center bg-black/70 p-6" onClick={close}>
           <div className="max-w-md border border-rule bg-ink p-5" onClick={(e) => e.stopPropagation()}>
             <p className="font-display text-xl">{inspect.label}</p>
             <p className="mt-3 text-smoke">{inspect.text}</p>
-            <button onClick={() => setInspect(null)} className="mt-4 border border-rule px-3 py-1.5 text-sm hover:border-paper">
+            <button onClick={close} className="mt-4 border border-rule px-3 py-1.5 text-sm hover:border-paper">
               Close
             </button>
           </div>

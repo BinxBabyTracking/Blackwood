@@ -23,7 +23,8 @@ export type WalkRoomDef = {
   size: number[];
   floor: { tex: string; repeat?: number };
   ceil: { tex: string };
-  light: { id: string; at: number[]; power: number };
+  /** The ceiling light: glow is the ceiling picture with only the lit glass left, shown bright when it is switched on. */
+  light: { id: string; at: number[]; power: number; glow?: string };
   /** Darkens the room's surfaces a little (1 = as painted), for spaces with no window of their own. */
   tint?: number;
   walls: Partial<Record<"front" | "back" | "left" | "right", WalkWall>>;
@@ -71,7 +72,8 @@ export const C001_HOUSE: WalkHouse = {
      2.2929999999999997,
      0
     ],
-    "power": 9
+    "power": 9,
+    "glow": "/rooms/c001-living-room/walk/ceil_glow.webp"
    },
    "walls": {
     "front": {
@@ -498,10 +500,11 @@ export const C001_HOUSE: WalkHouse = {
     "id": "kitchen",
     "at": [
      0,
-     2.6229999999999998,
+     2.393,
      5.004
     ],
-    "power": 8
+    "power": 8,
+    "glow": "/rooms/c001-kitchen/walk/ceil_glow.webp"
    },
    "walls": {
     "front": {
