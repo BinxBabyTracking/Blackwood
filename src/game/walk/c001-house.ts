@@ -1,425 +1,569 @@
 /*
- * The Whitmore File (C001): Eleanor's living room as a walkable 3D room (WASD on a computer, joystick on a phone).
- * Metres, floor at y 0, the room centered on x/z 0, the front wall (door and window) toward -z. Made from the
- * 360° room's images and its 3D furniture. Openings are in each wall's picture coordinates (0 to 1 from its top left,
- * as seen from inside). Built from scripts/testing (bake_box.py configs, render3d/c001_living_room.json).
+ * The Whitmore File (C001): Eleanor's house as one walkable 3D space (WASD on a computer, the stick on a phone).
+ * Metres, floor at y 0. The living room is centered on x/z 0 with its front wall (door and window) toward -z; the
+ * kitchen is behind it, through the arch, toward +z. Wall pictures and openings are in each wall's picture
+ * coordinates (0 to 1 from its top left, as seen from inside the room). Built from scripts/testing.
  */
 export type WalkModel = { file: string; size: number; fit: "x" | "y"; pos: number[]; rotX?: number; rotY?: number; opacity?: number; shadow?: number[] };
-export type WalkHotspot = { id: string; kind: "inspect" | "switch"; label: string; text?: string; at: number[] };
-export type WalkRoom = {
+export type WalkHotspot = { id: string; kind: "inspect" | "switch"; label: string; text?: string; light?: string; at: number[] };
+export type WalkOutside = { day: string; night: string; distance: number; width: number; u: number; y: number };
+export type WalkWall = {
+  tex: string;
+  cutout?: boolean;
+  /** Openings drawn with the wall's thickness: a window or door (rect u0, u1, v0, v1) or an arch outline. */
+  reveals?: ({ rect: number[]; sill?: boolean } | { arch: number[][] })[];
+  /** A window screen over this opening (u0, u1, v0, v1), with the case's L-shaped cut. */
+  screen?: number[];
+  outside?: WalkOutside;
+};
+export type WalkRoomDef = {
   id: string;
   name: string;
+  center: number[];
   size: number[];
+  floor: { tex: string; repeat?: number };
+  ceil: { tex: string };
+  light: { id: string; at: number[]; power: number };
+  walls: Partial<Record<"front" | "back" | "left" | "right", WalkWall>>;
+};
+export type WalkHouse = {
+  id: string;
+  name: string;
   eye: number;
-  textures: Record<"front" | "back" | "left" | "right" | "floor" | "ceil", string>;
-  outside: { day: string; night: string; distance: number; width: number; center: number[] };
-  window: number[];
-  doorWindow: number[];
-  arch: number[][];
+  wall: number;
+  rooms: WalkRoomDef[];
+  /** Openings you walk through from one room to the next (x and z ranges in metres). */
+  passages: { x: number[]; z: number[] }[];
   models: WalkModel[];
   hotspots: WalkHotspot[];
 };
 
-export const C001_LIVING_WALK: WalkRoom = {
- "id": "c001_living_room",
- "name": "Eleanor's Living Room",
- "size": [
-  4.874,
-  4.874,
-  2.743
- ],
+export const C001_HOUSE: WalkHouse = {
+ "id": "c001_whitmore_house",
+ "name": "The Whitmore House",
  "eye": 1.673,
- "textures": {
-  "front": "/rooms/c001-living-room/walk/front.webp",
-  "back": "/rooms/c001-living-room/walk/back.webp",
-  "left": "/rooms/c001-living-room/walk/left.webp",
-  "right": "/rooms/c001-living-room/walk/right.webp",
-  "floor": "/rooms/c001-living-room/walk/floor.webp",
-  "ceil": "/rooms/c001-living-room/walk/ceil.webp"
- },
- "outside": {
-  "day": "/rooms/c001-living-room/walk/outside_day.webp",
-  "night": "/rooms/c001-living-room/walk/outside_night.webp",
-  "distance": 2.743,
-  "width": 9.875,
-  "center": [
-   0.623,
-   1.618
-  ]
- },
- "window": [
-  0.4306,
-  0.9151,
-  0.0831,
-  0.6938
+ "wall": 0.13,
+ "rooms": [
+  {
+   "id": "living",
+   "name": "Eleanor's Living Room",
+   "center": [
+    0,
+    0
+   ],
+   "size": [
+    4.874,
+    4.874,
+    2.743
+   ],
+   "floor": {
+    "tex": "/rooms/c001-living-room/walk/floor.webp"
+   },
+   "ceil": {
+    "tex": "/rooms/c001-living-room/walk/ceil.webp"
+   },
+   "light": {
+    "id": "living",
+    "at": [
+     0,
+     2.2929999999999997,
+     0
+    ],
+    "power": 9
+   },
+   "walls": {
+    "front": {
+     "tex": "/rooms/c001-living-room/walk/front.webp",
+     "cutout": true,
+     "reveals": [
+      {
+       "rect": [
+        0.4306,
+        0.9151,
+        0.0831,
+        0.6938
+       ],
+       "sill": true
+      }
+     ],
+     "outside": {
+      "day": "/rooms/c001-living-room/walk/outside_day.webp",
+      "night": "/rooms/c001-living-room/walk/outside_night.webp",
+      "distance": 2.743,
+      "width": 9.875,
+      "u": 0.6278,
+      "y": 1.618
+     }
+    },
+    "back": {
+     "tex": "/rooms/c001-living-room/walk/back.webp",
+     "cutout": true,
+     "reveals": [
+      {
+       "arch": [
+        [
+         0.2907,
+         0.255
+        ],
+        [
+         0.2955,
+         0.221
+        ],
+        [
+         0.3002,
+         0.2019
+        ],
+        [
+         0.305,
+         0.187
+        ],
+        [
+         0.3098,
+         0.1743
+        ],
+        [
+         0.3146,
+         0.1637
+        ],
+        [
+         0.3194,
+         0.153
+        ],
+        [
+         0.3242,
+         0.1445
+        ],
+        [
+         0.3289,
+         0.1371
+        ],
+        [
+         0.3337,
+         0.1307
+        ],
+        [
+         0.3385,
+         0.1243
+        ],
+        [
+         0.3433,
+         0.118
+        ],
+        [
+         0.3481,
+         0.1126
+        ],
+        [
+         0.3529,
+         0.1084
+        ],
+        [
+         0.3577,
+         0.1031
+        ],
+        [
+         0.3624,
+         0.0988
+        ],
+        [
+         0.3672,
+         0.0956
+        ],
+        [
+         0.372,
+         0.0914
+        ],
+        [
+         0.3768,
+         0.0882
+        ],
+        [
+         0.3816,
+         0.085
+        ],
+        [
+         0.3864,
+         0.0818
+        ],
+        [
+         0.3911,
+         0.0797
+        ],
+        [
+         0.3959,
+         0.0765
+        ],
+        [
+         0.4007,
+         0.0744
+        ],
+        [
+         0.4055,
+         0.0723
+        ],
+        [
+         0.4103,
+         0.0701
+        ],
+        [
+         0.4151,
+         0.068
+        ],
+        [
+         0.4199,
+         0.0659
+        ],
+        [
+         0.4246,
+         0.0648
+        ],
+        [
+         0.4294,
+         0.0627
+        ],
+        [
+         0.4342,
+         0.0616
+        ],
+        [
+         0.439,
+         0.0606
+        ],
+        [
+         0.4438,
+         0.0584
+        ],
+        [
+         0.4486,
+         0.0574
+        ],
+        [
+         0.4533,
+         0.0574
+        ],
+        [
+         0.4581,
+         0.0563
+        ],
+        [
+         0.4629,
+         0.0553
+        ],
+        [
+         0.4677,
+         0.0542
+        ],
+        [
+         0.4725,
+         0.0542
+        ],
+        [
+         0.4773,
+         0.0531
+        ],
+        [
+         0.4821,
+         0.0531
+        ],
+        [
+         0.4868,
+         0.0531
+        ],
+        [
+         0.4916,
+         0.0531
+        ],
+        [
+         0.4964,
+         0.0531
+        ],
+        [
+         0.5012,
+         0.0531
+        ],
+        [
+         0.506,
+         0.0531
+        ],
+        [
+         0.5108,
+         0.0531
+        ],
+        [
+         0.5156,
+         0.0531
+        ],
+        [
+         0.5203,
+         0.0542
+        ],
+        [
+         0.5251,
+         0.0542
+        ],
+        [
+         0.5299,
+         0.0542
+        ],
+        [
+         0.5347,
+         0.0553
+        ],
+        [
+         0.5395,
+         0.0563
+        ],
+        [
+         0.5443,
+         0.0574
+        ],
+        [
+         0.549,
+         0.0574
+        ],
+        [
+         0.5538,
+         0.0584
+        ],
+        [
+         0.5586,
+         0.0595
+        ],
+        [
+         0.5634,
+         0.0606
+        ],
+        [
+         0.5682,
+         0.0627
+        ],
+        [
+         0.573,
+         0.0638
+        ],
+        [
+         0.5778,
+         0.0659
+        ],
+        [
+         0.5825,
+         0.067
+        ],
+        [
+         0.5873,
+         0.0691
+        ],
+        [
+         0.5921,
+         0.0712
+        ],
+        [
+         0.5969,
+         0.0733
+        ],
+        [
+         0.6017,
+         0.0755
+        ],
+        [
+         0.6065,
+         0.0776
+        ],
+        [
+         0.6112,
+         0.0808
+        ],
+        [
+         0.616,
+         0.0829
+        ],
+        [
+         0.6208,
+         0.0861
+        ],
+        [
+         0.6256,
+         0.0893
+        ],
+        [
+         0.6304,
+         0.0925
+        ],
+        [
+         0.6352,
+         0.0967
+        ],
+        [
+         0.64,
+         0.101
+        ],
+        [
+         0.6447,
+         0.1052
+        ],
+        [
+         0.6495,
+         0.1095
+        ],
+        [
+         0.6543,
+         0.1137
+        ],
+        [
+         0.6591,
+         0.119
+        ],
+        [
+         0.6639,
+         0.1243
+        ],
+        [
+         0.6687,
+         0.1307
+        ],
+        [
+         0.6734,
+         0.1371
+        ],
+        [
+         0.6782,
+         0.1445
+        ],
+        [
+         0.683,
+         0.153
+        ],
+        [
+         0.6878,
+         0.1615
+        ],
+        [
+         0.6926,
+         0.1722
+        ],
+        [
+         0.6974,
+         0.1828
+        ],
+        [
+         0.7022,
+         0.1966
+        ],
+        [
+         0.7069,
+         0.2125
+        ],
+        [
+         0.7117,
+         0.2338
+        ],
+        [
+         0.7165,
+         0.2752
+        ]
+       ]
+      }
+     ]
+    },
+    "left": {
+     "tex": "/rooms/c001-living-room/walk/left.webp"
+    },
+    "right": {
+     "tex": "/rooms/c001-living-room/walk/right.webp"
+    }
+   }
+  },
+  {
+   "id": "kitchen",
+   "name": "Eleanor's Kitchen",
+   "center": [
+    0,
+    5.004
+   ],
+   "size": [
+    4.874,
+    4.874,
+    2.743
+   ],
+   "floor": {
+    "tex": "/rooms/c001-kitchen/walk/floor.webp",
+    "repeat": 2
+   },
+   "ceil": {
+    "tex": "/rooms/c001-kitchen/walk/ceil.webp"
+   },
+   "light": {
+    "id": "kitchen",
+    "at": [
+     0,
+     2.6229999999999998,
+     5.004
+    ],
+    "power": 8
+   },
+   "walls": {
+    "front": {
+     "tex": "/rooms/c001-kitchen/walk/arch.webp",
+     "cutout": true
+    },
+    "back": {
+     "tex": "/rooms/c001-kitchen/walk/sink.webp",
+     "cutout": true,
+     "reveals": [
+      {
+       "rect": [
+        0.3088,
+        0.6918,
+        0.1157,
+        0.7676
+       ],
+       "sill": true
+      }
+     ],
+     "screen": [
+      0.4237,
+      0.5799,
+      0.5452,
+      0.7556
+     ],
+     "outside": {
+      "day": "/rooms/c001-kitchen/walk/outside.webp",
+      "night": "/rooms/c001-kitchen/walk/outside.webp",
+      "distance": 2.6,
+      "width": 16,
+      "u": 0.5,
+      "y": 1.5
+     }
+    },
+    "right": {
+     "tex": "/rooms/c001-kitchen/walk/door.webp",
+     "cutout": true,
+     "outside": {
+      "day": "/rooms/c001-kitchen/walk/outside.webp",
+      "night": "/rooms/c001-kitchen/walk/outside.webp",
+      "distance": 2.4,
+      "width": 16,
+      "u": 0.5,
+      "y": 1.5
+     }
+    },
+    "left": {
+     "tex": "/rooms/c001-kitchen/walk/phone.webp"
+    }
+   }
+  }
  ],
- "doorWindow": [
-  0.1005,
-  0.2279,
-  0.153,
-  0.4166
- ],
- "arch": [
-  [
-   0.2907,
-   0.255
-  ],
-  [
-   0.2955,
-   0.221
-  ],
-  [
-   0.3002,
-   0.2019
-  ],
-  [
-   0.305,
-   0.187
-  ],
-  [
-   0.3098,
-   0.1743
-  ],
-  [
-   0.3146,
-   0.1637
-  ],
-  [
-   0.3194,
-   0.153
-  ],
-  [
-   0.3242,
-   0.1445
-  ],
-  [
-   0.3289,
-   0.1371
-  ],
-  [
-   0.3337,
-   0.1307
-  ],
-  [
-   0.3385,
-   0.1243
-  ],
-  [
-   0.3433,
-   0.118
-  ],
-  [
-   0.3481,
-   0.1126
-  ],
-  [
-   0.3529,
-   0.1084
-  ],
-  [
-   0.3577,
-   0.1031
-  ],
-  [
-   0.3624,
-   0.0988
-  ],
-  [
-   0.3672,
-   0.0956
-  ],
-  [
-   0.372,
-   0.0914
-  ],
-  [
-   0.3768,
-   0.0882
-  ],
-  [
-   0.3816,
-   0.085
-  ],
-  [
-   0.3864,
-   0.0818
-  ],
-  [
-   0.3911,
-   0.0797
-  ],
-  [
-   0.3959,
-   0.0765
-  ],
-  [
-   0.4007,
-   0.0744
-  ],
-  [
-   0.4055,
-   0.0723
-  ],
-  [
-   0.4103,
-   0.0701
-  ],
-  [
-   0.4151,
-   0.068
-  ],
-  [
-   0.4199,
-   0.0659
-  ],
-  [
-   0.4246,
-   0.0648
-  ],
-  [
-   0.4294,
-   0.0627
-  ],
-  [
-   0.4342,
-   0.0616
-  ],
-  [
-   0.439,
-   0.0606
-  ],
-  [
-   0.4438,
-   0.0584
-  ],
-  [
-   0.4486,
-   0.0574
-  ],
-  [
-   0.4533,
-   0.0574
-  ],
-  [
-   0.4581,
-   0.0563
-  ],
-  [
-   0.4629,
-   0.0553
-  ],
-  [
-   0.4677,
-   0.0542
-  ],
-  [
-   0.4725,
-   0.0542
-  ],
-  [
-   0.4773,
-   0.0531
-  ],
-  [
-   0.4821,
-   0.0531
-  ],
-  [
-   0.4868,
-   0.0531
-  ],
-  [
-   0.4916,
-   0.0531
-  ],
-  [
-   0.4964,
-   0.0531
-  ],
-  [
-   0.5012,
-   0.0531
-  ],
-  [
-   0.506,
-   0.0531
-  ],
-  [
-   0.5108,
-   0.0531
-  ],
-  [
-   0.5156,
-   0.0531
-  ],
-  [
-   0.5203,
-   0.0542
-  ],
-  [
-   0.5251,
-   0.0542
-  ],
-  [
-   0.5299,
-   0.0542
-  ],
-  [
-   0.5347,
-   0.0553
-  ],
-  [
-   0.5395,
-   0.0563
-  ],
-  [
-   0.5443,
-   0.0574
-  ],
-  [
-   0.549,
-   0.0574
-  ],
-  [
-   0.5538,
-   0.0584
-  ],
-  [
-   0.5586,
-   0.0595
-  ],
-  [
-   0.5634,
-   0.0606
-  ],
-  [
-   0.5682,
-   0.0627
-  ],
-  [
-   0.573,
-   0.0638
-  ],
-  [
-   0.5778,
-   0.0659
-  ],
-  [
-   0.5825,
-   0.067
-  ],
-  [
-   0.5873,
-   0.0691
-  ],
-  [
-   0.5921,
-   0.0712
-  ],
-  [
-   0.5969,
-   0.0733
-  ],
-  [
-   0.6017,
-   0.0755
-  ],
-  [
-   0.6065,
-   0.0776
-  ],
-  [
-   0.6112,
-   0.0808
-  ],
-  [
-   0.616,
-   0.0829
-  ],
-  [
-   0.6208,
-   0.0861
-  ],
-  [
-   0.6256,
-   0.0893
-  ],
-  [
-   0.6304,
-   0.0925
-  ],
-  [
-   0.6352,
-   0.0967
-  ],
-  [
-   0.64,
-   0.101
-  ],
-  [
-   0.6447,
-   0.1052
-  ],
-  [
-   0.6495,
-   0.1095
-  ],
-  [
-   0.6543,
-   0.1137
-  ],
-  [
-   0.6591,
-   0.119
-  ],
-  [
-   0.6639,
-   0.1243
-  ],
-  [
-   0.6687,
-   0.1307
-  ],
-  [
-   0.6734,
-   0.1371
-  ],
-  [
-   0.6782,
-   0.1445
-  ],
-  [
-   0.683,
-   0.153
-  ],
-  [
-   0.6878,
-   0.1615
-  ],
-  [
-   0.6926,
-   0.1722
-  ],
-  [
-   0.6974,
-   0.1828
-  ],
-  [
-   0.7022,
-   0.1966
-  ],
-  [
-   0.7069,
-   0.2125
-  ],
-  [
-   0.7117,
-   0.2338
-  ],
-  [
-   0.7165,
-   0.2752
-  ]
+ "passages": [
+  {
+   "x": [
+    -1.084,
+    1.006
+   ],
+   "z": [
+    1.837,
+    3.167
+   ]
+  }
  ],
  "models": [
   {
@@ -513,9 +657,9 @@ export const C001_LIVING_WALK: WalkRoom = {
    "size": 1.5361,
    "fit": "y",
    "pos": [
-    1.92,
+    1.86,
     0.0,
-    1.92
+    1.74
    ],
    "shadow": [
     0.823,
@@ -563,6 +707,99 @@ export const C001_LIVING_WALK: WalkRoom = {
     -0.384
    ],
    "rotY": -20
+  },
+  {
+   "file": "/rooms/c001-kitchen/models/k_counter.glb",
+   "size": 1.28,
+   "fit": "y",
+   "rotY": 180,
+   "pos": [
+    0,
+    0,
+    7.071
+   ],
+   "shadow": [
+    2.0,
+    0.8
+   ]
+  },
+  {
+   "file": "/rooms/c001-kitchen/models/k_stove.glb",
+   "size": 1.1,
+   "fit": "y",
+   "rotY": 180,
+   "pos": [
+    -1.49,
+    0,
+    6.99
+   ],
+   "shadow": [
+    0.95,
+    0.85
+   ]
+  },
+  {
+   "file": "/rooms/c001-kitchen/models/k_fridge.glb",
+   "size": 1.68,
+   "fit": "y",
+   "rotY": 180,
+   "pos": [
+    1.52,
+    0,
+    6.99
+   ],
+   "shadow": [
+    0.95,
+    0.85
+   ]
+  },
+  {
+   "file": "/rooms/c001-kitchen/models/k_table.glb",
+   "size": 1.5,
+   "fit": "x",
+   "rotY": 0,
+   "pos": [
+    -1.35,
+    0,
+    4.4
+   ],
+   "shadow": [
+    1.4,
+    1.1
+   ]
+  },
+  {
+   "file": "/rooms/c001-kitchen/models/k_knives.glb",
+   "size": 0.32,
+   "fit": "y",
+   "rotY": 200,
+   "pos": [
+    -0.45,
+    0.92,
+    7.12
+   ]
+  },
+  {
+   "file": "/rooms/c001-kitchen/models/k_toaster.glb",
+   "size": 0.22,
+   "fit": "y",
+   "rotY": 180,
+   "pos": [
+    -0.78,
+    0.92,
+    7.1
+   ]
+  },
+  {
+   "file": "/rooms/c001-kitchen/models/k_rack.glb",
+   "size": 0.45,
+   "fit": "x",
+   "rotY": 180,
+   "pos": [
+    0.62,
+    0.92,
+    7.1
+   ]
   }
  ],
  "hotspots": [
@@ -684,17 +921,84 @@ export const C001_LIVING_WALK: WalkRoom = {
     -0.766,
     1.535,
     -2.4
+   ],
+   "light": "living"
+  },
+  {
+   "id": "k_window",
+   "kind": "inspect",
+   "label": "Window over the sink",
+   "text": "Kitchen window: The window over the sink stands open a few inches behind its screen.",
+   "at": [
+    0.0,
+    1.042,
+    7.401
    ]
   },
   {
-   "id": "lr_to_kitchen",
+   "id": "k_door",
    "kind": "inspect",
-   "label": "Kitchen",
-   "text": "Test hotspot. The kitchen is not built in 360\u00b0 yet; this will walk you through.",
+   "label": "Rear door",
+   "text": "Rear door: The back door to the yard. The police found it unlocked on Saturday morning.",
    "at": [
-    0.021,
-    1.235,
-    2.4
+    2.397,
+    1.371,
+    5.004
+   ]
+  },
+  {
+   "id": "k_calendar",
+   "kind": "inspect",
+   "label": "Wall calendar",
+   "text": "Wall calendar: A pharmacy calendar beside the telephone. Friday's square has a penciled note: 'Supper, 7. M, R, P, D.'",
+   "at": [
+    -2.397,
+    1.152,
+    5.638
+   ]
+  },
+  {
+   "id": "k_phone",
+   "kind": "inspect",
+   "label": "Kitchen telephone",
+   "text": "Kitchen telephone: A beige wall telephone with a long coiled cord. A pad beside it lists numbers: Patricia (work), Margaret, Hale Automotive, D. Mercer, Mr. Albright.",
+   "at": [
+    -2.397,
+    1.371,
+    4.663
+   ]
+  },
+  {
+   "id": "k_knives",
+   "kind": "inspect",
+   "label": "Knife block",
+   "text": "Knife block: A wooden block of French knives on the counter.",
+   "at": [
+    -0.45,
+    1.15,
+    7.12
+   ]
+  },
+  {
+   "id": "k_rack",
+   "kind": "inspect",
+   "label": "Drying rack",
+   "text": "Drying rack: Five dessert plates, five coffee cups and the cake server, washed and drying. Eleanor tidied up after her guests left.",
+   "at": [
+    0.62,
+    1.08,
+    7.1
+   ]
+  },
+  {
+   "id": "k-switch",
+   "kind": "switch",
+   "label": "Light switch",
+   "light": "kitchen",
+   "at": [
+    2.397,
+    1.481,
+    6.096
    ]
   }
  ]

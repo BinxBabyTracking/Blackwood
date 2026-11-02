@@ -4,42 +4,91 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import type { WalkHotspot, WalkRoom } from "./c001-house";
+import type { WalkHotspot, WalkHouse, WalkRoomDef, WalkWall } from "./c001-house";
 
 /*
- * A walkable room. Computer: click to look around with the mouse, WASD or the arrow keys to walk, Shift to hurry.
- * Phone: the stick at the bottom left walks, dragging anywhere else looks. Walls are solid slabs with real thickness,
- * so the arch and the window have depth. Lighting is live: soft room light, the sun (or the streetlight at night)
- * through the window with shadows, and the ceiling light from the switch.
+ * A walkable house: every room is loaded up front, so you walk from one into the next with no loading.
+ * Computer: click to look around with the mouse, WASD to walk, the arrow keys turn, Shift to hurry.
+ * Phone: the stick at the bottom left walks, dragging anywhere else looks. Walls are solid slabs, so arches
+ * and windows have real depth. Lighting is live: soft room light, the sun (or the streetlight at night)
+ * through the windows with shadows, and each room's ceiling light from its switch.
  */
 
-const WALL = 0.13; // wall thickness in metres (about 5 inches)
 const RADIUS = 0.28; // how close you can get to walls and furniture
 const SPEED = 1.4;
 const NEAR = 2.6; // markers show within this distance
 
-type Look = { yaw: number; pitch: number };
-
+type Side = "front" | "back" | "left" | "right";
 const SUN = { day: { az: 15, el: 48, color: 0xfff0d8, power: 5 }, night: { az: 22, el: 8, color: 0xffcf8a, power: 0.55 } };
 const SKY = { day: { sky: 0xfff4e6, ground: 0x8a6a50, power: 3.3 }, night: { sky: 0x5a6a99, ground: 0x2a2018, power: 0.8 } };
 
-export function WalkViewer({ room, title }: { room: WalkRoom; title: string }) {
+/** Where a wall sits and which way it faces, for a room. */
+function wallFrame(r: WalkRoomDef, side: Side) {
+  const [cx, cz] = r.center;
+  const [w, d] = r.size;
+  if (side === "front") return { pos: [cx, cz - d / 2], rot: 0, width: w, normal: [0, 1] };
+  if (side === "back") return { pos: [cx, cz + d / 2], rot: Math.PI, width: w, normal: [0, -1] };
+  if (side === "left") return { pos: [cx - w / 2, cz], rot: Math.PI / 2, width: d, normal: [1, 0] };
+  return { pos: [cx + w / 2, cz], rot: -Math.PI / 2, width: d, normal: [-1, 0] };
+}
+
+/** A window screen with an L-shaped cut, the edges bent away from the room. */
+function screenTexture() {
+  const c = document.createElement("canvas");
+  c.width = c.height = 512;
+  const g = c.getContext("2d")!;
+  g.clearRect(0, 0, 512, 512);
+  g.strokeStyle = "rgba(70,74,78,0.55)";
+  g.lineWidth = 1;
+  for (let i = 0; i < 512; i += 4) {
+    g.beginPath();
+    g.moveTo(i + 0.5, 0);
+    g.lineTo(i + 0.5, 512);
+    g.stroke();
+    g.beginPath();
+    g.moveTo(0, i + 0.5);
+    g.lineTo(512, i + 0.5);
+    g.stroke();
+  }
+  // The cut: down from near the top left, then across the bottom.
+  g.globalCompositeOperation = "destination-out";
+  g.lineWidth = 9;
+  g.beginPath();
+  g.moveTo(150, 90);
+  g.lineTo(150, 360);
+  g.lineTo(390, 360);
+  g.stroke();
+  g.globalCompositeOperation = "source-over";
+  g.strokeStyle = "rgba(40,42,45,0.9)";
+  g.lineWidth = 2;
+  g.beginPath();
+  g.moveTo(144, 90);
+  g.lineTo(144, 366);
+  g.lineTo(390, 366);
+  g.stroke();
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+export function WalkViewer({ house, title }: { house: WalkHouse; title: string }) {
   const mountRef = useRef<HTMLDivElement>(null);
   const markerRefs = useRef(new Map<string, HTMLButtonElement>());
   const stickRef = useRef<HTMLDivElement>(null);
   const knobRef = useRef<HTMLDivElement>(null);
-  const api = useRef<{ setNight: (n: boolean) => void; setLight: (on: boolean) => void; release: () => void } | null>(null);
+  const api = useRef<{ setNight: (n: boolean) => void; setLight: (id: string, on: boolean) => void; release: () => void } | null>(null);
   const [progress, setProgress] = useState(0);
   const [ready, setReady] = useState(false);
   const [night, setNight] = useState(false);
-  const [lightOn, setLightOn] = useState(false);
+  const [lights, setLights] = useState<Record<string, boolean>>({});
   const [inspect, setInspect] = useState<WalkHotspot | null>(null);
   const [locked, setLocked] = useState(false);
   const [touch, setTouch] = useState(false);
+  const [roomName, setRoomName] = useState(house.rooms[0].name);
 
   useEffect(() => {
     const mount = mountRef.current!;
-    const [W, D, H] = room.size;
+    const WALL = house.wall;
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(mount.clientWidth, mount.clientHeight);
@@ -50,13 +99,14 @@ export function WalkViewer({ room, title }: { room: WalkRoom; title: string }) {
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x000000);
-    const camera = new THREE.PerspectiveCamera(70, mount.clientWidth / mount.clientHeight, 0.05, 60);
-    const look: Look = { yaw: 0, pitch: -0.05 };
-    const pos = new THREE.Vector3(0, room.eye, 0.4);
-    // For testing: #x,z,yaw (metres, degrees) in the address starts you at that spot facing that way.
+    const camera = new THREE.PerspectiveCamera(70, mount.clientWidth / mount.clientHeight, 0.05, 80);
+    const look = { yaw: 0, pitch: -0.05 };
+    const pos = new THREE.Vector3(0, house.eye, 0.4);
+    // For testing: #x,z,yaw[,pitch[,noclip]] (metres, degrees) in the address starts you at that spot facing that way.
     const start = location.hash.slice(1).split(",").map(Number);
-    if (start.length >= 3 && start.every((n) => Number.isFinite(n))) {
-      pos.set(start[0], room.eye, start[1]);
+    const testing = start.length >= 3 && start.every((n) => Number.isFinite(n));
+    if (testing) {
+      pos.set(start[0], house.eye, start[1]);
       look.yaw = (start[2] * Math.PI) / 180;
       if (start.length > 3) look.pitch = (start[3] * Math.PI) / 180;
     }
@@ -64,137 +114,168 @@ export function WalkViewer({ room, title }: { room: WalkRoom; title: string }) {
     const manager = new THREE.LoadingManager();
     manager.onProgress = (_u, loaded, total) => setProgress(loaded / total);
     const tex = new THREE.TextureLoader(manager);
-    const loadTex = (url: string) => {
+    const loadTex = (url: string, repeat = 1) => {
       const t = tex.load(url);
       t.colorSpace = THREE.SRGBColorSpace;
       t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      if (repeat !== 1) {
+        t.wrapS = t.wrapT = THREE.RepeatWrapping;
+        t.repeat.set(repeat, repeat);
+      }
       return t;
     };
-
-    // Plaster for the inside of openings, and a dark stand-in for the kitchen beyond the arch until it is built.
-    const plaster = new THREE.MeshLambertMaterial({ color: 0xd8bf98, side: THREE.DoubleSide });
-    const trim = new THREE.MeshLambertMaterial({ color: 0x4a2c1a, side: THREE.DoubleSide });
-    const wallMat = (url: string, cutout: boolean) =>
-      new THREE.MeshLambertMaterial({ map: loadTex(url), alphaTest: cutout ? 0.5 : 0, transparent: false, side: THREE.FrontSide });
-    const shadowCaster = (m: THREE.Mesh) => {
+    const cast = (m: THREE.Mesh) => {
       m.castShadow = true;
       m.receiveShadow = true;
       return m;
     };
+    const plaster = new THREE.MeshLambertMaterial({ color: 0xd8bf98, side: THREE.DoubleSide });
+    const trim = new THREE.MeshLambertMaterial({ color: 0x4a2c1a, side: THREE.DoubleSide });
+    const outsides: { mat: THREE.MeshBasicMaterial; day: THREE.Texture; night: THREE.Texture }[] = [];
+    const roomLights = new Map<string, { light: THREE.PointLight; glow: THREE.Mesh; power: number }>();
 
-    // Walls: the inner face carries the picture (with its openings cut out), plus a back face so it blocks light.
-    const addWall = (url: string, cutout: boolean, w: number, place: (m: THREE.Object3D) => void) => {
-      const g = new THREE.Group();
-      const face = shadowCaster(new THREE.Mesh(new THREE.PlaneGeometry(w, H), wallMat(url, cutout)));
-      (face.material as THREE.Material).shadowSide = THREE.DoubleSide;
-      face.position.y = H / 2;
-      g.add(face);
-      place(g);
-      scene.add(g);
-      return g;
-    };
-    const front = addWall(room.textures.front, true, W, (g) => g.position.set(0, 0, -D / 2));
-    const back = addWall(room.textures.back, true, W, (g) => {
-      g.position.set(0, 0, D / 2);
-      g.rotation.y = Math.PI;
-    });
-    addWall(room.textures.left, false, D, (g) => {
-      g.position.set(-W / 2, 0, 0);
-      g.rotation.y = Math.PI / 2;
-    });
-    addWall(room.textures.right, false, D, (g) => {
-      g.position.set(W / 2, 0, 0);
-      g.rotation.y = -Math.PI / 2;
-    });
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(W, D), new THREE.MeshLambertMaterial({ map: loadTex(room.textures.floor) }));
-    floor.rotation.x = -Math.PI / 2;
-    floor.receiveShadow = true;
-    scene.add(floor);
-    const ceil = shadowCaster(new THREE.Mesh(new THREE.PlaneGeometry(W, D), new THREE.MeshLambertMaterial({ map: loadTex(room.textures.ceil) })));
-    ceil.rotation.x = Math.PI / 2;
-    ceil.position.y = H;
-    scene.add(ceil);
-
-    // The depth of an opening: strips from the wall's inner face back through its thickness.
+    // The depth of an opening: strips from the wall's face back through its thickness.
     const strip = (parent: THREE.Object3D, a: THREE.Vector2, b: THREE.Vector2, mat: THREE.Material) => {
       const len = a.distanceTo(b);
       if (len < 1e-4) return;
-      const m = shadowCaster(new THREE.Mesh(new THREE.PlaneGeometry(len, WALL), mat));
+      const m = cast(new THREE.Mesh(new THREE.PlaneGeometry(len, WALL), mat));
       m.position.set((a.x + b.x) / 2, (a.y + b.y) / 2, -WALL / 2);
       m.rotation.set(0, 0, Math.atan2(b.y - a.y, b.x - a.x));
       m.rotateX(Math.PI / 2);
       parent.add(m);
     };
-    const wallPoint = (w: number, u: number, v: number) => new THREE.Vector2((u - 0.5) * w, (1 - v) * H);
-    // The arch, traced from its picture: up the left side, over the curve, down the right side.
-    const arch = room.arch.map(([u, v]) => wallPoint(W, u, v));
-    const archLine = [new THREE.Vector2(arch[0].x, 0), ...arch, new THREE.Vector2(arch[arch.length - 1].x, 0)];
-    for (let i = 0; i < archLine.length - 1; i++) strip(back, archLine[i], archLine[i + 1], plaster);
-    // The window's sill, sides and head.
-    const [wu0, wu1, wv0, wv1] = room.window;
-    const wc = [wallPoint(W, wu0, wv1), wallPoint(W, wu1, wv1), wallPoint(W, wu1, wv0), wallPoint(W, wu0, wv0)];
-    for (let i = 0; i < 4; i++) strip(front, wc[i], wc[(i + 1) % 4], i === 0 ? trim : plaster);
-    // Back of the window and arch openings: the far side of the wall, so light only gets in through the holes.
-    const backing = (parent: THREE.Object3D, url: string, w: number) => {
-      const m = new THREE.Mesh(new THREE.PlaneGeometry(w, H), new THREE.MeshLambertMaterial({ map: loadTex(url), alphaTest: 0.5, colorWrite: false, depthWrite: false }));
-      m.position.set(0, H / 2, -WALL);
-      m.castShadow = true;
-      parent.add(m);
+
+    const buildWall = (r: WalkRoomDef, side: Side, def: WalkWall) => {
+      const H = r.size[2];
+      const f = wallFrame(r, side);
+      const g = new THREE.Group();
+      g.position.set(f.pos[0], 0, f.pos[1]);
+      g.rotation.y = f.rot;
+      const pt = (u: number, v: number) => new THREE.Vector2((u - 0.5) * f.width, (1 - v) * H);
+      const face = cast(new THREE.Mesh(new THREE.PlaneGeometry(f.width, H), new THREE.MeshLambertMaterial({ map: loadTex(def.tex), alphaTest: def.cutout ? 0.5 : 0 })));
+      (face.material as THREE.Material).shadowSide = THREE.DoubleSide;
+      face.position.y = H / 2;
+      g.add(face);
+      if (def.cutout) {
+        // The far side of the wall: blocks light except through the holes, never drawn.
+        const back = new THREE.Mesh(new THREE.PlaneGeometry(f.width, H), new THREE.MeshLambertMaterial({ map: loadTex(def.tex), alphaTest: 0.5, colorWrite: false, depthWrite: false }));
+        back.position.set(0, H / 2, -WALL);
+        back.castShadow = true;
+        g.add(back);
+      }
+      for (const rv of def.reveals ?? []) {
+        if ("arch" in rv) {
+          const a = rv.arch.map(([u, v]) => pt(u, v));
+          const line = [new THREE.Vector2(a[0].x, 0), ...a, new THREE.Vector2(a[a.length - 1].x, 0)];
+          for (let i = 0; i < line.length - 1; i++) strip(g, line[i], line[i + 1], plaster);
+        } else {
+          const [u0, u1, v0, v1] = rv.rect;
+          const c = [pt(u0, v1), pt(u1, v1), pt(u1, v0), pt(u0, v0)];
+          for (let i = 0; i < 4; i++) strip(g, c[i], c[(i + 1) % 4], i === 0 && rv.sill ? trim : plaster);
+        }
+      }
+      if (def.screen) {
+        const [u0, u1, v0, v1] = def.screen;
+        const a = pt(u0, v1), b = pt(u1, v0);
+        const s = new THREE.Mesh(new THREE.PlaneGeometry(b.x - a.x, b.y - a.y), new THREE.MeshLambertMaterial({ map: screenTexture(), transparent: true, side: THREE.DoubleSide, depthWrite: false }));
+        s.position.set((a.x + b.x) / 2, (a.y + b.y) / 2, -WALL * 0.8);
+        g.add(s);
+      }
+      if (def.outside) {
+        const o = def.outside;
+        const mat = new THREE.MeshBasicMaterial({ map: loadTex(o.day) });
+        outsides.push({ mat, day: mat.map!, night: o.night === o.day ? mat.map! : loadTex(o.night) });
+        const m = new THREE.Mesh(new THREE.PlaneGeometry(o.width, (o.width * 864) / 1536), mat);
+        m.position.set((o.u - 0.5) * f.width, o.y, -WALL - o.distance);
+        g.add(m);
+      }
+      scene.add(g);
     };
-    backing(front, room.textures.front, W);
-    backing(back, room.textures.back, W);
 
-    // Beyond the arch: a dim passage until the kitchen is built.
-    const passage = new THREE.Mesh(new THREE.BoxGeometry(arch[arch.length - 1].x - arch[0].x + 0.4, H, 2.2), new THREE.MeshLambertMaterial({ color: 0x3a2a1e, side: THREE.BackSide }));
-    passage.position.set(0, H / 2, D / 2 + WALL + 1.1);
-    scene.add(passage);
+    for (const r of house.rooms) {
+      const [cx, cz] = r.center;
+      const [w, d, H] = r.size;
+      const floor = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshLambertMaterial({ map: loadTex(r.floor.tex, r.floor.repeat ?? 1) }));
+      floor.rotation.x = -Math.PI / 2;
+      floor.position.set(cx, 0, cz);
+      floor.receiveShadow = true;
+      scene.add(floor);
+      const ceil = cast(new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshLambertMaterial({ map: loadTex(r.ceil.tex) })));
+      ceil.rotation.x = Math.PI / 2;
+      ceil.position.set(cx, H, cz);
+      scene.add(ceil);
+      for (const side of ["front", "back", "left", "right"] as Side[]) {
+        const def = r.walls[side];
+        if (def) buildWall(r, side, def);
+      }
+      const light = new THREE.PointLight(0xffd29a, 0, 0, 2);
+      light.position.set(r.light.at[0], r.light.at[1], r.light.at[2]);
+      scene.add(light);
+      const glow = new THREE.Mesh(new THREE.SphereGeometry(0.09, 16, 12), new THREE.MeshBasicMaterial({ color: 0xffe2b0 }));
+      glow.position.copy(light.position);
+      glow.visible = false;
+      scene.add(glow);
+      roomLights.set(r.light.id, { light, glow, power: r.light.power });
+    }
 
-    // The view out of the window.
-    const outsideMat = new THREE.MeshBasicMaterial({ map: loadTex(room.outside.day) });
-    const outsideTex = { day: outsideMat.map!, night: loadTex(room.outside.night) };
-    const ow = room.outside.width;
-    const outside = new THREE.Mesh(new THREE.PlaneGeometry(ow, (ow * 864) / 1536), outsideMat);
-    outside.position.set(room.outside.center[0], room.outside.center[1], -D / 2 - room.outside.distance);
-    scene.add(outside);
+    // The floor under each doorway, through the thickness of the wall.
+    for (const ps of house.passages) {
+      // Only the part of the passage no room's floor covers: the gap between the two wall faces.
+      const mz = (ps.z[0] + ps.z[1]) / 2;
+      const z0 = Math.max(ps.z[0], ...house.rooms.map((r) => r.center[1] + r.size[1] / 2).filter((z) => z <= mz + WALL));
+      const z1 = Math.min(ps.z[1], ...house.rooms.map((r) => r.center[1] - r.size[1] / 2).filter((z) => z >= mz - WALL));
+      if (z1 - z0 <= 0.001) continue;
+      const th = new THREE.Mesh(new THREE.PlaneGeometry(ps.x[1] - ps.x[0], z1 - z0), trim);
+      th.rotation.x = -Math.PI / 2;
+      th.position.set((ps.x[0] + ps.x[1]) / 2, 0, (z0 + z1) / 2);
+      th.receiveShadow = true;
+      scene.add(th);
+    }
 
-    // Lights.
+    // Lights shared by the whole house.
     const hemi = new THREE.HemisphereLight(SKY.day.sky, SKY.day.ground, SKY.day.power);
     scene.add(hemi);
     const sun = new THREE.DirectionalLight(SUN.day.color, SUN.day.power);
     sun.castShadow = true;
-    sun.shadow.mapSize.set(2048, 2048);
-    Object.assign(sun.shadow.camera, { left: -4, right: 4, top: 4, bottom: -4, near: 0.5, far: 20 });
+    sun.shadow.mapSize.set(4096, 4096);
+    Object.assign(sun.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7, near: 0.5, far: 30 });
     sun.shadow.bias = -0.0004;
     sun.shadow.normalBias = 0.02;
     scene.add(sun, sun.target);
+    const mid = new THREE.Vector3(0, house.eye, (Math.min(...house.rooms.map((r) => r.center[1] - r.size[1] / 2)) + Math.max(...house.rooms.map((r) => r.center[1] + r.size[1] / 2))) / 2);
     const setSun = (n: boolean) => {
       const s = n ? SUN.night : SUN.day;
       const a = (s.az * Math.PI) / 180, e = (s.el * Math.PI) / 180;
-      sun.position.set(Math.sin(a) * Math.cos(e) * 8, Math.sin(e) * 8 + room.eye, -Math.cos(a) * Math.cos(e) * 8);
-      sun.target.position.set(0, room.eye, 0);
+      sun.position.set(mid.x + Math.sin(a) * Math.cos(e) * 12, mid.y + Math.sin(e) * 12, mid.z - Math.cos(a) * Math.cos(e) * 12);
+      sun.target.position.copy(mid);
       sun.color.set(s.color);
       sun.intensity = s.power;
       const k = n ? SKY.night : SKY.day;
       hemi.color.set(k.sky);
       hemi.groundColor.set(k.ground);
       hemi.intensity = k.power;
-      outsideMat.map = n ? outsideTex.night : outsideTex.day;
-      outsideMat.color.setScalar(n ? 0.9 : 1);
-      outsideMat.needsUpdate = true;
+      for (const o of outsides) {
+        o.mat.map = n ? o.night : o.day;
+        o.mat.color.setScalar(n ? (o.night === o.day ? 0.3 : 0.9) : 1);
+        o.mat.needsUpdate = true;
+      }
     };
     setSun(false);
-    const bulb = new THREE.PointLight(0xffd29a, 0, 0, 2);
-    bulb.position.set(0, H - 0.45, 0);
-    scene.add(bulb);
-    const glow = new THREE.Mesh(new THREE.SphereGeometry(0.09, 16, 12), new THREE.MeshBasicMaterial({ color: 0xffe2b0 }));
-    glow.position.copy(bulb.position);
-    glow.visible = false;
-    scene.add(glow);
 
     // Furniture.
     const blockers: { x0: number; x1: number; z0: number; z1: number }[] = [];
+    const sc = document.createElement("canvas");
+    sc.width = sc.height = 128;
+    const g2 = sc.getContext("2d")!;
+    const gr = g2.createRadialGradient(64, 64, 0, 64, 64, 64);
+    gr.addColorStop(0, "rgba(0,0,0,0.55)");
+    gr.addColorStop(0.6, "rgba(0,0,0,0.3)");
+    gr.addColorStop(1, "rgba(0,0,0,0)");
+    g2.fillStyle = gr;
+    g2.fillRect(0, 0, 128, 128);
+    const contactMat = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(sc), transparent: true, depthWrite: false });
     const gl = new GLTFLoader(manager);
-    for (const M of room.models) {
+    for (const M of house.models) {
       gl.load(M.file, (g) => {
         const op = M.opacity ?? 1;
         g.scene.traverse((o) => {
@@ -233,24 +314,32 @@ export function WalkViewer({ room, title }: { room: WalkRoom; title: string }) {
         }
       });
     }
-    const sc = document.createElement("canvas");
-    sc.width = sc.height = 128;
-    const g2 = sc.getContext("2d")!;
-    const gr = g2.createRadialGradient(64, 64, 0, 64, 64, 64);
-    gr.addColorStop(0, "rgba(0,0,0,0.55)");
-    gr.addColorStop(0.6, "rgba(0,0,0,0.3)");
-    gr.addColorStop(1, "rgba(0,0,0,0)");
-    g2.fillStyle = gr;
-    g2.fillRect(0, 0, 128, 128);
-    const contactMat = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(sc), transparent: true, depthWrite: false });
-
     manager.onLoad = () => setReady(true);
+
+    // Where you can stand: inside a room or in a passage between rooms, clear of the furniture.
+    const areas = [
+      ...house.rooms.map((r) => ({ x0: r.center[0] - r.size[0] / 2 + RADIUS, x1: r.center[0] + r.size[0] / 2 - RADIUS, z0: r.center[1] - r.size[1] / 2 + RADIUS, z1: r.center[1] + r.size[1] / 2 - RADIUS })),
+      ...house.passages.map((p) => ({ x0: p.x[0] + RADIUS, x1: p.x[1] - RADIUS, z0: p.z[0], z1: p.z[1] })),
+    ];
+    const free = (x: number, z: number) => {
+      if (!areas.some((a) => x >= a.x0 && x <= a.x1 && z >= a.z0 && z <= a.z1)) return false;
+      return !blockers.some((b) => x > b.x0 - RADIUS && x < b.x1 + RADIUS && z > b.z0 - RADIUS && z < b.z1 + RADIUS && Math.hypot(x - Math.max(b.x0, Math.min(b.x1, x)), z - Math.max(b.z0, Math.min(b.z1, z))) < RADIUS);
+    };
+    const noclip = testing && start.length > 4;
+    const move = (dx: number, dz: number) => {
+      if (noclip || free(pos.x + dx, pos.z + dz)) {
+        pos.x += dx;
+        pos.z += dz;
+      } else if (free(pos.x + dx, pos.z)) pos.x += dx;
+      else if (free(pos.x, pos.z + dz)) pos.z += dz;
+    };
+    const roomAt = (x: number, z: number) => house.rooms.find((r) => Math.abs(x - r.center[0]) <= r.size[0] / 2 && Math.abs(z - r.center[1]) <= r.size[1] / 2);
+    let lastRoom = "";
 
     // Controls.
     const keys = new Set<string>();
     const stick = { x: 0, y: 0, id: -1, cx: 0, cy: 0 };
     let lookId = -1, lastX = 0, lastY = 0;
-    // By physical key, so it works on any keyboard layout.
     const CODES: Record<string, string> = {
       KeyW: "w", KeyA: "a", KeyS: "s", KeyD: "d", ArrowUp: "arrowup", ArrowDown: "arrowdown", ArrowLeft: "arrowleft",
       ArrowRight: "arrowright", ShiftLeft: "shift", ShiftRight: "shift",
@@ -262,18 +351,18 @@ export function WalkViewer({ room, title }: { room: WalkRoom; title: string }) {
       else keys.delete(k);
       e.preventDefault();
     };
-    const clearKeys = () => keys.clear();
-    window.addEventListener("blur", clearKeys);
     const kd = onKey(true), ku = onKey(false);
+    const clearKeys = () => keys.clear();
     document.addEventListener("keydown", kd, true);
     document.addEventListener("keyup", ku, true);
+    window.addEventListener("blur", clearKeys);
     const canvas = renderer.domElement;
+    canvas.tabIndex = 0;
     const onMouse = (e: MouseEvent) => {
       if (document.pointerLockElement !== canvas) return;
       look.yaw += e.movementX * 0.0024;
       look.pitch = Math.max(-1.45, Math.min(1.45, look.pitch - e.movementY * 0.0024));
     };
-    canvas.tabIndex = 0;
     const onClick = () => {
       canvas.focus();
       if (window.matchMedia("(pointer: coarse)").matches) return;
@@ -328,32 +417,10 @@ export function WalkViewer({ room, title }: { room: WalkRoom; title: string }) {
     canvas.addEventListener("touchmove", onTouchMove, { passive: false });
     canvas.addEventListener("touchend", onTouchEnd);
     canvas.addEventListener("touchcancel", onTouchEnd);
-    stickRef.current?.addEventListener("touchstart", onTouchStart as EventListener, { passive: true });
-    stickRef.current?.addEventListener("touchmove", onTouchMove as EventListener, { passive: false });
-    stickRef.current?.addEventListener("touchend", onTouchEnd as EventListener);
-
-    // Keep inside the walls and out of the furniture.
-    const testing = start.length >= 3;
-    const collide = (x: number, z: number) => {
-      if (testing && start.length > 4) return [x, z];
-      x = Math.max(-W / 2 + RADIUS, Math.min(W / 2 - RADIUS, x));
-      z = Math.max(-D / 2 + RADIUS, Math.min(D / 2 - RADIUS, z));
-      for (const b of blockers) {
-        const nx = Math.max(b.x0, Math.min(b.x1, x)), nz = Math.max(b.z0, Math.min(b.z1, z));
-        const dx = x - nx, dz = z - nz, d = Math.hypot(dx, dz);
-        if (d < RADIUS) {
-          if (d > 1e-5) {
-            x = nx + (dx / d) * RADIUS;
-            z = nz + (dz / d) * RADIUS;
-          } else {
-            const pushX = Math.min(x - b.x0, b.x1 - x), pushZ = Math.min(z - b.z0, b.z1 - z);
-            if (pushX < pushZ) x = x - b.x0 < b.x1 - x ? b.x0 - RADIUS : b.x1 + RADIUS;
-            else z = z - b.z0 < b.z1 - z ? b.z0 - RADIUS : b.z1 + RADIUS;
-          }
-        }
-      }
-      return [x, z];
-    };
+    const stickEl = stickRef.current;
+    stickEl?.addEventListener("touchstart", onTouchStart as EventListener, { passive: true });
+    stickEl?.addEventListener("touchmove", onTouchMove as EventListener, { passive: false });
+    stickEl?.addEventListener("touchend", onTouchEnd as EventListener);
 
     let raf = 0, last = performance.now();
     const v = new THREE.Vector3();
@@ -366,7 +433,6 @@ export function WalkViewer({ room, title }: { room: WalkRoom; title: string }) {
       if (keys.has("s") || keys.has("arrowdown")) f -= 1;
       if (keys.has("d")) s += 1;
       if (keys.has("a")) s -= 1;
-      // The arrow keys turn, for anyone not using a mouse.
       if (keys.has("arrowright")) look.yaw += 1.9 * dt;
       if (keys.has("arrowleft")) look.yaw -= 1.9 * dt;
       f -= stick.y;
@@ -375,15 +441,18 @@ export function WalkViewer({ room, title }: { room: WalkRoom; title: string }) {
       if (m > 0.01) {
         const sp = (SPEED * (keys.has("shift") ? 1.7 : 1) * Math.min(1, m)) / m;
         const sy = Math.sin(look.yaw), cy = Math.cos(look.yaw);
-        const [nx, nz] = collide(pos.x + (sy * f + cy * s) * sp * dt, pos.z + (-cy * f + sy * s) * sp * dt);
-        pos.x = nx;
-        pos.z = nz;
+        move((sy * f + cy * s) * sp * dt, (-cy * f + sy * s) * sp * dt);
+      }
+      const here = roomAt(pos.x, pos.z);
+      if (here && here.id !== lastRoom) {
+        lastRoom = here.id;
+        setRoomName(here.name);
       }
       camera.position.copy(pos);
       camera.lookAt(pos.x + Math.sin(look.yaw) * Math.cos(look.pitch), pos.y + Math.sin(look.pitch), pos.z - Math.cos(look.yaw) * Math.cos(look.pitch));
       renderer.render(scene, camera);
       const w = mount.clientWidth, h = mount.clientHeight;
-      for (const hs of room.hotspots) {
+      for (const hs of house.hotspots) {
         const el = markerRefs.current.get(hs.id);
         if (!el) continue;
         v.set(hs.at[0], hs.at[1], hs.at[2]);
@@ -409,9 +478,11 @@ export function WalkViewer({ room, title }: { room: WalkRoom; title: string }) {
 
     api.current = {
       setNight: (n) => setSun(n),
-      setLight: (on) => {
-        bulb.intensity = on ? 9 : 0;
-        glow.visible = on;
+      setLight: (id, on) => {
+        const l = roomLights.get(id);
+        if (!l) return;
+        l.light.intensity = on ? l.power : 0;
+        l.glow.visible = on;
       },
       release: () => document.exitPointerLock?.(),
     };
@@ -426,13 +497,13 @@ export function WalkViewer({ room, title }: { room: WalkRoom; title: string }) {
       renderer.dispose();
       mount.removeChild(canvas);
     };
-  }, [room]);
+  }, [house]);
 
   const press = (hs: WalkHotspot) => {
-    if (hs.kind === "switch") {
-      const on = !lightOn;
-      setLightOn(on);
-      api.current?.setLight(on);
+    if (hs.kind === "switch" && hs.light) {
+      const on = !lights[hs.light];
+      setLights((l) => ({ ...l, [hs.light!]: on }));
+      api.current?.setLight(hs.light, on);
       return;
     }
     api.current?.release();
@@ -443,7 +514,7 @@ export function WalkViewer({ room, title }: { room: WalkRoom; title: string }) {
     <div className="fixed inset-0 select-none overflow-hidden bg-black text-paper">
       <div ref={mountRef} className="absolute inset-0 touch-none" />
 
-      {room.hotspots.map((hs) => (
+      {house.hotspots.map((hs) => (
         <button
           key={hs.id}
           ref={(el) => {
@@ -455,7 +526,7 @@ export function WalkViewer({ room, title }: { room: WalkRoom; title: string }) {
           className="group absolute -translate-x-1/2 -translate-y-1/2"
         >
           <span className={`block h-9 w-9 rounded-full border-2 ${hs.kind === "switch" ? "border-paper/80" : "border-brass/80"} bg-black/30 shadow-[0_0_18px_rgba(0,0,0,0.8)]`}>
-            <span className="grid h-full w-full place-items-center text-sm">{hs.kind === "switch" ? (lightOn ? "●" : "○") : "?"}</span>
+            <span className="grid h-full w-full place-items-center text-sm">{hs.kind === "switch" ? (hs.light && lights[hs.light] ? "●" : "○") : "?"}</span>
           </span>
           <span className="absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap rounded-[2px] bg-black/70 px-2 py-0.5 text-xs">{hs.label}</span>
         </button>
@@ -475,7 +546,7 @@ export function WalkViewer({ room, title }: { room: WalkRoom; title: string }) {
       {!ready ? (
         <div className="absolute inset-0 grid place-items-center bg-black">
           <div className="w-64 text-center">
-            <p className="font-display text-xl">{room.name}</p>
+            <p className="font-display text-xl">{house.name}</p>
             <div className="mt-4 h-1 w-full bg-rule">
               <div className="h-1 bg-brass" style={{ width: `${Math.round(progress * 100)}%` }} />
             </div>
@@ -487,7 +558,7 @@ export function WalkViewer({ room, title }: { room: WalkRoom; title: string }) {
       <div className="absolute inset-x-0 top-0 flex items-center justify-between gap-3 bg-gradient-to-b from-black/80 to-transparent p-3 sm:p-4">
         <div className="min-w-0">
           <p className="truncate font-mono text-[0.7rem] uppercase tracking-[0.2em] text-brass">Testing Zone · {title}</p>
-          <p className="truncate font-display text-lg">{room.name}</p>
+          <p className="truncate font-display text-lg">{roomName}</p>
         </div>
         <Link href="/agency/assignments" className="shrink-0 border border-rule bg-black/50 px-3 py-1.5 text-sm hover:border-paper">
           Exit
