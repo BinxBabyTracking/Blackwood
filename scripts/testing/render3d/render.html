@@ -1,6 +1,8 @@
 <html><body style="margin:0;background:transparent">
 <script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
 <script type="module">
+// Renders one or more models from the player's eye. Each model: file, size (real size in room units) along "fit"
+// (x = length, y = height), rotY (degrees), pos (middle of its base, relative to the eye), opacity (glass).
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 const P = JSON.parse(decodeURIComponent(location.hash.slice(1)));
@@ -10,14 +12,16 @@ r.outputColorSpace=THREE.SRGBColorSpace; document.body.appendChild(r.domElement)
 const scene=new THREE.Scene();
 const cam=new THREE.PerspectiveCamera(P.fovv,W/H,0.01,50);
 const a=P.yaw*Math.PI/180,b=P.pitch*Math.PI/180;
-cam.position.set(0,0,0); cam.lookAt(Math.sin(a)*Math.cos(b),Math.sin(b),-Math.cos(a)*Math.cos(b));
-new GLTFLoader().load(P.file,g=>{
+cam.lookAt(Math.sin(a)*Math.cos(b),Math.sin(b),-Math.cos(a)*Math.cos(b));
+const L=new GLTFLoader(); const sizes={};
+await Promise.all(P.models.map(M=>new Promise(res=>L.load(M.file,g=>{
   const m=g.scene;
-  m.traverse(o=>{ if(o.isMesh){ const map=o.material.map; o.material=new THREE.MeshBasicMaterial({map, side:THREE.DoubleSide}); }});
+  m.traverse(o=>{ if(o.isMesh){ o.material=new THREE.MeshBasicMaterial({map:o.material.map, side:THREE.DoubleSide, transparent:(M.opacity??1)<1, opacity:M.opacity??1, depthWrite:(M.opacity??1)>=1}); o.renderOrder=(M.opacity??1)<1?1:0; }});
   const box=new THREE.Box3().setFromObject(m), size=box.getSize(new THREE.Vector3()), c=box.getCenter(new THREE.Vector3());
-  m.position.sub(new THREE.Vector3(c.x,box.min.y,c.z));           // base center at origin
-  const s=P.length/size.x; const grp=new THREE.Group(); grp.add(m); grp.scale.setScalar(s);
-  grp.rotation.y=P.rotY*Math.PI/180; grp.position.set(...P.pos); scene.add(grp);
-  r.render(scene,cam); window.DONE=[size.x*s,size.y*s,size.z*s];
-});
+  m.position.sub(new THREE.Vector3(c.x,box.min.y,c.z));
+  const s=M.size/(M.fit==='y'?size.y:size.x); const grp=new THREE.Group(); grp.add(m); grp.scale.setScalar(s);
+  grp.rotation.y=(M.rotY||0)*Math.PI/180; grp.position.set(...M.pos); scene.add(grp);
+  sizes[M.file]=[size.x*s,size.y*s,size.z*s]; res();
+}))));
+r.render(scene,cam); window.DONE=sizes;
 </script></body></html>
