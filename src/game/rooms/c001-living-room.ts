@@ -34,7 +34,7 @@ export const C001_LIVING_ROOM: TestRoom = {
     // On the rug, a little left of the tape marks (the tape marks and broken glass are laid into the floor image).
     { id: "chair", image: "/rooms/c001-living-room/props/chair.webp", x: -0.33, z: -0.36, width: 0.36, height: 0.28, gain: 1.2, shadow: { width: 0.36, depth: 0.25, back: 0.06 } },
     // Left wall: the roll-top desk toward the front door, the sideboard toward the kitchen arch.
-    { id: "rolltop", image: "/rooms/c001-living-room/props/rolltop.webp", x: -0.6, z: -0.42, width: 0.58, height: 0.4625, gain: 1.2, facing: -90, shadow: { width: 0.55, depth: 0.3, back: 0.12 } },
+    { id: "rolltop", image: "/rooms/c001-living-room/props/rolltop_view.webp", x: -0.749, z: -0.42, width: 0, height: 0, gain: 1.2, view: { yaw: -60.719, pitch: -24.315, fovv: 62, aspect: 1.5, dist: 0.9423 }, shadow: { width: 0.6, depth: 0.32, back: -0.02 } },
     { id: "sideboard", image: "/rooms/c001-living-room/props/sideboard.webp", x: -0.7, z: 0.52, width: 0.68, height: 0.477, gain: 1.2, shadow: { width: 0.62, depth: 0.22, back: 0.05 } },
     // Back right corner, by the fireplace and the kitchen arch.
     { id: "palm", image: "/rooms/c001-living-room/props/palm.webp", x: 0.7, z: 0.7, width: 0.4, height: 0.62, gain: 1.2, shadow: { width: 0.25, depth: 0.22, back: 0.02 } },
@@ -44,9 +44,9 @@ export const C001_LIVING_ROOM: TestRoom = {
     { kind: "inspect", id: "lr_chair", yaw: -42.5, pitch: -43.9, label: "Overturned chair", text: "Overturned chair: One of the dining chairs, brought in for coffee. It lies on its back." },
     { kind: "inspect", id: "lr_glass", yaw: -49.6, pitch: -66.7, label: "Broken glass", text: "Broken glass: Crystal shards on the carpet, a bagged piece beside them with an LAPD tag." },
     { kind: "inspect", id: "lr_sofa", yaw: 19.8, pitch: -32.9, label: "Sofa", text: "Where she was found: Police tape marks on the carpet between the sofa and the overturned chair show where Eleanor was found. The sofa cushions are still squared off. Nothing on this side of the room was disturbed." },
-    { kind: "inspect", id: "lr_ledger", yaw: -55.0, pitch: -23.8, label: "Writing desk", text: "Eleanor's writing desk: A roll-top desk. Her household ledger lies open on the blotter." },
-    { kind: "inspect", id: "lr_diary", yaw: -54.6, pitch: -18.1, label: "Desk diary", text: "Desk diary: A leather desk diary propped open on the shelf above the blotter." },
-    { kind: "inspect", id: "lr_drawer", yaw: -45.9, pitch: -27.4, label: "Desk filing drawer", text: "Filing drawer: A deep drawer of hanging files, each labeled in Eleanor's handwriting. One gap stands out." },
+    { kind: "inspect", id: "lr_ledger", yaw: -58.2, pitch: -23.4, label: "Writing desk", text: "Eleanor's writing desk: A roll-top desk. Her household ledger lies open on the blotter." },
+    { kind: "inspect", id: "lr_diary", yaw: -61.1, pitch: -17.2, label: "Desk diary", text: "Desk diary: A leather desk diary propped open on the shelf above the blotter." },
+    { kind: "inspect", id: "lr_drawer", yaw: -44.8, pitch: -30.5, label: "Desk filing drawer", text: "Filing drawer: A deep drawer of hanging files, each labeled in Eleanor's handwriting. One gap stands out." },
     { kind: "inspect", id: "lr_sideboard", yaw: -126.6, pitch: -25.7, label: "Sideboard", text: "Sideboard: A glass cake stand with a few crumbs of lemon cake, five dessert plates stacked beside it, and a tray of crystal water glasses. One place in the set is empty. A space on the runner where something long lay." },
     { kind: "inspect", id: "lr_wine", yaw: -119.9, pitch: -14.3, label: "Wine bottle", text: "Wine bottle: A 1979 Burgundy, two-thirds empty. Fingerprint powder on the neck. The police lab report found only Eleanor's prints." },
     { kind: "inspect", id: "lr_poker", yaw: 109.7, pitch: -20.0, label: "Fireplace tools", text: "Fireplace tools: Poker, brush and shovel, hanging neatly in their stand. A film of dust on all three. The grate holds old, cold ash. No one has lit a fire here since spring." },
