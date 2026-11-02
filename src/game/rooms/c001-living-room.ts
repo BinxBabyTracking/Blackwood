@@ -43,7 +43,7 @@ export const C001_LIVING_ROOM: TestRoom = {
     { kind: "switch", id: "lr-switch", yaw: -17.7, pitch: -3.1, label: "Light switch" },
     { kind: "inspect", id: "lr_chair", yaw: -39.3, pitch: -49.0, label: "Overturned chair", text: "Overturned chair: One of the dining chairs, brought in for coffee. It lies on its back." },
     { kind: "inspect", id: "lr_glass", yaw: -49.6, pitch: -66.7, label: "Broken glass", text: "Broken glass: Crystal shards on the carpet, a bagged piece beside them with an LAPD tag." },
-    { kind: "inspect", id: "lr_sofa", yaw: 18.5, pitch: -34.6, label: "Sofa", text: "Where she was found: Police tape marks on the carpet between the sofa and the overturned chair show where Eleanor was found. The sofa cushions are still squared off. Nothing on this side of the room was disturbed." },
+    { kind: "inspect", id: "lr_sofa", yaw: 19.2, pitch: -36.0, label: "Sofa", text: "Where she was found: Police tape marks on the carpet between the sofa and the overturned chair show where Eleanor was found. The sofa cushions are still squared off. Nothing on this side of the room was disturbed." },
     { kind: "inspect", id: "lr_ledger", yaw: -59.3, pitch: -22.5, label: "Writing desk", text: "Eleanor's writing desk: A roll-top desk. Her household ledger lies open on the blotter." },
     { kind: "inspect", id: "lr_diary", yaw: -60.9, pitch: -16.4, label: "Desk diary", text: "Desk diary: A leather desk diary propped open on the shelf above the blotter." },
     { kind: "inspect", id: "lr_drawer", yaw: -44.4, pitch: -30.9, label: "Desk filing drawer", text: "Filing drawer: A deep drawer of hanging files, each labeled in Eleanor's handwriting. One gap stands out." },
