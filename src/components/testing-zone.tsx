@@ -28,6 +28,17 @@ export async function TestingZone() {
           {built ? <p className="mt-2 font-mono text-xs text-smoke">Last updated {built}</p> : null}
         </div>
       </Link>
+      <Link
+        href="/agency/testing/walk"
+        className="mt-3 flex max-w-xl items-center gap-4 border border-rule bg-card p-4 transition hover:border-brass"
+      >
+        <div className="grid h-20 w-40 shrink-0 place-items-center border border-rule font-mono text-2xl text-brass">WASD</div>
+        <div className="min-w-0">
+          <p className="font-display text-xl text-paper">Walk Eleanor&apos;s Living Room</p>
+          <p className="mt-1 text-sm text-smoke">The living room as a 3D space you walk through: WASD on a computer, the stick on a phone.</p>
+          <p className="mt-2 text-sm text-brass">Walk in →</p>
+        </div>
+      </Link>
     </section>
   );
 }
