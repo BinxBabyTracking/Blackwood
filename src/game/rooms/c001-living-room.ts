@@ -28,6 +28,7 @@ export const C001_LIVING_ROOM: TestRoom = {
   light: { x: 0, y: 0.86, z: 0, color: [1.0, 0.84, 0.62], strength: 22 },
   // Every piece of furniture is a 3D model (Meshy), rendered together from the player's eye into one 360° layer
   // (scripts/testing/render3d/render360.html with c001_living_room.json). Models in models/ for walking later.
+  walkHref: "/agency/testing/walk",
   furniture: { image: "/rooms/c001-living-room/furniture.webp", light: "/rooms/c001-living-room/furniture_light_day.webp", gain: 1.05 },
   hotspots: [
     { kind: "switch", id: "lr-switch", yaw: -17.7, pitch: -3.1, label: "Light switch" },

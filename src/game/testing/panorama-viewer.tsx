@@ -797,6 +797,11 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
               </select>
             </label>
           ) : null}
+          {room.walkHref ? (
+            <Link href={room.walkHref} className="border border-brass bg-black/50 px-3 py-1.5 text-sm text-brass hover:bg-brass/10">
+              Walk this room
+            </Link>
+          ) : null}
           <Link href="/agency/assignments" className="border border-rule bg-black/50 px-3 py-1.5 text-sm hover:border-paper">
             Exit
           </Link>

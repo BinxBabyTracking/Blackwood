@@ -96,6 +96,8 @@ export type TestRoom = {
    * drawn over the room and lit with it. "gain" brightens it to sit with the room's plain light.
    */
   furniture?: { image: string; light?: string; gain?: number };
+  /** A walkable (WASD) version of this room, linked from the top bar. */
+  walkHref?: string;
   moon?: [number, number, number];
 };
 
