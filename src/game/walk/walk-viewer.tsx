@@ -250,26 +250,34 @@ export function WalkViewer({ room, title }: { room: WalkRoom; title: string }) {
     const keys = new Set<string>();
     const stick = { x: 0, y: 0, id: -1, cx: 0, cy: 0 };
     let lookId = -1, lastX = 0, lastY = 0;
-    const onKey = (down: boolean) => (e: KeyboardEvent) => {
-      const k = e.key.toLowerCase();
-      if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright", "shift"].includes(k)) {
-        if (down) keys.add(k);
-        else keys.delete(k);
-        e.preventDefault();
-      }
+    // By physical key, so it works on any keyboard layout.
+    const CODES: Record<string, string> = {
+      KeyW: "w", KeyA: "a", KeyS: "s", KeyD: "d", ArrowUp: "arrowup", ArrowDown: "arrowdown", ArrowLeft: "arrowleft",
+      ArrowRight: "arrowright", ShiftLeft: "shift", ShiftRight: "shift",
     };
+    const onKey = (down: boolean) => (e: KeyboardEvent) => {
+      const k = CODES[e.code] ?? e.key.toLowerCase();
+      if (!["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright", "shift"].includes(k)) return;
+      if (down) keys.add(k);
+      else keys.delete(k);
+      e.preventDefault();
+    };
+    const clearKeys = () => keys.clear();
+    window.addEventListener("blur", clearKeys);
     const kd = onKey(true), ku = onKey(false);
-    window.addEventListener("keydown", kd);
-    window.addEventListener("keyup", ku);
+    document.addEventListener("keydown", kd, true);
+    document.addEventListener("keyup", ku, true);
     const canvas = renderer.domElement;
     const onMouse = (e: MouseEvent) => {
       if (document.pointerLockElement !== canvas) return;
       look.yaw += e.movementX * 0.0024;
       look.pitch = Math.max(-1.45, Math.min(1.45, look.pitch - e.movementY * 0.0024));
     };
+    canvas.tabIndex = 0;
     const onClick = () => {
+      canvas.focus();
       if (window.matchMedia("(pointer: coarse)").matches) return;
-      if (document.pointerLockElement !== canvas) canvas.requestPointerLock?.();
+      if (document.pointerLockElement !== canvas) (canvas.requestPointerLock?.() as Promise<void> | undefined)?.catch?.(() => {});
     };
     const onLock = () => setLocked(document.pointerLockElement === canvas);
     document.addEventListener("mousemove", onMouse);
@@ -351,7 +359,7 @@ export function WalkViewer({ room, title }: { room: WalkRoom; title: string }) {
     const v = new THREE.Vector3();
     const frame = (now: number) => {
       raf = requestAnimationFrame(frame);
-      const dt = Math.min(0.05, (now - last) / 1000);
+      const dt = Math.min(0.12, (now - last) / 1000);
       last = now;
       let f = 0, s = 0;
       if (keys.has("w") || keys.has("arrowup")) f += 1;
@@ -409,8 +417,9 @@ export function WalkViewer({ room, title }: { room: WalkRoom; title: string }) {
     };
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener("keydown", kd);
-      window.removeEventListener("keyup", ku);
+      document.removeEventListener("keydown", kd, true);
+      document.removeEventListener("keyup", ku, true);
+      window.removeEventListener("blur", clearKeys);
       window.removeEventListener("resize", onResize);
       document.removeEventListener("mousemove", onMouse);
       document.removeEventListener("pointerlockchange", onLock);
