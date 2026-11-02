@@ -83,7 +83,7 @@ void main(){
     vec4 fv = texture(fu, vec2(u, vv));
     // Light map for the furniture: r = soft room light (darker underneath), g = light from the window, with shadows.
     vec2 fla = flOn > 0.5 ? texture(fl, vec2(u, vv)).rg : vec2(0.75, 0.15);
-    vec3 lightOn = lmOn > 0.5 ? ambient * fla.r + moonCol * fla.g * moonLevel + bulb * 0.4 * (0.4 + 0.6 * fla.r) : vec3(1.) + bulb;
+    vec3 lightOn = lmOn > 0.5 ? ambient * fla.r + moonCol * fla.g * moonLevel + bulb * 0.85 * (0.4 + 0.6 * fla.r) : vec3(1.) + bulb;
     col = mix(col, fv.rgb * fuGain * lightOn, fv.a);
   }
   o = vec4(col * fade, 1.);
