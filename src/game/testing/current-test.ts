@@ -42,6 +42,12 @@ export type TestProp = {
    * For furniture drawn straight on from the front.
    */
   facing?: number;
+  /**
+   * Art painted over a reference view from the player's eye (scripts/testing/ref_view.py): the whole picture is set
+   * up as a screen at the box's distance, square to that view, so the piece lands exactly in its box. x and z are the
+   * box's middle (for drawing order); width, height and sink are not used.
+   */
+  view?: { yaw: number; pitch: number; fovv: number; aspect: number; dist: number };
   /** Drawn over lower layers whatever their distance: 1 for things that sit on top of furniture (desk items). */
   layer?: number;
   /** Shown only while a test toggle is in this state. */

@@ -273,7 +273,15 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
         }
         const hw = p.width / 2;
         const base = floor - (p.sink ?? 0);
-        gl.bufferData(gl.ARRAY_BUFFER, quad([
+        if (p.view) {
+          const a = p.view.yaw * RAD, b = p.view.pitch * RAD;
+          const f = [Math.sin(a) * Math.cos(b), Math.sin(b), -Math.cos(a) * Math.cos(b)];
+          const r = [Math.cos(a), 0, Math.sin(a)];
+          const u = [-Math.sin(a) * Math.sin(b), Math.cos(b), Math.cos(a) * Math.sin(b)];
+          const hh = p.view.dist * Math.tan((p.view.fovv * RAD) / 2), vw = hh * p.view.aspect;
+          const c = (sx: number, sy: number) => [0, 1, 2].map((k) => f[k] * p.view!.dist + r[k] * sx * vw + u[k] * sy * hh);
+          gl.bufferData(gl.ARRAY_BUFFER, quad([c(-1, -1), c(1, -1), c(-1, 1), c(1, 1)]), gl.DYNAMIC_DRAW);
+        } else gl.bufferData(gl.ARRAY_BUFFER, quad([
           [p.x - rx * hw, base, p.z - rz * hw],
           [p.x + rx * hw, base, p.z + rz * hw],
           [p.x - rx * hw, base + p.height, p.z - rz * hw],
