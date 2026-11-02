@@ -1,0 +1,46 @@
+{
+ "width": 1.7768,
+ "depth": 1.7768,
+ "eye": 0.61,
+ "faces": {
+  "front": {
+   "file": "/home/claude/work/lr_front_keyed.png",
+   "level": 0.203
+  },
+  "back": {
+   "file": "/home/claude/work/lr_back_filled.png",
+   "level": 0.311
+  },
+  "left": {
+   "file": "/mnt/user-data/uploads/8f8f586f-image.png",
+   "level": 0.492
+  },
+  "right": {
+   "file": "/mnt/user-data/uploads/f9466647-image.png",
+   "level": 0.479
+  },
+  "floor": {
+   "file": "/mnt/user-data/uploads/9df1dbf2-image.png",
+   "level": 0.3
+  },
+  "ceil": {
+   "file": "/mnt/user-data/uploads/f64b11f6-image.png",
+   "level": 0.4
+  }
+ },
+ "outside": {
+  "file": "/mnt/user-data/uploads/bc630377-image.png",
+  "distance": 1.0,
+  "width": 3.6,
+  "center": [
+   0.227,
+   -0.02
+  ],
+  "brightness": 1.0
+ },
+ "light": {
+  "azimuth": 15,
+  "elevation": 48,
+  "softness": 2.0
+ }
+}

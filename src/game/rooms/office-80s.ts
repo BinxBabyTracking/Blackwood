@@ -9,7 +9,7 @@ import type { TestRoom } from "@/game/testing/current-test";
 export const OFFICE_80S: TestRoom = {
       // About 16 feet square with a 9-foot ceiling (the walls are 16:9). The player sits at the desk in the middle, facing the window.
       id: "office",
-      name: "Detective's Office",
+      name: "80s Office",
       image: "/rooms/office-80s/office.webp",
       lightmap: "/rooms/office-80s/office_light.webp",
       size: [1.7768, 1.7768],

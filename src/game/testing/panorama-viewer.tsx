@@ -113,6 +113,12 @@ void main(){
 
 type LoadedProp = { prop: TestProp; tex: WebGLTexture };
 
+/** A room as it is in one of its variants (day, night): that variant's image, light map and light levels. */
+function withVariant(r: TestRoom, i: number): TestRoom {
+  const v = r.variants?.options[i];
+  return v ? { ...r, image: v.image, lightmap: v.lightmap ?? r.lightmap, ambient: v.ambient ?? r.ambient, moon: v.moon ?? r.moon } : r;
+}
+
 const RAD = Math.PI / 180;
 const clamp = (x: number, a: number, b: number) => Math.min(b, Math.max(a, x));
 const wrap = (deg: number) => ((((deg + 180) % 360) + 360) % 360) - 180;
@@ -156,6 +162,8 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
   const [toggles, setToggles] = useState<Record<string, string>>({});
   const togglesRef = useRef<Record<string, string>>({});
   const [moonOn, setMoonOn] = useState(true);
+  const [variant, setVariant] = useState(0);
+  const variantRef = useRef(0);
 
   const room = rooms.find((r) => r.id === roomId) ?? rooms[0];
 
@@ -418,11 +426,14 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  // Load the room's panorama whenever the room changes.
+  // Load the room's panorama whenever the room changes (always in its first variant, like daytime).
   useEffect(() => {
     const g = glRef.current;
-    const r = rooms.find((x) => x.id === roomId);
-    if (!g || !r) return;
+    const base = rooms.find((x) => x.id === roomId);
+    if (!g || !base) return;
+    const r = withVariant(base, 0);
+    variantRef.current = 0;
+    queueMicrotask(() => setVariant(0));
     view.current.yaw = r.startYaw;
     view.current.pitch = r.startPitch ?? 0;
     view.current.fov = 80;
@@ -701,15 +712,45 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
           <p className="truncate font-mono text-[0.7rem] uppercase tracking-[0.2em] text-brass">Testing Zone · {title}</p>
           <p className="truncate font-display text-lg">{room.name}</p>
         </div>
-        <Link href="/agency/assignments" className="shrink-0 border border-rule bg-black/50 px-3 py-1.5 text-sm hover:border-paper">
-          Exit
-        </Link>
+        <div className="flex shrink-0 items-center gap-2">
+          {rooms.length > 1 ? (
+            <label className="flex items-center gap-2 text-sm">
+              <span className="sr-only">Go to</span>
+              <select
+                value={roomId}
+                onChange={(e) => {
+                  if (busy.current) return;
+                  setInspect(null);
+                  setRoomId(e.target.value);
+                }}
+                className="max-w-[48vw] border border-rule bg-black/70 px-2 py-1.5 text-paper"
+              >
+                {rooms.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+          <Link href="/agency/assignments" className="border border-rule bg-black/50 px-3 py-1.5 text-sm hover:border-paper">
+            Exit
+          </Link>
+        </div>
       </div>
 
       <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-center justify-center gap-2 bg-gradient-to-t from-black/80 to-transparent p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-sm">
         <button onClick={toggleGyro} className={`border px-3 py-1.5 ${gyroOn ? "border-brass text-brass" : "border-rule bg-black/50"}`}>
           {gyroOn ? "Tilt to look: on" : "Tilt to look"}
         </button>
+        {room.variants ? (
+          <button
+            onClick={() => switchVariant((variant + 1) % room.variants!.options.length)}
+            className="border border-brass px-3 py-1.5 text-brass"
+          >
+            {room.variants.label}: {room.variants.options[variant]?.name}
+          </button>
+        ) : null}
         {(room.toggles ?? []).map((t) => {
           const state = toggles[t.id] ?? t.states[0];
           return (
@@ -759,6 +800,36 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
       ) : null}
     </div>
   );
+
+  /** Switch to another version of the room (day or night) without moving the view: new image, light map and light levels. */
+  function switchVariant(i: number) {
+    const g = glRef.current;
+    const r = withVariant(room, i);
+    variantRef.current = i;
+    setVariant(i);
+    if (!g || !r.image) return;
+    lit.current.ambient = r.ambient ?? lit.current.ambient;
+    lit.current.moon = r.moon ?? lit.current.moon;
+    const img = new Image();
+    img.onload = () => {
+      if (variantRef.current !== i) return;
+      const { gl, tex } = g;
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
+    };
+    img.src = r.image;
+    if (r.lightmap && lmTexRef.current) {
+      const limg = new Image();
+      limg.onload = () => {
+        if (variantRef.current !== i) return;
+        const { gl } = g;
+        gl.bindTexture(gl.TEXTURE_2D, lmTexRef.current);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, limg);
+        gl.bindTexture(gl.TEXTURE_2D, g.tex);
+      };
+      limg.src = r.lightmap;
+    }
+  }
 
   /** The light from outside fades out (or back in) over about two seconds. */
   function animateMoon(to: number) {

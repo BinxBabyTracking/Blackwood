@@ -68,6 +68,8 @@ export type TestRoom = {
   size?: [number, number];
   /** Show the test button that hides and brings back the light from outside (the moon). */
   outsideToggle?: string;
+  /** Versions of the room you can switch between (day and night): each swaps the room image, its light map and its light levels. */
+  variants?: { label: string; options: { name: string; image: string; lightmap?: string; ambient?: [number, number, number]; moon?: [number, number, number] }[] };
   /** Test buttons that cycle through states, for things that come and go in the case (deliveries on the desk). */
   toggles?: { id: string; label: string; states: string[] }[];
   /**
@@ -82,12 +84,13 @@ export type TestRoom = {
 
 /** The current test: the Whitmore File's office, rebuilt as a 360° room. Its art is still being made. */
 import { OFFICE_80S } from "@/game/rooms/office-80s";
+import { C001_LIVING_ROOM } from "@/game/rooms/c001-living-room";
 
-/** The current test: the saved 80s Office. */
+/** The current test: the Whitmore File's rooms in 360° (the menu at the top right goes between them). */
 export const CURRENT_TEST = {
-  id: "office-80s",
-  title: "80s Office",
-  blurb: "Blackwood's 1980s detective office as a 360° room, lit in code. First built for the Whitmore File.",
+  id: "c001-360",
+  title: "The Whitmore File (360°)",
+  blurb: "The Whitmore File's rooms in 360°, lit in code: the 80s Office and Eleanor's living room. Use the menu at the top right to move between them.",
   start: "office",
-  rooms: [OFFICE_80S],
+  rooms: [OFFICE_80S, C001_LIVING_ROOM],
 };
