@@ -1,0 +1,23 @@
+<html><body style="margin:0;background:transparent">
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const P = JSON.parse(decodeURIComponent(location.hash.slice(1)));
+const W=1536,H=1024;
+const r=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true}); r.setSize(W,H); r.setClearColor(0,0);
+r.outputColorSpace=THREE.SRGBColorSpace; document.body.appendChild(r.domElement);
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(P.fovv,W/H,0.01,50);
+const a=P.yaw*Math.PI/180,b=P.pitch*Math.PI/180;
+cam.position.set(0,0,0); cam.lookAt(Math.sin(a)*Math.cos(b),Math.sin(b),-Math.cos(a)*Math.cos(b));
+new GLTFLoader().load(P.file,g=>{
+  const m=g.scene;
+  m.traverse(o=>{ if(o.isMesh){ const map=o.material.map; o.material=new THREE.MeshBasicMaterial({map, side:THREE.DoubleSide}); }});
+  const box=new THREE.Box3().setFromObject(m), size=box.getSize(new THREE.Vector3()), c=box.getCenter(new THREE.Vector3());
+  m.position.sub(new THREE.Vector3(c.x,box.min.y,c.z));           // base center at origin
+  const s=P.length/size.x; const grp=new THREE.Group(); grp.add(m); grp.scale.setScalar(s);
+  grp.rotation.y=P.rotY*Math.PI/180; grp.position.set(...P.pos); scene.add(grp);
+  r.render(scene,cam); window.DONE=[size.x*s,size.y*s,size.z*s];
+});
+</script></body></html>

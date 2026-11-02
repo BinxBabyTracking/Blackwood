@@ -35,7 +35,7 @@ export const C001_LIVING_ROOM: TestRoom = {
     { id: "chair", image: "/rooms/c001-living-room/props/chair.webp", x: -0.27, z: -0.33, width: 0.3, height: 0.234, gain: 1.2, shadow: { width: 0.3, depth: 0.22, back: 0.05 } },
     // Left wall: the roll-top desk toward the front door, the sideboard toward the kitchen arch.
     { id: "rolltop", image: "/rooms/c001-living-room/props/rolltop_view.webp", x: -0.749, z: -0.42, width: 0, height: 0, gain: 1.2, view: { yaw: -60.719, pitch: -24.315, fovv: 62, aspect: 1.5, dist: 0.9423 }, shadow: { width: 0.6, depth: 0.32, back: -0.02 } },
-    { id: "sideboard", image: "/rooms/c001-living-room/props/sideboard_view.webp", x: -0.794, z: 0.5, width: 0, height: 0, gain: 1.2, view: { yaw: -122.2, pitch: -23.088, fovv: 62, aspect: 1.5, dist: 1.02 }, shadow: { width: 0.64, depth: 0.22, back: -0.06 } },
+    { id: "sideboard", image: "/rooms/c001-living-room/props/sideboard_3d.webp", x: -0.769, z: 0.5, width: 0, height: 0, gain: 1.25, view: { yaw: -122.2, pitch: -25.298, fovv: 62, aspect: 1.5, dist: 1.0163 }, shadow: { width: 0.66, depth: 0.24, back: 0 } },
     // Back right corner, by the fireplace and the kitchen arch.
     { id: "palm", image: "/rooms/c001-living-room/props/palm.webp", x: 0.7, z: 0.7, width: 0.4, height: 0.62, gain: 1.2, shadow: { width: 0.25, depth: 0.22, back: 0.02 } },
   ],
@@ -47,8 +47,8 @@ export const C001_LIVING_ROOM: TestRoom = {
     { kind: "inspect", id: "lr_ledger", yaw: -59.3, pitch: -22.5, label: "Writing desk", text: "Eleanor's writing desk: A roll-top desk. Her household ledger lies open on the blotter." },
     { kind: "inspect", id: "lr_diary", yaw: -60.9, pitch: -16.4, label: "Desk diary", text: "Desk diary: A leather desk diary propped open on the shelf above the blotter." },
     { kind: "inspect", id: "lr_drawer", yaw: -44.4, pitch: -30.9, label: "Desk filing drawer", text: "Filing drawer: A deep drawer of hanging files, each labeled in Eleanor's handwriting. One gap stands out." },
-    { kind: "inspect", id: "lr_sideboard", yaw: -124.4, pitch: -28.3, label: "Sideboard", text: "Sideboard: A glass cake stand with a few crumbs of lemon cake, five dessert plates stacked beside it, and a tray of crystal water glasses. One place in the set is empty. A space on the runner where something long lay." },
-    { kind: "inspect", id: "lr_wine", yaw: -125.9, pitch: -16.6, label: "Wine bottle", text: "Wine bottle: A 1979 Burgundy, two-thirds empty. Fingerprint powder on the neck. The police lab report found only Eleanor's prints." },
+    { kind: "inspect", id: "lr_sideboard", yaw: -127.6, pitch: -27.7, label: "Sideboard", text: "Sideboard: A glass cake stand with a few crumbs of lemon cake, five dessert plates stacked beside it, and a tray of crystal water glasses. One place in the set is empty. A space on the runner where something long lay." },
+    { kind: "inspect", id: "lr_wine", yaw: -128.8, pitch: -14.2, label: "Wine bottle", text: "Wine bottle: A 1979 Burgundy, two-thirds empty. Fingerprint powder on the neck. The police lab report found only Eleanor's prints." },
     { kind: "inspect", id: "lr_poker", yaw: 109.7, pitch: -20.0, label: "Fireplace tools", text: "Fireplace tools: Poker, brush and shovel, hanging neatly in their stand. A film of dust on all three. The grate holds old, cold ash. No one has lit a fire here since spring." },
     { kind: "inspect", id: "lr_front_door", yaw: -34.1, pitch: -4.7, label: "Front door", text: "Front door: Solid oak, with a deadbolt and a brass chain. No damage. Margaret Ellis let herself in with her spare key at 7:40 on Saturday morning; the door was locked and the chain was off." },
     { kind: "inspect", id: "lr_to_kitchen", yaw: 179.5, pitch: -10.2, label: "Kitchen", text: "Test hotspot. The kitchen is not built in 360° yet; this will walk you through." },
