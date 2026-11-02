@@ -91,6 +91,11 @@ export type TestRoom = {
   lightmap?: string;
   /** The night level inside the room with no lights, and the moonlight's color. */
   ambient?: [number, number, number];
+  /**
+   * Furniture rendered from 3D models into one 360° picture with transparency (scripts/testing/render3d/render360.html),
+   * drawn over the room and lit with it. "gain" brightens it to sit with the room's plain light.
+   */
+  furniture?: { image: string; gain?: number };
   moon?: [number, number, number];
 };
 

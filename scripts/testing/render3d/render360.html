@@ -1,0 +1,40 @@
+<html><body style="margin:0;background:transparent">
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Renders every model in a room into one 360° (equirectangular) picture with transparency, from the player's eye
+// at (0,0,0). Each model: file, size + fit (x = length, y = height), rotX/rotY/rotZ (degrees), pos (middle of its base),
+// opacity (glass), shadow [width, depth] (a soft contact shadow under it).
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const P = JSON.parse(decodeURIComponent(location.hash.slice(1)));
+const W=P.W||4096,H=W/2;
+const r=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true}); r.setSize(W,H); r.setPixelRatio(1); r.setClearColor(0,0);
+document.body.appendChild(r.domElement);
+const scene=new THREE.Scene();
+const sc=document.createElement('canvas'); sc.width=sc.height=128; const g2=sc.getContext('2d');
+const gr=g2.createRadialGradient(64,64,0,64,64,64); gr.addColorStop(0,'rgba(0,0,0,0.75)'); gr.addColorStop(0.55,'rgba(0,0,0,0.45)'); gr.addColorStop(1,'rgba(0,0,0,0)');
+g2.fillStyle=gr; g2.fillRect(0,0,128,128); const shadowTex=new THREE.CanvasTexture(sc);
+const L=new GLTFLoader(); const info={};
+await Promise.all(P.models.map(M=>new Promise(res=>L.load(M.file,g=>{
+  const m=g.scene; const op=M.opacity??1;
+  m.traverse(o=>{ if(o.isMesh){ o.material=new THREE.MeshBasicMaterial({map:o.material.map, side:THREE.DoubleSide, transparent:op<1, opacity:op, depthWrite:op>=1}); o.renderOrder=op<1?2:0; }});
+  const inner=new THREE.Group(); inner.add(m); inner.rotation.set((M.rotX||0)*Math.PI/180,0,(M.rotZ||0)*Math.PI/180); inner.updateMatrixWorld(true);
+  const box=new THREE.Box3().setFromObject(inner), size=box.getSize(new THREE.Vector3()), c=box.getCenter(new THREE.Vector3());
+  const off=new THREE.Group(); off.add(inner); off.position.sub(new THREE.Vector3(c.x,box.min.y,c.z));
+  const s=M.size/(M.fit==='y'?size.y:size.x); const grp=new THREE.Group(); grp.add(off); grp.scale.setScalar(s);
+  grp.rotation.y=(M.rotY||0)*Math.PI/180; grp.position.set(...M.pos); scene.add(grp);
+  if(M.shadow){ const pl=new THREE.Mesh(new THREE.PlaneGeometry(M.shadow[0],M.shadow[1]),new THREE.MeshBasicMaterial({map:shadowTex,transparent:true,depthWrite:false}));
+    pl.rotation.x=-Math.PI/2; pl.rotation.z=(M.rotY||0)*Math.PI/180; pl.position.set(M.pos[0],M.pos[1]+0.002,M.pos[2]); pl.renderOrder=1; scene.add(pl); }
+  info[M.file]=[size.x*s,size.y*s,size.z*s]; res();
+}))));
+const rt=new THREE.WebGLCubeRenderTarget(P.cube||2048,{generateMipmaps:false,minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter});
+const cc=new THREE.CubeCamera(0.005,20,rt); scene.add(cc); cc.update(r,scene);
+const q=new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({uniforms:{c:{value:rt.texture},flip:{value:P.flip??1}},
+  vertexShader:'varying vec2 v; void main(){v=uv; gl_Position=vec4(position.xy,0.,1.);}',
+  fragmentShader:`uniform samplerCube c; uniform float flip; varying vec2 v; const float PI=3.14159265;
+  void main(){ float yaw=(v.x-0.5)*2.*PI, p=(v.y-0.5)*PI;
+    vec3 d=vec3(sin(yaw)*cos(p), sin(p), -cos(yaw)*cos(p));
+    vec4 o=textureCube(c, vec3(flip*d.x,d.y,d.z));
+    gl_FragColor=vec4(pow(max(o.rgb,0.),vec3(1./2.2)), o.a); }`,depthTest:false}));
+const s2=new THREE.Scene(); s2.add(q); r.render(s2,new THREE.Camera()); window.DONE=info;
+</script></body></html>

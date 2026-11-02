@@ -26,29 +26,19 @@ export const C001_LIVING_ROOM: TestRoom = {
   },
   // The wrought iron chandelier in the middle of the ceiling.
   light: { x: 0, y: 0.86, z: 0, color: [1.0, 0.84, 0.62], strength: 7 },
-  props: [
-    // Under the front window.
-    { id: "sofa", image: "/rooms/c001-living-room/props/sofa_view.webp", x: 0.23, z: -0.7215, width: 0, height: 0, gain: 1.2, view: { yaw: 17.681, pitch: -30.72, fovv: 62, aspect: 1.5, dist: 0.8809 }, shadow: { width: 0.8, depth: 0.3, back: -0.12 } },
-    // Front right corner, beside the sofa.
-    { id: "side-table", image: "/rooms/c001-living-room/props/side_table.webp", x: 0.74, z: -0.72, width: 0.22, height: 0.46, gain: 1.2, shadow: { width: 0.22, depth: 0.2, back: 0.03 } },
-    // On the rug, a little left of the tape marks (the tape marks and broken glass are laid into the floor image).
-    { id: "chair", image: "/rooms/c001-living-room/props/chair.webp", x: -0.27, z: -0.33, width: 0.3, height: 0.234, gain: 1.2, shadow: { width: 0.3, depth: 0.22, back: 0.05 } },
-    // Left wall: the roll-top desk toward the front door, the sideboard toward the kitchen arch.
-    { id: "rolltop", image: "/rooms/c001-living-room/props/rolltop_view.webp", x: -0.749, z: -0.42, width: 0, height: 0, gain: 1.2, view: { yaw: -60.719, pitch: -24.315, fovv: 62, aspect: 1.5, dist: 0.9423 }, shadow: { width: 0.6, depth: 0.32, back: -0.02 } },
-    { id: "sideboard", image: "/rooms/c001-living-room/props/sideboard_3d.webp", x: -0.769, z: 0.5, width: 0, height: 0, gain: 1.25, view: { yaw: -122.2, pitch: -25.298, fovv: 62, aspect: 1.5, dist: 1.0163 }, shadow: { width: 0.66, depth: 0.24, back: 0 } },
-    // Back right corner, by the fireplace and the kitchen arch.
-    { id: "palm", image: "/rooms/c001-living-room/props/palm.webp", x: 0.7, z: 0.7, width: 0.4, height: 0.62, gain: 1.2, shadow: { width: 0.25, depth: 0.22, back: 0.02 } },
-  ],
+  // Every piece of furniture is a 3D model (Meshy), rendered together from the player's eye into one 360° layer
+  // (scripts/testing/render3d/render360.html with c001_living_room.json). Models in models/ for walking later.
+  furniture: { image: "/rooms/c001-living-room/furniture.webp", gain: 1.1 },
   hotspots: [
     { kind: "switch", id: "lr-switch", yaw: -17.7, pitch: -3.1, label: "Light switch" },
-    { kind: "inspect", id: "lr_chair", yaw: -39.3, pitch: -49.0, label: "Overturned chair", text: "Overturned chair: One of the dining chairs, brought in for coffee. It lies on its back." },
-    { kind: "inspect", id: "lr_glass", yaw: -49.6, pitch: -66.7, label: "Broken glass", text: "Broken glass: Crystal shards on the carpet, a bagged piece beside them with an LAPD tag." },
-    { kind: "inspect", id: "lr_sofa", yaw: 19.2, pitch: -36.0, label: "Sofa", text: "Where she was found: Police tape marks on the carpet between the sofa and the overturned chair show where Eleanor was found. The sofa cushions are still squared off. Nothing on this side of the room was disturbed." },
-    { kind: "inspect", id: "lr_ledger", yaw: -59.3, pitch: -22.5, label: "Writing desk", text: "Eleanor's writing desk: A roll-top desk. Her household ledger lies open on the blotter." },
-    { kind: "inspect", id: "lr_diary", yaw: -60.9, pitch: -16.4, label: "Desk diary", text: "Desk diary: A leather desk diary propped open on the shelf above the blotter." },
-    { kind: "inspect", id: "lr_drawer", yaw: -44.4, pitch: -30.9, label: "Desk filing drawer", text: "Filing drawer: A deep drawer of hanging files, each labeled in Eleanor's handwriting. One gap stands out." },
+    { kind: "inspect", id: "lr_chair", yaw: -38.2, pitch: -50.5, label: "Overturned chair", text: "Overturned chair: One of the dining chairs, brought in for coffee. It lies on its back." },
+    { kind: "inspect", id: "lr_glass", yaw: -42.9, pitch: -72.3, label: "Broken glass", text: "Broken glass: Crystal shards on the carpet, a bagged piece beside them with an LAPD tag." },
+    { kind: "inspect", id: "lr_sofa", yaw: 15.8, pitch: -30.9, label: "Sofa", text: "Where she was found: Police tape marks on the carpet between the sofa and the overturned chair show where Eleanor was found. The sofa cushions are still squared off. Nothing on this side of the room was disturbed." },
+    { kind: "inspect", id: "lr_ledger", yaw: -55.0, pitch: -24.9, label: "Writing desk", text: "Eleanor's writing desk: A roll-top desk. Her household ledger lies open on the blotter." },
+    { kind: "inspect", id: "lr_diary", yaw: -60.8, pitch: -15.6, label: "Desk diary", text: "Desk diary: A leather desk diary propped open on the shelf above the blotter." },
+    { kind: "inspect", id: "lr_drawer", yaw: -39.8, pitch: -32.1, label: "Desk filing drawer", text: "Filing drawer: A deep drawer of hanging files, each labeled in Eleanor's handwriting. One gap stands out." },
     { kind: "inspect", id: "lr_sideboard", yaw: -127.6, pitch: -27.7, label: "Sideboard", text: "Sideboard: A glass cake stand with a few crumbs of lemon cake, five dessert plates stacked beside it, and a tray of crystal water glasses. One place in the set is empty. A space on the runner where something long lay." },
-    { kind: "inspect", id: "lr_wine", yaw: -111.3, pitch: -14.1, label: "Wine bottle", text: "Wine bottle: A 1979 Burgundy, two-thirds empty. Fingerprint powder on the neck. The police lab report found only Eleanor's prints." },
+    { kind: "inspect", id: "lr_wine", yaw: -111.3, pitch: -14.3, label: "Wine bottle", text: "Wine bottle: A 1979 Burgundy, two-thirds empty. Fingerprint powder on the neck. The police lab report found only Eleanor's prints." },
     { kind: "inspect", id: "lr_poker", yaw: 109.7, pitch: -20.0, label: "Fireplace tools", text: "Fireplace tools: Poker, brush and shovel, hanging neatly in their stand. A film of dust on all three. The grate holds old, cold ash. No one has lit a fire here since spring." },
     { kind: "inspect", id: "lr_front_door", yaw: -34.1, pitch: -4.7, label: "Front door", text: "Front door: Solid oak, with a deadbolt and a brass chain. No damage. Margaret Ellis let herself in with her spare key at 7:40 on Saturday morning; the door was locked and the chain was off." },
     { kind: "inspect", id: "lr_to_kitchen", yaw: 179.5, pitch: -10.2, label: "Kitchen", text: "Test hotspot. The kitchen is not built in 360° yet; this will walk you through." },
