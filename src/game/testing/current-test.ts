@@ -81,7 +81,7 @@ export type TestRoom = {
   /** Show the test button that hides and brings back the light from outside (the moon). */
   outsideToggle?: string;
   /** Versions of the room you can switch between (day and night): each swaps the room image, its light map and its light levels. */
-  variants?: { label: string; options: { name: string; image: string; lightmap?: string; ambient?: [number, number, number]; moon?: [number, number, number] }[] };
+  variants?: { label: string; options: { name: string; image: string; lightmap?: string; furnitureLight?: string; ambient?: [number, number, number]; moon?: [number, number, number] }[] };
   /** Test buttons that cycle through states, for things that come and go in the case (deliveries on the desk). */
   toggles?: { id: string; label: string; states: string[] }[];
   /**
@@ -95,7 +95,7 @@ export type TestRoom = {
    * Furniture rendered from 3D models into one 360° picture with transparency (scripts/testing/render3d/render360.html),
    * drawn over the room and lit with it. "gain" brightens it to sit with the room's plain light.
    */
-  furniture?: { image: string; gain?: number };
+  furniture?: { image: string; light?: string; gain?: number };
   moon?: [number, number, number];
 };
 

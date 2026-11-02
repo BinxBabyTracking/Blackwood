@@ -25,7 +25,7 @@ uniform float lamp, lampStrength; uniform vec3 lampPos, lampCol;
 // Rooms lit in code: the light map (r = moonlight, g = inside the room), the night level and the moon.
 uniform sampler2D lm; uniform float lmOn, moonLevel; uniform vec3 ambient, moonCol;
 // Furniture from 3D models: a 360° picture with transparency, lit like the room but without the light map's patches.
-uniform sampler2D fu; uniform float fuOn, fuGain;
+uniform sampler2D fu, fl; uniform float fuOn, fuGain, flOn;
 const float PI = 3.14159265359;
 void main(){
   vec3 d = normalize(vec3(v.x*tanHalf*aspect, v.y*tanHalf, -1.));
@@ -81,8 +81,10 @@ void main(){
   }
   if (fuOn > 0.5) {
     vec4 fv = texture(fu, vec2(u, vv));
-    vec3 fl = lmOn > 0.5 ? ambient * 0.92 + moonCol * 0.18 * moonLevel + bulb * 0.4 : vec3(1.) + bulb;
-    col = mix(col, fv.rgb * fuGain * fl, fv.a);
+    // Light map for the furniture: r = soft room light (darker underneath), g = light from the window, with shadows.
+    vec2 fla = flOn > 0.5 ? texture(fl, vec2(u, vv)).rg : vec2(0.75, 0.15);
+    vec3 lightOn = lmOn > 0.5 ? ambient * fla.r + moonCol * fla.g * moonLevel + bulb * 0.4 * (0.4 + 0.6 * fla.r) : vec3(1.) + bulb;
+    col = mix(col, fv.rgb * fuGain * lightOn, fv.a);
   }
   o = vec4(col * fade, 1.);
 }`;
@@ -147,7 +149,8 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
   }>({ eye: 0.5, list: [], token: {} });
   const lmTexRef = useRef<WebGLTexture | null>(null);
   const fuTexRef = useRef<WebGLTexture | null>(null);
-  const furn = useRef<{ on: boolean; gain: number }>({ on: false, gain: 1 });
+  const furn = useRef<{ on: boolean; gain: number; light: boolean }>({ on: false, gain: 1, light: false });
+  const flTexRef = useRef<WebGLTexture | null>(null);
   /** The room's code lighting, when it has a light map. */
   const lit = useRef<{ on: boolean; ambient: [number, number, number]; moon: [number, number, number] }>({ on: false, ambient: [1, 1, 1], moon: [1, 1, 1] });
   const moonLevel = useRef(1);
@@ -208,7 +211,7 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 1, 1, 0, gl.RGB, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0]));
-    const u = Object.fromEntries(["t", "yaw", "pitch", "tanHalf", "aspect", "fade", "boxOn", "light", "lightStrength", "box", "lightPos", "lightCol", "lm", "lmOn", "moonLevel", "ambient", "moonCol", "lamp", "lampStrength", "lampPos", "lampCol", "fu", "fuOn", "fuGain"].map((n) => [n, gl.getUniformLocation(prog, n)]));
+    const u = Object.fromEntries(["t", "yaw", "pitch", "tanHalf", "aspect", "fade", "boxOn", "light", "lightStrength", "box", "lightPos", "lightCol", "lm", "lmOn", "moonLevel", "ambient", "moonCol", "lamp", "lampStrength", "lampPos", "lampCol", "fu", "fuOn", "fuGain", "fl", "flOn"].map((n) => [n, gl.getUniformLocation(prog, n)]));
     const lmTex = gl.createTexture()!;
     gl.bindTexture(gl.TEXTURE_2D, lmTex);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
@@ -227,6 +230,15 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
     gl.bindTexture(gl.TEXTURE_2D, tex);
     fuTexRef.current = fuTex;
+    const flTex = gl.createTexture()!;
+    gl.bindTexture(gl.TEXTURE_2D, flTex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 1, 1, 0, gl.RGB, gl.UNSIGNED_BYTE, new Uint8Array([190, 40, 0]));
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    flTexRef.current = flTex;
     glRef.current = { gl, tex, u };
 
     const sprog = gl.createProgram()!;
@@ -412,8 +424,12 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
       gl.uniform1i(u.fu, 2);
       gl.uniform1f(u.fuOn, furn.current.on ? 1 : 0);
       gl.uniform1f(u.fuGain, furn.current.gain);
+      gl.uniform1i(u.fl, 3);
+      gl.uniform1f(u.flOn, furn.current.light ? 1 : 0);
       gl.activeTexture(gl.TEXTURE2);
       gl.bindTexture(gl.TEXTURE_2D, fuTexRef.current);
+      gl.activeTexture(gl.TEXTURE3);
+      gl.bindTexture(gl.TEXTURE_2D, flTexRef.current);
       gl.activeTexture(gl.TEXTURE0);
       gl.uniform1f(u.light, R.light ? lightLevel.current : 0);
       if (R.box) gl.uniform4f(u.box, R.box[0], R.box[1], R.box[2], R.box[3]);
@@ -494,7 +510,8 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
       setMoonOn(true);
     });
     lit.current = { on: false, ambient: r.ambient ?? [1, 1, 1], moon: r.moon ?? [1, 1, 1] };
-    furn.current = { on: false, gain: r.furniture?.gain ?? 1 };
+    furn.current = { on: false, gain: r.furniture?.gain ?? 1, light: false };
+    if (r.furniture?.light) loadFurnitureLight(r.furniture.light, () => cancelled);
     if (r.furniture && fuTexRef.current) {
       const fimg = new Image();
       fimg.onload = () => {
@@ -848,6 +865,22 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
     </div>
   );
 
+  /** The furniture's light map (soft light and window light, which change between day and night). */
+  function loadFurnitureLight(src: string, stale: () => boolean) {
+    const g = glRef.current;
+    if (!g || !flTexRef.current) return;
+    const img = new Image();
+    img.onload = () => {
+      if (stale()) return;
+      const { gl } = g;
+      gl.bindTexture(gl.TEXTURE_2D, flTexRef.current);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
+      gl.bindTexture(gl.TEXTURE_2D, g.tex);
+      furn.current.light = true;
+    };
+    img.src = src;
+  }
+
   /** Switch to another version of the room (day or night) without moving the view: new image, light map and light levels. */
   function switchVariant(i: number) {
     const g = glRef.current;
@@ -855,6 +888,8 @@ export function PanoramaViewer({ rooms, start, title }: { rooms: TestRoom[]; sta
     variantRef.current = i;
     setVariant(i);
     if (!g || !r.image) return;
+    const fvar = room.variants?.options[i]?.furnitureLight;
+    if (fvar) loadFurnitureLight(fvar, () => variantRef.current !== i);
     lit.current.ambient = r.ambient ?? lit.current.ambient;
     lit.current.moon = r.moon ?? lit.current.moon;
     const img = new Image();

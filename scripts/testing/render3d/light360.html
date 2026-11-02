@@ -1,0 +1,70 @@
+<html><body style="margin:0;background:transparent">
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Lighting passes for a room's furniture, rendered to one 360° picture from the player's eye.
+// pass "albedo": the models' own colors (transparent elsewhere).
+// pass "hemi":  white models lit only by soft sky/ground light (R).  pass "sun": white models lit by the window light,
+//               with the front wall (window holes from its mask) and the furniture casting shadows (R).
+// pass "roomshadow": the furniture's sun shadows on the floor and walls (alpha).  pass "contact": soft shadows under each piece (alpha).
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const P = JSON.parse(decodeURIComponent(location.hash.slice(1))); const pass=P.pass;
+const W=P.W||4096,H=W/2;
+const r=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true}); r.setSize(W,H); r.setPixelRatio(1); r.setClearColor(0,0);
+r.shadowMap.enabled=true; r.shadowMap.type=THREE.PCFSoftShadowMap;
+document.body.appendChild(r.domElement);
+const scene=new THREE.Scene();
+const E=P.eye, RW=P.room[0]/2, RD=P.room[1]/2, RH=1;
+const white=new THREE.MeshLambertMaterial({color:0xffffff, side:THREE.DoubleSide});
+const sc=document.createElement('canvas'); sc.width=sc.height=128; const g2=sc.getContext('2d');
+const gr=g2.createRadialGradient(64,64,0,64,64,64); gr.addColorStop(0,'rgba(0,0,0,0.8)'); gr.addColorStop(0.55,'rgba(0,0,0,0.5)'); gr.addColorStop(1,'rgba(0,0,0,0)');
+g2.fillStyle=gr; g2.fillRect(0,0,128,128); const shadowTex=new THREE.CanvasTexture(sc);
+const L=new GLTFLoader();
+await Promise.all(P.models.map(M=>new Promise(res=>L.load(M.file,g=>{
+  const m=g.scene; const op=M.opacity??1;
+  m.traverse(o=>{ if(o.isMesh){
+    if(pass==='albedo') { o.material=new THREE.MeshBasicMaterial({map:o.material.map, side:THREE.DoubleSide, transparent:op<1, opacity:op, depthWrite:op>=1}); o.renderOrder=op<1?2:0; }
+    else if(pass==='hemi'||pass==='sun') { o.material=white; o.castShadow=true; o.receiveShadow=true; }
+    else { o.material=new THREE.MeshBasicMaterial({colorWrite:false, side:THREE.DoubleSide}); o.castShadow=(M.castsShadow??true)&&op>=1; }
+  }});
+  const inner=new THREE.Group(); inner.add(m); inner.rotation.set((M.rotX||0)*Math.PI/180,0,(M.rotZ||0)*Math.PI/180); inner.updateMatrixWorld(true);
+  const box=new THREE.Box3().setFromObject(inner), size=box.getSize(new THREE.Vector3()), c=box.getCenter(new THREE.Vector3());
+  const off=new THREE.Group(); off.add(inner); off.position.sub(new THREE.Vector3(c.x,box.min.y,c.z));
+  const s=M.size/(M.fit==='y'?size.y:size.x); const grp=new THREE.Group(); grp.add(off); grp.scale.setScalar(s);
+  grp.rotation.y=(M.rotY||0)*Math.PI/180; grp.position.set(...M.pos); scene.add(grp);
+  if(M.shadow && pass==='contact'){ const pl=new THREE.Mesh(new THREE.PlaneGeometry(M.shadow[0],M.shadow[1]),new THREE.MeshBasicMaterial({map:shadowTex,transparent:true,depthWrite:false}));
+    pl.rotation.x=-Math.PI/2; pl.rotation.z=(M.rotY||0)*Math.PI/180; pl.position.set(M.pos[0],-E+0.002,M.pos[2]); scene.add(pl); }
+  res();
+}))));
+const az=P.sun[0]*Math.PI/180, el=P.sun[1]*Math.PI/180;
+const toSun=new THREE.Vector3(Math.sin(az)*Math.cos(el),Math.sin(el),-Math.cos(az)*Math.cos(el));
+function sunLight(){ const d=new THREE.DirectionalLight(0xffffff,Math.PI); d.position.copy(toSun.clone().multiplyScalar(4)); d.target.position.set(0,0,0);
+  d.castShadow=true; d.shadow.mapSize.set(4096,4096); const k=d.shadow.camera; k.left=-2;k.right=2;k.top=2;k.bottom=-2;k.near=0.5;k.far=10; d.shadow.bias=-0.0004; d.shadow.normalBias=0.004; d.shadow.radius=3;
+  scene.add(d); scene.add(d.target); }
+if(pass==='hemi'){ scene.add(new THREE.HemisphereLight(0xffffff,0x5a5a5a,Math.PI*0.55)); }
+if(pass==='sun'){
+  sunLight();
+  // The front wall with its window holes: casts shadows only, never drawn.
+  const t=new THREE.TextureLoader().load(P.frontMask); await new Promise(z=>{const i=setInterval(()=>{if(t.image){clearInterval(i);z();}},20);});
+  const wall=new THREE.Mesh(new THREE.PlaneGeometry(2*RW,RH),new THREE.MeshBasicMaterial({map:t,alphaTest:0.5,colorWrite:false,depthWrite:false,side:THREE.DoubleSide}));
+  wall.position.set(0,-E+RH/2,-RD-0.002); wall.castShadow=true; scene.add(wall);
+}
+if(pass==='roomshadow'){
+  sunLight();
+  const sm=new THREE.ShadowMaterial({opacity:1,color:0x000000,side:THREE.DoubleSide});
+  const add=(w,h,pos,rot)=>{const p=new THREE.Mesh(new THREE.PlaneGeometry(w,h),sm); p.position.set(...pos); p.rotation.set(...rot); p.receiveShadow=true; scene.add(p);};
+  add(2*RW,2*RD,[0,-E+0.001,0],[-Math.PI/2,0,0]);
+  add(2*RW,RH,[0,-E+RH/2,RD-0.001],[0,Math.PI,0]); add(2*RD,RH,[-RW+0.001,-E+RH/2,0],[0,Math.PI/2,0]); add(2*RD,RH,[RW-0.001,-E+RH/2,0],[0,-Math.PI/2,0]);
+}
+const rt=new THREE.WebGLCubeRenderTarget(P.cube||2048,{generateMipmaps:false,minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,type:THREE.HalfFloatType});
+const cc=new THREE.CubeCamera(0.005,20,rt); scene.add(cc); cc.update(r,scene);
+const gamma=pass==='albedo'?1/2.2:1.0;
+const q=new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({uniforms:{c:{value:rt.texture}},
+  vertexShader:'varying vec2 v; void main(){v=uv; gl_Position=vec4(position.xy,0.,1.);}',
+  fragmentShader:`uniform samplerCube c; varying vec2 v; const float PI=3.14159265;
+  void main(){ float yaw=(v.x-0.5)*2.*PI, p=(v.y-0.5)*PI;
+    vec3 d=vec3(sin(yaw)*cos(p), sin(p), -cos(yaw)*cos(p));
+    vec4 o=textureCube(c, d);
+    ${pass==='hemi'||pass==='sun' ? 'gl_FragColor=vec4(clamp(o.rgb,0.,1.), o.a);' : pass==='albedo' ? 'gl_FragColor=vec4(pow(max(o.rgb,0.),vec3('+gamma+')), o.a);' : 'gl_FragColor=vec4(0.,0.,0.,o.a);'} }`,depthTest:false}));
+const s2=new THREE.Scene(); s2.add(q); r.render(s2,new THREE.Camera()); window.DONE=1;
+</script></body></html>

@@ -20,15 +20,15 @@ export const C001_LIVING_ROOM: TestRoom = {
   variants: {
     label: "Time",
     options: [
-      { name: "day", image: "/rooms/c001-living-room/living_day.webp", lightmap: "/rooms/c001-living-room/living_day_light.webp", ambient: [0.82, 0.78, 0.7], moon: [0.95, 0.8, 0.58] },
-      { name: "night", image: "/rooms/c001-living-room/living_night.webp", lightmap: "/rooms/c001-living-room/living_night_light.webp", ambient: [0.2, 0.22, 0.32], moon: [0.42, 0.34, 0.21] },
+      { name: "day", image: "/rooms/c001-living-room/living_day.webp", lightmap: "/rooms/c001-living-room/living_day_light.webp", furnitureLight: "/rooms/c001-living-room/furniture_light_day.webp", ambient: [0.82, 0.78, 0.7], moon: [0.95, 0.8, 0.58] },
+      { name: "night", image: "/rooms/c001-living-room/living_night.webp", lightmap: "/rooms/c001-living-room/living_night_light.webp", furnitureLight: "/rooms/c001-living-room/furniture_light_night.webp", ambient: [0.2, 0.22, 0.32], moon: [0.42, 0.34, 0.21] },
     ],
   },
   // The wrought iron chandelier in the middle of the ceiling.
   light: { x: 0, y: 0.86, z: 0, color: [1.0, 0.84, 0.62], strength: 7 },
   // Every piece of furniture is a 3D model (Meshy), rendered together from the player's eye into one 360° layer
   // (scripts/testing/render3d/render360.html with c001_living_room.json). Models in models/ for walking later.
-  furniture: { image: "/rooms/c001-living-room/furniture.webp", gain: 1.1 },
+  furniture: { image: "/rooms/c001-living-room/furniture.webp", light: "/rooms/c001-living-room/furniture_light_day.webp", gain: 1.05 },
   hotspots: [
     { kind: "switch", id: "lr-switch", yaw: -17.7, pitch: -3.1, label: "Light switch" },
     { kind: "inspect", id: "lr_chair", yaw: -38.2, pitch: -50.5, label: "Overturned chair", text: "Overturned chair: One of the dining chairs, brought in for coffee. It lies on its back." },
