@@ -85,6 +85,8 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
   const [locked, setLocked] = useState(false);
   const [touch, setTouch] = useState(false);
   const [roomName, setRoomName] = useState(house.rooms[0].name);
+  const [focus, setFocus] = useState<WalkHotspot | null>(null);
+  const pressRef = useRef<(hs: WalkHotspot) => void>(() => {});
 
   useEffect(() => {
     const mount = mountRef.current!;
@@ -152,7 +154,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
       g.position.set(f.pos[0], 0, f.pos[1]);
       g.rotation.y = f.rot;
       const pt = (u: number, v: number) => new THREE.Vector2((u - 0.5) * f.width, (1 - v) * H);
-      const face = cast(new THREE.Mesh(new THREE.PlaneGeometry(f.width, H), new THREE.MeshLambertMaterial({ map: loadTex(def.tex), alphaTest: def.cutout ? 0.5 : 0 })));
+      const face = cast(new THREE.Mesh(new THREE.PlaneGeometry(f.width, H), new THREE.MeshLambertMaterial({ map: loadTex(def.tex), alphaTest: def.cutout ? 0.5 : 0, side: def.cutout ? THREE.DoubleSide : THREE.FrontSide })));
       (face.material as THREE.Material).shadowSide = THREE.DoubleSide;
       face.position.y = H / 2;
       g.add(face);
@@ -363,8 +365,23 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
       look.yaw += e.movementX * 0.0024;
       look.pitch = Math.max(-1.45, Math.min(1.45, look.pitch - e.movementY * 0.0024));
     };
+    let focused: WalkHotspot | null = null;
+    const use = () => {
+      if (focused) pressRef.current(focused);
+    };
+    const onUseKey = (e: KeyboardEvent) => {
+      if ((e.code === "KeyE" || e.code === "Enter") && document.pointerLockElement === canvas && focused) {
+        e.preventDefault();
+        use();
+      }
+    };
+    document.addEventListener("keydown", onUseKey, true);
     const onClick = () => {
       canvas.focus();
+      if (document.pointerLockElement === canvas) {
+        use();
+        return;
+      }
       if (window.matchMedia("(pointer: coarse)").matches) return;
       if (document.pointerLockElement !== canvas) (canvas.requestPointerLock?.() as Promise<void> | undefined)?.catch?.(() => {});
     };
@@ -452,6 +469,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
       camera.lookAt(pos.x + Math.sin(look.yaw) * Math.cos(look.pitch), pos.y + Math.sin(look.pitch), pos.z - Math.cos(look.yaw) * Math.cos(look.pitch));
       renderer.render(scene, camera);
       const w = mount.clientWidth, h = mount.clientHeight;
+      let best: WalkHotspot | null = null, bestD = 0.11;
       for (const hs of house.hotspots) {
         const el = markerRefs.current.get(hs.id);
         if (!el) continue;
@@ -466,6 +484,17 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         el.style.left = `${((v.x + 1) / 2) * w}px`;
         el.style.top = `${((1 - v.y) / 2) * h}px`;
         el.style.opacity = String(Math.min(1, (NEAR - dist) / 0.6));
+        // The marker nearest the center dot (and close to it) is the one a click uses.
+        const c = Math.hypot(v.x * (w / h), v.y);
+        if (c < bestD) {
+          bestD = c;
+          best = hs;
+        }
+      }
+      for (const hs of house.hotspots) markerRefs.current.get(hs.id)?.toggleAttribute("data-focus", hs === best);
+      if (best !== focused) {
+        focused = best;
+        setFocus(best);
       }
     };
     raf = requestAnimationFrame(frame);
@@ -490,6 +519,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
       cancelAnimationFrame(raf);
       document.removeEventListener("keydown", kd, true);
       document.removeEventListener("keyup", ku, true);
+      document.removeEventListener("keydown", onUseKey, true);
       window.removeEventListener("blur", clearKeys);
       window.removeEventListener("resize", onResize);
       document.removeEventListener("mousemove", onMouse);
@@ -509,6 +539,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     api.current?.release();
     setInspect(hs);
   };
+  pressRef.current = press;
 
   return (
     <div className="fixed inset-0 select-none overflow-hidden bg-black text-paper">
@@ -523,9 +554,9 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
           }}
           onClick={() => press(hs)}
           style={{ display: "none" }}
-          className="group absolute -translate-x-1/2 -translate-y-1/2"
+          className="group absolute -translate-x-1/2 -translate-y-1/2 transition-transform data-[focus]:scale-125"
         >
-          <span className={`block h-9 w-9 rounded-full border-2 ${hs.kind === "switch" ? "border-paper/80" : "border-brass/80"} bg-black/30 shadow-[0_0_18px_rgba(0,0,0,0.8)]`}>
+          <span className={`block h-9 w-9 rounded-full border-2 ${hs.kind === "switch" ? "border-paper/80" : "border-brass/80"} bg-black/30 group-data-[focus]:border-paper group-data-[focus]:bg-black/60 shadow-[0_0_18px_rgba(0,0,0,0.8)]`}>
             <span className="grid h-full w-full place-items-center text-sm">{hs.kind === "switch" ? (hs.light && lights[hs.light] ? "●" : "○") : "?"}</span>
           </span>
           <span className="absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap rounded-[2px] bg-black/70 px-2 py-0.5 text-xs">{hs.label}</span>
@@ -534,10 +565,15 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
 
       {!locked && !touch && ready ? (
         <span className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[2px] bg-black/60 px-3 py-2 text-sm">
-          Click to look around · WASD to walk · arrows turn · Esc to use the markers
+          Click to look around · WASD to walk · aim the dot at a marker and click
         </span>
       ) : null}
       {locked ? <span className="pointer-events-none absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-paper/70" /> : null}
+      {locked && focus ? (
+        <span className="pointer-events-none absolute left-1/2 top-1/2 mt-6 -translate-x-1/2 rounded-[2px] bg-black/70 px-2 py-1 text-xs">
+          Click or E: {focus.kind === "switch" ? "flip the switch" : `look at the ${focus.label.toLowerCase()}`}
+        </span>
+      ) : null}
 
       <div ref={stickRef} className="absolute bottom-20 left-6 h-28 w-28 rounded-full border border-paper/30 bg-black/30 sm:hidden">
         <div ref={knobRef} className="absolute left-1/2 top-1/2 -ml-6 -mt-6 h-12 w-12 rounded-full bg-paper/40" />
