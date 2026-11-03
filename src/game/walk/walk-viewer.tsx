@@ -91,8 +91,8 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
   const api = useRef<{ setNight: (n: boolean) => void; setLight: (id: string, on: boolean) => void; release: () => void; relock: () => void } | null>(null);
   const [progress, setProgress] = useState(0);
   const [ready, setReady] = useState(false);
-  const [night, setNight] = useState(false);
-  const [lights, setLights] = useState<Record<string, boolean>>({});
+  const [night, setNight] = useState(!!house.startNight);
+  const [lights, setLights] = useState<Record<string, boolean>>(() => Object.fromEntries(house.rooms.filter((r) => r.light.startOn).map((r) => [r.light.id, true])));
   const [inspect, setInspect] = useState<WalkHotspot | null>(null);
   const [locked, setLocked] = useState(false);
   const [touch, setTouch] = useState(false);
@@ -115,7 +115,8 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     scene.background = new THREE.Color(0x000000);
     const camera = new THREE.PerspectiveCamera(70, mount.clientWidth / mount.clientHeight, 0.05, 80);
     const look = { yaw: 0, pitch: -0.05 };
-    const pos = new THREE.Vector3(0, house.eye, 0.4);
+    const pos = new THREE.Vector3(house.start?.[0] ?? 0, house.eye, house.start?.[1] ?? 0.4);
+    if (house.start) look.yaw = ((house.start[2] ?? 0) * Math.PI) / 180;
     // For testing: #x,z,yaw[,pitch[,noclip]] (metres, degrees) in the address starts you at that spot facing that way.
     const start = location.hash.slice(1).split(",").map(Number);
     const testing = start.length >= 3 && start.every((n) => Number.isFinite(n));
@@ -273,7 +274,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         o.mat.needsUpdate = true;
       }
     };
-    setSun(false);
+    setSun(!!house.startNight);
 
     // Furniture.
     const blockers: { x0: number; x1: number; z0: number; z1: number }[] = [];
@@ -321,7 +322,8 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         off.position.set(-c.x, -box.min.y, -c.z);
         const grp = new THREE.Group();
         grp.add(off);
-        grp.scale.setScalar(M.size / (M.fit === "y" ? size.y : size.x));
+        const k = M.size / (M.fit === "y" ? size.y : size.x);
+        grp.scale.set(k * (M.stretch?.[0] ?? 1), k * (M.stretch?.[1] ?? 1), k * (M.stretch?.[2] ?? 1));
         grp.rotation.y = ((M.rotY ?? 0) * Math.PI) / 180;
         grp.position.set(M.pos[0], M.pos[1], M.pos[2]);
         scene.add(grp);
@@ -337,7 +339,11 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         }
       });
     }
-    manager.onLoad = () => setReady(true);
+    manager.onLoad = () => {
+      setReady(true);
+      // Lights that are on when you arrive (a diner open all night).
+      for (const r of house.rooms) if (r.light.startOn) api.current?.setLight(r.light.id, true);
+    };
 
     // Where you can stand: inside a room or in a passage between rooms, clear of the furniture.
     const areas = [

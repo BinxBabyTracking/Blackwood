@@ -8,6 +8,8 @@ export type WalkModel = {
   file: string; size: number; fit: "x" | "y"; pos: number[]; rotX?: number; rotY?: number; opacity?: number; shadow?: number[];
   /** A light fixture: lamp is the room light it belongs to, glow its texture with only the glass left, lit when the switch is on. */
   lamp?: string; glow?: string;
+  /** Stretch on top of the even scale (x, y, z), for a model that came out too flat or too narrow. */
+  stretch?: number[];
 };
 export type WalkHotspot = { id: string; kind: "inspect" | "switch"; label: string; text?: string; light?: string; at: number[] };
 export type WalkOutside = { day: string; night: string; distance: number; width: number; u: number; y: number };
@@ -28,7 +30,7 @@ export type WalkRoomDef = {
   floor: { tex: string; repeat?: number };
   ceil: { tex: string };
   /** The ceiling light: glow is the ceiling picture with only the lit glass left, shown bright when it is switched on. */
-  light: { id: string; at: number[]; power: number; glow?: string };
+  light: { id: string; at: number[]; power: number; glow?: string; startOn?: boolean };
   /** Darkens the room's surfaces a little (1 = as painted), for spaces with no window of their own. */
   tint?: number;
   walls: Partial<Record<"front" | "back" | "left" | "right", WalkWall>>;
@@ -38,6 +40,10 @@ export type WalkHouse = {
   name: string;
   eye: number;
   wall: number;
+  /** Where you start: x, z (metres) and the way you face (degrees). */
+  start?: number[];
+  /** Opens at night. */
+  startNight?: boolean;
   rooms: WalkRoomDef[];
   /** Openings you walk through from one room to the next (x and z ranges in metres), crossed along z unless said otherwise. */
   passages: { x: number[]; z: number[]; along?: "x" | "z" }[];
