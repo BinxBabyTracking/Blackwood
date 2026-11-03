@@ -55,6 +55,8 @@ export type WalkHouse = {
   passages: { x: number[]; z: number[]; along?: "x" | "z" }[];
   models: WalkModel[];
   hotspots: WalkHotspot[];
+  /** Flat pictures laid on the floor (a rug): centre x, z and size in metres, turned by rotY degrees. */
+  decals?: { tex: string; pos: number[]; size: number[]; rotY?: number }[];
 };
 
 export const C001_HOUSE: WalkHouse = {

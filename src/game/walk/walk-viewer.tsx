@@ -249,6 +249,14 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
       scene.add(th);
     }
 
+    for (const dc of house.decals ?? []) {
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(dc.size[0], dc.size[1]), new THREE.MeshLambertMaterial({ map: loadTex(dc.tex), alphaTest: 0.5 }));
+      m.rotation.set(-Math.PI / 2, 0, ((dc.rotY ?? 0) * Math.PI) / 180);
+      m.position.set(dc.pos[0], 0.003, dc.pos[1]);
+      m.receiveShadow = true;
+      scene.add(m);
+    }
+
     // Lights shared by the whole house.
     const hemi = new THREE.HemisphereLight(SKY.day.sky, SKY.day.ground, SKY.day.power);
     scene.add(hemi);
@@ -303,7 +311,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
           const mesh = o as THREE.Mesh;
           if (!mesh.isMesh) return;
           const old = mesh.material as THREE.MeshStandardMaterial;
-          const mat = new THREE.MeshLambertMaterial({ map: old.map, side: THREE.DoubleSide, transparent: op < 1, opacity: op, depthWrite: op >= 1 });
+          const mat = new THREE.MeshLambertMaterial({ map: old.map, vertexColors: !old.map && !!mesh.geometry.getAttribute("color"), side: THREE.DoubleSide, transparent: op < 1, opacity: op, depthWrite: op >= 1 });
           if (M.lamp && M.glow) {
             const gm = tex.load(M.glow);
             gm.flipY = false;
