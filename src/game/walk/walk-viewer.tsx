@@ -162,6 +162,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
   const visitRef = useRef(visit);
   visitRef.current = visit;
   const pressRef = useRef<(hs: WalkHotspot) => void>(() => {});
+  const talkRef = useRef<{ id: string; text: string; start: number } | null>(null);
 
   useEffect(() => {
     const mount = mountRef.current!;
@@ -374,6 +375,8 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     const lampLights = new Map<string, { light: THREE.PointLight; power: number }[]>();
     const visitGroups: { visit: string; obj: THREE.Object3D }[] = [];
     const rigs: Rig[] = [];
+    const jaws: { mesh: THREE.Mesh; i: number; hotspot: string }[] = [];
+    let jawNow = 0;
     for (const M of house.models) {
       gl.load(M.file, (g) => {
         const op = M.opacity ?? 1;
@@ -381,7 +384,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
           const mesh = o as THREE.Mesh;
           if (!mesh.isMesh) return;
           const old = mesh.material as THREE.MeshStandardMaterial;
-          const mat = new THREE.MeshLambertMaterial({ map: old.map, vertexColors: !old.map && !!mesh.geometry.getAttribute("color"), side: THREE.DoubleSide, transparent: op < 1, opacity: op, depthWrite: op >= 1 });
+          const mat = new THREE.MeshLambertMaterial({ map: old.map, vertexColors: !!mesh.geometry.getAttribute("color"), side: THREE.DoubleSide, transparent: op < 1, opacity: op, depthWrite: op >= 1 });
           if (M.lamp && M.glow) {
             const gm = tex.load(M.glow);
             gm.flipY = false;
@@ -391,6 +394,8 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
             lampMats.set(M.lamp, [...(lampMats.get(M.lamp) ?? []), mat]);
           }
           mesh.material = mat;
+          const ji = mesh.morphTargetDictionary?.jawOpen;
+          if (M.talk && ji !== undefined) jaws.push({ mesh, i: ji, hotspot: M.talk });
           mesh.castShadow = op >= 1;
           if ((mesh as THREE.SkinnedMesh).isSkinnedMesh) mesh.frustumCulled = false;
           mesh.receiveShadow = true;
@@ -598,6 +603,18 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         setRoomName(here.name);
       }
       for (const r of rigs) idleRig(r, now / 1000);
+      // Talking: the mouth follows the letters of the line being read (vowels open, m, b, p and pauses close).
+      const tk = talkRef.current;
+      let jawGoal = 0;
+      if (tk) {
+        const i = Math.floor((now - tk.start) / 62);
+        const ch = (tk.text[i] ?? "").toLowerCase();
+        jawGoal = i >= tk.text.length ? 0 : "ao".includes(ch) ? 1 : "ei".includes(ch) ? 0.65 : "uwy".includes(ch) ? 0.4 : /[a-z]/.test(ch) && !"mbp".includes(ch) ? 0.25 : 0;
+      }
+      const dbg = (window as unknown as { __jaw?: number }).__jaw;
+      if (typeof dbg === "number") jawGoal = dbg;
+      jawNow += (jawGoal - jawNow) * Math.min(1, dt * 18);
+      for (const j of jaws) if (j.mesh.morphTargetInfluences) j.mesh.morphTargetInfluences[j.i] = tk && tk.id !== j.hotspot && typeof dbg !== "number" ? 0 : jawNow;
       camera.position.copy(pos);
       camera.lookAt(pos.x + Math.sin(look.yaw) * Math.cos(look.pitch), pos.y + Math.sin(look.pitch), pos.z - Math.cos(look.yaw) * Math.cos(look.pitch));
       renderer.render(scene, camera);
@@ -684,9 +701,13 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     }
     api.current?.release();
     setInspect(hs);
+    // A person reads out the part of the note in quotes (or the whole note).
+    const quoted = hs.text?.match(/"([^"]+)"/)?.[1];
+    talkRef.current = { id: hs.id, text: quoted ?? hs.text?.split(": ").slice(1).join(": ") ?? "", start: performance.now() };
   };
   pressRef.current = press;
   const close = () => {
+    talkRef.current = null;
     setInspect(null);
     api.current?.relock();
   };
@@ -794,7 +815,10 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
       </div>
 
       {inspect ? (
-        <div className="absolute inset-0 grid place-items-center bg-black/70 p-6" onClick={close}>
+        <div
+          className={house.models.some((m) => m.talk === inspect.id) ? "absolute inset-x-0 bottom-16 grid place-items-center p-6" : "absolute inset-0 grid place-items-center bg-black/70 p-6"}
+          onClick={close}
+        >
           <div className="max-w-md border border-rule bg-ink p-5" onClick={(e) => e.stopPropagation()}>
             <p className="font-display text-xl">{inspect.label}</p>
             <p className="mt-3 text-smoke">{inspect.text}</p>

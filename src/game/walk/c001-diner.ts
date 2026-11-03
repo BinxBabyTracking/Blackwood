@@ -249,7 +249,8 @@ export const C001_DINER: WalkHouse = {
    "shadow": [
     0.5,
     0.4
-   ]
+   ],
+   "talk": "d_rosa"
   },
   {
    "file": "/rooms/c001-diner/models/stool.glb",
