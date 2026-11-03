@@ -19,7 +19,11 @@ export type WalkModel = {
   /** Only on this visit (rooms that change between visits). */
   visit?: string;
 };
-export type WalkHotspot = { id: string; kind: "inspect" | "switch"; label: string; text?: string; light?: string; at: number[]; visit?: string };
+export type WalkHotspot = {
+  id: string; kind: "inspect" | "switch"; label: string; text?: string; light?: string; at: number[]; visit?: string;
+  /** A person you can question (their character id): clicking opens a question box instead of a note. */
+  person?: string;
+};
 export type WalkOutside = { day: string; night: string; distance: number; width: number; u: number; y: number };
 export type WalkWall = {
   tex: string;
@@ -48,6 +52,8 @@ export type WalkHouse = {
   name: string;
   eye: number;
   wall: number;
+  /** The case the people here belong to, for questioning them. */
+  caseId?: string;
   /** Where you start: x, z (metres) and the way you face (degrees). */
   start?: number[];
   /** Opens at night. */

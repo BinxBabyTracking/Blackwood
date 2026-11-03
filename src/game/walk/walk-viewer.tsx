@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import type { InvestigationState } from "@/game/engine/types";
+import { walkAsk } from "@/app/actions/walk-test";
 import type { WalkHotspot, WalkHouse, WalkRoomDef, WalkWall } from "./c001-house";
 
 /*
@@ -162,7 +164,10 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
   const visitRef = useRef(visit);
   visitRef.current = visit;
   const pressRef = useRef<(hs: WalkHotspot) => void>(() => {});
-  const talkRef = useRef<{ id: string; text: string; start: number } | null>(null);
+  const talkRef = useRef<{ id: string; text: string; start: number; timing?: { starts: number[]; ends: number[] } | null } | null>(null);
+  const [chat, setChat] = useState<{ hs: WalkHotspot; lines: { you: boolean; text: string }[]; pending: boolean; state: InvestigationState | null; error?: string } | null>(null);
+  const [draft, setDraft] = useState("");
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const mount = mountRef.current!;
@@ -483,6 +488,8 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
       ArrowRight: "arrowright", ShiftLeft: "shift", ShiftRight: "shift",
     };
     const onKey = (down: boolean) => (e: KeyboardEvent) => {
+      const tg = e.target as HTMLElement | null;
+      if (tg && (tg.tagName === "INPUT" || tg.tagName === "TEXTAREA")) return;
       const k = CODES[e.code] ?? e.key.toLowerCase();
       if (!["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright", "shift"].includes(k)) return;
       if (down) keys.add(k);
@@ -607,9 +614,15 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
       const tk = talkRef.current;
       let jawGoal = 0;
       if (tk) {
-        const i = Math.floor((now - tk.start) / 62);
+        const el = now - tk.start;
+        let i = Math.floor(el / 62);
+        if (tk.timing) {
+          const sec = el / 1000;
+          i = tk.timing.starts.findIndex((st, k) => sec >= st && sec < (tk.timing!.ends[k] ?? st));
+          if (i < 0) i = sec > (tk.timing.ends[tk.timing.ends.length - 1] ?? 0) ? tk.text.length : -1;
+        }
         const ch = (tk.text[i] ?? "").toLowerCase();
-        jawGoal = i >= tk.text.length ? 0 : "ao".includes(ch) ? 1 : "ei".includes(ch) ? 0.65 : "uwy".includes(ch) ? 0.4 : /[a-z]/.test(ch) && !"mbp".includes(ch) ? 0.25 : 0;
+        jawGoal = i < 0 || i >= tk.text.length ? 0 : "ao".includes(ch) ? 1 : "ei".includes(ch) ? 0.65 : "uwy".includes(ch) ? 0.4 : /[a-z]/.test(ch) && !"mbp".includes(ch) ? 0.25 : 0;
       }
       const dbg = (window as unknown as { __jaw?: number }).__jaw;
       if (typeof dbg === "number") jawGoal = dbg;
@@ -692,7 +705,52 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     };
   }, [house]);
 
+  /** Speak each line in turn in the person's voice, the mouth following the voice timing. */
+  const speak = async (hs: WalkHotspot, lines: string[]) => {
+    for (const text of lines) {
+      const base = `/api/walk-voice?caseId=${encodeURIComponent(house.caseId ?? "")}&id=${encodeURIComponent(hs.person ?? "")}&text=${encodeURIComponent(text)}`;
+      const a = new Audio(base);
+      audioRef.current = a;
+      const done = new Promise<void>((res) => {
+        a.onended = () => res();
+        a.onerror = () => res();
+      });
+      a.onplaying = async () => {
+        talkRef.current = { id: hs.id, text, start: performance.now(), timing: null };
+        const t = await fetch(base + "&timing=1").then((r) => (r.ok ? r.json() : null)).catch(() => null);
+        if (t && talkRef.current?.text === text) talkRef.current.timing = { starts: t.starts, ends: t.ends };
+      };
+      await a.play().catch(() => {
+        // No sound (blocked or failed): read the line with the mouth only.
+        talkRef.current = { id: hs.id, text, start: performance.now(), timing: null };
+      });
+      await Promise.race([done, new Promise((r) => setTimeout(r, Math.max(2500, text.length * 75)))]);
+      if (audioRef.current !== a) return;
+    }
+    talkRef.current = null;
+  };
+
+  const askPerson = async () => {
+    if (!chat || chat.pending || !draft.trim()) return;
+    const q = draft.trim();
+    setDraft("");
+    setChat({ ...chat, pending: true, error: undefined, lines: [...chat.lines, { you: true, text: q }] });
+    const r = await walkAsk(house.caseId ?? "", chat.hs.person ?? "", q, chat.state);
+    if ("error" in r && r.error) {
+      setChat((c) => (c ? { ...c, pending: false, error: r.error } : c));
+      return;
+    }
+    const got = r as { state: InvestigationState; lines: string[] };
+    setChat((c) => (c ? { ...c, pending: false, state: got.state, lines: [...c.lines, ...got.lines.map((t) => ({ you: false, text: t }))] } : c));
+    speak(chat.hs, got.lines);
+  };
+
   const press = (hs: WalkHotspot) => {
+    if (hs.person && house.caseId) {
+      api.current?.release();
+      setChat((c) => (c && c.hs.id === hs.id ? c : { hs, lines: [], pending: false, state: null }));
+      return;
+    }
     if (hs.kind === "switch" && hs.light) {
       const on = !lights[hs.light];
       setLights((l) => ({ ...l, [hs.light!]: on }));
@@ -708,6 +766,9 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
   pressRef.current = press;
   const close = () => {
     talkRef.current = null;
+    audioRef.current?.pause();
+    audioRef.current = null;
+    setChat(null);
     setInspect(null);
     api.current?.relock();
   };
@@ -813,6 +874,49 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
           </button>
         ) : null}
       </div>
+
+      {chat ? (
+        <div className="absolute inset-x-0 bottom-14 flex justify-center p-4" onKeyDown={(e) => e.key === "Escape" && close()}>
+          <div className="w-full max-w-xl border border-rule bg-ink/95 p-4">
+            <div className="flex items-center justify-between">
+              <p className="font-display text-lg">{chat.hs.label}</p>
+              <button onClick={close} className="border border-rule px-2 py-1 text-xs hover:border-paper">
+                Close
+              </button>
+            </div>
+            <div className="mt-2 max-h-48 space-y-2 overflow-y-auto text-sm">
+              {chat.lines.length ? null : <p className="text-smoke">Type a question. This is a test copy of the case: nothing here changes your investigation.</p>}
+              {chat.lines.map((l, i) => (
+                <p key={i} className={l.you ? "text-brass" : "text-paper"}>
+                  {l.you ? "You: " : ""}
+                  {l.text}
+                </p>
+              ))}
+              {chat.pending ? <p className="text-smoke">...</p> : null}
+              {chat.error ? <p className="text-[#e2a7a2]">{chat.error}</p> : null}
+            </div>
+            <form
+              className="mt-3 flex gap-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                askPerson();
+              }}
+            >
+              <input
+                autoFocus
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                maxLength={300}
+                placeholder={`Ask ${chat.hs.label.split(",")[0].split(" ")[0]} something...`}
+                className="min-w-0 flex-1 border border-rule bg-black/60 px-3 py-2 text-sm outline-none focus:border-brass"
+              />
+              <button disabled={chat.pending || !draft.trim()} className="border border-brass px-3 py-2 text-sm text-brass disabled:opacity-40">
+                Ask
+              </button>
+            </form>
+          </div>
+        </div>
+      ) : null}
 
       {inspect ? (
         <div

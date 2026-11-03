@@ -349,7 +349,8 @@ export const C001_DINER: WalkHouse = {
     0.3,
     1.5,
     -1.95
-   ]
+   ],
+   "person": "rosa"
   },
   {
    "id": "d_schedule",
@@ -406,5 +407,6 @@ export const C001_DINER: WalkHouse = {
     0.35
    ]
   }
- ]
+ ],
+ "caseId": "C001"
 };
