@@ -325,6 +325,17 @@ export const C001_DINER: WalkHouse = {
     0.45,
     0.45
    ]
+  },
+  {
+   "file": "/rooms/c001-diner/models/schedule.glb",
+   "size": 0.72,
+   "fit": "x",
+   "pos": [
+    1.95,
+    1.0,
+    -2.4
+   ],
+   "rotY": 0
   }
  ],
  "hotspots": [
@@ -346,8 +357,8 @@ export const C001_DINER: WalkHouse = {
    "text": "Staff schedule: The week's shifts, pinned beside the kitchen pass.",
    "at": [
     1.95,
-    1.399,
-    -2.397
+    1.4,
+    -2.3
    ]
   },
   {
