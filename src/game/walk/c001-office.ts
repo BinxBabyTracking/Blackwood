@@ -133,14 +133,14 @@ export const C001_OFFICE: WalkHouse = {
   },
   {
    "file": "/rooms/c001-office/models/typewriter.glb",
-   "size": 0.45,
+   "size": 0.42,
    "fit": "x",
    "pos": [
-    0.45,
-    0.925,
-    -0.9
+    -1.754,
+    0.68,
+    -1.754
    ],
-   "rotY": 180
+   "rotY": 135
   },
   {
    "file": "/rooms/c001-office/models/recorder.glb",
@@ -275,14 +275,29 @@ export const C001_OFFICE: WalkHouse = {
   },
   {
    "file": "/rooms/c001-bank/models/phone.glb",
-   "size": 0.24,
+   "size": 0.28,
    "fit": "x",
    "pos": [
-    -0.7,
+    0.45,
     0.925,
-    -0.55
+    -0.9
    ],
-   "rotY": 200
+   "rotY": 180
+  },
+  {
+   "file": "/rooms/c001-office/models/endtable.glb",
+   "size": 0.68,
+   "fit": "y",
+   "pos": [
+    -1.754,
+    0,
+    -1.754
+   ],
+   "rotY": 45,
+   "shadow": [
+    0.6,
+    0.6
+   ]
   }
  ],
  "hotspots": [
@@ -364,9 +379,9 @@ export const C001_OFFICE: WalkHouse = {
    "label": "Typewriter",
    "text": "Typewriter: Where the final report gets written, once you know who did it.",
    "at": [
-    0.45,
-    1.075,
-    -0.9
+    -1.754,
+    0.8300000000000001,
+    -1.754
    ],
    "game": "office_typewriter"
   },
@@ -388,9 +403,9 @@ export const C001_OFFICE: WalkHouse = {
    "label": "Telephone",
    "text": "Telephone.",
    "at": [
-    -0.7,
-    1.045,
-    -0.55
+    0.45,
+    1.0550000000000002,
+    -0.9
    ]
   },
   {

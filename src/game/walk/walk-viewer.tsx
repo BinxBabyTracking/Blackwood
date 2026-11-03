@@ -753,7 +753,7 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
       jawNow += (jawGoal - jawNow) * Math.min(1, dt * 18);
       jawU.value = jawNow;
       for (const j of jaws) if (j.mesh.morphTargetInfluences) j.mesh.morphTargetInfluences[j.i] = tk && tk.id !== j.hotspot && typeof dbg !== "number" ? 0 : jawNow;
-      eyeNow += ((seated ? 1.15 : house.eye) - eyeNow) * Math.min(1, dt * 6);
+      eyeNow += ((seated ? 1.45 : house.eye) - eyeNow) * Math.min(1, dt * 6);
       pos.y = eyeNow;
       camera.position.copy(pos);
       lookAt.set(pos.x + Math.sin(look.yaw) * Math.cos(look.pitch), pos.y + Math.sin(look.pitch), pos.z - Math.cos(look.yaw) * Math.cos(look.pitch));
