@@ -525,6 +525,12 @@ export function InvestigationShell({
     } catch {}
   }, []);
   const walkHouse = rooms3d ? walkSceneFor(caseId, view.location.id) : null;
+  // An interview with someone standing in this 3D room happens in the room: their face, not their portrait.
+  const talkingTo = layer?.k === "conversation" ? layer.data : null;
+  const inRoom = Boolean(
+    walkHouse && talkingTo && talkingTo.medium !== "telephone" && walkHouse.hotspots.some((h) => h.person === talkingTo.characterId) && walkHouse.models.some((m) => m.talk && walkHouse.hotspots.some((h) => h.id === m.talk && h.person === talkingTo.characterId)),
+  );
+  const [roomLine, setRoomLine] = useState<{ src: string; text: string } | null>(null);
   // The telephone rings only in the office (anywhere, with a mobile phone), and never over an interview, a document or an inspection.
   const phoneHere = atHome || view.phone.mobile;
   const ringing = Boolean(!trip && view.phone.ringing && phoneHere && view.introSeen && (layer === null || panel === "phone") && deferredCall !== view.phone.ringing.id);
@@ -721,6 +727,7 @@ export function InvestigationShell({
             visible: view.location.hotspots.map((h) => h.id),
             attention: Object.fromEntries(view.location.hotspots.filter((h) => h.attention).map((h) => [h.id, h.callout])),
             busy: layer !== null || pending || menu,
+            interview: inRoom && talkingTo ? { characterId: talkingTo.characterId, line: roomLine } : null,
             onHotspot: (id) => {
               handled(id);
               if (view.location.hotspots.find((h) => h.id === id)?.local === "rolling") {
@@ -1037,7 +1044,7 @@ export function InvestigationShell({
       ) : null}
 
       {layer?.k === "conversation" ? (
-        <InterviewScreen key={`interview-${layer.data.characterId}`} caseId={caseId} data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} volume={dialogueVolume} />
+        <InterviewScreen key={`interview-${layer.data.characterId}`} caseId={caseId} data={layer.data} view={view} dispatch={dispatch} onClose={close} pending={pending} volume={dialogueVolume} inRoom={inRoom} onSpeaking={setRoomLine} />
       ) : null}
       {layer?.k === "document" ? <DocumentPanel caseId={caseId} data={layer.data} view={view} dispatch={dispatch} onClose={closeDocument} pending={pending} volume={dialogueVolume} /> : null}
       {layer?.k === "call" ? (

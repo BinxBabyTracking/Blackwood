@@ -86,7 +86,7 @@ function screenTexture(wm: number, hm: number) {
 }
 
 /** A rigged person: arms lowered from the rigging pose, then a slow idle (breathing, weight shift, glances). */
-type Rig = { bones: Record<string, THREE.Bone>; base: Record<string, THREE.Quaternion>; phase: number };
+type Rig = { bones: Record<string, THREE.Bone>; base: Record<string, THREE.Quaternion>; phase: number; still?: boolean };
 const RIG_BONES = ["Hips", "Spine", "Spine01", "Spine02", "neck", "Head", "LeftArm", "RightArm", "LeftForeArm", "RightForeArm", "LeftHand", "RightHand", "headfront"];
 
 function poseRig(root: THREE.Object3D): Rig | null {
@@ -138,7 +138,8 @@ function idleRig(r: Rig, t: number) {
   set("Spine02", breath * 0.016, 0, 0);
   set("Hips", 0, Math.sin(T * 0.21) * 0.025, Math.sin(T * 0.37) * 0.012);
   // Glance around now and then: mostly still, with slow turns.
-  const glance = Math.sin(T * 0.19) * 0.22 + Math.sin(T * 0.53) * 0.06;
+  // In an interview they look at you, not around the room.
+  const glance = r.still ? 0 : Math.sin(T * 0.19) * 0.22 + Math.sin(T * 0.53) * 0.06;
   set("neck", Math.sin(T * 0.31) * 0.03, glance * 0.4, 0);
   set("Head", Math.sin(T * 0.43) * 0.04 - 0.02, glance * 0.6, Math.sin(T * 0.27) * 0.02);
   set("LeftArm", breath * 0.01, 0, Math.sin(T * 0.33) * 0.02);
@@ -158,6 +159,8 @@ export type WalkGame = {
   attention: Record<string, string | null>;
   /** A panel, note or conversation is open over the room. */
   busy: boolean;
+  /** Interviewing someone standing here: the camera turns to their face (on the left of the screen) and their mouth follows the line being spoken. */
+  interview?: { characterId: string; line: { src: string; text: string } | null } | null;
   onHotspot: (id: string) => void;
 };
 
@@ -411,6 +414,14 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
     const visitGroups: { visit: string; obj: THREE.Object3D }[] = [];
     const showGroups: { id: string; obj: THREE.Object3D }[] = [];
     const rigs: Rig[] = [];
+    const people = new Map<string, { grp: THREE.Object3D; rig: Rig | null; rotY: number }>();
+    // The interview camera: how far it has moved from your own view to the person's face (0 to 1).
+    let iv = 0;
+    const ivFrom = new THREE.Vector3(), ivAt = new THREE.Vector3(), camAt = new THREE.Vector3(), lookAt = new THREE.Vector3();
+    let ivWho = "";
+    // A soft light from beside the camera in an interview, so a face is never lost against a bright window.
+    const ivLight = new THREE.PointLight(0xffeedd, 0, 4, 2);
+    scene.add(ivLight);
     const jaws: { mesh: THREE.Mesh; i: number; hotspot: string }[] = [];
     let jawNow = 0;
     const jawU = { value: 0 };
@@ -474,6 +485,7 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
         grp.updateMatrixWorld(true);
         const rig = poseRig(grp);
         if (rig) rigs.push(rig);
+        if (M.talk) people.set(M.talk, { grp, rig, rotY: ((M.rotY ?? 0) * Math.PI) / 180 });
         if (game && M.showIf) {
           showGroups.push({ id: M.showIf, obj: grp });
           grp.visible = gameRef.current?.visible.includes(M.showIf) ?? false;
@@ -701,7 +713,21 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
         if (G.busy && document.pointerLockElement === canvas) document.exitPointerLock?.();
       }
       for (const r of rigs) idleRig(r, now / 1000);
+      const IV = gameRef.current?.interview;
+      const hsFor = IV ? house.hotspots.find((h) => h.person === IV.characterId) : undefined;
+      const who = hsFor ? people.get(hsFor.id) : undefined;
       // Talking: the mouth follows the letters of the line being read (vowels open, m, b, p and pauses close).
+      const line = IV?.line ?? null;
+      if (hsFor && line && talkRef.current?.text !== line.text) {
+        const tkNew: { id: string; text: string; start: number; timing?: { starts: number[]; ends: number[] } | null } = { id: hsFor.id, text: line.text, start: performance.now(), timing: null };
+        talkRef.current = tkNew;
+        fetch(line.src + "&timing=1")
+          .then((r) => (r.ok ? r.json() : null))
+          .then((t) => {
+            if (t && talkRef.current === tkNew) tkNew.timing = { starts: t.starts, ends: t.ends };
+          })
+          .catch(() => {});
+      } else if (IV && !line && talkRef.current) talkRef.current = null;
       const tk = talkRef.current;
       let jawGoal = 0;
       if (tk) {
@@ -721,7 +747,35 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
       jawU.value = jawNow;
       for (const j of jaws) if (j.mesh.morphTargetInfluences) j.mesh.morphTargetInfluences[j.i] = tk && tk.id !== j.hotspot && typeof dbg !== "number" ? 0 : jawNow;
       camera.position.copy(pos);
-      camera.lookAt(pos.x + Math.sin(look.yaw) * Math.cos(look.pitch), pos.y + Math.sin(look.pitch), pos.z - Math.cos(look.yaw) * Math.cos(look.pitch));
+      lookAt.set(pos.x + Math.sin(look.yaw) * Math.cos(look.pitch), pos.y + Math.sin(look.pitch), pos.z - Math.cos(look.yaw) * Math.cos(look.pitch));
+      // Interviewing someone here: ease the camera round to their face.
+      for (const r of rigs) r.still = !!who && r === who.rig;
+      if (who) ivWho = hsFor!.id;
+      iv = Math.max(0, Math.min(1, iv + (who ? dt : -dt) * 1.6));
+      const P = people.get(ivWho);
+      if (iv > 0 && P) {
+        const head = P.rig?.bones.Head;
+        const face = head ? head.getWorldPosition(ivAt) : P.grp.getWorldPosition(ivAt).setY(1.5);
+        const fx = Math.sin(P.rotY), fz = Math.cos(P.rotY);
+        face.y += 0.04;
+        face.x += fx * 0.06;
+        face.z += fz * 0.06;
+        // Wide screens: the face on the left, where the interview leaves the room showing; narrow: near the top.
+        const w = mount.clientWidth, h = mount.clientHeight, wide = w >= 768;
+        const d = 0.8;
+        camAt.set(face.x + fx * d, face.y + 0.02, face.z + fz * d);
+        const tanV = Math.tan(((camera.fov / 2) * Math.PI) / 180), tanH = tanV * (w / h);
+        // Aim to the side of the face (or below it) so it lands where the screen is open.
+        const ndcX = wide ? -0.58 : 0, ndcY = wide ? 0.08 : 0.55;
+        const rx = Math.cos(P.rotY), rz = -Math.sin(P.rotY); // the person's left, our right
+        ivFrom.set(face.x - rx * ndcX * d * tanH, face.y - ndcY * d * tanV, face.z - rz * ndcX * d * tanH);
+        const e = iv * iv * (3 - 2 * iv);
+        camera.position.lerpVectors(pos, camAt, e);
+        lookAt.lerp(ivFrom, e);
+        ivLight.position.set(camAt.x + rx * 0.4, camAt.y + 0.35, camAt.z + rz * 0.4);
+        ivLight.intensity = 1.6 * e;
+      } else ivLight.intensity = 0;
+      camera.lookAt(lookAt);
       renderer.render(scene, camera);
       const w = mount.clientWidth, h = mount.clientHeight;
       let best: WalkHotspot | null = null, bestD = 0.11;
@@ -911,7 +965,7 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
         </button>
       ))}
 
-      {!locked && !touch && ready && !hinted ? (
+      {!locked && !touch && ready && !hinted && !game?.busy ? (
         <span className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[2px] bg-black/60 px-3 py-2 text-sm">
           Click to look around · WASD to walk · aim the dot at a marker and click
         </span>

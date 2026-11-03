@@ -27,7 +27,13 @@ export function InterviewScreen({
   onClose,
   pending,
   volume,
+  inRoom = false,
+  onSpeaking,
 }: {
+  /** The person is standing in a 3D room behind this screen: no portrait, the left side left open to show them. */
+  inRoom?: boolean;
+  /** Told which line is being spoken (and stopped), for a 3D person to move their mouth to. */
+  onSpeaking?: (line: { src: string; text: string } | null) => void;
   caseId: string;
   data: Conversation;
   view: ClientView;
@@ -74,6 +80,11 @@ export function InterviewScreen({
   const speakingText = player.current !== null ? data.history[player.current]?.text ?? "" : "";
   const speakingLine = useMemo(() => (speakingSrc ? { src: speakingSrc, text: speakingText } : null), [speakingSrc, speakingText]);
 
+  useEffect(() => {
+    onSpeaking?.(speakingLine);
+  }, [speakingLine, onSpeaking]);
+  useEffect(() => () => onSpeaking?.(null), [onSpeaking]);
+
   const ask = async (a: GameAction) => {
     stop();
     setMode("questions");
@@ -82,8 +93,8 @@ export function InterviewScreen({
 
   const backdrop = useBackdropClose(onClose);
   return (
-    <div className="fixed inset-0 z-40 flex bg-black/70 backdrop-blur-[2px] game-fade md:p-6 lg:p-10" {...backdrop}>
-    <div className="mx-auto flex h-full w-full max-w-7xl flex-col overflow-hidden bg-[#08090a] text-paper md:border md:border-white/10 md:shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9)]" role="dialog" aria-modal="true" aria-label={`Interview with ${data.name}`}>
+    <div className={`fixed inset-0 z-40 flex game-fade ${inRoom ? "" : "bg-black/70 backdrop-blur-[2px] md:p-6 lg:p-10"}`} {...backdrop}>
+    <div className={`mx-auto flex h-full w-full flex-col overflow-hidden text-paper ${inRoom ? "" : "max-w-7xl bg-[#08090a] md:border md:border-white/10 md:shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9)]"}`} role="dialog" aria-modal="true" aria-label={`Interview with ${data.name}`}>
       {/* Letterbox: case, place, manner, and the way out */}
       <header className="flex shrink-0 items-center justify-between gap-3 border-b border-white/5 bg-black px-4 py-2.5 sm:px-6">
         <p className="min-w-0 truncate font-mono text-[0.7rem] uppercase tracking-[0.18em] text-smoke">
@@ -108,9 +119,12 @@ export function InterviewScreen({
 
       <div className="grid min-h-0 flex-1 grid-rows-[auto_1fr] md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:grid-rows-1">
         {/* The witness */}
-        <section className="relative overflow-hidden border-b border-white/5 md:border-b-0 md:border-r">
-          <div className="flex items-center gap-4 p-4 md:block md:h-full md:p-0">
+        <section className={`relative overflow-hidden border-b border-white/5 md:border-b-0 md:border-r ${inRoom ? "h-[42dvh] md:h-auto" : ""}`}>
+          <div className={`flex gap-4 p-4 md:block md:h-full md:p-0 ${inRoom ? "h-full items-end" : "items-center"}`}>
             {/* A talking portrait gets a larger frame on a phone, so the face can be seen moving. */}
+            {inRoom ? (
+              <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+            ) : (
             <div className={`relative shrink-0 overflow-hidden md:absolute md:inset-0 md:h-auto md:w-auto ${data.face ? "h-44 w-32 sm:h-52 sm:w-40" : "h-24 w-20"}`}>
               {data.face ? (
                 <TalkingPortrait
@@ -131,7 +145,8 @@ export function InterviewScreen({
               <div aria-hidden className="pointer-events-none absolute inset-0 hidden bg-[radial-gradient(ellipse_at_40%_35%,transparent_35%,rgba(0,0,0,0.85)_100%)] md:block" />
               <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-2/3 bg-gradient-to-t from-black via-black/70 to-transparent md:block" />
             </div>
-            <div className="min-w-0 md:absolute md:inset-x-0 md:bottom-0 md:p-8">
+            )}
+            <div className="relative min-w-0 md:absolute md:inset-x-0 md:bottom-0 md:p-8">
               <p className="font-display text-2xl leading-tight text-paper sm:text-3xl md:text-4xl">{data.name}</p>
               <p className="mt-1 font-mono text-xs text-paper/70">{data.role}</p>
               <p className="mt-3 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-smoke">
@@ -149,7 +164,7 @@ export function InterviewScreen({
         </section>
 
         {/* The words */}
-        <section className="flex min-h-0 flex-col">
+        <section className={`flex min-h-0 flex-col ${inRoom ? "bg-[#08090a]/95" : ""}`}>
           <div className="relative min-h-0 flex-1 overflow-y-auto px-5 py-6 sm:px-10 sm:py-10" aria-live="polite">
             {mode === "transcript" ? (
               <Transcript lines={data.history} current={player.current} voiced={voiced} onReplay={(n) => play(n, srcs, n + 1)} />
