@@ -288,6 +288,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     g2.fillRect(0, 0, 128, 128);
     const contactMat = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(sc), transparent: true, depthWrite: false });
     const gl = new GLTFLoader(manager);
+    const lampMats = new Map<string, THREE.MeshLambertMaterial[]>();
     for (const M of house.models) {
       gl.load(M.file, (g) => {
         const op = M.opacity ?? 1;
@@ -295,7 +296,16 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
           const mesh = o as THREE.Mesh;
           if (!mesh.isMesh) return;
           const old = mesh.material as THREE.MeshStandardMaterial;
-          mesh.material = new THREE.MeshLambertMaterial({ map: old.map, side: THREE.DoubleSide, transparent: op < 1, opacity: op, depthWrite: op >= 1 });
+          const mat = new THREE.MeshLambertMaterial({ map: old.map, side: THREE.DoubleSide, transparent: op < 1, opacity: op, depthWrite: op >= 1 });
+          if (M.lamp && M.glow) {
+            const gm = tex.load(M.glow);
+            gm.flipY = false;
+            gm.colorSpace = THREE.SRGBColorSpace;
+            mat.emissiveMap = gm;
+            mat.emissive.set(0x000000);
+            lampMats.set(M.lamp, [...(lampMats.get(M.lamp) ?? []), mat]);
+          }
+          mesh.material = mat;
           mesh.castShadow = op >= 1;
           mesh.receiveShadow = true;
         });
@@ -529,6 +539,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         if (!l) return;
         l.light.intensity = on ? l.power : 0;
         if (l.ceil.emissiveMap) l.ceil.emissive.setRGB(on ? 1.6 : 0, on ? 1.35 : 0, on ? 0.95 : 0);
+        for (const m of lampMats.get(id) ?? []) m.emissive.setRGB(on ? 1.5 : 0, on ? 1.3 : 0, on ? 0.95 : 0);
       },
       release: () => document.exitPointerLock?.(),
       // Back to looking around after a close (the close click or key counts as the user's go-ahead).

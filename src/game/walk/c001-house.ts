@@ -4,7 +4,11 @@
  * kitchen is behind it, through the arch, toward +z. Wall pictures and openings are in each wall's picture
  * coordinates (0 to 1 from its top left, as seen from inside the room). Built from scripts/testing.
  */
-export type WalkModel = { file: string; size: number; fit: "x" | "y"; pos: number[]; rotX?: number; rotY?: number; opacity?: number; shadow?: number[] };
+export type WalkModel = {
+  file: string; size: number; fit: "x" | "y"; pos: number[]; rotX?: number; rotY?: number; opacity?: number; shadow?: number[];
+  /** A light fixture: lamp is the room light it belongs to, glow its texture with only the glass left, lit when the switch is on. */
+  lamp?: string; glow?: string;
+};
 export type WalkHotspot = { id: string; kind: "inspect" | "switch"; label: string; text?: string; light?: string; at: number[] };
 export type WalkOutside = { day: string; night: string; distance: number; width: number; u: number; y: number };
 export type WalkWall = {
@@ -63,17 +67,16 @@ export const C001_HOUSE: WalkHouse = {
     "tex": "/rooms/c001-living-room/walk/floor.webp"
    },
    "ceil": {
-    "tex": "/rooms/c001-living-room/walk/ceil.webp"
+    "tex": "/rooms/c001-living-room/walk/ceil_plain.webp"
    },
    "light": {
     "id": "living",
     "at": [
      0,
-     2.2929999999999997,
+     2.483,
      0
     ],
-    "power": 9,
-    "glow": "/rooms/c001-living-room/walk/ceil_glow.webp"
+    "power": 9
    },
    "walls": {
     "front": {
@@ -494,17 +497,16 @@ export const C001_HOUSE: WalkHouse = {
     "repeat": 2
    },
    "ceil": {
-    "tex": "/rooms/c001-kitchen/walk/ceil.webp"
+    "tex": "/rooms/c001-kitchen/walk/ceil_plain.webp"
    },
    "light": {
     "id": "kitchen",
     "at": [
      0,
-     2.393,
+     2.323,
      5.004
     ],
-    "power": 8,
-    "glow": "/rooms/c001-kitchen/walk/ceil_glow.webp"
+    "power": 8
    },
    "walls": {
     "front": {
@@ -1494,6 +1496,30 @@ export const C001_HOUSE: WalkHouse = {
     0.92,
     7.1
    ]
+  },
+  {
+   "file": "/rooms/c001-shared/models/flush_light.glb",
+   "size": 0.46,
+   "fit": "x",
+   "pos": [
+    0,
+    2.578,
+    0
+   ],
+   "lamp": "living",
+   "glow": "/rooms/c001-shared/models/flush_light_glow.webp"
+  },
+  {
+   "file": "/rooms/c001-shared/models/flush_light.glb",
+   "size": 0.38,
+   "fit": "x",
+   "pos": [
+    0,
+    2.606,
+    5.004
+   ],
+   "lamp": "kitchen",
+   "glow": "/rooms/c001-shared/models/flush_light_glow.webp"
   }
  ],
  "hotspots": [
