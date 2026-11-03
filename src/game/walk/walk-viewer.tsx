@@ -429,7 +429,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         grp.updateMatrixWorld(true);
         const wb = new THREE.Box3().setFromObject(grp);
         // Pieces you would bump into (not things sitting on top of others, or flat on the floor).
-        if (M.pos[1] < 0.05 && wb.max.y > 0.25) blockers.push({ x0: wb.min.x, x1: wb.max.x, z0: wb.min.z, z1: wb.max.z, visit: M.visit });
+        if (M.solid !== false && M.pos[1] < 0.05 && wb.max.y > 0.25) blockers.push({ x0: wb.min.x, x1: wb.max.x, z0: wb.min.z, z1: wb.max.z, visit: M.visit });
         if (M.shadow) {
           const pl = new THREE.Mesh(new THREE.PlaneGeometry(M.shadow[0], M.shadow[1]), contactMat);
           pl.rotation.set(-Math.PI / 2, 0, ((M.rotY ?? 0) * Math.PI) / 180);

@@ -12,6 +12,8 @@ export type WalkModel = {
   stretch?: number[];
   /** A lamp that lights the room itself: a point light this far above the model's base (x, y, z offset) at this power. */
   light?: { at: number[]; power: number };
+  /** false for something small you can walk over or through (a sleeping cat). */
+  solid?: boolean;
   /** Only on this visit (rooms that change between visits). */
   visit?: string;
 };

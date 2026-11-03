@@ -208,15 +208,16 @@ export const C001_MARGARET_HOUSE: WalkHouse = {
    "size": 0.6,
    "fit": "x",
    "pos": [
-    0.25,
+    1.6,
     0,
-    0.35
+    -1.72
    ],
-   "rotY": 40,
+   "rotY": -60,
    "shadow": [
     0.6,
     0.45
-   ]
+   ],
+   "solid": false
   },
   {
    "file": "/rooms/c001-margaret/models/margaret.glb",
@@ -296,11 +297,11 @@ export const C001_MARGARET_HOUSE: WalkHouse = {
    "id": "m_cat",
    "kind": "inspect",
    "label": "Cat",
-   "text": "Cat: A large ginger tom, asleep on the rug. He has a habit of being let in late.",
+   "text": "Cat: A large ginger tom, asleep in the corner under the window. He has a habit of being let in late.",
    "at": [
+    1.6,
     0.25,
-    0.25,
-    0.35
+    -1.72
    ]
   },
   {
