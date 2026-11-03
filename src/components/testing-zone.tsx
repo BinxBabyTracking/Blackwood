@@ -29,6 +29,17 @@ export async function TestingZone() {
         </div>
       </Link>
       <Link
+        href="/agency/testing/walk/office"
+        className="mt-3 flex max-w-xl items-center gap-4 border border-rule bg-card p-4 transition hover:border-brass"
+      >
+        <div className="grid h-20 w-40 shrink-0 place-items-center border border-rule font-mono text-2xl text-brass">WASD</div>
+        <div className="min-w-0">
+          <p className="font-display text-xl text-paper">Walk the Detective&apos;s Office</p>
+          <p className="mt-1 text-sm text-smoke">Blackwood Investigations on Wilshire: the desk, the murder board and the street map.</p>
+          <p className="mt-2 text-sm text-brass">Walk in →</p>
+        </div>
+      </Link>
+      <Link
         href="/agency/testing/walk"
         className="mt-3 flex max-w-xl items-center gap-4 border border-rule bg-card p-4 transition hover:border-brass"
       >
