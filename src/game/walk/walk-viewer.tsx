@@ -167,6 +167,17 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
   const talkRef = useRef<{ id: string; text: string; start: number; timing?: { starts: number[]; ends: number[] } | null } | null>(null);
   const [chat, setChat] = useState<{ hs: WalkHotspot; lines: { you: boolean; text: string }[]; pending: boolean; state: InvestigationState | null; error?: string } | null>(null);
   const [draft, setDraft] = useState("");
+  // Markers hide while a note or a conversation is open.
+  const busyRef = useRef(false);
+  busyRef.current = !!chat || !!inspect;
+  // The "click to look around" hint goes once you have clicked into the room (and stays gone).
+  const [hinted, setHinted] = useState(() => {
+    try {
+      return localStorage.getItem("walk-hinted") === "1";
+    } catch {
+      return false;
+    }
+  });
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -528,7 +539,16 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
       if (window.matchMedia("(pointer: coarse)").matches) return;
       if (document.pointerLockElement !== canvas) (canvas.requestPointerLock?.() as Promise<void> | undefined)?.catch?.(() => {});
     };
-    const onLock = () => setLocked(document.pointerLockElement === canvas);
+    const onLock = () => {
+      const on = document.pointerLockElement === canvas;
+      setLocked(on);
+      if (on) {
+        setHinted(true);
+        try {
+          localStorage.setItem("walk-hinted", "1");
+        } catch {}
+      }
+    };
     document.addEventListener("mousemove", onMouse);
     document.addEventListener("pointerlockchange", onLock);
     canvas.addEventListener("click", onClick);
@@ -639,7 +659,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         v.set(hs.at[0], hs.at[1], hs.at[2]);
         const dist = v.distanceTo(pos);
         v.project(camera);
-        if (hotRoom.get(hs.id) !== lastRoom || (hs.visit && hs.visit !== visitRef.current) || dist > NEAR || v.z > 1 || Math.abs(v.x) > 1.1 || Math.abs(v.y) > 1.1) {
+        if (busyRef.current || hotRoom.get(hs.id) !== lastRoom || (hs.visit && hs.visit !== visitRef.current) || dist > NEAR || v.z > 1 || Math.abs(v.x) > 1.1 || Math.abs(v.y) > 1.1) {
           el.style.display = "none";
           continue;
         }
@@ -811,7 +831,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         </button>
       ))}
 
-      {!locked && !touch && ready ? (
+      {!locked && !touch && ready && !hinted ? (
         <span className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[2px] bg-black/60 px-3 py-2 text-sm">
           Click to look around · WASD to walk · aim the dot at a marker and click
         </span>

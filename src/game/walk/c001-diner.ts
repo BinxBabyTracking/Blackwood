@@ -347,7 +347,7 @@ export const C001_DINER: WalkHouse = {
    "text": "Rosa Delgado: The night waitress, a coffee pot in her hand. \"I've got tables waiting. Holler if you need anything else.\"",
    "at": [
     0.3,
-    1.5,
+    1.15,
     -1.95
    ],
    "person": "rosa"

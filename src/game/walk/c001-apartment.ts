@@ -335,7 +335,7 @@ export const C001_DANIEL_APARTMENT: WalkHouse = {
    "text": "Daniel Mercer: Forty-one. Runs a one-man bookkeeping and estate management practice from this apartment.",
    "at": [
     0.95,
-    1.6,
+    1.28,
     -0.88
    ]
   },

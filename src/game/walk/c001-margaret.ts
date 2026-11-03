@@ -256,7 +256,7 @@ export const C001_MARGARET_HOUSE: WalkHouse = {
    "text": "Margaret Ellis: Retired schoolteacher. She has lived across Hollister Avenue from the Whitmore house for twenty years. \"I've told you everything I can think of. If anything else comes back to me, I'll telephone your office.\"",
    "at": [
     -0.55,
-    1.5,
+    1.15,
     -1.15
    ]
   },
