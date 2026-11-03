@@ -83,6 +83,66 @@ function screenTexture(wm: number, hm: number) {
   return t;
 }
 
+/** A rigged person: arms lowered from the rigging pose, then a slow idle (breathing, weight shift, glances). */
+type Rig = { bones: Record<string, THREE.Bone>; base: Record<string, THREE.Quaternion>; phase: number };
+const RIG_BONES = ["Hips", "Spine", "Spine01", "Spine02", "neck", "Head", "LeftArm", "RightArm", "LeftForeArm", "RightForeArm", "LeftHand", "RightHand", "headfront"];
+
+function poseRig(root: THREE.Object3D): Rig | null {
+  const bones: Record<string, THREE.Bone> = {};
+  root.traverse((o) => {
+    const b = o as THREE.Bone;
+    if (!b.isBone) return;
+    const name = RIG_BONES.find((n) => b.name === n || b.name.endsWith(":" + n) || b.name.endsWith("_" + n));
+    if (name && !bones[name]) bones[name] = b;
+  });
+  if (!bones.LeftArm || !bones.RightArm || !bones.Head) return null;
+  root.updateMatrixWorld(true);
+  const wp = (b: THREE.Object3D) => b.getWorldPosition(new THREE.Vector3());
+  const fwd = bones.headfront ? wp(bones.headfront).sub(wp(bones.Head)).setY(0).normalize() : new THREE.Vector3(0, 0, 1);
+  const down = new THREE.Vector3(0, -1, 0);
+  // Turn a bone so the joint below it points along dir (in world space).
+  const aim = (bone: THREE.Bone, child: THREE.Bone, dir: THREE.Vector3) => {
+    bone.updateWorldMatrix(true, false);
+    const cur = wp(child).sub(wp(bone)).normalize();
+    const q = new THREE.Quaternion().setFromUnitVectors(cur, dir.clone().normalize());
+    const world = bone.getWorldQuaternion(new THREE.Quaternion());
+    const parent = bone.parent!.getWorldQuaternion(new THREE.Quaternion());
+    bone.quaternion.copy(parent.invert().multiply(q.multiply(world)));
+    bone.updateWorldMatrix(false, true);
+  };
+  for (const side of ["Left", "Right"]) {
+    const arm = bones[side + "Arm"], fore = bones[side + "ForeArm"], hand = bones[side + "Hand"];
+    if (!fore || !hand) continue;
+    const out = wp(arm).sub(wp(bones.Spine02 ?? bones.Hips)).setY(0).normalize();
+    aim(arm, fore, down.clone().addScaledVector(out, 0.16).addScaledVector(fwd, 0.06));
+    aim(fore, hand, down.clone().addScaledVector(out, 0.05).addScaledVector(fwd, 0.3));
+  }
+  const base: Record<string, THREE.Quaternion> = {};
+  for (const [k, b] of Object.entries(bones)) base[k] = b.quaternion.clone();
+  return { bones, base, phase: Math.random() * 100 };
+}
+
+const _q = new THREE.Quaternion();
+const _e = new THREE.Euler();
+function idleRig(r: Rig, t: number) {
+  const T = t + r.phase;
+  const set = (name: string, x: number, y: number, z: number) => {
+    const b = r.bones[name];
+    if (!b) return;
+    b.quaternion.copy(r.base[name]).multiply(_q.setFromEuler(_e.set(x, y, z)));
+  };
+  const breath = Math.sin(T * 1.5);
+  set("Spine01", breath * 0.012, 0, 0);
+  set("Spine02", breath * 0.016, 0, 0);
+  set("Hips", 0, Math.sin(T * 0.21) * 0.025, Math.sin(T * 0.37) * 0.012);
+  // Glance around now and then: mostly still, with slow turns.
+  const glance = Math.sin(T * 0.19) * 0.22 + Math.sin(T * 0.53) * 0.06;
+  set("neck", Math.sin(T * 0.31) * 0.03, glance * 0.4, 0);
+  set("Head", Math.sin(T * 0.43) * 0.04 - 0.02, glance * 0.6, Math.sin(T * 0.27) * 0.02);
+  set("LeftArm", breath * 0.01, 0, Math.sin(T * 0.33) * 0.02);
+  set("RightArm", breath * 0.01, 0, -Math.sin(T * 0.29) * 0.02);
+}
+
 export function WalkViewer({ house, title }: { house: WalkHouse; title: string }) {
   const mountRef = useRef<HTMLDivElement>(null);
   const markerRefs = useRef(new Map<string, HTMLButtonElement>());
@@ -304,6 +364,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     const lampMats = new Map<string, THREE.MeshLambertMaterial[]>();
     const lampLights = new Map<string, { light: THREE.PointLight; power: number }[]>();
     const visitGroups: { visit: string; obj: THREE.Object3D }[] = [];
+    const rigs: Rig[] = [];
     for (const M of house.models) {
       gl.load(M.file, (g) => {
         const op = M.opacity ?? 1;
@@ -322,6 +383,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
           }
           mesh.material = mat;
           mesh.castShadow = op >= 1;
+          if ((mesh as THREE.SkinnedMesh).isSkinnedMesh) mesh.frustumCulled = false;
           mesh.receiveShadow = true;
         });
         const inner = new THREE.Group();
@@ -341,6 +403,9 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         grp.rotation.y = ((M.rotY ?? 0) * Math.PI) / 180;
         grp.position.set(M.pos[0], M.pos[1], M.pos[2]);
         scene.add(grp);
+        grp.updateMatrixWorld(true);
+        const rig = poseRig(grp);
+        if (rig) rigs.push(rig);
         if (M.visit) {
           visitGroups.push({ visit: M.visit, obj: grp });
           grp.visible = M.visit === visitRef.current;
@@ -523,6 +588,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         lastRoom = here.id;
         setRoomName(here.name);
       }
+      for (const r of rigs) idleRig(r, now / 1000);
       camera.position.copy(pos);
       camera.lookAt(pos.x + Math.sin(look.yaw) * Math.cos(look.pitch), pos.y + Math.sin(look.pitch), pos.z - Math.cos(look.yaw) * Math.cos(look.pitch));
       renderer.render(scene, camera);
