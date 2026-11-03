@@ -316,11 +316,11 @@ export const C001_DANIEL_APARTMENT: WalkHouse = {
    "size": 1.85,
    "fit": "y",
    "pos": [
-    -0.3,
+    0.95,
     0,
-    0.4
+    -0.88
    ],
-   "rotY": -143,
+   "rotY": 0,
    "shadow": [
     0.6,
     0.5
@@ -334,9 +334,9 @@ export const C001_DANIEL_APARTMENT: WalkHouse = {
    "label": "Daniel Mercer",
    "text": "Daniel Mercer: Forty-one. Runs a one-man bookkeeping and estate management practice from this apartment.",
    "at": [
-    -0.3,
+    0.95,
     1.6,
-    0.4
+    -0.88
    ]
   },
   {
@@ -345,9 +345,9 @@ export const C001_DANIEL_APARTMENT: WalkHouse = {
    "label": "Daniel's right hand",
    "text": "Daniel's right hand: Daniel keeps his right hand close to his side.",
    "at": [
-    -0.08,
+    0.71,
     0.88,
-    0.25
+    -0.84
    ]
   },
   {
