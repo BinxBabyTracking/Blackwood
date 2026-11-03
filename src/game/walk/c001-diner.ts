@@ -250,7 +250,8 @@ export const C001_DINER: WalkHouse = {
     0.5,
     0.4
    ],
-   "talk": "d_rosa"
+   "talk": "d_rosa",
+   "mouth": "/rooms/c001-diner/models/rosa_mouth.png"
   },
   {
    "file": "/rooms/c001-diner/models/stool.glb",

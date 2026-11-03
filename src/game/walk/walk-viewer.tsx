@@ -393,6 +393,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     const rigs: Rig[] = [];
     const jaws: { mesh: THREE.Mesh; i: number; hotspot: string }[] = [];
     let jawNow = 0;
+    const jawU = { value: 0 };
     for (const M of house.models) {
       gl.load(M.file, (g) => {
         const op = M.opacity ?? 1;
@@ -412,6 +413,23 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
           mesh.material = mat;
           const ji = mesh.morphTargetDictionary?.jawOpen;
           if (M.talk && ji !== undefined) jaws.push({ mesh, i: ji, hotspot: M.talk });
+          if (M.talk && M.mouth && mat.map) {
+            const mt = tex.load(M.mouth);
+            mt.flipY = false;
+            mt.colorSpace = THREE.SRGBColorSpace;
+            mat.onBeforeCompile = (sh) => {
+              sh.uniforms.mouthMap = { value: mt };
+              sh.uniforms.uJaw = jawU;
+              sh.fragmentShader = sh.fragmentShader
+                .replace("#include <map_pars_fragment>", "#include <map_pars_fragment>\nuniform sampler2D mouthMap;\nuniform float uJaw;")
+                .replace(
+                  "#include <map_fragment>",
+                  "#include <map_fragment>\n{ vec4 mo = texture2D(mouthMap, vMapUv); diffuseColor.rgb = mix(diffuseColor.rgb, mo.rgb, mo.a * smoothstep(0.08, 0.6, uJaw)); }",
+                );
+            };
+            mat.customProgramCacheKey = () => "mouth";
+            mat.needsUpdate = true;
+          }
           mesh.castShadow = op >= 1;
           if ((mesh as THREE.SkinnedMesh).isSkinnedMesh) mesh.frustumCulled = false;
           mesh.receiveShadow = true;
@@ -647,6 +665,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
       const dbg = (window as unknown as { __jaw?: number }).__jaw;
       if (typeof dbg === "number") jawGoal = dbg;
       jawNow += (jawGoal - jawNow) * Math.min(1, dt * 18);
+      jawU.value = jawNow;
       for (const j of jaws) if (j.mesh.morphTargetInfluences) j.mesh.morphTargetInfluences[j.i] = tk && tk.id !== j.hotspot && typeof dbg !== "number" ? 0 : jawNow;
       camera.position.copy(pos);
       camera.lookAt(pos.x + Math.sin(look.yaw) * Math.cos(look.pitch), pos.y + Math.sin(look.pitch), pos.z - Math.cos(look.yaw) * Math.cos(look.pitch));

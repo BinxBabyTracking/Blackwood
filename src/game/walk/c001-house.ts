@@ -14,6 +14,8 @@ export type WalkModel = {
   light?: { at: number[]; power: number };
   /** A person whose jaw moves (a jawOpen shape) while this hotspot's note is open. */
   talk?: string;
+  /** For a talking person: the open-mouth layer (painted in the model's texture space), shown as the jaw opens. */
+  mouth?: string;
   /** false for something small you can walk over or through (a sleeping cat). */
   solid?: boolean;
   /** Only on this visit (rooms that change between visits). */
