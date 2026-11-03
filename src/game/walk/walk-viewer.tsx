@@ -262,9 +262,18 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
       }
       if (def.outside) {
         const o = def.outside;
-        const mat = new THREE.MeshBasicMaterial({ map: loadTex(o.day) });
-        outsides.push({ mat, day: mat.map!, night: o.night === o.day ? mat.map! : loadTex(o.night) });
-        const m = new THREE.Mesh(new THREE.PlaneGeometry(o.width, (o.width * 864) / 1536), mat);
+        // The view runs on past its edges as a mirror image, so close to the glass you never see where it stops.
+        const P = 5;
+        const wrap = (t: THREE.Texture) => {
+          t.wrapS = t.wrapT = THREE.MirroredRepeatWrapping;
+          t.repeat.set(P, P);
+          t.offset.set(-(P - 1) / 2, -(P - 1) / 2);
+          return t;
+        };
+        const dayT = wrap(loadTex(o.day));
+        const mat = new THREE.MeshBasicMaterial({ map: dayT });
+        outsides.push({ mat, day: dayT, night: o.night === o.day ? dayT : wrap(loadTex(o.night)) });
+        const m = new THREE.Mesh(new THREE.PlaneGeometry(o.width * P, ((o.width * 864) / 1536) * P), mat);
         m.position.set((o.u - 0.5) * f.width, o.y, -WALL - o.distance);
         g.add(m);
       }

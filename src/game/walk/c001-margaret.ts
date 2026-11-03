@@ -197,11 +197,11 @@ export const C001_MARGARET_HOUSE: WalkHouse = {
    "size": 0.22,
    "fit": "y",
    "pos": [
-    -1.25,
-    0.8,
-    1.808
+    -1.8,
+    0.543,
+    1.728
    ],
-   "rotY": 20
+   "rotY": 200
   },
   {
    "file": "/rooms/c001-margaret/models/cat.glb",
@@ -287,9 +287,9 @@ export const C001_MARGARET_HOUSE: WalkHouse = {
    "label": "Framed photograph",
    "text": "Framed photograph: Opening of the reading room at the Hollister branch library, 1983. Eleanor holds the scissors at the ribbon. Margaret stands beside her.",
    "at": [
-    -1.25,
-    0.9400000000000001,
-    1.8075
+    -1.8,
+    0.7,
+    1.728
    ]
   },
   {
