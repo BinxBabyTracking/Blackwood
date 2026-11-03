@@ -30,7 +30,7 @@ const at = (u, w) => { let best = null, bestScore = -1e9;
   return best; };
 const L = at(Lu, Lv), R = at(Ru, Rv);
 if (!L || !R) throw new Error('mouth corners not found on the face');
-const O0 = [(L[0]+R[0])/2,(L[1]+R[1])/2,(L[2]+R[2])/2], O = add(O0, up, Number(process.env.OFF || 0)), side = nrm(sub(R, L)), HW = Math.hypot(...sub(R, L)) / 2;
+const O0 = [(L[0]+R[0])/2,(L[1]+R[1])/2,(L[2]+R[2])/2], O = add(O0, up, Number(process.env.OFF || 0)), side = nrm(process.env.STRAIGHT ? sub(sub(R, L), up.map((x) => x * dot(sub(R, L), up))) : sub(R, L)), HW = Math.hypot(...sub(R, L)) / 2;
 let fw = nrm(sub(hf, side.map(x=>x*dot(hf,side)))); let dn = nrm(cross(side, fw)); if (dot(dn, up) > 0) dn = dn.map(x=>-x);
 console.log('mouth width', (HW*2).toFixed(3), 'tilt deg', (Math.asin(dot(side, up))*180/Math.PI).toFixed(1));
 const frame = (p) => { const r = sub(p, O); return [-dot(r, dn), dot(r, fw), dot(r, side)]; }; // height above the lip line, forward, side
