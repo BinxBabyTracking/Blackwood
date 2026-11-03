@@ -324,7 +324,9 @@ export const C001_DANIEL_APARTMENT: WalkHouse = {
    "shadow": [
     0.6,
     0.5
-   ]
+   ],
+   "talk": "da_daniel",
+   "mouth": "/rooms/c001-apartment/models/daniel_mouth.png"
   }
  ],
  "hotspots": [
@@ -337,7 +339,8 @@ export const C001_DANIEL_APARTMENT: WalkHouse = {
     0.95,
     1.28,
     -0.88
-   ]
+   ],
+   "person": "daniel"
   },
   {
    "id": "da_hand",
@@ -421,5 +424,6 @@ export const C001_DANIEL_APARTMENT: WalkHouse = {
     -0.553
    ]
   }
- ]
+ ],
+ "caseId": "C001"
 };

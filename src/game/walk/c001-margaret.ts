@@ -232,7 +232,9 @@ export const C001_MARGARET_HOUSE: WalkHouse = {
    "shadow": [
     0.55,
     0.45
-   ]
+   ],
+   "talk": "m_margaret",
+   "mouth": "/rooms/c001-margaret/models/margaret_mouth.png"
   },
   {
    "file": "/rooms/c001-shared/models/flush_light.glb",
@@ -258,7 +260,8 @@ export const C001_MARGARET_HOUSE: WalkHouse = {
     -0.55,
     1.15,
     -1.15
-   ]
+   ],
+   "person": "margaret"
   },
   {
    "id": "m_window",
@@ -328,5 +331,6 @@ export const C001_MARGARET_HOUSE: WalkHouse = {
     1.73
    ]
   }
- ]
+ ],
+ "caseId": "C001"
 };

@@ -227,7 +227,8 @@ export const C001_BANK: WalkHouse = {
     0.55,
     0.45
    ],
-   "talk": "p_patricia"
+   "talk": "p_patricia",
+   "mouth": "/rooms/c001-bank/models/patricia_mouth.png"
   }
  ],
  "hotspots": [

@@ -30,7 +30,7 @@ const at = (u, w) => { let best = null, bestScore = -1e9;
   return best; };
 const L = at(Lu, Lv), R = at(Ru, Rv);
 if (!L || !R) throw new Error('mouth corners not found on the face');
-const O = [(L[0]+R[0])/2,(L[1]+R[1])/2,(L[2]+R[2])/2], side = nrm(sub(R, L)), HW = Math.hypot(...sub(R, L)) / 2;
+const O0 = [(L[0]+R[0])/2,(L[1]+R[1])/2,(L[2]+R[2])/2], O = add(O0, up, Number(process.env.OFF || 0)), side = nrm(sub(R, L)), HW = Math.hypot(...sub(R, L)) / 2;
 let fw = nrm(sub(hf, side.map(x=>x*dot(hf,side)))); let dn = nrm(cross(side, fw)); if (dot(dn, up) > 0) dn = dn.map(x=>-x);
 console.log('mouth width', (HW*2).toFixed(3), 'tilt deg', (Math.asin(dot(side, up))*180/Math.PI).toFixed(1));
 const frame = (p) => { const r = sub(p, O); return [-dot(r, dn), dot(r, fw), dot(r, side)]; }; // height above the lip line, forward, side
@@ -61,7 +61,7 @@ for (let k=0;k<IDX.length;k+=3){ for (let q=0;q<3;q++){P.getElement(IDX[k+q],v[q
     const a=w0*fc[0][0]+w1*fc[1][0]+w2*fc[2][0], c=w0*fc[0][2]+w1*fc[1][2]+w2*fc[2][2];
     const e=1-(c/(HW*0.92))**2; if (e<=0) continue; const half=HH*Math.sqrt(e); if (Math.abs(a)>half) continue;
     const edge=Math.min(1,(half-Math.abs(a))/(HH*0.35)); const o=(y*SIZE+x)*4;
-    const teeth = a > half*0.35 && Math.abs(c) < HW*0.65; const col = teeth ? [222,214,196] : [38,12,12];
+    const teeth = (process.env.FLIP ? -a : a) > half*0.35 && Math.abs(c) < HW*0.65; const col = teeth ? [222,214,196] : [38,12,12];
     img[o]=col[0]; img[o+1]=col[1]; img[o+2]=col[2]; img[o+3]=Math.max(img[o+3],Math.round(255*edge)); px++; } }
 await sharp(Buffer.from(img), { raw: { width: SIZE, height: SIZE, channels: 4 } }).png().toFile(png);
 console.log('moved', moved, 'mouth px', px);

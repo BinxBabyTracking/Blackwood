@@ -222,7 +222,8 @@ export const C001_GARAGE: WalkHouse = {
     0.6,
     0.5
    ],
-   "talk": "g_robert"
+   "talk": "g_robert",
+   "mouth": "/rooms/c001-garage/models/robert_mouth.png"
   }
  ],
  "hotspots": [
