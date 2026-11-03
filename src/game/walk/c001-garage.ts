@@ -158,15 +158,16 @@ export const C001_GARAGE: WalkHouse = {
    "size": 0.75,
    "fit": "x",
    "pos": [
-    -0.6,
+    0.35,
     0,
-    -1.9
+    0.0
    ],
-   "rotY": 35,
+   "rotY": 90,
    "shadow": [
     0.5,
     0.8
-   ]
+   ],
+   "solid": false
   },
   {
    "file": "/rooms/c001-garage/models/drum.glb",

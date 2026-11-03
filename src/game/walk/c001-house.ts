@@ -24,7 +24,9 @@ export type WalkModel = {
   visit?: string;
 };
 export type WalkHotspot = {
-  id: string; kind: "inspect" | "switch"; label: string; text?: string; light?: string; at: number[]; visit?: string;
+  id: string; kind: "inspect" | "switch" | "seat"; label: string; text?: string; light?: string; at: number[]; visit?: string;
+  /** For a seat: where you sit (x, z, facing in degrees). Any step stands you up again. */
+  seat?: number[];
   /** In the case: the real hotspot this marker stands for (defaults to id). The marker shows only while the case shows it. */
   game?: string;
   /** A person you can question (their character id): clicking opens a question box instead of a note. */

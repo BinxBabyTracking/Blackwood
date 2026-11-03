@@ -93,9 +93,9 @@ export const C001_OFFICE: WalkHouse = {
    "pos": [
     0,
     0,
-    -1.15
+    -0.85
    ],
-   "rotY": 0,
+   "rotY": 180,
    "shadow": [
     1.7,
     1.0
@@ -108,9 +108,9 @@ export const C001_OFFICE: WalkHouse = {
    "pos": [
     0.05,
     0,
-    -1.9
+    -1.6
    ],
-   "rotY": 180,
+   "rotY": 0,
    "shadow": [
     0.7,
     0.7
@@ -121,11 +121,11 @@ export const C001_OFFICE: WalkHouse = {
    "size": 0.95,
    "fit": "y",
    "pos": [
-    0.35,
+    -1.684,
     0,
-    -0.05
+    1.684
    ],
-   "rotY": 200,
+   "rotY": 135,
    "shadow": [
     0.6,
     0.6
@@ -138,7 +138,7 @@ export const C001_OFFICE: WalkHouse = {
    "pos": [
     0.45,
     0.925,
-    -1.2
+    -0.9
    ],
    "rotY": 180
   },
@@ -149,7 +149,7 @@ export const C001_OFFICE: WalkHouse = {
    "pos": [
     -0.55,
     0.925,
-    -1.0
+    -0.7
    ],
    "rotY": 170
   },
@@ -160,7 +160,7 @@ export const C001_OFFICE: WalkHouse = {
    "pos": [
     -0.05,
     0.925,
-    -0.97
+    -0.67
    ],
    "rotY": 5,
    "rotX": -90
@@ -172,7 +172,7 @@ export const C001_OFFICE: WalkHouse = {
    "pos": [
     -0.35,
     0.925,
-    -0.9
+    -0.6
    ],
    "rotY": -20,
    "rotX": -90
@@ -184,7 +184,7 @@ export const C001_OFFICE: WalkHouse = {
    "pos": [
     0.65,
     0.925,
-    -0.87
+    -0.57
    ],
    "rotY": 0
   },
@@ -195,7 +195,7 @@ export const C001_OFFICE: WalkHouse = {
    "pos": [
     -0.62,
     0.925,
-    -1.37
+    -1.07
    ],
    "rotY": 160,
    "lamp": "office",
@@ -272,6 +272,17 @@ export const C001_OFFICE: WalkHouse = {
    "rotY": 0,
    "lamp": "office",
    "glow": "/rooms/c001-office/models/fan_glow.webp"
+  },
+  {
+   "file": "/rooms/c001-bank/models/phone.glb",
+   "size": 0.24,
+   "fit": "x",
+   "pos": [
+    -0.7,
+    0.925,
+    -0.55
+   ],
+   "rotY": 200
   }
  ],
  "hotspots": [
@@ -283,7 +294,7 @@ export const C001_OFFICE: WalkHouse = {
    "at": [
     -0.05,
     1.005,
-    -0.97
+    -0.67
    ],
    "game": "office_casefile"
   },
@@ -319,7 +330,7 @@ export const C001_OFFICE: WalkHouse = {
    "at": [
     -0.55,
     1.045,
-    -0.9999999999999999
+    -0.7
    ],
    "game": "office_recorder"
   },
@@ -331,7 +342,7 @@ export const C001_OFFICE: WalkHouse = {
    "at": [
     -0.35,
     0.975,
-    -0.8999999999999999
+    -0.6
    ],
    "game": "office_notebook"
   },
@@ -343,7 +354,7 @@ export const C001_OFFICE: WalkHouse = {
    "at": [
     0.65,
     1.025,
-    -0.8699999999999999
+    -0.57
    ],
    "game": "office_mail"
   },
@@ -355,7 +366,7 @@ export const C001_OFFICE: WalkHouse = {
    "at": [
     0.45,
     1.075,
-    -1.2
+    -0.9
    ],
    "game": "office_typewriter"
   },
@@ -378,8 +389,8 @@ export const C001_OFFICE: WalkHouse = {
    "text": "Telephone.",
    "at": [
     -0.7,
-    1.0250000000000001,
-    -0.8499999999999999
+    1.045,
+    -0.55
    ]
   },
   {
@@ -391,7 +402,7 @@ export const C001_OFFICE: WalkHouse = {
    "at": [
     0.2,
     0.9850000000000001,
-    -0.7999999999999999
+    -0.5
    ]
   },
   {
@@ -403,7 +414,7 @@ export const C001_OFFICE: WalkHouse = {
    "at": [
     0.35,
     0.9850000000000001,
-    -0.95
+    -0.65
    ]
   },
   {
@@ -415,7 +426,7 @@ export const C001_OFFICE: WalkHouse = {
    "at": [
     -0.2,
     0.9850000000000001,
-    -0.7699999999999999
+    -0.47
    ]
   },
   {
@@ -427,7 +438,7 @@ export const C001_OFFICE: WalkHouse = {
    "at": [
     0.05,
     1.0050000000000001,
-    -0.7499999999999999
+    -0.45
    ]
   },
   {
@@ -439,7 +450,22 @@ export const C001_OFFICE: WalkHouse = {
    "at": [
     0.25,
     0.9850000000000001,
-    -1.15
+    -0.85
+   ]
+  },
+  {
+   "id": "o_seat",
+   "kind": "seat",
+   "label": "Sit down",
+   "at": [
+    0.05,
+    0.75,
+    -1.6
+   ],
+   "seat": [
+    0.05,
+    -1.6,
+    180
    ]
   }
  ]

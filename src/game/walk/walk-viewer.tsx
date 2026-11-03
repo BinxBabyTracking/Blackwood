@@ -171,7 +171,7 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
   const markerRefs = useRef(new Map<string, HTMLButtonElement>());
   const stickRef = useRef<HTMLDivElement>(null);
   const knobRef = useRef<HTMLDivElement>(null);
-  const api = useRef<{ setNight: (n: boolean) => void; setLight: (id: string, on: boolean) => void; setVisit: (v: string) => void; release: () => void; relock: () => void } | null>(null);
+  const api = useRef<{ sit: (seat: number[]) => void; setNight: (n: boolean) => void; setLight: (id: string, on: boolean) => void; setVisit: (v: string) => void; release: () => void; relock: () => void } | null>(null);
   const [progress, setProgress] = useState(0);
   const [ready, setReady] = useState(false);
   const [night, setNight] = useState(!!house.startNight);
@@ -532,6 +532,9 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
       return !blockers.some((b) => (!b.visit || b.visit === visitRef.current) && (b.obj?.visible ?? true) && x > b.x0 - RADIUS && x < b.x1 + RADIUS && z > b.z0 - RADIUS && z < b.z1 + RADIUS && Math.hypot(x - Math.max(b.x0, Math.min(b.x1, x)), z - Math.max(b.z0, Math.min(b.z1, z))) < RADIUS);
     };
     const noclip = testing && start.length > 4;
+    // Sitting in a chair: lower and fixed in place until you step away, back where you stood.
+    let seated: { from: THREE.Vector3 } | null = null;
+    let eyeNow = house.eye;
     const move = (dx: number, dz: number) => {
       if (noclip || free(pos.x + dx, pos.z + dz)) {
         pos.x += dx;
@@ -678,7 +681,11 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
       f -= stick.y;
       s += stick.x;
       const m = Math.hypot(f, s);
-      if (m > 0.01 && !(gameRef.current?.busy)) {
+      if (m > 0.01 && seated && !(gameRef.current?.busy)) {
+        pos.x = seated.from.x;
+        pos.z = seated.from.z;
+        seated = null;
+      } else if (m > 0.01 && !(gameRef.current?.busy)) {
         const sp = (SPEED * (keys.has("shift") ? 1.7 : 1) * Math.min(1, m)) / m;
         const sy = Math.sin(look.yaw), cy = Math.cos(look.yaw);
         move((sy * f + cy * s) * sp * dt, (-cy * f + sy * s) * sp * dt);
@@ -746,6 +753,8 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
       jawNow += (jawGoal - jawNow) * Math.min(1, dt * 18);
       jawU.value = jawNow;
       for (const j of jaws) if (j.mesh.morphTargetInfluences) j.mesh.morphTargetInfluences[j.i] = tk && tk.id !== j.hotspot && typeof dbg !== "number" ? 0 : jawNow;
+      eyeNow += ((seated ? 1.15 : house.eye) - eyeNow) * Math.min(1, dt * 6);
+      pos.y = eyeNow;
       camera.position.copy(pos);
       lookAt.set(pos.x + Math.sin(look.yaw) * Math.cos(look.pitch), pos.y + Math.sin(look.pitch), pos.z - Math.cos(look.yaw) * Math.cos(look.pitch));
       // Interviewing someone here: ease the camera round to their face.
@@ -786,8 +795,8 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
         const dist = v.distanceTo(pos);
         v.project(camera);
         const Gm = gameRef.current;
-        const shown = hs.kind === "switch" || !Gm || Gm.visible.includes(hs.game ?? hs.id);
-        if (busyRef.current || !shown || hotRoom.get(hs.id) !== lastRoom || (!Gm && hs.visit && hs.visit !== visitRef.current) || dist > (Gm && (hs.game ?? hs.id) in Gm.attention ? 9 : NEAR) || v.z > 1 || Math.abs(v.x) > 1.1 || Math.abs(v.y) > 1.1) {
+        const shown = hs.kind === "switch" || hs.kind === "seat" || !Gm || Gm.visible.includes(hs.game ?? hs.id);
+        if (busyRef.current || !shown || (seated && hs.kind === "seat") || hotRoom.get(hs.id) !== lastRoom || (!Gm && hs.visit && hs.visit !== visitRef.current) || dist > (Gm && (hs.game ?? hs.id) in Gm.attention ? 9 : NEAR) || v.z > 1 || Math.abs(v.x) > 1.1 || Math.abs(v.y) > 1.1) {
           el.style.display = "none";
           continue;
         }
@@ -832,6 +841,13 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
         for (const g of visitGroups) g.obj.visible = g.visit === v;
       },
       release: () => document.exitPointerLock?.(),
+      sit: (st) => {
+        seated = { from: pos.clone() };
+        pos.x = st[0];
+        pos.z = st[1];
+        look.yaw = (st[2] * Math.PI) / 180;
+        look.pitch = -0.25;
+      },
       // Back to looking around after a close (the close click or key counts as the user's go-ahead).
       relock: () => {
         if (window.matchMedia("(pointer: coarse)").matches || document.pointerLockElement === canvas) return;
@@ -894,6 +910,10 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
   };
 
   const press = (hs: WalkHotspot) => {
+    if (hs.kind === "seat" && hs.seat) {
+      api.current?.sit(hs.seat);
+      return;
+    }
     if (game && hs.kind !== "switch") {
       api.current?.release();
       game.onHotspot(hs.game ?? hs.id);
@@ -958,7 +978,7 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
           className="group absolute -translate-x-1/2 -translate-y-1/2 transition-transform data-[focus]:scale-125"
         >
           <span className={`block h-9 w-9 rounded-full border-2 ${hs.kind === "switch" ? "border-paper/80" : "border-brass/80"} bg-black/30 group-data-[focus]:border-paper group-data-[focus]:bg-black/60 shadow-[0_0_18px_rgba(0,0,0,0.8)]`}>
-            <span className="grid h-full w-full place-items-center text-sm">{hs.kind === "switch" ? (hs.light && lights[hs.light] ? "●" : "○") : "?"}</span>
+            <span className="grid h-full w-full place-items-center text-sm">{hs.kind === "switch" ? (hs.light && lights[hs.light] ? "●" : "○") : hs.kind === "seat" ? "↓" : "?"}</span>
           </span>
           {game && (hs.game ?? hs.id) in game.attention ? <span aria-hidden className="pointer-events-none absolute -inset-2 animate-ping rounded-full border-2 border-brass" /> : null}
           <span className="absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap rounded-[2px] bg-black/70 px-2 py-0.5 text-xs">{game?.attention[hs.game ?? hs.id] ?? hs.label}</span>
@@ -973,7 +993,7 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
       {locked ? <span className="pointer-events-none absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-paper/70" /> : null}
       {locked && focus ? (
         <span className="pointer-events-none absolute left-1/2 top-1/2 mt-6 -translate-x-1/2 rounded-[2px] bg-black/70 px-2 py-1 text-xs">
-          Click or E: {focus.kind === "switch" ? "flip the switch" : `look at the ${focus.label.toLowerCase()}`}
+          Click or E: {focus.kind === "switch" ? "flip the switch" : focus.kind === "seat" ? "sit down" : `look at the ${focus.label.toLowerCase()}`}
         </span>
       ) : null}
 
