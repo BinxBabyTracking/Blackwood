@@ -320,7 +320,7 @@ export const C001_DANIEL_APARTMENT: WalkHouse = {
     0,
     -0.88
    ],
-   "rotY": 0,
+   "rotY": -25,
    "shadow": [
     0.6,
     0.5
@@ -345,9 +345,9 @@ export const C001_DANIEL_APARTMENT: WalkHouse = {
    "label": "Daniel's right hand",
    "text": "Daniel's right hand: Daniel keeps his right hand close to his side.",
    "at": [
-    0.71,
+    0.716,
     0.88,
-    -0.84
+    -0.945
    ]
   },
   {
