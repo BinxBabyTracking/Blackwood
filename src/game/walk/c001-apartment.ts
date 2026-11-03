@@ -108,7 +108,8 @@ export const C001_DANIEL_APARTMENT: WalkHouse = {
     "back": {
      "tex": "/rooms/c001-apartment/walk/back.webp"
     }
-   }
+   },
+   "location": "daniel_apartment"
   }
  ],
  "passages": [],
@@ -281,7 +282,8 @@ export const C001_DANIEL_APARTMENT: WalkHouse = {
     0.6,
     0.6
    ],
-   "visit": "A"
+   "visit": "A",
+   "showIf": "da_coats_a"
   },
   {
    "file": "/rooms/c001-apartment/models/rack_b.glb",
@@ -297,7 +299,8 @@ export const C001_DANIEL_APARTMENT: WalkHouse = {
     0.6,
     0.6
    ],
-   "visit": "B"
+   "visit": "B",
+   "showIf": "da_coats_b"
   },
   {
    "file": "/rooms/c001-apartment/models/ashtray.glb",
@@ -309,7 +312,8 @@ export const C001_DANIEL_APARTMENT: WalkHouse = {
     -0.6
    ],
    "rotY": 0,
-   "visit": "B"
+   "visit": "B",
+   "showIf": "da_ashtray"
   },
   {
    "file": "/rooms/c001-apartment/models/daniel.glb",
@@ -378,23 +382,10 @@ export const C001_DANIEL_APARTMENT: WalkHouse = {
    ]
   },
   {
-   "id": "da_desk_a",
+   "id": "da_desk",
    "kind": "inspect",
    "label": "Desk and client files",
-   "visit": "A",
    "text": "Client files: Neat stacks of client folders, each labeled. The one marked 'Whitmore' is thin.",
-   "at": [
-    -0.35,
-    0.89,
-    1.98
-   ]
-  },
-  {
-   "id": "da_desk_b",
-   "kind": "inspect",
-   "label": "Desk and client files",
-   "visit": "B",
-   "text": "Client files: The stacks have been gone through. The folder marked 'Whitmore' is no longer here.",
    "at": [
     -0.35,
     0.89,
@@ -422,6 +413,42 @@ export const C001_DANIEL_APARTMENT: WalkHouse = {
     -2.263,
     1.451,
     -0.553
+   ]
+  },
+  {
+   "id": "da_waste",
+   "kind": "inspect",
+   "label": "Wastebasket",
+   "visit": "A",
+   "text": "Wastebasket: Nearly empty. A receipt from Rexall Drugs on Sunset: 'Gauze 4in, adhesive tape, iodine. 8/17/85 9:02 AM.'",
+   "at": [
+    0.85,
+    0.25,
+    1.85
+   ]
+  },
+  {
+   "id": "da_firstaid",
+   "kind": "inspect",
+   "label": "First aid tin",
+   "visit": "A",
+   "text": "First aid tin: Open on the kitchen counter. Gauze, tape, a half-used bottle of iodine.",
+   "at": [
+    1.9529999999999998,
+    0.98,
+    0.2
+   ]
+  },
+  {
+   "id": "da_suitcase",
+   "kind": "inspect",
+   "label": "Suitcase",
+   "visit": "B",
+   "text": "Suitcase: A packed suitcase by the door, airline tag still on the handle from a trip to Phoenix in May.",
+   "at": [
+    -1.9529999999999998,
+    0.35,
+    0.85
    ]
   }
  ],

@@ -79,7 +79,8 @@ export const C001_MARGARET_HOUSE: WalkHouse = {
     "back": {
      "tex": "/rooms/c001-margaret/walk/back.webp"
     }
-   }
+   },
+   "location": "margaret_house"
   }
  ],
  "passages": [],

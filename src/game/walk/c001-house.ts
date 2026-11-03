@@ -16,6 +16,8 @@ export type WalkModel = {
   talk?: string;
   /** For a talking person: the open-mouth layer (painted in the model's texture space), shown as the jaw opens. */
   mouth?: string;
+  /** In the case: shown only while this hotspot is in the scene (a coat rack that changes between visits). */
+  showIf?: string;
   /** false for something small you can walk over or through (a sleeping cat). */
   solid?: boolean;
   /** Only on this visit (rooms that change between visits). */
@@ -23,6 +25,8 @@ export type WalkModel = {
 };
 export type WalkHotspot = {
   id: string; kind: "inspect" | "switch"; label: string; text?: string; light?: string; at: number[]; visit?: string;
+  /** In the case: the real hotspot this marker stands for (defaults to id). The marker shows only while the case shows it. */
+  game?: string;
   /** A person you can question (their character id): clicking opens a question box instead of a note. */
   person?: string;
 };
@@ -45,6 +49,9 @@ export type WalkRoomDef = {
   ceil: { tex: string };
   /** The ceiling light: glow is the ceiling picture with only the lit glass left, shown bright when it is switched on. */
   light: { id: string; at: number[]; power: number; glow?: string; startOn?: boolean };
+  /** In the case: the location this room is, and the hotspot that goes there (walking in through a doorway). */
+  location?: string;
+  enter?: string;
   /** Darkens the room's surfaces a little (1 = as painted), for spaces with no window of their own. */
   tint?: number;
   walls: Partial<Record<"front" | "back" | "left" | "right", WalkWall>>;
@@ -56,6 +63,8 @@ export type WalkHouse = {
   wall: number;
   /** The case the people here belong to, for questioning them. */
   caseId?: string;
+  /** In the case: where you arrive for each location (x, z, facing), when you come by the map. */
+  starts?: Record<string, number[]>;
   /** Where you start: x, z (metres) and the way you face (degrees). */
   start?: number[];
   /** Opens at night. */
@@ -504,7 +513,9 @@ export const C001_HOUSE: WalkHouse = {
     "right": {
      "tex": "/rooms/c001-living-room/walk/right.webp"
     }
-   }
+   },
+   "location": "living_room",
+   "enter": "k_to_living"
   },
   {
    "id": "kitchen",
@@ -1217,7 +1228,9 @@ export const C001_HOUSE: WalkHouse = {
       }
      ]
     }
-   }
+   },
+   "location": "kitchen",
+   "enter": "lr_to_kitchen"
   },
   {
    "id": "hall",
@@ -1747,5 +1760,18 @@ export const C001_HOUSE: WalkHouse = {
     6.096
    ]
   }
- ]
+ ],
+ "caseId": "C001",
+ "starts": {
+  "living_room": [
+   0,
+   1.6,
+   180
+  ],
+  "kitchen": [
+   0,
+   3.9,
+   180
+  ]
+ }
 };

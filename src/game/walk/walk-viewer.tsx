@@ -145,7 +145,25 @@ function idleRig(r: Rig, t: number) {
   set("RightArm", breath * 0.01, 0, -Math.sin(T * 0.29) * 0.02);
 }
 
-export function WalkViewer({ house, title }: { house: WalkHouse; title: string }) {
+/**
+ * Playing the case in the room (rather than the Testing Zone): markers stand for the case's own hotspots and show
+ * only while the case shows them; clicking one is handled by the game; walking through a doorway into a room that
+ * is another location goes there.
+ */
+export type WalkGame = {
+  /** The location the case is at. */
+  here: string;
+  /** Ids of the hotspots in the scene right now, and the ones the case is pointing at (with a callout). */
+  visible: string[];
+  attention: Record<string, string | null>;
+  /** A panel, note or conversation is open over the room. */
+  busy: boolean;
+  onHotspot: (id: string) => void;
+};
+
+export function WalkViewer({ house, title, game }: { house: WalkHouse; title: string; game?: WalkGame }) {
+  const gameRef = useRef(game);
+  gameRef.current = game;
   const mountRef = useRef<HTMLDivElement>(null);
   const markerRefs = useRef(new Map<string, HTMLButtonElement>());
   const stickRef = useRef<HTMLDivElement>(null);
@@ -169,7 +187,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
   const [draft, setDraft] = useState("");
   // Markers hide while a note or a conversation is open.
   const busyRef = useRef(false);
-  busyRef.current = !!chat || !!inspect;
+  busyRef.current = !!chat || !!inspect || !!game?.busy;
   // The "click to look around" hint goes once you have clicked into the room (and stays gone).
   const [hinted, setHinted] = useState(() => {
     try {
@@ -195,8 +213,9 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     scene.background = new THREE.Color(0x000000);
     const camera = new THREE.PerspectiveCamera(70, mount.clientWidth / mount.clientHeight, 0.05, 80);
     const look = { yaw: 0, pitch: -0.05 };
-    const pos = new THREE.Vector3(house.start?.[0] ?? 0, house.eye, house.start?.[1] ?? 0.4);
-    if (house.start) look.yaw = ((house.start[2] ?? 0) * Math.PI) / 180;
+    const arrive = (game && house.starts?.[game.here]) || house.start;
+    const pos = new THREE.Vector3(arrive?.[0] ?? 0, house.eye, arrive?.[1] ?? 0.4);
+    if (arrive) look.yaw = ((arrive[2] ?? 0) * Math.PI) / 180;
     // For testing: #x,z,yaw[,pitch[,noclip]] (metres, degrees) in the address starts you at that spot facing that way.
     const start = location.hash.slice(1).split(",").map(Number);
     const testing = start.length >= 3 && start.every((n) => Number.isFinite(n));
@@ -374,7 +393,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     setSun(!!house.startNight);
 
     // Furniture.
-    const blockers: { x0: number; x1: number; z0: number; z1: number; visit?: string }[] = [];
+    const blockers: { x0: number; x1: number; z0: number; z1: number; visit?: string; obj?: THREE.Object3D }[] = [];
     const lightsOn = new Set<string>();
     const sc = document.createElement("canvas");
     sc.width = sc.height = 128;
@@ -390,6 +409,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     const lampMats = new Map<string, THREE.MeshLambertMaterial[]>();
     const lampLights = new Map<string, { light: THREE.PointLight; power: number }[]>();
     const visitGroups: { visit: string; obj: THREE.Object3D }[] = [];
+    const showGroups: { id: string; obj: THREE.Object3D }[] = [];
     const rigs: Rig[] = [];
     const jaws: { mesh: THREE.Mesh; i: number; hotspot: string }[] = [];
     let jawNow = 0;
@@ -454,7 +474,10 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         grp.updateMatrixWorld(true);
         const rig = poseRig(grp);
         if (rig) rigs.push(rig);
-        if (M.visit) {
+        if (game && M.showIf) {
+          showGroups.push({ id: M.showIf, obj: grp });
+          grp.visible = gameRef.current?.visible.includes(M.showIf) ?? false;
+        } else if (M.visit && !game) {
           visitGroups.push({ visit: M.visit, obj: grp });
           grp.visible = M.visit === visitRef.current;
         }
@@ -468,7 +491,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         grp.updateMatrixWorld(true);
         const wb = new THREE.Box3().setFromObject(grp);
         // Pieces you would bump into (not things sitting on top of others, or flat on the floor).
-        if (M.solid !== false && M.pos[1] < 0.05 && wb.max.y > 0.25) blockers.push({ x0: wb.min.x, x1: wb.max.x, z0: wb.min.z, z1: wb.max.z, visit: M.visit });
+        if (M.solid !== false && M.pos[1] < 0.05 && wb.max.y > 0.25) blockers.push({ x0: wb.min.x, x1: wb.max.x, z0: wb.min.z, z1: wb.max.z, visit: game ? undefined : M.visit, obj: grp });
         if (M.shadow) {
           const pl = new THREE.Mesh(new THREE.PlaneGeometry(M.shadow[0], M.shadow[1]), contactMat);
           pl.rotation.set(-Math.PI / 2, 0, ((M.rotY ?? 0) * Math.PI) / 180);
@@ -494,7 +517,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     ];
     const free = (x: number, z: number) => {
       if (!areas.some((a) => x >= a.x0 && x <= a.x1 && z >= a.z0 && z <= a.z1)) return false;
-      return !blockers.some((b) => (!b.visit || b.visit === visitRef.current) && x > b.x0 - RADIUS && x < b.x1 + RADIUS && z > b.z0 - RADIUS && z < b.z1 + RADIUS && Math.hypot(x - Math.max(b.x0, Math.min(b.x1, x)), z - Math.max(b.z0, Math.min(b.z1, z))) < RADIUS);
+      return !blockers.some((b) => (!b.visit || b.visit === visitRef.current) && (b.obj?.visible ?? true) && x > b.x0 - RADIUS && x < b.x1 + RADIUS && z > b.z0 - RADIUS && z < b.z1 + RADIUS && Math.hypot(x - Math.max(b.x0, Math.min(b.x1, x)), z - Math.max(b.z0, Math.min(b.z1, z))) < RADIUS);
     };
     const noclip = testing && start.length > 4;
     const move = (dx: number, dz: number) => {
@@ -506,6 +529,8 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     };
     const roomAt = (x: number, z: number) => house.rooms.find((r) => Math.abs(x - r.center[0]) <= r.size[0] / 2 && Math.abs(z - r.center[1]) <= r.size[1] / 2);
     let lastRoom = "";
+    let sentFor = "";
+    let lastHere = game?.here ?? "";
     const hotRoom = new Map<string, string>();
 
     // Controls.
@@ -518,7 +543,12 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     };
     const onKey = (down: boolean) => (e: KeyboardEvent) => {
       const tg = e.target as HTMLElement | null;
-      if (tg && (tg.tagName === "INPUT" || tg.tagName === "TEXTAREA")) return;
+      if (tg && (tg.tagName === "INPUT" || tg.tagName === "TEXTAREA" || tg.isContentEditable)) return;
+      // A panel or conversation is open over the room: its keys are its own.
+      if (gameRef.current?.busy) {
+        keys.clear();
+        return;
+      }
       const k = CODES[e.code] ?? e.key.toLowerCase();
       if (!["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright", "shift"].includes(k)) return;
       if (down) keys.add(k);
@@ -574,7 +604,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
       setTouch(true);
       for (const t of Array.from(e.changedTouches)) {
         const r = stickRef.current?.getBoundingClientRect();
-        if (r && stick.id < 0 && t.clientX < r.right + 40 && t.clientY > r.top - 40) {
+        if (r && stick.id < 0 && t.clientX > r.left - 40 && t.clientX < r.right + 40 && t.clientY > r.top - 40 && t.clientY < r.bottom + 40) {
           stick.id = t.identifier;
           stick.cx = r.left + r.width / 2;
           stick.cy = r.top + r.height / 2;
@@ -636,7 +666,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
       f -= stick.y;
       s += stick.x;
       const m = Math.hypot(f, s);
-      if (m > 0.01) {
+      if (m > 0.01 && !(gameRef.current?.busy)) {
         const sp = (SPEED * (keys.has("shift") ? 1.7 : 1) * Math.min(1, m)) / m;
         const sy = Math.sin(look.yaw), cy = Math.cos(look.yaw);
         move((sy * f + cy * s) * sp * dt, (-cy * f + sy * s) * sp * dt);
@@ -646,6 +676,29 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         for (const hs of house.hotspots) hotRoom.set(hs.id, roomAt(hs.at[0], hs.at[2])?.id ?? "");
         lastRoom = here.id;
         setRoomName(here.name);
+      }
+      const G = gameRef.current;
+      if (G) {
+        for (const sg of showGroups) sg.obj.visible = G.visible.includes(sg.id);
+        // Walked through a doorway into a room that is another location: go there in the case.
+        if (here?.location && here.location !== G.here && here.enter && sentFor !== here.location) {
+          sentFor = here.location;
+          G.onHotspot(here.enter);
+        }
+        if (here?.location === G.here) sentFor = "";
+        // Came here some other way (the map): stand where you arrive.
+        if (G.here !== lastHere) {
+          const inside = house.rooms.find((r) => r.location === G.here);
+          if (lastHere && inside && here?.location !== G.here) {
+            const a = house.starts?.[G.here];
+            if (a) {
+              pos.set(a[0], house.eye, a[1]);
+              look.yaw = (a[2] * Math.PI) / 180;
+            }
+          }
+          lastHere = G.here;
+        }
+        if (G.busy && document.pointerLockElement === canvas) document.exitPointerLock?.();
       }
       for (const r of rigs) idleRig(r, now / 1000);
       // Talking: the mouth follows the letters of the line being read (vowels open, m, b, p and pauses close).
@@ -678,7 +731,9 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         v.set(hs.at[0], hs.at[1], hs.at[2]);
         const dist = v.distanceTo(pos);
         v.project(camera);
-        if (busyRef.current || hotRoom.get(hs.id) !== lastRoom || (hs.visit && hs.visit !== visitRef.current) || dist > NEAR || v.z > 1 || Math.abs(v.x) > 1.1 || Math.abs(v.y) > 1.1) {
+        const Gm = gameRef.current;
+        const shown = hs.kind === "switch" || !Gm || Gm.visible.includes(hs.game ?? hs.id);
+        if (busyRef.current || !shown || hotRoom.get(hs.id) !== lastRoom || (!Gm && hs.visit && hs.visit !== visitRef.current) || dist > (Gm && (hs.game ?? hs.id) in Gm.attention ? 9 : NEAR) || v.z > 1 || Math.abs(v.x) > 1.1 || Math.abs(v.y) > 1.1) {
           el.style.display = "none";
           continue;
         }
@@ -785,6 +840,11 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
   };
 
   const press = (hs: WalkHotspot) => {
+    if (game && hs.kind !== "switch") {
+      api.current?.release();
+      game.onHotspot(hs.game ?? hs.id);
+      return;
+    }
     if (hs.person && house.caseId) {
       api.current?.release();
       setChat((c) => (c && c.hs.id === hs.id ? c : { hs, lines: [], pending: false, state: null }));
@@ -829,7 +889,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
   });
 
   return (
-    <div className="fixed inset-0 select-none overflow-hidden bg-black text-paper">
+    <div className={`${game ? "relative min-h-0 flex-1" : "fixed inset-0"} select-none overflow-hidden bg-black text-paper`}>
       <div ref={mountRef} className="absolute inset-0 touch-none" />
 
       {house.hotspots.map((hs) => (
@@ -846,7 +906,8 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
           <span className={`block h-9 w-9 rounded-full border-2 ${hs.kind === "switch" ? "border-paper/80" : "border-brass/80"} bg-black/30 group-data-[focus]:border-paper group-data-[focus]:bg-black/60 shadow-[0_0_18px_rgba(0,0,0,0.8)]`}>
             <span className="grid h-full w-full place-items-center text-sm">{hs.kind === "switch" ? (hs.light && lights[hs.light] ? "●" : "○") : "?"}</span>
           </span>
-          <span className="absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap rounded-[2px] bg-black/70 px-2 py-0.5 text-xs">{hs.label}</span>
+          {game && (hs.game ?? hs.id) in game.attention ? <span aria-hidden className="pointer-events-none absolute -inset-2 animate-ping rounded-full border-2 border-brass" /> : null}
+          <span className="absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap rounded-[2px] bg-black/70 px-2 py-0.5 text-xs">{game?.attention[hs.game ?? hs.id] ?? hs.label}</span>
         </button>
       ))}
 
@@ -862,7 +923,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         </span>
       ) : null}
 
-      <div ref={stickRef} className="absolute bottom-20 left-6 h-28 w-28 rounded-full border border-paper/30 bg-black/30 sm:hidden">
+      <div ref={stickRef} className={`absolute ${game ? "bottom-24 right-6" : "bottom-20 left-6"} h-28 w-28 rounded-full border border-paper/30 bg-black/30 sm:hidden`}>
         <div ref={knobRef} className="absolute left-1/2 top-1/2 -ml-6 -mt-6 h-12 w-12 rounded-full bg-paper/40" />
       </div>
 
@@ -878,7 +939,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         </div>
       ) : null}
 
-      <div className="absolute inset-x-0 top-0 flex items-center justify-between gap-3 bg-gradient-to-b from-black/80 to-transparent p-3 sm:p-4">
+      <div data-game={game ? "" : undefined} className="absolute inset-x-0 top-0 flex items-center justify-between gap-3 bg-gradient-to-b data-[game]:hidden from-black/80 to-transparent p-3 sm:p-4">
         <div className="min-w-0">
           <p className="truncate font-mono text-[0.7rem] uppercase tracking-[0.2em] text-brass">Testing Zone · {title}</p>
           <p className="truncate font-display text-lg">{roomName}</p>
@@ -888,7 +949,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         </Link>
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-center justify-center gap-2 bg-gradient-to-t from-black/80 to-transparent p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-sm">
+      <div data-game={game ? "" : undefined} className="absolute inset-x-0 bottom-0 flex flex-wrap items-center justify-center gap-2 data-[game]:hidden bg-gradient-to-t from-black/80 to-transparent p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-sm">
         <button
           onClick={() => {
             const n = !night;

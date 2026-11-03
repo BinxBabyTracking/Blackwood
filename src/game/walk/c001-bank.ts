@@ -80,7 +80,8 @@ export const C001_BANK: WalkHouse = {
     "back": {
      "tex": "/rooms/c001-bank/walk/lobby.webp"
     }
-   }
+   },
+   "location": "patricia_office"
   }
  ],
  "passages": [],

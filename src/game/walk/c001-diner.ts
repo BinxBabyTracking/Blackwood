@@ -122,7 +122,8 @@ export const C001_DINER: WalkHouse = {
     "right": {
      "tex": "/rooms/c001-diner/walk/jukebox.webp"
     }
-   }
+   },
+   "location": "diner"
   }
  ],
  "passages": [],

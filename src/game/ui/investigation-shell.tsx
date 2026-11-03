@@ -14,6 +14,11 @@ import { DetectiveNotebook } from "./detective-notebook";
 import { EvidenceInspection } from "./evidence-inspection";
 import { EvidenceInventory } from "./evidence-inventory";
 import { ExplorationScene } from "./exploration-scene";
+import dynamic from "next/dynamic";
+import { walkSceneFor } from "../walk/c001-scenes";
+
+// The 3D rooms load three.js, so only when a case has them.
+const WalkViewer = dynamic(() => import("../walk/walk-viewer").then((m) => m.WalkViewer), { ssr: false, loading: () => <div className="relative min-h-0 flex-1 bg-black" /> });
 import { CaseResolution } from "./case-resolution";
 import { ChapterOpening, CheckpointScreen, ResumeScreen } from "./chapter-screens";
 import { ReportDialog } from "./feedback-forms";
@@ -512,6 +517,14 @@ export function InvestigationShell({
 
   const panel = layer?.k === "panel" ? layer.panel : null;
   const atHome = view.location.id === homeLocation;
+  // Locations with a 3D room are walked through; the painted scene stays available from the menu.
+  const [rooms3d, setRooms3d] = useState(true);
+  useEffect(() => {
+    try {
+      if (localStorage.getItem("bw-rooms-3d") === "0") setRooms3d(false);
+    } catch {}
+  }, []);
+  const walkHouse = rooms3d ? walkSceneFor(caseId, view.location.id) : null;
   // The telephone rings only in the office (anywhere, with a mobile phone), and never over an interview, a document or an inspection.
   const phoneHere = atHome || view.phone.mobile;
   const ringing = Boolean(!trip && view.phone.ringing && phoneHere && view.introSeen && (layer === null || panel === "phone") && deferredCall !== view.phone.ringing.id);
@@ -656,6 +669,24 @@ export function InvestigationShell({
                     ) : null}
                   </div>
                 ) : null}
+                {walkSceneFor(caseId, view.location.id) ? (
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={rooms3d}
+                    className="block w-full px-3 py-2 text-left hover:bg-white/5"
+                    onClick={() => {
+                      const on = !rooms3d;
+                      setRooms3d(on);
+                      try {
+                        localStorage.setItem("bw-rooms-3d", on ? "1" : "0");
+                      } catch {}
+                    }}
+                  >
+                    3D rooms: {rooms3d ? "On" : "Off"}
+                    <span className="block text-xs text-smoke">Walk through each place in 3D. Turn off for the painted scenes, lighter on older phones.</span>
+                  </button>
+                ) : null}
                 <button
                   type="button"
                   className="block w-full px-3 py-2 text-left hover:bg-white/5"
@@ -681,6 +712,26 @@ export function InvestigationShell({
 
       <HomeScreenTip paused={swipeCard} />
 
+      {walkHouse ? (
+        <WalkViewer
+          house={walkHouse}
+          title={view.title}
+          game={{
+            here: view.location.id,
+            visible: view.location.hotspots.map((h) => h.id),
+            attention: Object.fromEntries(view.location.hotspots.filter((h) => h.attention).map((h) => [h.id, h.callout])),
+            busy: layer !== null || pending || menu,
+            onHotspot: (id) => {
+              handled(id);
+              if (view.location.hotspots.find((h) => h.id === id)?.local === "rolling") {
+                setLayer({ k: "panel", panel: "rolling" });
+                return;
+              }
+              void dispatch({ type: "hotspot", hotspotId: id });
+            },
+          }}
+        />
+      ) : (
       <ExplorationScene
         introKey={`bw-swipe-${caseId}`}
         onIntro={setSwipeCard}
@@ -732,6 +783,7 @@ export function InvestigationShell({
           return dispatch({ type: "hotspot", hotspotId: id });
         }}
       />
+      )}
 
       {/* Map, notebook and evidence: painted objects in the corner of the scene. The murder board is on the office wall. */}
       <nav aria-label="Investigation" className="pointer-events-none fixed bottom-3 left-3 z-20 flex items-end gap-2 sm:bottom-4 sm:left-4 sm:gap-3">

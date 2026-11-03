@@ -80,7 +80,8 @@ export const C001_OFFICE: WalkHouse = {
     "back": {
      "tex": "/rooms/c001-office/walk/door.webp"
     }
-   }
+   },
+   "location": "office"
   }
  ],
  "passages": [],
@@ -283,7 +284,8 @@ export const C001_OFFICE: WalkHouse = {
     -0.05,
     1.005,
     -0.97
-   ]
+   ],
+   "game": "office_casefile"
   },
   {
    "id": "o_board",
@@ -294,7 +296,8 @@ export const C001_OFFICE: WalkHouse = {
     -2.0335,
     1.6,
     0.15
-   ]
+   ],
+   "game": "office_board"
   },
   {
    "id": "o_map",
@@ -305,7 +308,8 @@ export const C001_OFFICE: WalkHouse = {
     2.0335,
     1.6,
     -0.75
-   ]
+   ],
+   "game": "office_map"
   },
   {
    "id": "o_recorder",
@@ -316,7 +320,8 @@ export const C001_OFFICE: WalkHouse = {
     -0.55,
     1.045,
     -0.9999999999999999
-   ]
+   ],
+   "game": "office_recorder"
   },
   {
    "id": "o_notebook",
@@ -327,7 +332,8 @@ export const C001_OFFICE: WalkHouse = {
     -0.35,
     0.975,
     -0.8999999999999999
-   ]
+   ],
+   "game": "office_notebook"
   },
   {
    "id": "o_mail",
@@ -338,7 +344,8 @@ export const C001_OFFICE: WalkHouse = {
     0.65,
     1.025,
     -0.8699999999999999
-   ]
+   ],
+   "game": "office_mail"
   },
   {
    "id": "o_typewriter",
@@ -349,7 +356,8 @@ export const C001_OFFICE: WalkHouse = {
     0.45,
     1.075,
     -1.2
-   ]
+   ],
+   "game": "office_typewriter"
   },
   {
    "id": "o-switch",
@@ -360,6 +368,78 @@ export const C001_OFFICE: WalkHouse = {
     -1.067,
     1.35,
     2.084
+   ]
+  },
+  {
+   "id": "o_phone",
+   "game": "office_phone",
+   "kind": "inspect",
+   "label": "Telephone",
+   "text": "Telephone.",
+   "at": [
+    -0.7,
+    1.0250000000000001,
+    -0.8499999999999999
+   ]
+  },
+  {
+   "id": "o_labreport",
+   "game": "office_labreport",
+   "kind": "inspect",
+   "label": "Lab results: the broken glass",
+   "text": "Lab results.",
+   "at": [
+    0.2,
+    0.9850000000000001,
+    -0.7999999999999999
+   ]
+  },
+  {
+   "id": "o_labsamples",
+   "game": "office_labsamples",
+   "kind": "inspect",
+   "label": "Lab results: the guests' blood",
+   "text": "Lab results.",
+   "at": [
+    0.35,
+    0.9850000000000001,
+    -0.95
+   ]
+  },
+  {
+   "id": "o_envelope",
+   "game": "office_envelope",
+   "kind": "inspect",
+   "label": "Manila envelope",
+   "text": "Envelope.",
+   "at": [
+    -0.2,
+    0.9850000000000001,
+    -0.7699999999999999
+   ]
+  },
+  {
+   "id": "o_evidencebag",
+   "game": "office_evidencebag",
+   "kind": "inspect",
+   "label": "Police evidence bag",
+   "text": "Evidence bag.",
+   "at": [
+    0.05,
+    1.0050000000000001,
+    -0.7499999999999999
+   ]
+  },
+  {
+   "id": "o_report",
+   "game": "office_report",
+   "kind": "inspect",
+   "label": "Final report folder",
+   "text": "Final report.",
+   "at": [
+    0.25,
+    0.9850000000000001,
+    -1.15
    ]
   }
  ]

@@ -79,7 +79,8 @@ export const C001_GARAGE: WalkHouse = {
     "back": {
      "tex": "/rooms/c001-garage/walk/back.webp"
     }
-   }
+   },
+   "location": "robert_garage"
   }
  ],
  "passages": [],
