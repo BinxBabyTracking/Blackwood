@@ -10,8 +10,12 @@ export type WalkModel = {
   lamp?: string; glow?: string;
   /** Stretch on top of the even scale (x, y, z), for a model that came out too flat or too narrow. */
   stretch?: number[];
+  /** A lamp that lights the room itself: a point light this far above the model's base (x, y, z offset) at this power. */
+  light?: { at: number[]; power: number };
+  /** Only on this visit (rooms that change between visits). */
+  visit?: string;
 };
-export type WalkHotspot = { id: string; kind: "inspect" | "switch"; label: string; text?: string; light?: string; at: number[] };
+export type WalkHotspot = { id: string; kind: "inspect" | "switch"; label: string; text?: string; light?: string; at: number[]; visit?: string };
 export type WalkOutside = { day: string; night: string; distance: number; width: number; u: number; y: number };
 export type WalkWall = {
   tex: string;
@@ -44,6 +48,8 @@ export type WalkHouse = {
   start?: number[];
   /** Opens at night. */
   startNight?: boolean;
+  /** Visits that change the room (first and second, say): a button switches between them. */
+  visits?: { id: string; label: string }[];
   rooms: WalkRoomDef[];
   /** Openings you walk through from one room to the next (x and z ranges in metres), crossed along z unless said otherwise. */
   passages: { x: number[]; z: number[]; along?: "x" | "z" }[];

@@ -88,7 +88,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
   const markerRefs = useRef(new Map<string, HTMLButtonElement>());
   const stickRef = useRef<HTMLDivElement>(null);
   const knobRef = useRef<HTMLDivElement>(null);
-  const api = useRef<{ setNight: (n: boolean) => void; setLight: (id: string, on: boolean) => void; release: () => void; relock: () => void } | null>(null);
+  const api = useRef<{ setNight: (n: boolean) => void; setLight: (id: string, on: boolean) => void; setVisit: (v: string) => void; release: () => void; relock: () => void } | null>(null);
   const [progress, setProgress] = useState(0);
   const [ready, setReady] = useState(false);
   const [night, setNight] = useState(!!house.startNight);
@@ -98,6 +98,9 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
   const [touch, setTouch] = useState(false);
   const [roomName, setRoomName] = useState(house.rooms[0].name);
   const [focus, setFocus] = useState<WalkHotspot | null>(null);
+  const [visit, setVisit] = useState(house.visits?.[0]?.id ?? "");
+  const visitRef = useRef(visit);
+  visitRef.current = visit;
   const pressRef = useRef<(hs: WalkHotspot) => void>(() => {});
 
   useEffect(() => {
@@ -277,7 +280,8 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     setSun(!!house.startNight);
 
     // Furniture.
-    const blockers: { x0: number; x1: number; z0: number; z1: number }[] = [];
+    const blockers: { x0: number; x1: number; z0: number; z1: number; visit?: string }[] = [];
+    const lightsOn = new Set<string>();
     const sc = document.createElement("canvas");
     sc.width = sc.height = 128;
     const g2 = sc.getContext("2d")!;
@@ -290,6 +294,8 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     const contactMat = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(sc), transparent: true, depthWrite: false });
     const gl = new GLTFLoader(manager);
     const lampMats = new Map<string, THREE.MeshLambertMaterial[]>();
+    const lampLights = new Map<string, { light: THREE.PointLight; power: number }[]>();
+    const visitGroups: { visit: string; obj: THREE.Object3D }[] = [];
     for (const M of house.models) {
       gl.load(M.file, (g) => {
         const op = M.opacity ?? 1;
@@ -327,10 +333,21 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         grp.rotation.y = ((M.rotY ?? 0) * Math.PI) / 180;
         grp.position.set(M.pos[0], M.pos[1], M.pos[2]);
         scene.add(grp);
+        if (M.visit) {
+          visitGroups.push({ visit: M.visit, obj: grp });
+          grp.visible = M.visit === visitRef.current;
+        }
+        if (M.lamp && M.light) {
+          const pl = new THREE.PointLight(0xffd29a, 0, 0, 2);
+          pl.position.set(M.pos[0] + M.light.at[0], M.pos[1] + M.light.at[1], M.pos[2] + M.light.at[2]);
+          scene.add(pl);
+          lampLights.set(M.lamp, [...(lampLights.get(M.lamp) ?? []), { light: pl, power: M.light.power }]);
+          if (lightsOn.has(M.lamp)) pl.intensity = M.light.power;
+        }
         grp.updateMatrixWorld(true);
         const wb = new THREE.Box3().setFromObject(grp);
         // Pieces you would bump into (not things sitting on top of others, or flat on the floor).
-        if (M.pos[1] < 0.05 && wb.max.y > 0.25) blockers.push({ x0: wb.min.x, x1: wb.max.x, z0: wb.min.z, z1: wb.max.z });
+        if (M.pos[1] < 0.05 && wb.max.y > 0.25) blockers.push({ x0: wb.min.x, x1: wb.max.x, z0: wb.min.z, z1: wb.max.z, visit: M.visit });
         if (M.shadow) {
           const pl = new THREE.Mesh(new THREE.PlaneGeometry(M.shadow[0], M.shadow[1]), contactMat);
           pl.rotation.set(-Math.PI / 2, 0, ((M.rotY ?? 0) * Math.PI) / 180);
@@ -356,7 +373,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
     ];
     const free = (x: number, z: number) => {
       if (!areas.some((a) => x >= a.x0 && x <= a.x1 && z >= a.z0 && z <= a.z1)) return false;
-      return !blockers.some((b) => x > b.x0 - RADIUS && x < b.x1 + RADIUS && z > b.z0 - RADIUS && z < b.z1 + RADIUS && Math.hypot(x - Math.max(b.x0, Math.min(b.x1, x)), z - Math.max(b.z0, Math.min(b.z1, z))) < RADIUS);
+      return !blockers.some((b) => (!b.visit || b.visit === visitRef.current) && x > b.x0 - RADIUS && x < b.x1 + RADIUS && z > b.z0 - RADIUS && z < b.z1 + RADIUS && Math.hypot(x - Math.max(b.x0, Math.min(b.x1, x)), z - Math.max(b.z0, Math.min(b.z1, z))) < RADIUS);
     };
     const noclip = testing && start.length > 4;
     const move = (dx: number, dz: number) => {
@@ -509,7 +526,7 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         v.set(hs.at[0], hs.at[1], hs.at[2]);
         const dist = v.distanceTo(pos);
         v.project(camera);
-        if (hotRoom.get(hs.id) !== lastRoom || dist > NEAR || v.z > 1 || Math.abs(v.x) > 1.1 || Math.abs(v.y) > 1.1) {
+        if (hotRoom.get(hs.id) !== lastRoom || (hs.visit && hs.visit !== visitRef.current) || dist > NEAR || v.z > 1 || Math.abs(v.x) > 1.1 || Math.abs(v.y) > 1.1) {
           el.style.display = "none";
           continue;
         }
@@ -544,8 +561,14 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         const l = roomLights.get(id);
         if (!l) return;
         l.light.intensity = on ? l.power : 0;
+        if (on) lightsOn.add(id);
+        else lightsOn.delete(id);
+        for (const p of lampLights.get(id) ?? []) p.light.intensity = on ? p.power : 0;
         if (l.ceil.emissiveMap) l.ceil.emissive.setRGB(on ? 1.6 : 0, on ? 1.35 : 0, on ? 0.95 : 0);
         for (const m of lampMats.get(id) ?? []) m.emissive.setRGB(on ? 1.5 : 0, on ? 1.3 : 0, on ? 0.95 : 0);
+      },
+      setVisit: (v) => {
+        for (const g of visitGroups) g.obj.visible = g.visit === v;
       },
       release: () => document.exitPointerLock?.(),
       // Back to looking around after a close (the close click or key counts as the user's go-ahead).
@@ -672,6 +695,19 @@ export function WalkViewer({ house, title }: { house: WalkHouse; title: string }
         >
           Time: {night ? "night" : "day"}
         </button>
+        {house.visits ? (
+          <button
+            onClick={() => {
+              const i = house.visits!.findIndex((v) => v.id === visit);
+              const next = house.visits![(i + 1) % house.visits!.length].id;
+              setVisit(next);
+              api.current?.setVisit(next);
+            }}
+            className="border border-brass px-3 py-1.5 text-brass"
+          >
+            Visit: {house.visits.find((v) => v.id === visit)?.label}
+          </button>
+        ) : null}
       </div>
 
       {inspect ? (
