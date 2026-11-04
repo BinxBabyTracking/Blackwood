@@ -5,6 +5,7 @@ const LINKS = [
   { href: "/about", label: "About" },
   { href: "/investigations", label: "Investigations" },
   { href: "/how-it-works", label: "How It Works" },
+  { href: "/support", label: "Support" },
   { href: "/contact", label: "Contact" },
   { href: "/privacy", label: "Privacy Policy" },
   { href: "/terms", label: "Terms of Service" },

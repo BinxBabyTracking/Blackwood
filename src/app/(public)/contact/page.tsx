@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
 
 export const metadata: Metadata = { title: "Contact" };
@@ -12,6 +13,13 @@ export default function ContactPage() {
         Questions about your account, the platform or a case in the archive.
       </PageIntro>
       <section className="mx-auto max-w-3xl px-4 py-16 sm:px-8">
+        <p className="mb-8 text-lg">
+          For help with your account, a purchase or a case,{" "}
+          <Link href="/support" className="text-brass underline underline-offset-4">
+            open a support ticket
+          </Link>
+          . We answer every one.
+        </p>
         {email ? (
           <p className="text-lg">
             Write to{" "}
@@ -20,12 +28,7 @@ export default function ContactPage() {
             </a>
             . We read every message.
           </p>
-        ) : (
-          <p className="rounded-[var(--radius-file)] border border-dashed border-rule p-6 text-smoke">
-            A support address has not been published yet. Set <code className="font-mono text-paper">NEXT_PUBLIC_CONTACT_EMAIL</code>{" "}
-            to show it here.
-          </p>
-        )}
+        ) : null}
         <p className="mt-8 text-sm text-smoke">
           Blackwood Investigations is a fictional agency and cannot take on real investigations. For a real emergency, contact local
           law enforcement.

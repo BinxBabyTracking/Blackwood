@@ -21,6 +21,10 @@ import { allEntries } from "@/lib/leaderboard";
 import { adminRemoveEntry } from "@/app/actions/leaderboard";
 import { adminDecideEarlyAccess } from "@/app/actions/early-access";
 import { allRequests } from "@/lib/early-access";
+import { adminSetStatus } from "@/app/actions/support";
+import { AdminReplyForm } from "@/components/support-forms";
+import { StatusTag } from "@/components/support-status";
+import { adminTickets, categoryLabel, type TicketStatus } from "@/lib/support";
 import { NameCheck } from "@/components/portal/name-check";
 import { AdminSection } from "@/components/portal/admin-section";
 import { ArtStudio } from "@/components/portal/art-studio";
@@ -42,6 +46,7 @@ function usd(n: number) {
 
 const TABS = [
   { id: "spending", label: "Spending", blurb: "What the paid services cost, by case: Claude for interviews, ElevenLabs for voices and push-to-talk. Figures are estimates from your rates below; the providers' own dashboards are the bill." },
+  { id: "support", label: "Support", blurb: "Tickets players open on the Support page. Your replies show on the ticket's page; players see a New reply mark under Support." },
   { id: "players", label: "Player data", blurb: "Early access requests, playthroughs, feedback, leaderboard entries and the new-case email list." },
   { id: "music", label: "Music and sounds", blurb: "Each case's music and room sound, made with ElevenLabs." },
   { id: "voices", label: "Voices", blurb: "The voice of every person in each case." },
@@ -90,7 +95,7 @@ async function Admin({ searchParams }: { searchParams: Promise<Record<string, st
         </section>
       ) : (
         <div className="space-y-14">
-          {tab === "spending" ? <Spending /> : tab === "players" ? <Players /> : tab === "music" ? <Soundtracks /> : tab === "voices" ? <Voices /> : <Artwork />}
+          {tab === "spending" ? <Spending /> : tab === "support" ? <SupportAdmin filter={typeof q.status === "string" ? q.status : "open"} /> : tab === "players" ? <Players /> : tab === "music" ? <Soundtracks /> : tab === "voices" ? <Voices /> : <Artwork />}
           <form action={lockAdmin}>
             <button type="submit" className="text-sm text-smoke underline-offset-4 hover:text-paper hover:underline">
               Lock the Admin page on this device
@@ -629,5 +634,82 @@ async function EarlyAccessAdmin() {
         </div>
       )}
     </AdminSection>
+  );
+}
+
+/** Support tickets: filter by status, read the thread, reply, close or reopen. */
+async function SupportAdmin({ filter }: { filter: string }) {
+  const status = (["open", "answered", "closed", "all"].includes(filter) ? filter : "open") as TicketStatus | "all";
+  const { tally, tickets } = await adminTickets(status);
+  const FILTERS: { id: TicketStatus | "all"; label: string }[] = [
+    { id: "open", label: `Needs a reply (${tally.open})` },
+    { id: "answered", label: `Answered (${tally.answered})` },
+    { id: "closed", label: `Closed (${tally.closed})` },
+    { id: "all", label: "All" },
+  ];
+  return (
+    <section aria-label="Support tickets" className="space-y-6">
+      <nav aria-label="Ticket status" className="flex flex-wrap gap-2 text-sm">
+        {FILTERS.map((f) => (
+          <Link
+            key={f.id}
+            href={`/agency/admin?tab=support&status=${f.id}`}
+            aria-current={f.id === status ? "page" : undefined}
+            className={`rounded-[2px] border px-3 py-1.5 ${f.id === status ? "border-brass text-paper" : "border-rule text-smoke hover:text-paper"}`}
+          >
+            {f.label}
+          </Link>
+        ))}
+      </nav>
+      {!tickets.length ? (
+        <p className="text-smoke">{status === "open" ? "Nothing waiting. Every ticket has an answer." : "No tickets here."}</p>
+      ) : (
+        <ul className="space-y-3">
+          {tickets.map((t) => (
+            <li key={t.id}>
+              <details className="rounded-[var(--radius-file)] border border-rule bg-card/30 open:bg-card/50">
+                <summary className="flex cursor-pointer flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3">
+                  <StatusTag status={t.status} admin />
+                  <span className="min-w-0 flex-1 truncate text-paper">{t.subject}</span>
+                  <span className="font-mono text-xs text-smoke">
+                    #{t.id} · {t.displayName ?? t.name ?? t.email} · {formatDate(t.updated_at, { dateStyle: "medium", timeStyle: "short" })}
+                  </span>
+                </summary>
+                <div className="space-y-5 border-t border-rule px-4 py-4">
+                  <p className="font-mono text-xs text-smoke">
+                    {categoryLabel(t.category)}
+                    {t.case_id ? ` · ${t.case_id}` : ""} · {t.email}
+                    {t.user_id ? " · signed in" : " · no account"} · opened {formatDate(t.created_at, { dateStyle: "medium", timeStyle: "short" })}
+                  </p>
+                  <ol className="space-y-3">
+                    {t.messages.map((m) => (
+                      <li key={m.id} className={`rounded-[2px] border px-4 py-3 ${m.author === "staff" ? "border-brass/50 bg-brass/5" : "border-rule"}`}>
+                        <p className="font-mono text-xs text-smoke">
+                          {m.author === "staff" ? <span className="text-brass">You</span> : "Player"} · {formatDate(m.created_at, { dateStyle: "medium", timeStyle: "short" })}
+                        </p>
+                        <p className="mt-1.5 whitespace-pre-wrap text-sm leading-relaxed text-paper">{m.body}</p>
+                      </li>
+                    ))}
+                  </ol>
+                  <AdminReplyForm id={t.id} />
+                  <form action={adminSetStatus} className="flex flex-wrap gap-3 text-sm">
+                    <input type="hidden" name="id" value={t.id} />
+                    {t.status !== "closed" ? (
+                      <button type="submit" name="status" value="closed" className="text-smoke underline-offset-4 hover:text-paper hover:underline">
+                        Close without replying
+                      </button>
+                    ) : (
+                      <button type="submit" name="status" value="open" className="text-smoke underline-offset-4 hover:text-paper hover:underline">
+                        Reopen
+                      </button>
+                    )}
+                  </form>
+                </div>
+              </details>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }

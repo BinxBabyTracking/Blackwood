@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
+import { unreadForUser } from "@/lib/support";
 import { FeaturedCase } from "@/components/featured-case";
 import { Greeting } from "@/components/portal/greeting";
 import { Ledger } from "@/components/portal/heading";
@@ -54,10 +56,19 @@ export default function HeadquartersPage() {
 
 async function Welcome() {
   const me = await requireInvestigator();
+  const replies = await unreadForUser(me.id);
   return (
     <div>
       <Greeting name={me.profile.display_name} />
       <p className="mt-2 text-lg text-smoke">Your next assignment is waiting.</p>
+      {replies ? (
+        <Link
+          href="/support"
+          className="mt-5 inline-flex items-center gap-2 rounded-[var(--radius-file)] border border-brass/60 bg-brass/10 px-4 py-2.5 text-sm text-paper hover:bg-brass/20"
+        >
+          Blackwood Support has answered {replies === 1 ? "your ticket" : `${replies} of your tickets`}. Read the reply
+        </Link>
+      ) : null}
     </div>
   );
 }

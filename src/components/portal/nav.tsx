@@ -13,6 +13,7 @@ const ICONS: Record<string, React.ReactNode> = {
   joint: <path d="M8 11a3 3 0 100-6 3 3 0 000 6zM16 11a3 3 0 100-6 3 3 0 000 6zM2 20c0-3 3-5 6-5s6 2 6 5M14 15.5c3 0 8 1 8 4.5" />,
   record: <path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9 5.5-.8z" />,
   personnel: <path d="M4 5h16v14H4zM9 12a2.2 2.2 0 100-4.4A2.2 2.2 0 009 12zM5.8 16c.6-1.8 1.8-2.6 3.2-2.6s2.6.8 3.2 2.6M14.5 9h3M14.5 12.5h3" />,
+  support: <path d="M4 5h16v11H9l-5 4zM9 9.5h6M9 12.5h4" />,
   settings: <path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M14 4v4M8 10v4M16 16v4" />,
 };
 
@@ -23,6 +24,7 @@ export const PORTAL_NAV = [
   { href: "/agency/service-record", label: "Service Record", icon: "record" },
   { href: "/agency/personnel", label: "Personnel File", icon: "personnel" },
   { href: "/agency/settings", label: "Agency Settings", icon: "settings" },
+  { href: "/support", label: "Support", icon: "support" },
 ] as const;
 
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
