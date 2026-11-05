@@ -726,7 +726,7 @@ export function InvestigationShell({
             here: view.location.id,
             visible: view.location.hotspots.map((h) => h.id),
             attention: Object.fromEntries(view.location.hotspots.filter((h) => h.attention).map((h) => [h.id, h.callout])),
-            busy: layer !== null || pending || menu,
+            busy: layer !== null || menu,
             interview: inRoom && talkingTo ? { characterId: talkingTo.characterId, line: roomLine } : null,
             onHotspot: (id) => {
               handled(id);
