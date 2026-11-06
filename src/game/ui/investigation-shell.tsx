@@ -716,6 +716,90 @@ export function InvestigationShell({
         </div>
       </div>
 
+      {/* Map, notes and evidence in the top right corner of the scene: the map fills the corner as a quarter circle,
+          the notes sit at the top end of its curve and the evidence below its lower end. The murder board is on the office wall. */}
+      {(() => {
+        // In the office the map and notebook are in the room itself; someone being held has no map to follow.
+        const showMap = !atHome && view.captivity?.role !== "captive";
+        const caseFile = view.caseFileInHud ? (
+          <HudObject
+            label="Case File"
+            image={view.caseArt.obj_casefile ?? null}
+            // The HALLOW001 painting has a phone lying beside the folder: show the folder only.
+            cropAspect="604/638"
+            fallback="casefile"
+            below
+            onClick={() => dispatch({ type: "readDocument", documentId: "casefile" })}
+          />
+        ) : null;
+        const notes = atHome ? null : (
+          <HudObject label={words.notebook} image={hudArt(caseId, "obj_notebook", view.theme, view.caseArt)} fallback="notebook" below onClick={() => setLayer({ k: "panel", panel: "notebook" })} />
+        );
+        const evidence = (
+          <HudObject
+            label={words.evidence}
+            image={hudArt(caseId, "obj_evidence_bag", view.theme, view.caseArt)}
+            fallback="evidence"
+            count={view.evidence.length}
+            glow={newEvidence}
+            below
+            callout={newEvidence && !bagOpened && (atHome || mapUsed || view.captivity?.role === "captive") ? (view.theme === "medieval" ? "Something new. Open your satchel to study it." : "New evidence. Open the bag to study it.") : undefined}
+            onClick={() => openBag()}
+          />
+        );
+        // A case with a mobile phone carries it everywhere; it shakes while a call is coming in.
+        const phone = view.phone.mobile ? (
+          <HudObject
+            label="Phone"
+            image={hudArt(caseId, "obj_phone", view.theme, view.caseArt)}
+            fallback="phone"
+            alert={Boolean(view.phone.ringing)}
+            count={phoneUnread || undefined}
+            below
+            onClick={() => setLayer({ k: "panel", panel: "phone" })}
+          />
+        ) : null;
+        return (
+          <nav aria-label="Investigation" className="pointer-events-none relative z-20 h-0 shrink-0 [--r:8rem] sm:[--r:11rem]">
+            {showMap ? (
+              <>
+                <HudMapCorner
+                  label={words.map}
+                  image={hudArt(caseId, "map", view.theme, view.caseArt)}
+                  guide={!mapUsed && !swipeCard}
+                  callout={
+                    mapUsed || swipeCard ? undefined : (
+                      <>
+                        <span className="pointer-fine:hidden">Tap</span>
+                        <span className="hidden pointer-fine:inline">Click</span> the map to travel
+                      </>
+                    )
+                  }
+                  onClick={openHudMap}
+                />
+                {/* Along the top, at the upper end of the curve */}
+                <div className="absolute right-[calc(var(--r)+0.5rem)] top-2 flex flex-row-reverse items-start gap-2 sm:gap-3">
+                  {notes}
+                  {caseFile}
+                </div>
+                {/* Down the right side, below the lower end of the curve */}
+                <div className="absolute right-2 top-[calc(var(--r)+0.5rem)] flex flex-col items-end gap-2 sm:gap-3">
+                  {evidence}
+                  {phone}
+                </div>
+              </>
+            ) : (
+              <div className="absolute right-2 top-2 flex flex-row-reverse items-start gap-2 sm:gap-3">
+                {evidence}
+                {notes}
+                {caseFile}
+                {phone}
+              </div>
+            )}
+          </nav>
+        );
+      })()}
+
       <HomeScreenTip paused={swipeCard} />
 
       {walkHouse ? (
@@ -792,64 +876,6 @@ export function InvestigationShell({
       />
       )}
 
-      {/* Map, notebook and evidence: painted objects in the corner of the scene. The murder board is on the office wall. */}
-      <nav aria-label="Investigation" className="pointer-events-none fixed bottom-3 left-3 z-20 flex items-end gap-2 sm:bottom-4 sm:left-4 sm:gap-3">
-        {/* A case that carries its case file keeps it here, first in the corner, readable anywhere. */}
-        {view.caseFileInHud ? (
-          <HudObject
-            label="Case File"
-            image={view.caseArt.obj_casefile ?? null}
-            // The HALLOW001 painting has a phone lying beside the folder: show the folder only.
-            cropAspect="604/638"
-            fallback="casefile"
-            onClick={() => dispatch({ type: "readDocument", documentId: "casefile" })}
-          />
-        ) : null}
-        {/* In the office the map and notebook are in the room itself; only the evidence stays in the corner. */}
-        {atHome ? null : (
-          <>
-            {/* Someone being held has no map to follow: the way out is in the scenes. */}
-            {view.captivity?.role === "captive" ? null : (
-              <HudObject
-                label={words.map}
-                image={hudArt(caseId, "map", view.theme, view.caseArt)}
-                fallback="map"
-                guide={!mapUsed && !swipeCard}
-                callout={
-                  mapUsed || swipeCard ? undefined : (
-                    <>
-                      <span className="pointer-fine:hidden">Tap</span>
-                      <span className="hidden pointer-fine:inline">Click</span> the map to travel
-                    </>
-                  )
-                }
-                onClick={openHudMap}
-              />
-            )}
-            <HudObject label={words.notebook} image={hudArt(caseId, "obj_notebook", view.theme, view.caseArt)} fallback="notebook" onClick={() => setLayer({ k: "panel", panel: "notebook" })} />
-          </>
-        )}
-        <HudObject
-          label={words.evidence}
-          image={hudArt(caseId, "obj_evidence_bag", view.theme, view.caseArt)}
-          fallback="evidence"
-          count={view.evidence.length}
-          glow={newEvidence}
-          callout={newEvidence && !bagOpened && (atHome || mapUsed || view.captivity?.role === "captive") ? (view.theme === "medieval" ? "Something new. Open your satchel to study it." : "New evidence. Open the bag to study it.") : undefined}
-          onClick={() => openBag()}
-        />
-        {/* A case with a mobile phone carries it everywhere; it shakes while a call is coming in. */}
-        {view.phone.mobile ? (
-          <HudObject
-            label="Phone"
-            image={hudArt(caseId, "obj_phone", view.theme, view.caseArt)}
-            fallback="phone"
-            alert={Boolean(view.phone.ringing)}
-            count={phoneUnread || undefined}
-            onClick={() => setLayer({ k: "panel", panel: "phone" })}
-          />
-        ) : null}
-      </nav>
 
       {/* Someone is being held: each screen's part in it, and a way forward if a screen goes quiet */}
       {view.captivity && view.introSeen ? (
@@ -1150,7 +1176,7 @@ export function InvestigationShell({
       ) : null}
       {report ? <ReportDialog caseId={caseId} asGuest={guest} open={report.open} characterId={report.characterId} onClose={() => setReport(null)} /> : null}
       {locked && layer === null ? (
-        <div className="fixed right-4 top-12 z-20 max-w-xs border border-[color:var(--color-ok)] bg-[#141a17]/95 p-4 text-sm shadow-lg">
+        <div className="fixed right-4 top-64 z-20 max-w-xs border border-[color:var(--color-ok)] sm:top-80 bg-[#141a17]/95 p-4 text-sm shadow-lg">
           <p className="font-serif text-lg">Case closed</p>
           <p className="mt-1 text-smoke">You can still look through the scenes, your notebook and the board.</p>
           <div className="mt-3 flex flex-col items-start gap-1.5">
@@ -1395,6 +1421,7 @@ function HudObject({
   callout,
   guide = false,
   cropAspect,
+  below = false,
   onClick,
 }: {
   label: string;
@@ -1410,6 +1437,8 @@ function HudObject({
   callout?: React.ReactNode;
   /** A first-time pointer: a pulsing gold ring and a bold label, like the ones in the office. */
   guide?: boolean;
+  /** Sitting at the top of the screen: its note hangs below it, toward the middle. */
+  below?: boolean;
   onClick: () => void;
 }) {
   return (
@@ -1419,7 +1448,12 @@ function HudObject({
       aria-label={count !== undefined ? `${label}, ${count} items` : label}
       className="group pointer-events-auto relative flex w-14 flex-col items-center gap-1 sm:w-[4.5rem]"
     >
-      {callout && guide ? (
+      {callout && below ? (
+        <span className="pointer-events-none absolute right-0 top-full z-20 mt-2 w-44 rounded-[3px] border border-brass/60 bg-[#161b20]/95 px-2.5 py-2 text-left text-xs normal-case leading-snug tracking-normal text-paper shadow-lg game-fade">
+          <span className="absolute -top-1.5 right-6 h-3 w-3 rotate-45 border-l border-t border-brass/60 bg-[#161b20]" aria-hidden />
+          {callout}
+        </span>
+      ) : callout && guide ? (
         <span className="pointer-events-none absolute bottom-full left-0 mb-3 flex flex-col items-start game-callout-side">
           <span className="whitespace-nowrap rounded-[2px] bg-brass px-3 py-1.5 font-mono text-[0.7rem] font-bold uppercase tracking-[0.12em] text-ink shadow-[0_4px_14px_rgba(0,0,0,0.6)] sm:text-xs">
             {callout}
@@ -1454,6 +1488,38 @@ function HudObject({
         ) : null}
       </span>
       <span className="rounded-[2px] bg-[#0d1013]/80 px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-[0.14em] text-paper/90 group-hover:text-brass sm:text-[0.65rem]">{label}</span>
+    </button>
+  );
+}
+
+/** The map, filling the top right corner of the scene as a quarter circle. */
+function HudMapCorner({ label, image, guide, callout, onClick }: { label: string; image: string | null; guide: boolean; callout?: React.ReactNode; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      className="group pointer-events-auto absolute right-0 top-0 h-[var(--r)] w-[var(--r)]"
+    >
+      {guide ? <span className="pointer-events-none absolute -inset-1.5 z-10 rounded-bl-full game-guide" aria-hidden /> : null}
+      <span className="absolute inset-0 overflow-hidden rounded-bl-full border-b-2 border-l-2 border-[#e8dcc0]/80 bg-[#161b20] shadow-[0_6px_18px_rgba(0,0,0,0.7)] transition-[filter] duration-200 group-hover:brightness-110">
+        {image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={image} alt="" draggable={false} className="h-full w-full scale-110 object-cover transition-transform duration-300 group-hover:scale-125" />
+        ) : (
+          <span className="flex h-full w-full items-start justify-end p-[22%] text-paper">
+            <HudIcon kind="map" />
+          </span>
+        )}
+      </span>
+      <span className="absolute bottom-[30%] right-[26%] rounded-[2px] bg-[#0d1013]/85 px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-[0.14em] text-paper/90 group-hover:text-brass sm:text-[0.65rem]">{label}</span>
+      {callout ? (
+        <span className={`pointer-events-none absolute right-2 top-full mt-14 flex flex-col items-end sm:mt-16 ${guide ? "game-callout-side" : ""}`}>
+          <span className="whitespace-nowrap rounded-[2px] bg-brass px-3 py-1.5 font-mono text-[0.7rem] font-bold uppercase tracking-[0.12em] text-ink shadow-[0_4px_14px_rgba(0,0,0,0.6)] sm:text-xs">
+            {callout}
+          </span>
+        </span>
+      ) : null}
     </button>
   );
 }
