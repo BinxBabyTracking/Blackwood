@@ -161,7 +161,16 @@ func _room(r: Dictionary) -> void:
 	var ce := _quad(Vector2(w, d), ceil_mat)
 	ce.rotation.x = PI / 2
 	ce.position = Vector3(cx, h, cz)
+	# The ceiling a light sits just under shouldn't shadow itself; a slab above it keeps the sun out instead.
+	ce.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(ce)
+	var roof := MeshInstance3D.new()
+	var slab := BoxMesh.new()
+	slab.size = Vector3(w + 0.4, 0.05, d + 0.4)
+	roof.mesh = slab
+	roof.position = Vector3(cx, h + 0.12, cz)
+	roof.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
+	root.add_child(roof)
 
 	for side in ["front", "back", "left", "right"]:
 		if r.walls.has(side):
@@ -339,7 +348,9 @@ func _model(M: Dictionary) -> void:
 	var mouth_tex: Texture2D = load(String(M.mouth)) if M.has("mouth") else null
 	var person := {}
 	for mi in _meshes(grp):
-		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if opacity >= 1.0 else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		# Light fittings don't shadow their own light (a ceiling fixture would blot the ceiling).
+		var casts := opacity >= 1.0 and lamp_id == ""
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if casts else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		if mi.mesh is ArrayMesh and talk != "" and mi.mesh.get_blend_shape_count() > 0:
 			person.mesh = mi
 		for i in mi.mesh.get_surface_count():

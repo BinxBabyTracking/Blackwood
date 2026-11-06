@@ -36,7 +36,7 @@ textures/default_filters/anisotropic_filtering_level=3
 [importer_defaults]
 
 texture={
-"compress/high_quality": true,
+"compress/high_quality": false,
 "compress/mode": 2,
 "mipmaps/generate": true
 }
