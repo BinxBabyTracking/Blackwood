@@ -1,0 +1,1695 @@
+{
+ "id": "c001_whitmore_house",
+ "name": "The Whitmore House",
+ "eye": 1.673,
+ "wall": 0.13,
+ "rooms": [
+  {
+   "id": "living",
+   "name": "Eleanor's Living Room",
+   "center": [
+    0,
+    0
+   ],
+   "size": [
+    4.874,
+    4.874,
+    2.743
+   ],
+   "floor": {
+    "tex": "res://rooms/c001-living-room/walk/floor.webp"
+   },
+   "ceil": {
+    "tex": "res://rooms/c001-living-room/walk/ceil_plain.webp"
+   },
+   "light": {
+    "id": "living",
+    "at": [
+     0,
+     2.483,
+     0
+    ],
+    "power": 9
+   },
+   "walls": {
+    "front": {
+     "tex": "res://rooms/c001-living-room/walk/front.webp",
+     "cutout": true,
+     "reveals": [
+      {
+       "rect": [
+        0.4306,
+        0.9151,
+        0.0831,
+        0.6938
+       ],
+       "sill": true
+      }
+     ],
+     "outside": {
+      "day": "res://rooms/c001-living-room/walk/outside_day.webp",
+      "night": "res://rooms/c001-living-room/walk/outside_night.webp",
+      "distance": 2.743,
+      "width": 9.875,
+      "u": 0.6278,
+      "y": 1.618
+     }
+    },
+    "back": {
+     "tex": "res://rooms/c001-living-room/walk/back.webp",
+     "cutout": true,
+     "reveals": [
+      {
+       "arch": [
+        [
+         0.2907,
+         0.255
+        ],
+        [
+         0.2955,
+         0.221
+        ],
+        [
+         0.3002,
+         0.2019
+        ],
+        [
+         0.305,
+         0.187
+        ],
+        [
+         0.3098,
+         0.1743
+        ],
+        [
+         0.3146,
+         0.1637
+        ],
+        [
+         0.3194,
+         0.153
+        ],
+        [
+         0.3242,
+         0.1445
+        ],
+        [
+         0.3289,
+         0.1371
+        ],
+        [
+         0.3337,
+         0.1307
+        ],
+        [
+         0.3385,
+         0.1243
+        ],
+        [
+         0.3433,
+         0.118
+        ],
+        [
+         0.3481,
+         0.1126
+        ],
+        [
+         0.3529,
+         0.1084
+        ],
+        [
+         0.3577,
+         0.1031
+        ],
+        [
+         0.3624,
+         0.0988
+        ],
+        [
+         0.3672,
+         0.0956
+        ],
+        [
+         0.372,
+         0.0914
+        ],
+        [
+         0.3768,
+         0.0882
+        ],
+        [
+         0.3816,
+         0.085
+        ],
+        [
+         0.3864,
+         0.0818
+        ],
+        [
+         0.3911,
+         0.0797
+        ],
+        [
+         0.3959,
+         0.0765
+        ],
+        [
+         0.4007,
+         0.0744
+        ],
+        [
+         0.4055,
+         0.0723
+        ],
+        [
+         0.4103,
+         0.0701
+        ],
+        [
+         0.4151,
+         0.068
+        ],
+        [
+         0.4199,
+         0.0659
+        ],
+        [
+         0.4246,
+         0.0648
+        ],
+        [
+         0.4294,
+         0.0627
+        ],
+        [
+         0.4342,
+         0.0616
+        ],
+        [
+         0.439,
+         0.0606
+        ],
+        [
+         0.4438,
+         0.0584
+        ],
+        [
+         0.4486,
+         0.0574
+        ],
+        [
+         0.4533,
+         0.0574
+        ],
+        [
+         0.4581,
+         0.0563
+        ],
+        [
+         0.4629,
+         0.0553
+        ],
+        [
+         0.4677,
+         0.0542
+        ],
+        [
+         0.4725,
+         0.0542
+        ],
+        [
+         0.4773,
+         0.0531
+        ],
+        [
+         0.4821,
+         0.0531
+        ],
+        [
+         0.4868,
+         0.0531
+        ],
+        [
+         0.4916,
+         0.0531
+        ],
+        [
+         0.4964,
+         0.0531
+        ],
+        [
+         0.5012,
+         0.0531
+        ],
+        [
+         0.506,
+         0.0531
+        ],
+        [
+         0.5108,
+         0.0531
+        ],
+        [
+         0.5156,
+         0.0531
+        ],
+        [
+         0.5203,
+         0.0542
+        ],
+        [
+         0.5251,
+         0.0542
+        ],
+        [
+         0.5299,
+         0.0542
+        ],
+        [
+         0.5347,
+         0.0553
+        ],
+        [
+         0.5395,
+         0.0563
+        ],
+        [
+         0.5443,
+         0.0574
+        ],
+        [
+         0.549,
+         0.0574
+        ],
+        [
+         0.5538,
+         0.0584
+        ],
+        [
+         0.5586,
+         0.0595
+        ],
+        [
+         0.5634,
+         0.0606
+        ],
+        [
+         0.5682,
+         0.0627
+        ],
+        [
+         0.573,
+         0.0638
+        ],
+        [
+         0.5778,
+         0.0659
+        ],
+        [
+         0.5825,
+         0.067
+        ],
+        [
+         0.5873,
+         0.0691
+        ],
+        [
+         0.5921,
+         0.0712
+        ],
+        [
+         0.5969,
+         0.0733
+        ],
+        [
+         0.6017,
+         0.0755
+        ],
+        [
+         0.6065,
+         0.0776
+        ],
+        [
+         0.6112,
+         0.0808
+        ],
+        [
+         0.616,
+         0.0829
+        ],
+        [
+         0.6208,
+         0.0861
+        ],
+        [
+         0.6256,
+         0.0893
+        ],
+        [
+         0.6304,
+         0.0925
+        ],
+        [
+         0.6352,
+         0.0967
+        ],
+        [
+         0.64,
+         0.101
+        ],
+        [
+         0.6447,
+         0.1052
+        ],
+        [
+         0.6495,
+         0.1095
+        ],
+        [
+         0.6543,
+         0.1137
+        ],
+        [
+         0.6591,
+         0.119
+        ],
+        [
+         0.6639,
+         0.1243
+        ],
+        [
+         0.6687,
+         0.1307
+        ],
+        [
+         0.6734,
+         0.1371
+        ],
+        [
+         0.6782,
+         0.1445
+        ],
+        [
+         0.683,
+         0.153
+        ],
+        [
+         0.6878,
+         0.1615
+        ],
+        [
+         0.6926,
+         0.1722
+        ],
+        [
+         0.6974,
+         0.1828
+        ],
+        [
+         0.7022,
+         0.1966
+        ],
+        [
+         0.7069,
+         0.2125
+        ],
+        [
+         0.7117,
+         0.2338
+        ],
+        [
+         0.7165,
+         0.2752
+        ]
+       ]
+      }
+     ]
+    },
+    "left": {
+     "tex": "res://rooms/c001-living-room/walk/left.webp"
+    },
+    "right": {
+     "tex": "res://rooms/c001-living-room/walk/right.webp"
+    }
+   },
+   "location": "living_room",
+   "enter": "k_to_living"
+  },
+  {
+   "id": "kitchen",
+   "name": "Eleanor's Kitchen",
+   "center": [
+    0,
+    5.004
+   ],
+   "size": [
+    4.874,
+    4.874,
+    2.743
+   ],
+   "floor": {
+    "tex": "res://rooms/c001-kitchen/walk/floor.webp",
+    "repeat": 2
+   },
+   "ceil": {
+    "tex": "res://rooms/c001-kitchen/walk/ceil_plain.webp"
+   },
+   "light": {
+    "id": "kitchen",
+    "at": [
+     0,
+     2.323,
+     5.004
+    ],
+    "power": 8
+   },
+   "walls": {
+    "front": {
+     "tex": "res://rooms/c001-kitchen/walk/arch.webp",
+     "cutout": true,
+     "reveals": [
+      {
+       "arch": [
+        [
+         0.2773,
+         0.3183
+        ],
+        [
+         0.278,
+         0.3148
+        ],
+        [
+         0.278,
+         0.3113
+        ],
+        [
+         0.2773,
+         0.3079
+        ],
+        [
+         0.2773,
+         0.3044
+        ],
+        [
+         0.2773,
+         0.3009
+        ],
+        [
+         0.2773,
+         0.2975
+        ],
+        [
+         0.2773,
+         0.294
+        ],
+        [
+         0.2773,
+         0.2905
+        ],
+        [
+         0.278,
+         0.287
+        ],
+        [
+         0.278,
+         0.2836
+        ],
+        [
+         0.278,
+         0.2801
+        ],
+        [
+         0.278,
+         0.2766
+        ],
+        [
+         0.2786,
+         0.2731
+        ],
+        [
+         0.2786,
+         0.2697
+        ],
+        [
+         0.2793,
+         0.2662
+        ],
+        [
+         0.2793,
+         0.2627
+        ],
+        [
+         0.2799,
+         0.2593
+        ],
+        [
+         0.2806,
+         0.2558
+        ],
+        [
+         0.2806,
+         0.2523
+        ],
+        [
+         0.2812,
+         0.2488
+        ],
+        [
+         0.2819,
+         0.2454
+        ],
+        [
+         0.2826,
+         0.2419
+        ],
+        [
+         0.2832,
+         0.2384
+        ],
+        [
+         0.2839,
+         0.235
+        ],
+        [
+         0.2845,
+         0.2315
+        ],
+        [
+         0.2852,
+         0.228
+        ],
+        [
+         0.2865,
+         0.2245
+        ],
+        [
+         0.2878,
+         0.2211
+        ],
+        [
+         0.2884,
+         0.2176
+        ],
+        [
+         0.2891,
+         0.2141
+        ],
+        [
+         0.2904,
+         0.2106
+        ],
+        [
+         0.291,
+         0.2072
+        ],
+        [
+         0.2923,
+         0.2037
+        ],
+        [
+         0.2936,
+         0.2002
+        ],
+        [
+         0.2949,
+         0.1968
+        ],
+        [
+         0.2962,
+         0.1933
+        ],
+        [
+         0.2975,
+         0.1898
+        ],
+        [
+         0.2988,
+         0.1863
+        ],
+        [
+         0.3008,
+         0.1829
+        ],
+        [
+         0.3021,
+         0.1794
+        ],
+        [
+         0.3034,
+         0.1759
+        ],
+        [
+         0.3053,
+         0.1725
+        ],
+        [
+         0.3066,
+         0.169
+        ],
+        [
+         0.3086,
+         0.1655
+        ],
+        [
+         0.3105,
+         0.162
+        ],
+        [
+         0.3125,
+         0.1586
+        ],
+        [
+         0.3145,
+         0.1551
+        ],
+        [
+         0.3164,
+         0.1516
+        ],
+        [
+         0.3184,
+         0.1481
+        ],
+        [
+         0.321,
+         0.1447
+        ],
+        [
+         0.3229,
+         0.1412
+        ],
+        [
+         0.3255,
+         0.1377
+        ],
+        [
+         0.3281,
+         0.1343
+        ],
+        [
+         0.3307,
+         0.1308
+        ],
+        [
+         0.334,
+         0.1273
+        ],
+        [
+         0.3366,
+         0.1238
+        ],
+        [
+         0.3398,
+         0.1204
+        ],
+        [
+         0.3424,
+         0.1169
+        ],
+        [
+         0.3457,
+         0.1134
+        ],
+        [
+         0.3496,
+         0.11
+        ],
+        [
+         0.3535,
+         0.1065
+        ],
+        [
+         0.3568,
+         0.103
+        ],
+        [
+         0.3613,
+         0.0995
+        ],
+        [
+         0.3665,
+         0.0961
+        ],
+        [
+         0.3711,
+         0.0926
+        ],
+        [
+         0.3757,
+         0.0891
+        ],
+        [
+         0.3809,
+         0.0856
+        ],
+        [
+         0.3874,
+         0.0822
+        ],
+        [
+         0.3932,
+         0.0787
+        ],
+        [
+         0.3997,
+         0.0752
+        ],
+        [
+         0.4056,
+         0.0718
+        ],
+        [
+         0.4167,
+         0.0683
+        ],
+        [
+         0.4258,
+         0.0648
+        ],
+        [
+         0.4362,
+         0.0613
+        ],
+        [
+         0.4492,
+         0.0579
+        ],
+        [
+         0.4766,
+         0.0544
+        ],
+        [
+         0.5111,
+         0.0544
+        ],
+        [
+         0.5423,
+         0.0579
+        ],
+        [
+         0.5573,
+         0.0613
+        ],
+        [
+         0.5671,
+         0.0648
+        ],
+        [
+         0.5762,
+         0.0683
+        ],
+        [
+         0.5866,
+         0.0718
+        ],
+        [
+         0.5924,
+         0.0752
+        ],
+        [
+         0.5996,
+         0.0787
+        ],
+        [
+         0.6055,
+         0.0822
+        ],
+        [
+         0.612,
+         0.0856
+        ],
+        [
+         0.6172,
+         0.0891
+        ],
+        [
+         0.6217,
+         0.0926
+        ],
+        [
+         0.6257,
+         0.0961
+        ],
+        [
+         0.6309,
+         0.0995
+        ],
+        [
+         0.6348,
+         0.103
+        ],
+        [
+         0.638,
+         0.1065
+        ],
+        [
+         0.6419,
+         0.11
+        ],
+        [
+         0.6452,
+         0.1134
+        ],
+        [
+         0.6484,
+         0.1169
+        ],
+        [
+         0.6517,
+         0.1204
+        ],
+        [
+         0.6549,
+         0.1238
+        ],
+        [
+         0.6576,
+         0.1273
+        ],
+        [
+         0.6602,
+         0.1308
+        ],
+        [
+         0.6628,
+         0.1343
+        ],
+        [
+         0.6647,
+         0.1377
+        ],
+        [
+         0.6673,
+         0.1412
+        ],
+        [
+         0.6699,
+         0.1447
+        ],
+        [
+         0.6719,
+         0.1481
+        ],
+        [
+         0.6738,
+         0.1516
+        ],
+        [
+         0.6758,
+         0.1551
+        ],
+        [
+         0.6777,
+         0.1586
+        ],
+        [
+         0.679,
+         0.162
+        ],
+        [
+         0.681,
+         0.1655
+        ],
+        [
+         0.6823,
+         0.169
+        ],
+        [
+         0.6842,
+         0.1725
+        ],
+        [
+         0.6855,
+         0.1759
+        ],
+        [
+         0.6868,
+         0.1794
+        ],
+        [
+         0.6882,
+         0.1829
+        ],
+        [
+         0.6895,
+         0.1863
+        ],
+        [
+         0.6908,
+         0.1898
+        ],
+        [
+         0.6921,
+         0.1933
+        ],
+        [
+         0.6934,
+         0.1968
+        ],
+        [
+         0.694,
+         0.2002
+        ],
+        [
+         0.6947,
+         0.2037
+        ],
+        [
+         0.696,
+         0.2072
+        ],
+        [
+         0.6966,
+         0.2106
+        ],
+        [
+         0.6979,
+         0.2141
+        ],
+        [
+         0.6986,
+         0.2176
+        ],
+        [
+         0.6992,
+         0.2211
+        ],
+        [
+         0.6999,
+         0.2245
+        ],
+        [
+         0.7012,
+         0.228
+        ],
+        [
+         0.7018,
+         0.2315
+        ],
+        [
+         0.7025,
+         0.235
+        ],
+        [
+         0.7025,
+         0.2384
+        ],
+        [
+         0.7025,
+         0.2419
+        ],
+        [
+         0.7031,
+         0.2454
+        ],
+        [
+         0.7038,
+         0.2488
+        ],
+        [
+         0.7044,
+         0.2523
+        ],
+        [
+         0.7044,
+         0.2558
+        ],
+        [
+         0.7044,
+         0.2593
+        ],
+        [
+         0.7051,
+         0.2627
+        ],
+        [
+         0.7057,
+         0.2662
+        ],
+        [
+         0.7057,
+         0.2697
+        ],
+        [
+         0.7057,
+         0.2731
+        ],
+        [
+         0.7057,
+         0.2766
+        ],
+        [
+         0.7057,
+         0.2801
+        ],
+        [
+         0.7064,
+         0.2836
+        ],
+        [
+         0.7064,
+         0.287
+        ],
+        [
+         0.7064,
+         0.2905
+        ],
+        [
+         0.7064,
+         0.294
+        ],
+        [
+         0.7064,
+         0.2975
+        ],
+        [
+         0.7064,
+         0.3009
+        ],
+        [
+         0.7064,
+         0.3044
+        ],
+        [
+         0.7064,
+         0.3079
+        ],
+        [
+         0.7064,
+         0.3113
+        ],
+        [
+         0.7064,
+         0.3148
+        ],
+        [
+         0.7064,
+         0.3183
+        ]
+       ]
+      }
+     ]
+    },
+    "back": {
+     "tex": "res://rooms/c001-kitchen/walk/sink.webp",
+     "cutout": true,
+     "reveals": [
+      {
+       "rect": [
+        0.3051,
+        0.693,
+        0.0788,
+        0.652
+       ],
+       "sill": true
+      }
+     ],
+     "screen": [
+      0.3171,
+      0.681,
+      0.4363,
+      0.64
+     ],
+     "outside": {
+      "day": "res://rooms/c001-kitchen/walk/outside.webp",
+      "night": "res://rooms/c001-kitchen/walk/outside.webp",
+      "distance": 2.6,
+      "width": 16,
+      "u": 0.5,
+      "y": 1.75
+     }
+    },
+    "right": {
+     "tex": "res://rooms/c001-kitchen/walk/door.webp",
+     "cutout": true,
+     "outside": {
+      "day": "res://rooms/c001-kitchen/walk/outside.webp",
+      "night": "res://rooms/c001-kitchen/walk/outside.webp",
+      "distance": 2.4,
+      "width": 16,
+      "u": 0.5,
+      "y": 1.5
+     }
+    },
+    "left": {
+     "tex": "res://rooms/c001-kitchen/walk/phone.webp",
+     "cutout": true,
+     "reveals": [
+      {
+       "rect": [
+        0.6426,
+        0.8802,
+        0.14,
+        1
+       ],
+       "wood": true
+      }
+     ]
+    }
+   },
+   "location": "kitchen",
+   "enter": "lr_to_kitchen"
+  },
+  {
+   "id": "hall",
+   "name": "Hallway",
+   "center": [
+    -4.267,
+    3.73
+   ],
+   "size": [
+    3.4,
+    1.4,
+    2.743
+   ],
+   "tint": 0.78,
+   "floor": {
+    "tex": "res://rooms/c001-hall/walk/hall_floor.webp"
+   },
+   "ceil": {
+    "tex": "res://rooms/c001-hall/walk/hall_ceil.webp"
+   },
+   "light": {
+    "id": "hall",
+    "at": [
+     -4.267,
+     2.6,
+     3.73
+    ],
+    "power": 0
+   },
+   "walls": {
+    "front": {
+     "tex": "res://rooms/c001-hall/walk/hall_side_photo.webp"
+    },
+    "back": {
+     "tex": "res://rooms/c001-hall/walk/hall_side_plain.webp"
+    },
+    "left": {
+     "tex": "res://rooms/c001-hall/walk/hall_end.webp"
+    },
+    "right": {
+     "tex": "res://rooms/c001-hall/walk/hall_door_back.webp",
+     "cutout": true
+    }
+   }
+  }
+ ],
+ "passages": [
+  {
+   "x": [
+    -1.084,
+    1.006
+   ],
+   "z": [
+    1.837,
+    3.167
+   ]
+  },
+  {
+   "x": [
+    -2.75,
+    -2.25
+   ],
+   "z": [
+    3.151,
+    4.309
+   ],
+   "along": "x"
+  }
+ ],
+ "models": [
+  {
+   "file": "res://rooms/c001-living-room/models/sideboard.glb",
+   "size": 1.8296,
+   "fit": "x",
+   "pos": [
+    -2.109,
+    0,
+    1.371
+   ],
+   "rotY": 90,
+   "shadow": [
+    0.823,
+    1.975
+   ]
+  },
+  {
+   "file": "res://rooms/c001-living-room/models/cake.glb",
+   "size": 0.288,
+   "fit": "y",
+   "pos": [
+    -2.109,
+    0.941,
+    1.975
+   ],
+   "opacity": 0.6
+  },
+  {
+   "file": "res://rooms/c001-living-room/models/plates.glb",
+   "size": 0.1783,
+   "fit": "x",
+   "pos": [
+    -2.082,
+    0.941,
+    1.687
+   ]
+  },
+  {
+   "file": "res://rooms/c001-living-room/models/tray.glb",
+   "size": 0.4114,
+   "fit": "x",
+   "pos": [
+    -2.109,
+    0.941,
+    1.262
+   ],
+   "rotY": 90,
+   "opacity": 0.6
+  },
+  {
+   "file": "res://rooms/c001-living-room/models/bottle.glb",
+   "size": 0.3017,
+   "fit": "y",
+   "pos": [
+    -2.109,
+    0.941,
+    0.823
+   ]
+  },
+  {
+   "file": "res://rooms/c001-living-room/models/sofa.glb",
+   "size": 2.0847,
+   "fit": "x",
+   "pos": [
+    0.549,
+    0,
+    -1.942
+   ],
+   "shadow": [
+    2.304,
+    1.152
+   ]
+  },
+  {
+   "file": "res://rooms/c001-living-room/models/sidetable.glb",
+   "size": 1.2618,
+   "fit": "y",
+   "pos": [
+    2.057,
+    0,
+    -2.057
+   ],
+   "shadow": [
+    0.658,
+    0.658
+   ]
+  },
+  {
+   "file": "res://rooms/c001-living-room/models/palm.glb",
+   "size": 1.5361,
+   "fit": "y",
+   "pos": [
+    1.86,
+    0,
+    1.74
+   ],
+   "shadow": [
+    0.823,
+    0.823
+   ]
+  },
+  {
+   "file": "res://rooms/c001-living-room/models/desk.glb",
+   "size": 1.4264,
+   "fit": "x",
+   "pos": [
+    -1.75,
+    0,
+    -0.307
+   ],
+   "rotY": 90,
+   "shadow": [
+    1.371,
+    1.591
+   ]
+  },
+  {
+   "file": "res://rooms/c001-living-room/models/chair.glb",
+   "size": 0.4389,
+   "fit": "x",
+   "pos": [
+    -0.713,
+    0,
+    -0.06
+   ],
+   "rotX": -90,
+   "rotY": 25,
+   "shadow": [
+    0.713,
+    0.987
+   ]
+  },
+  {
+   "file": "res://rooms/c001-living-room/models/glass.glb",
+   "size": 0.3566,
+   "fit": "x",
+   "pos": [
+    -0.357,
+    0,
+    -0.384
+   ],
+   "rotY": -20
+  },
+  {
+   "file": "res://rooms/c001-kitchen/models/k_counter.glb",
+   "size": 1.28,
+   "fit": "y",
+   "rotY": 180,
+   "pos": [
+    0,
+    0,
+    7.071
+   ],
+   "shadow": [
+    2,
+    0.8
+   ]
+  },
+  {
+   "file": "res://rooms/c001-kitchen/models/k_stove.glb",
+   "size": 1.1,
+   "fit": "y",
+   "rotY": 180,
+   "pos": [
+    -1.49,
+    0,
+    6.99
+   ],
+   "shadow": [
+    0.95,
+    0.85
+   ]
+  },
+  {
+   "file": "res://rooms/c001-kitchen/models/k_fridge.glb",
+   "size": 1.68,
+   "fit": "y",
+   "rotY": 180,
+   "pos": [
+    1.52,
+    0,
+    6.99
+   ],
+   "shadow": [
+    0.95,
+    0.85
+   ]
+  },
+  {
+   "file": "res://rooms/c001-kitchen/models/k_table.glb",
+   "size": 1.5,
+   "fit": "x",
+   "rotY": 0,
+   "pos": [
+    -1.35,
+    0,
+    4.4
+   ],
+   "shadow": [
+    1.4,
+    1.1
+   ]
+  },
+  {
+   "file": "res://rooms/c001-kitchen/models/k_knives.glb",
+   "size": 0.32,
+   "fit": "y",
+   "rotY": 200,
+   "pos": [
+    -0.45,
+    0.92,
+    7.12
+   ]
+  },
+  {
+   "file": "res://rooms/c001-kitchen/models/k_toaster.glb",
+   "size": 0.22,
+   "fit": "y",
+   "rotY": 180,
+   "pos": [
+    -0.78,
+    0.92,
+    7.1
+   ]
+  },
+  {
+   "file": "res://rooms/c001-kitchen/models/k_rack.glb",
+   "size": 0.45,
+   "fit": "x",
+   "rotY": 180,
+   "pos": [
+    0.62,
+    0.92,
+    7.1
+   ]
+  },
+  {
+   "file": "res://rooms/c001-shared/models/flush_light.glb",
+   "size": 0.46,
+   "fit": "x",
+   "pos": [
+    0,
+    2.578,
+    0
+   ],
+   "lamp": "living",
+   "glow": "res://rooms/c001-shared/models/flush_light_glow.webp"
+  },
+  {
+   "file": "res://rooms/c001-shared/models/flush_light.glb",
+   "size": 0.38,
+   "fit": "x",
+   "pos": [
+    0,
+    2.606,
+    5.004
+   ],
+   "lamp": "kitchen",
+   "glow": "res://rooms/c001-shared/models/flush_light_glow.webp"
+  }
+ ],
+ "hotspots": [
+  {
+   "id": "lr_sofa",
+   "kind": "inspect",
+   "label": "Sofa",
+   "text": "Where she was found: Police tape marks on the carpet between the sofa and the overturned chair show where Eleanor was found. The sofa cushions are still squared off. Nothing on this side of the room was disturbed.",
+   "at": [
+    0.549,
+    0.466,
+    -1.942
+   ]
+  },
+  {
+   "id": "lr_chair",
+   "kind": "inspect",
+   "label": "Overturned chair",
+   "text": "Overturned chair: One of the dining chairs, brought in for coffee. It lies on its back.",
+   "at": [
+    -0.713,
+    0.274,
+    -0.06
+   ]
+  },
+  {
+   "id": "lr_glass",
+   "kind": "inspect",
+   "label": "Broken glass",
+   "text": "Broken glass: Crystal shards on the carpet, a bagged piece beside them with an LAPD tag.",
+   "at": [
+    -0.357,
+    0.027,
+    -0.384
+   ]
+  },
+  {
+   "id": "lr_ledger",
+   "kind": "inspect",
+   "label": "Writing desk",
+   "text": "Eleanor's writing desk: A roll-top desk. Her household ledger lies open on the blotter.",
+   "at": [
+    -1.646,
+    0.741,
+    -0.307
+   ]
+  },
+  {
+   "id": "lr_diary",
+   "kind": "inspect",
+   "label": "Desk diary",
+   "text": "Desk diary: A leather desk diary propped open on the shelf above the blotter.",
+   "at": [
+    -2.057,
+    1.015,
+    -0.307
+   ]
+  },
+  {
+   "id": "lr_drawer",
+   "kind": "inspect",
+   "label": "Desk filing drawer",
+   "text": "Filing drawer: A deep drawer of hanging files, each labeled in Eleanor's handwriting. One gap stands out.",
+   "at": [
+    -1.371,
+    0.329,
+    -0.801
+   ]
+  },
+  {
+   "id": "lr_sideboard",
+   "kind": "inspect",
+   "label": "Sideboard",
+   "text": "Sideboard: A glass cake stand with a few crumbs of lemon cake, five dessert plates stacked beside it, and a tray of crystal water glasses. One place in the set is empty. A space on the runner where something long lay.",
+   "at": [
+    -1.783,
+    0.494,
+    1.371
+   ]
+  },
+  {
+   "id": "lr_wine",
+   "kind": "inspect",
+   "label": "Wine bottle",
+   "text": "Wine bottle: A 1979 Burgundy, two-thirds empty. Fingerprint powder on the neck. The police lab report found only Eleanor's prints.",
+   "at": [
+    -2.109,
+    1.097,
+    0.823
+   ]
+  },
+  {
+   "id": "lr_front_door",
+   "kind": "inspect",
+   "label": "Front door",
+   "text": "Front door: Solid oak, with a deadbolt and a brass chain. No damage. Margaret Ellis let herself in with her spare key at 7:40 on Saturday morning; the door was locked and the chain was off.",
+   "at": [
+    -1.625,
+    1.431,
+    -2.4
+   ]
+  },
+  {
+   "id": "lr_poker",
+   "kind": "inspect",
+   "label": "Fireplace tools",
+   "text": "Fireplace tools: Poker, brush and shovel, hanging neatly in their stand. A film of dust on all three. The grate holds old, cold ash. No one has lit a fire here since spring.",
+   "at": [
+    2.4,
+    0.731,
+    0.859
+   ]
+  },
+  {
+   "id": "lr-switch",
+   "kind": "switch",
+   "label": "Light switch",
+   "at": [
+    -0.766,
+    1.535,
+    -2.4
+   ],
+   "light": "living"
+  },
+  {
+   "id": "k_window",
+   "kind": "inspect",
+   "label": "Window over the sink",
+   "text": "Kitchen window: The window over the sink stands open a few inches behind its screen.",
+   "at": [
+    0,
+    1.042,
+    7.401
+   ]
+  },
+  {
+   "id": "k_door",
+   "kind": "inspect",
+   "label": "Rear door",
+   "text": "Rear door: The back door to the yard. The police found it unlocked on Saturday morning.",
+   "at": [
+    2.397,
+    1.371,
+    5.004
+   ]
+  },
+  {
+   "id": "k_calendar",
+   "kind": "inspect",
+   "label": "Wall calendar",
+   "text": "Wall calendar: A pharmacy calendar beside the telephone. Friday's square has a penciled note: 'Supper, 7. M, R, P, D.'",
+   "at": [
+    -2.407,
+    1.097,
+    6.393
+   ]
+  },
+  {
+   "id": "k_phone",
+   "kind": "inspect",
+   "label": "Kitchen telephone",
+   "text": "Kitchen telephone: A beige wall telephone with a long coiled cord. A pad beside it lists numbers: Patricia (work), Margaret, Hale Automotive, D. Mercer, Mr. Albright.",
+   "at": [
+    -2.407,
+    1.371,
+    5.491
+   ]
+  },
+  {
+   "id": "k_knives",
+   "kind": "inspect",
+   "label": "Knife block",
+   "text": "Knife block: A wooden block of French knives on the counter.",
+   "at": [
+    -0.45,
+    1.15,
+    7.12
+   ]
+  },
+  {
+   "id": "k_rack",
+   "kind": "inspect",
+   "label": "Drying rack",
+   "text": "Drying rack: Five dessert plates, five coffee cups and the cake server, washed and drying. Eleanor tidied up after her guests left.",
+   "at": [
+    0.62,
+    1.08,
+    7.1
+   ]
+  },
+  {
+   "id": "k-switch",
+   "kind": "switch",
+   "label": "Light switch",
+   "light": "kitchen",
+   "at": [
+    2.397,
+    1.481,
+    6.096
+   ]
+  }
+ ],
+ "caseId": "C001",
+ "starts": {
+  "living_room": [
+   0,
+   1.6,
+   180
+  ],
+  "kitchen": [
+   0,
+   3.9,
+   180
+  ]
+ }
+}

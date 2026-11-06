@@ -267,7 +267,7 @@
    "glow": "res://rooms/c001-office/models/fan_glow.webp"
   },
   {
-   "file": "res://rooms/c001-office/models/phone.glb",
+   "file": "res://rooms/c001-bank/models/phone.glb",
    "size": 0.28,
    "fit": "x",
    "pos": [

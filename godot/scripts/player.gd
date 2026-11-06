@@ -14,6 +14,8 @@ var eye := 1.673
 var yaw := 0.0
 var pitch := 0.0
 var enabled := true
+## While being shown someone's face in an interview, the game moves the camera itself.
+var camera_free := false
 var seated_from := Vector3.INF
 var camera: Camera3D
 var _eye_now := 1.673
@@ -100,7 +102,7 @@ func _move(dx: float, dz: float) -> void:
 
 func _apply() -> void:
 	rotation = Vector3(0, yaw, 0)
-	if camera:
+	if camera and not camera_free:
 		camera.rotation = Vector3(pitch, 0, 0)
 
 
