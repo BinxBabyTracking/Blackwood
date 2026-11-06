@@ -52,6 +52,16 @@ var hud: Control
 var prompt: Label
 var objectives: Label
 var place_label: Label
+# The corner: the map as a quarter circle in the top right, the notes at the top of its curve, the evidence below it.
+const CORNER_R := 230.0
+var corner: Control
+var corner_map: Button
+var corner_notes: Button
+var corner_evidence: Button
+var _evidence_count: Label
+var _hints := {}
+var _seen_evidence := -1
+var _evidence_pulse: Tween
 var toast_label: Label
 var stamp_label: Label
 var fade: ColorRect
@@ -84,6 +94,7 @@ var _labs_waiting := false
 
 func _ready() -> void:
 	_setup_input()
+	Input.joy_connection_changed.connect(func(_d: int, _c: bool) -> void: _update_corner())
 	_setup_audio()
 	api = Api.new()
 	add_child(api)
@@ -127,14 +138,14 @@ func _setup_input() -> void:
 	var keys := {
 		"move_forward": [KEY_W, KEY_UP], "move_back": [KEY_S, KEY_DOWN], "move_left": [KEY_A], "move_right": [KEY_D],
 		"turn_left": [KEY_LEFT], "turn_right": [KEY_RIGHT], "hurry": [KEY_SHIFT], "interact": [KEY_E, KEY_SPACE],
-		"back": [KEY_ESCAPE], "pause": [], "notebook": [KEY_TAB, KEY_N], "map": [KEY_M],
+		"back": [KEY_ESCAPE], "pause": [], "notebook": [KEY_TAB, KEY_N], "map": [KEY_M], "evidence": [KEY_I], "cursor": [KEY_ALT],
 		"look_left": [], "look_right": [], "look_up": [], "look_down": [],
 	}
 	var axes := {
 		"move_forward": [JOY_AXIS_LEFT_Y, -1.0], "move_back": [JOY_AXIS_LEFT_Y, 1.0], "move_left": [JOY_AXIS_LEFT_X, -1.0], "move_right": [JOY_AXIS_LEFT_X, 1.0],
 		"look_left": [JOY_AXIS_RIGHT_X, -1.0], "look_right": [JOY_AXIS_RIGHT_X, 1.0], "look_up": [JOY_AXIS_RIGHT_Y, -1.0], "look_down": [JOY_AXIS_RIGHT_Y, 1.0],
 	}
-	var buttons := {"interact": [JOY_BUTTON_A], "back": [JOY_BUTTON_B], "pause": [JOY_BUTTON_START], "hurry": [JOY_BUTTON_LEFT_STICK], "notebook": [JOY_BUTTON_BACK], "map": [JOY_BUTTON_Y]}
+	var buttons := {"interact": [JOY_BUTTON_A], "back": [JOY_BUTTON_B], "pause": [JOY_BUTTON_START], "hurry": [JOY_BUTTON_LEFT_STICK], "notebook": [JOY_BUTTON_BACK], "map": [JOY_BUTTON_Y], "evidence": [JOY_BUTTON_X]}
 	for action in keys:
 		if not InputMap.has_action(action):
 			InputMap.add_action(action, 0.2)
@@ -177,6 +188,13 @@ func _unhandled_input(event: InputEvent) -> void:
 			open_screen(NotebookScreen.new(self))
 	elif event.is_action_pressed("map"):
 		open_map()
+	elif event.is_action_pressed("evidence"):
+		open_evidence()
+	elif event.is_action_pressed("cursor"):
+		# Hold Alt to bring the pointer back and click the corner (the map, the notes, the evidence).
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	elif event.is_action_released("cursor") and screen == null:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	elif event.is_action_pressed("interact"):
 		if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED and event is InputEventMouseButton:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -230,6 +248,7 @@ func load_place(loc: String, fade_in := true) -> void:
 	var rr := room.room_at(player.position.x, player.position.z)
 	place_label.text = String(rr.get("name", data.get("name", "")))
 	_entering = ""
+	_update_corner()
 
 
 func _place_player(loc: String) -> void:
@@ -509,6 +528,7 @@ func take_view(v: Dictionary) -> void:
 			load_place(loc)
 		else:
 			_travel_card(loc, String(lv.get("name", "")), String(lv.get("subtitle", "")))
+	_update_corner()
 	if screen and screen.has_method("on_view"):
 		screen.on_view(v)
 
@@ -758,16 +778,15 @@ func _build_hud() -> void:
 	prompt.position = Vector2(-500, 40)
 	hud.add_child(prompt)
 	objectives = _outlined(UI.label("", 19))
-	objectives.position = Vector2(40, 36)
+	objectives.position = Vector2(40, 70)
 	objectives.size = Vector2(640, 300)
 	hud.add_child(objectives)
 	place_label = _outlined(UI.label("", 20, UI.DIM))
-	place_label.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	place_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	place_label.size = Vector2(700, 40)
-	place_label.position = Vector2(-740, 36)
+	place_label.position = Vector2(40, 30)
 	hud.add_child(place_label)
-	var keys := _outlined(UI.label("Tab / Back: notebook     M / Y: map     Esc / Start: menu", 16, UI.DIM))
+	_build_corner()
+	var keys := _outlined(UI.label("Hold Alt for the pointer     Esc / Start: menu", 16, UI.DIM))
 	keys.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
 	keys.position = Vector2(40, -50)
 	keys.size = Vector2(900, 30)
@@ -796,6 +815,161 @@ func _build_hud() -> void:
 	fade.z_index = 5
 	ui_root.add_child(fade)
 	_fade(0.0, 0.8)
+
+
+func _build_corner() -> void:
+	var R := CORNER_R
+	corner = Control.new()
+	corner.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	corner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	corner.size = Vector2(R + 140, R + 170)
+	corner.position = Vector2(-corner.size.x, 0)
+	hud.add_child(corner)
+
+	corner_map = Button.new()
+	corner_map.flat = true
+	corner_map.focus_mode = Control.FOCUS_NONE
+	corner_map.position = Vector2(corner.size.x - R, 0)
+	corner_map.size = Vector2(R, R)
+	corner_map.tooltip_text = "Map"
+	corner_map.pressed.connect(open_map)
+	var shade := Panel.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0, 0, 0, 0.55)
+	sb.corner_radius_bottom_left = int(R)
+	sb.shadow_color = Color(0, 0, 0, 0.6)
+	sb.shadow_size = 14
+	shade.add_theme_stylebox_override("panel", sb)
+	shade.set_anchors_preset(Control.PRESET_FULL_RECT)
+	shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	corner_map.add_child(shade)
+	var pic := TextureRect.new()
+	pic.set_anchors_preset(Control.PRESET_FULL_RECT)
+	pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var mask := ShaderMaterial.new()
+	mask.shader = preload("res://scripts/corner_map.gdshader")
+	pic.material = mask
+	corner_map.add_child(pic)
+	load_picture(pic, "/art/%s_map.webp" % case_id.to_lower())
+	var chip := _chip("MAP", "map")
+	chip.position = Vector2(R * 0.42, R * 0.52)
+	corner_map.add_child(chip)
+	corner_map.mouse_entered.connect(func() -> void: corner_map.modulate = Color(1.12, 1.12, 1.12))
+	corner_map.mouse_exited.connect(func() -> void: corner_map.modulate = Color.WHITE)
+	corner.add_child(corner_map)
+
+	corner_notes = _corner_object("/art/%s_obj_notebook.webp" % case_id.to_lower(), "NOTEBOOK", "notebook", func() -> void:
+		if online:
+			open_screen(NotebookScreen.new(self)))
+	corner_notes.position = Vector2(corner.size.x - R - 12 - 110, 10)
+	corner.add_child(corner_notes)
+
+	corner_evidence = _corner_object("/art/%s_obj_evidence_bag.webp" % case_id.to_lower(), "EVIDENCE", "evidence", open_evidence)
+	corner_evidence.position = Vector2(corner.size.x - 12 - 110, R + 12)
+	corner.add_child(corner_evidence)
+	_evidence_count = Label.new()
+	_evidence_count.add_theme_font_size_override("font_size", 16)
+	_evidence_count.add_theme_color_override("font_color", Color("14100c"))
+	var badge := StyleBoxFlat.new()
+	badge.bg_color = UI.BRASS
+	badge.set_corner_radius_all(12)
+	badge.content_margin_left = 7
+	badge.content_margin_right = 7
+	_evidence_count.add_theme_stylebox_override("normal", badge)
+	_evidence_count.position = Vector2(84, -4)
+	_evidence_count.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	corner_evidence.add_child(_evidence_count)
+	_update_corner()
+
+
+## A painted object in the corner (the notebook, the evidence bag): the picture, then its name and key.
+func _corner_object(image: String, label: String, action: String, on_press: Callable) -> Button:
+	var b := Button.new()
+	b.flat = true
+	b.focus_mode = Control.FOCUS_NONE
+	b.size = Vector2(110, 120)
+	b.tooltip_text = label.capitalize()
+	b.pressed.connect(on_press)
+	var pic := TextureRect.new()
+	pic.position = Vector2(8, 0)
+	pic.size = Vector2(94, 82)
+	pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	b.add_child(pic)
+	load_picture(pic, image)
+	var chip := _chip(label, action)
+	chip.position = Vector2(0, 86)
+	b.add_child(chip)
+	b.mouse_entered.connect(func() -> void: pic.position.y = -5)
+	b.mouse_exited.connect(func() -> void: pic.position.y = 0)
+	return b
+
+
+## A small dark label with the object's name and its key (or controller button).
+func _chip(text: String, action: String) -> Control:
+	var p := PanelContainer.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.05, 0.06, 0.075, 0.85)
+	sb.set_corner_radius_all(2)
+	sb.content_margin_left = 8
+	sb.content_margin_right = 8
+	sb.content_margin_top = 2
+	sb.content_margin_bottom = 2
+	p.add_theme_stylebox_override("panel", sb)
+	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var h := HBoxContainer.new()
+	h.add_theme_constant_override("separation", 8)
+	h.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	p.add_child(h)
+	var t := UI.label(text, 14, UI.PAPER)
+	t.autowrap_mode = TextServer.AUTOWRAP_OFF
+	t.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	h.add_child(t)
+	var k := UI.label("", 14, UI.BRASS)
+	k.autowrap_mode = TextServer.AUTOWRAP_OFF
+	k.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	h.add_child(k)
+	_hints[action] = k
+	return p
+
+
+## Shows what belongs in the corner here (in the office the map and notebook are part of the room),
+## the evidence count, and the keys for whichever is in use, keyboard or controller.
+func _update_corner() -> void:
+	if corner == null:
+		return
+	var at_office := here == "office"
+	var R := CORNER_R
+	corner_map.visible = not at_office
+	corner_notes.visible = online and not at_office
+	corner_evidence.visible = online
+	corner_evidence.position = Vector2(corner.size.x - 12 - 110, 10 if at_office else R + 12)
+	var n := collected_evidence().size()
+	_evidence_count.text = str(n)
+	_evidence_count.visible = online
+	if _seen_evidence < 0 or not online:
+		_seen_evidence = n
+	if n > _seen_evidence and (_evidence_pulse == null or not _evidence_pulse.is_valid()):
+		_evidence_pulse = create_tween().set_loops()
+		_evidence_pulse.tween_property(corner_evidence, "modulate", Color(1.5, 1.3, 0.9), 0.6)
+		_evidence_pulse.tween_property(corner_evidence, "modulate", Color.WHITE, 0.6)
+	var pad := Input.get_connected_joypads().size() > 0
+	var keys := {"map": "Y" if pad else "M", "notebook": "Back" if pad else "Tab", "evidence": "X" if pad else "I"}
+	for a in _hints:
+		(_hints[a] as Label).text = keys.get(a, "")
+
+
+func open_evidence() -> void:
+	if not online:
+		return
+	_seen_evidence = collected_evidence().size()
+	if _evidence_pulse and _evidence_pulse.is_valid():
+		_evidence_pulse.kill()
+	corner_evidence.modulate = Color.WHITE
+	open_screen(NotebookScreen.new(self, 1))
 
 
 func _outlined(l: Label) -> Label:
@@ -896,7 +1070,7 @@ func show_pause() -> void:
 		voice_volume = x
 		_apply_volumes())
 	v.add_child(vs)
-	v.add_child(UI.label("Move: WASD or left stick   Look: mouse or right stick   Hurry: Shift or L3\nUse: E, click or A   Notebook: Tab or Back   Map: M or Y   Back: Esc or B", 16, UI.DIM))
+	v.add_child(UI.label("Move: WASD or left stick   Look: mouse or right stick   Hurry: Shift or L3\nUse: E, click or A   Notebook: Tab or Back   Map: M or Y   Evidence: I or X\nHold Alt for the pointer   Back: Esc or B", 16, UI.DIM))
 	v.add_child(UI.button("Quit", func() -> void: get_tree().quit()))
 	s.first_focus = resume
 	open_screen(s)
