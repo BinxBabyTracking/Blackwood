@@ -14,6 +14,12 @@ const SKY := {
 	"night": {"sky": Color("5a6a99"), "ground": Color("2a2018"), "energy": 0.22},
 }
 const LIGHT_COLOR := Color("ffd29a")
+## Per-place adjustments for the desktop game (the website's rooms are lit differently):
+##   ambient: overall light level; lamps: brightness of the lamps and fittings; glow: how bright their
+##   shades and bulbs look; fill: a soft, shadowless light filling the room so faces can be seen.
+const TUNING := {
+	"c001_daniel_apartment": {"ambient": 0.75, "lamps": 0.55, "glow": 0.35, "fill": 0.9},
+}
 const PERSON_SHADER := preload("res://scripts/person.gdshader")
 const OUTSIDE_SHADER := preload("res://scripts/outside.gdshader")
 
@@ -62,7 +68,22 @@ func build(parent: Node3D, room_data: Dictionary) -> Node3D:
 		var l: Dictionary = r.get("light", {})
 		if l.get("startOn", false):
 			set_light(String(l.get("id", "")), true)
+	if float(_tune("fill", 0.0)) > 0.0:
+		for r in data.get("rooms", []):
+			var fill := OmniLight3D.new()
+			fill.light_color = Color("ffe6c8")
+			fill.light_energy = float(_tune("fill", 0.0))
+			fill.omni_range = maxf(float(r.size[0]), float(r.size[1])) * 1.2
+			fill.omni_attenuation = 0.6
+			fill.shadow_enabled = false
+			fill.light_specular = 0.0
+			fill.position = Vector3(float(r.center[0]), float(r.size[2]) * 0.8, float(r.center[1]))
+			root.add_child(fill)
 	return root
+
+
+func _tune(key: String, fallback: Variant) -> Variant:
+	return TUNING.get(String(data.get("id", "")), {}).get(key, fallback)
 
 
 # ---------------------------------------------------------------- environment
@@ -74,7 +95,7 @@ func _environment() -> void:
 	env.background_color = Color.BLACK
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = (k.sky as Color).lerp(k.ground, 0.45)
-	env.ambient_light_energy = k.energy
+	env.ambient_light_energy = float(_tune("ambient", k.energy))
 	env.tonemap_mode = Environment.TONE_MAPPER_AGX
 	env.tonemap_exposure = 1.15
 	env.ssao_enabled = true
@@ -638,10 +659,12 @@ func _light_entry(id: String) -> Dictionary:
 func set_light(id: String, on: bool) -> void:
 	var e := _light_entry(id)
 	e.on = on
+	var lamps := float(_tune("lamps", 1.0))
+	var glow := float(_tune("glow", 1.0))
 	for l in e.lights:
-		(l.light as Light3D).light_energy = l.energy if on else 0.0
+		(l.light as Light3D).light_energy = l.energy * lamps if on else 0.0
 	for m in e.glow:
-		(m as StandardMaterial3D).emission = Color(0.9, 0.8, 0.6) if on else Color.BLACK
+		(m as StandardMaterial3D).emission = Color(0.9, 0.8, 0.6) * glow if on else Color.BLACK
 	for m in e.ceil:
 		(m as StandardMaterial3D).emission = Color(0.75, 0.7, 0.6) if on else Color.BLACK
 

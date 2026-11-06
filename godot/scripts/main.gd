@@ -1408,6 +1408,20 @@ func _take_shot(path: String) -> void:
 	for i in 30:
 		await get_tree().process_frame
 	var base := path.get_basename()
+	for arg in OS.get_cmdline_user_args():
+		# A close-up of someone's face, as when questioning them: --face=d_rosa
+		if arg.begins_with("--face="):
+			for a2 in OS.get_cmdline_user_args():
+				if a2.begins_with("--jaw="):
+					_debug_jaw = float(a2.substr(6))
+			_face_id = arg.substr(7)
+			player.camera_free = true
+			hud.visible = false
+			for i in 90:
+				await get_tree().process_frame
+			get_viewport().get_texture().get_image().save_png("%s_face.png" % base)
+			get_tree().quit()
+			return
 	var s: Array = data.get("starts", {}).get(here, data.get("start", [0, 0, 0]))
 	var pitch := -6.0
 	for arg in OS.get_cmdline_user_args():
