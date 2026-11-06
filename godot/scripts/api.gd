@@ -132,6 +132,35 @@ func play(case_id: String, action: Dictionary) -> Dictionary:
 	return r.data
 
 
+## Push to talk: sends a WAV recording to the website, which turns it into text. { text } or { error }.
+func transcribe(case_id: String, character_id: String, wav: PackedByteArray, seconds: float) -> Dictionary:
+	var boundary := "----blackwood%d" % Time.get_ticks_usec()
+	var body := PackedByteArray()
+	var field := func(name: String, value: String) -> void:
+		body.append_array(("--%s\r\nContent-Disposition: form-data; name=\"%s\"\r\n\r\n%s\r\n" % [boundary, name, value]).to_utf8_buffer())
+	field.call("caseId", case_id)
+	field.call("characterId", character_id)
+	field.call("seconds", "%.1f" % seconds)
+	body.append_array(("--%s\r\nContent-Disposition: form-data; name=\"audio\"; filename=\"question.wav\"\r\nContent-Type: audio/wav\r\n\r\n" % boundary).to_utf8_buffer())
+	body.append_array(wav)
+	body.append_array(("\r\n--%s--\r\n" % boundary).to_utf8_buffer())
+	var http := HTTPRequest.new()
+	http.timeout = 40.0
+	add_child(http)
+	var headers := PackedStringArray(["Content-Type: multipart/form-data; boundary=" + boundary])
+	if access_token != "":
+		headers.append("Authorization: Bearer " + access_token)
+	if http.request_raw(base + "/api/transcribe", headers, HTTPClient.METHOD_POST, body) != OK:
+		http.queue_free()
+		return {"error": "Could not reach Blackwood."}
+	var res: Array = await http.request_completed
+	http.queue_free()
+	var d: Variant = JSON.parse_string((res[3] as PackedByteArray).get_string_from_utf8())
+	if not (d is Dictionary):
+		return {"error": "The speech service didn't answer. Type your question instead."}
+	return d
+
+
 func voice(case_id: String, character_id: String, n: int) -> PackedByteArray:
 	return await get_bytes("/api/voice?caseId=%s&kind=conversation&id=%s&n=%d" % [case_id, character_id, n])
 

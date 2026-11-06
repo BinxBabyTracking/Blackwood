@@ -49,6 +49,7 @@ func build(parent: Node3D, room_data: Dictionary) -> Node3D:
 		var along := String(p.get("along", "z"))
 		var x: Array = p.x
 		var z: Array = p.z
+		_passage_floor(float(x[0]), float(x[1]), float(z[0]), float(z[1]), along)
 		if along == "x":
 			areas.append(Rect2(float(x[0]), float(z[0]) + 0.28, float(x[1]) - float(x[0]), float(z[1]) - float(z[0]) - 0.56))
 		else:
@@ -96,8 +97,8 @@ func _environment() -> void:
 	sun.light_color = s.color
 	sun.light_energy = s.energy
 	sun.shadow_enabled = true
-	sun.shadow_bias = 0.02
-	sun.shadow_normal_bias = 0.6
+	sun.shadow_bias = 0.05
+	sun.shadow_normal_bias = 2.0
 	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
 	sun.directional_shadow_max_distance = 18.0
 	var a := deg_to_rad(float(s.az))
@@ -300,6 +301,47 @@ func _strip(parent: Node3D, a: Vector2, b: Vector2, mat: Material) -> void:
 	mi.position = Vector3((a.x + b.x) / 2, (a.y + b.y) / 2, -wall_thickness / 2)
 	mi.rotation.z = atan2(b.y - a.y, b.x - a.x)
 	parent.add_child(mi)
+
+
+## The floor through a doorway (the rooms' own floors stop at their walls), in the floor of the room it opens from.
+func _passage_floor(x0: float, x1: float, z0: float, z1: float, along: String) -> void:
+	# Only the gap the walls leave between the two rooms' floors.
+	var lo := z0 if along == "z" else x0
+	var hi := z1 if along == "z" else x1
+	var mid := (lo + hi) / 2.0
+	var g0 := lo
+	var g1 := hi
+	for r in rooms:
+		var rect: Rect2 = r.rect
+		var a := rect.position.y if along == "z" else rect.position.x
+		var b := rect.end.y if along == "z" else rect.end.x
+		if b <= mid and b > g0:
+			g0 = b
+		if a >= mid and a < g1:
+			g1 = a
+	if along == "z":
+		z0 = g0 - 0.01
+		z1 = g1 + 0.01
+	else:
+		x0 = g0 - 0.01
+		x1 = g1 + 0.01
+	var cx := (x0 + x1) / 2.0
+	var cz := (z0 + z1) / 2.0
+	var tex := ""
+	var best := 1e9
+	for r in data.get("rooms", []):
+		var d := Vector2(float(r.center[0]) - cx, float(r.center[1]) - cz).length()
+		if d < best:
+			best = d
+			tex = String(r.floor.tex)
+	if tex == "":
+		return
+	var m := _mat(tex)
+	m.uv1_scale = Vector3((x1 - x0) / 2.5, (z1 - z0) / 2.5, 1)
+	var q := _quad(Vector2(x1 - x0, z1 - z0), m)
+	q.rotation.x = -PI / 2
+	q.position = Vector3(cx, 0.002, cz)
+	root.add_child(q)
 
 
 func _decal(dc: Dictionary) -> void:

@@ -83,6 +83,11 @@ var _music_list: Array = []
 var _music_index := 0
 var _ambience_url := ""
 var music_volume := 0.6
+# Push to talk: the microphone records onto a silent bus; the recording goes to /api/transcribe.
+var _mic_player: AudioStreamPlayer
+var _mic_record: AudioEffectRecord
+# The line being spoken: its text and, when the server has it, when each letter is said (for the mouth).
+var _talk := {}
 var voice_volume := 1.0
 
 # Interview in a room: the camera turns to the person's face.
@@ -717,6 +722,9 @@ func open_screen(s: Control) -> void:
 	close_screen(false)
 	screen = s
 	ui_root.add_child(s)
+	for m in markers.values():
+		(m as Label3D).visible = false
+	prompt.text = ""
 	_walking(false)
 	hud.visible = false
 	if s.has_method("focus_first"):
@@ -1088,7 +1096,35 @@ func _process(dt: float) -> void:
 	var mag := 0.0
 	if voice_player.playing and _spectrum:
 		mag = _spectrum.get_magnitude_for_frequency_range(120, 3200).length()
-	voice_level = lerpf(voice_level, clampf(mag * 9.0, 0.0, 1.0), minf(1.0, dt * 18.0))
+	var goal := clampf(mag * 9.0, 0.0, 1.0)
+	var text := String(_talk.get("text", ""))
+	if voice_player.playing and text != "":
+		var sec := voice_player.get_playback_position() + AudioServer.get_time_since_last_mix()
+		var i := int(sec * 1000.0 / 62.0)
+		var tm = _talk.get("timing")
+		if tm is Dictionary and tm.has("starts"):
+			var starts: Array = tm.starts
+			var ends: Array = tm.get("ends", [])
+			i = -1
+			for k in starts.size():
+				if sec >= float(starts[k]) and sec < float(ends[k] if k < ends.size() else starts[k]):
+					i = k
+					break
+		var ch := text.substr(i, 1).to_lower() if i >= 0 and i < text.length() else ""
+		goal = 0.0
+		if ch == "":
+			goal = 0.0
+		elif "ao".contains(ch):
+			goal = 1.0
+		elif "ei".contains(ch):
+			goal = 0.65
+		elif "uwy".contains(ch):
+			goal = 0.4
+		elif ch >= "a" and ch <= "z" and not "mbp".contains(ch):
+			goal = 0.25
+	elif not voice_player.playing:
+		goal = 0.0
+	voice_level = lerpf(voice_level, goal, minf(1.0, dt * 18.0))
 	var talker := _person_here(_speaker) if _speaker != "" else ""
 	for id in room.people:
 		room.set_jaw(id, voice_level if id == talker else 0.0)
@@ -1152,6 +1188,13 @@ func _setup_audio() -> void:
 	music_player.finished.connect(_next_track)
 	ambience_player = AudioStreamPlayer.new()
 	add_child(ambience_player)
+	var mic_bus := AudioServer.bus_count
+	AudioServer.add_bus(mic_bus)
+	AudioServer.set_bus_name(mic_bus, "Mic")
+	AudioServer.set_bus_mute(mic_bus, true)
+	_mic_record = AudioEffectRecord.new()
+	_mic_record.format = AudioStreamWAV.FORMAT_16_BITS
+	AudioServer.add_bus_effect(mic_bus, _mic_record)
 	ring_player = AudioStreamPlayer.new()
 	ring_player.stream = _ring_tone()
 	ring_player.volume_db = -8.0
@@ -1196,6 +1239,7 @@ func play_lines(refs: Array) -> void:
 
 
 func stop_voice() -> void:
+	_talk = {}
 	_voice_token += 1
 	_voice_queue.clear()
 	voice_player.stop()
@@ -1223,8 +1267,74 @@ func _next_line() -> void:
 	s.data = bytes
 	voice_player.stream = s
 	_speaker = String(ref.get("speaker", ""))
+	_talk = {"text": String(ref.get("text", "")), "timing": null}
 	voice_player.play()
 	_apply_volumes()
+	if String(ref.get("text", "")) != "":
+		var talk := _talk
+		var t := await api.call_json(HTTPClient.METHOD_GET, "/api/voice?caseId=%s&kind=%s&id=%s&n=%d&timing=1" % [case_id, ref.kind, ref.id, int(ref.n)])
+		if t.ok and _talk == talk:
+			talk.timing = t.data
+
+
+func mic_start() -> bool:
+	if _mic_player == null:
+		_mic_player = AudioStreamPlayer.new()
+		_mic_player.stream = AudioStreamMicrophone.new()
+		_mic_player.bus = "Mic"
+		add_child(_mic_player)
+	if not _mic_player.playing:
+		_mic_player.play()
+	if AudioServer.get_input_device_list().is_empty():
+		return false
+	_mic_record.set_recording_active(true)
+	return true
+
+
+## Stops recording and sends it to the website to be turned into text: { text } or { error }.
+func mic_stop_and_transcribe(character_id: String) -> Dictionary:
+	if not _mic_record.is_recording_active():
+		return {"error": "Nothing was recorded."}
+	_mic_record.set_recording_active(false)
+	var rec := _mic_record.get_recording()
+	if rec == null or rec.data.size() < 4000:
+		return {"error": "That was too short. Hold the button while you speak."}
+	var wav := _wav_16k_mono(rec)
+	var seconds := float(wav.size() - 44) / 32000.0
+	return await api.transcribe(case_id, character_id, wav, seconds)
+
+
+## The recording as a small WAV file: one channel at 16,000 samples a second.
+func _wav_16k_mono(rec: AudioStreamWAV) -> PackedByteArray:
+	var src := rec.data
+	var channels := 2 if rec.stereo else 1
+	var frames := src.size() / (2 * channels)
+	var step := float(rec.mix_rate) / 16000.0
+	var out_n := int(frames / step)
+	var pcm := PackedByteArray()
+	pcm.resize(out_n * 2)
+	for i in out_n:
+		var f := int(i * step)
+		var v := src.decode_s16(f * 2 * channels)
+		if channels == 2:
+			v = (v + src.decode_s16(f * 4 + 2)) / 2
+		pcm.encode_s16(i * 2, v)
+	var h := PackedByteArray()
+	h.resize(44)
+	h.encode_u32(0, 0x46464952)
+	h.encode_u32(4, 36 + pcm.size())
+	h.encode_u32(8, 0x45564157)
+	h.encode_u32(12, 0x20746d66)
+	h.encode_u32(16, 16)
+	h.encode_u16(20, 1)
+	h.encode_u16(22, 1)
+	h.encode_u32(24, 16000)
+	h.encode_u32(28, 32000)
+	h.encode_u16(32, 2)
+	h.encode_u16(34, 16)
+	h.encode_u32(36, 0x61746164)
+	h.encode_u32(40, pcm.size())
+	return h + pcm
 
 
 func play_url(url: String) -> void:
@@ -1297,9 +1407,15 @@ func _take_shot(path: String) -> void:
 		await get_tree().process_frame
 	var base := path.get_basename()
 	var s: Array = data.get("starts", {}).get(here, data.get("start", [0, 0, 0]))
+	var pitch := -6.0
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--look="):
+			var v := arg.substr(7).split(",")
+			s = [float(v[0]), float(v[1]), float(v[2])]
+			pitch = float(v[3])
 	for k in 4:
 		player.place(float(s[0]), float(s[1]), float(s[2]) + k * 90.0)
-		player.pitch = deg_to_rad(-6)
+		player.pitch = deg_to_rad(pitch)
 		for i in 10:
 			await get_tree().process_frame
 		get_viewport().get_texture().get_image().save_png("%s_%d.png" % [base, k])

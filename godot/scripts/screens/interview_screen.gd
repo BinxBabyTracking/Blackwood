@@ -14,6 +14,8 @@ var portrait: TextureRect
 var _face_frames := {}
 var _present_box: VBoxContainer
 var _pending := false
+var speak_button: Button
+var _speaking := false
 
 
 func _init(g: Node, o: Dictionary, room := false) -> void:
@@ -90,6 +92,12 @@ func _init(g: Node, o: Dictionary, room := false) -> void:
 	row.add_child(field)
 	ask_button = UI.button("Ask", _ask)
 	row.add_child(ask_button)
+	# Push to talk: hold the button (or Ctrl, or the right trigger), ask out loud, let go.
+	speak_button = Button.new()
+	speak_button.text = "Hold to speak"
+	speak_button.button_down.connect(_start_speaking)
+	speak_button.button_up.connect(_stop_speaking)
+	row.add_child(speak_button)
 	right.add_child(row)
 	extra = HBoxContainer.new()
 	extra.add_theme_constant_override("separation", 10)
@@ -125,6 +133,7 @@ func show_outcome(o: Dictionary) -> void:
 	status.text = ("%d questions left with %s." % [int(q.get("left", 0)), String(o.name).split(" ")[0]]) if (can and q.get("limited", false)) else ("" if can else String(o.get("idle", "")))
 	field.editable = can and not _pending
 	ask_button.disabled = not field.editable
+	speak_button.disabled = not field.editable
 	for c in extra.get_children():
 		c.queue_free()
 	if o.medium != "telephone" and game.collected_evidence().size() > 0:
@@ -139,7 +148,7 @@ func show_outcome(o: Dictionary) -> void:
 		for n in o.get("latest", []):
 			for l in o.get("history", []):
 				if int(l.n) == int(n) and l.speakerId != "you" and l.speakerId != "cue" and l.get("via", "") != "text":
-					refs.append({"kind": "conversation", "id": character_id, "n": int(n), "speaker": l.speakerId})
+					refs.append({"kind": "conversation", "id": character_id, "n": int(n), "speaker": l.speakerId, "text": l.text})
 		if refs.size() > 0:
 			game.play_lines(refs)
 
@@ -156,12 +165,67 @@ func _ask() -> void:
 	transcript.text += "\n\n[color=#9c907c]You:[/color] %s" % text
 	var r: Dictionary = await game.act({"type": "askFree", "characterId": character_id, "text": text})
 	_pending = false
+	if not is_instance_valid(field):
+		return
+	# Ready for the next question (the answer arrived while this one was still being sent).
+	field.editable = bool(data.get("canAsk", false))
+	ask_button.disabled = not field.editable
+	speak_button.disabled = not field.editable
 	if r.has("error"):
 		status.text = String(r.error)
 		field.editable = true
 		ask_button.disabled = false
-	if is_instance_valid(field):
-		field.grab_focus()
+		speak_button.disabled = false
+	field.grab_focus()
+
+
+func _start_speaking() -> void:
+	if _speaking or _pending or not field.editable:
+		return
+	if not game.mic_start():
+		status.text = "No microphone was found. Type your question instead."
+		return
+	_speaking = true
+	game.stop_voice()
+	speak_button.text = "Listening... let go to ask"
+	status.text = "Listening..."
+
+
+func _stop_speaking() -> void:
+	if not _speaking:
+		return
+	_speaking = false
+	speak_button.text = "Hold to speak"
+	status.text = "..."
+	speak_button.disabled = true
+	var r: Dictionary = await game.mic_stop_and_transcribe(character_id)
+	if not is_instance_valid(field):
+		return
+	speak_button.disabled = false
+	var text := String(r.get("text", "")).strip_edges()
+	if text == "":
+		status.text = String(r.get("error", "Nothing was heard. Try again, or type your question."))
+		return
+	field.text = text
+	_ask()
+
+
+## Hold Ctrl on the keyboard, or the right trigger on a controller, to speak a question.
+func _input(event: InputEvent) -> void:
+	var held := false
+	var released := false
+	if event is InputEventKey and event.physical_keycode == KEY_CTRL and not event.echo:
+		held = event.pressed
+		released = not event.pressed
+	elif event is InputEventJoypadMotion and event.axis == JOY_AXIS_TRIGGER_RIGHT:
+		held = event.axis_value > 0.6 and not _speaking
+		released = event.axis_value < 0.3 and _speaking
+	if held:
+		_start_speaking()
+		get_viewport().set_input_as_handled()
+	elif released:
+		_stop_speaking()
+		get_viewport().set_input_as_handled()
 
 
 func _toggle_present() -> void:
