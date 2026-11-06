@@ -51,7 +51,8 @@ func is_seated() -> bool:
 	return seated_from != Vector3.INF
 
 
-func _unhandled_input(event: InputEvent) -> void:
+## Looking with the mouse is read before the interface sees the movement, so nothing on screen can block it.
+func _input(event: InputEvent) -> void:
 	if not enabled:
 		return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:

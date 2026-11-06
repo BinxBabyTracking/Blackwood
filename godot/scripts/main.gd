@@ -769,6 +769,8 @@ func _build_hud() -> void:
 	dot.add_theme_stylebox_override("panel", sb)
 	dot.size = Vector2(6, 6)
 	dot.set_anchors_preset(Control.PRESET_CENTER)
+	# The aiming dot sits exactly under the hidden pointer: it must not swallow the mouse's movement.
+	dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	dot.position -= Vector2(3, 3)
 	hud.add_child(dot)
 	prompt = _outlined(UI.label("", 24))
