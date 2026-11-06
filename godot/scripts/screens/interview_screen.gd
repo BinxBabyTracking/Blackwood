@@ -84,7 +84,9 @@ func _init(g: Node, o: Dictionary, room := false) -> void:
 	field.max_length = 300
 	field.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	field.text_submitted.connect(func(_t: String) -> void: _ask())
-	field.focus_entered.connect(func() -> void: DisplayServer.virtual_keyboard_show(field.text))
+	field.focus_entered.connect(func() -> void:
+		if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD) and Input.get_connected_joypads().size() > 0:
+			DisplayServer.virtual_keyboard_show(field.text))
 	row.add_child(field)
 	ask_button = UI.button("Ask", _ask)
 	row.add_child(ask_button)

@@ -84,6 +84,25 @@ func run(game: Node, out_dir: String) -> void:
 	g.open_panel("conclusion")
 	await shot("report")
 	g.close_screen()
+	# Jump ahead: everything found and everyone questioned, then file the right report.
+	var ev := ["E01", "E02", "E03", "E04", "E05", "E06", "E09", "E10", "E11", "E12", "E13", "E14", "E15", "E16"]
+	await g.api.call_json(HTTPClient.METHOD_POST, "/__debug/state?caseId=C001", {"evidence": ev, "talkedTo": ["bennett", "rosa", "daniel", "margaret", "robert", "patricia"]})
+	var v: Dictionary = await g.api.view("C001")
+	g.take_view(v.data.response.view)
+	g.open_panel("conclusion")
+	await shot("report_ready")
+	await g.act({"type": "submitConclusion", "theory": {"evidence": [], "culprit": "margaret", "motive": "jealousy", "weapon": "glass", "location": "kitchen"}})
+	await _wait(0.5)
+	await shot("report_returned")
+	g.close_screen()
+	await g.act({"type": "submitConclusion", "theory": {"evidence": [], "culprit": "daniel", "motive": "financial", "weapon": "knife", "location": "living_room"}})
+	await _wait(0.8)
+	await shot("closure_1")
+	for i in 3:
+		if g.screen and g.screen.has_method("_next"):
+			g.screen._next()
+		await _wait(0.3)
+	await shot("closure_4")
 
 
 func _hotspot(id: String) -> void:

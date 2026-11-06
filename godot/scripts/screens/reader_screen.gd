@@ -40,6 +40,13 @@ func _init(g: Node, o: Dictionary) -> void:
 		actions.add_child(UI.button("Play the call again", _play))
 	if kind == "document":
 		actions.add_child(UI.button("Read it to me", _read_aloud))
+	if o.get("photo") is Dictionary and not o.photo.get("taken", false):
+		var words: Dictionary = game.view.get("words", {})
+		var ph := UI.button(String(words.get("photoAction", "Take a photo")), func() -> void: _photo())
+		actions.add_child(ph)
+	if o.get("evidence") is Dictionary and game.view.get("narration", false):
+		var eid := String(o.evidence.id)
+		actions.add_child(UI.button("Read it to me", func() -> void: game.play_url("/api/narration?caseId=%s&evidenceId=%s" % [game.case_id, eid])))
 	_fill_evidence()
 	if kind == "call" and o.get("voiced", false):
 		_play()
@@ -117,6 +124,14 @@ func _fill_evidence() -> void:
 			_evidence_box.add_child(b)
 			if first_focus == null or first_focus.text == "Close":
 				first_focus = b
+
+
+func _photo() -> void:
+	var r: Dictionary = await game.act({"type": "photograph", "hotspotId": outcome.photo.hotspotId}, false)
+	if not r.has("error"):
+		var words: Dictionary = game.view.get("words", {})
+		game.toast(String(words.get("photoTaken", "Photographed.")))
+		game.stamp("PHOTO")
 
 
 func _collect(id: String) -> void:

@@ -376,7 +376,8 @@ func _model(M: Dictionary) -> void:
 		lp.light_color = LIGHT_COLOR
 		lp.omni_range = 3.2
 		lp.omni_attenuation = 1.6
-		lp.shadow_enabled = true
+		# A floor lamp's own shade would throw a dark blot on the ceiling; only desk lamps cast shadows.
+		lp.shadow_enabled = float(M.pos[1]) > 0.3
 		lp.light_size = 0.08
 		var at: Array = M.light.at
 		lp.position = Vector3(float(M.pos[0]) + float(at[0]), float(M.pos[1]) + float(at[1]) - 0.08, float(M.pos[2]) + float(at[2]) + 0.12)

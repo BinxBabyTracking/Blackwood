@@ -867,6 +867,17 @@ func show_pause() -> void:
 	else:
 		v.add_child(UI.button("Map", func() -> void: open_map()))
 		v.add_child(UI.button("Sign in", func() -> void: show_login()))
+	if online:
+		var voices_on: bool = view.get("voices", true)
+		v.add_child(UI.button("Character voices: %s" % ("on" if voices_on else "off"), func() -> void:
+			await act({"type": "setVoices", "enabled": not voices_on}, false)
+			show_pause()))
+		var narr_on: bool = view.get("narration", false)
+		v.add_child(UI.button("Evidence read aloud: %s" % ("on" if narr_on else "off"), func() -> void:
+			await act({"type": "setNarration", "enabled": not narr_on}, false)
+			show_pause()))
+		if view.get("status") == "closed" and view.get("closure") is Dictionary:
+			v.add_child(UI.button("Hear the ending again", func() -> void: _show_closure({})))
 	v.add_child(UI.label("Music", 18, UI.DIM))
 	var ms := HSlider.new()
 	ms.max_value = 1.0
@@ -1020,6 +1031,9 @@ func _next_line() -> void:
 	_speaker = ""
 	_apply_volumes()
 	if _voice_queue.is_empty() or not online:
+		return
+	if not view.get("voices", true) and String(_voice_queue[0].get("speaker", "")) != "narrator":
+		_voice_queue.clear()
 		return
 	var token := _voice_token
 	var ref: Dictionary = _voice_queue.pop_front()

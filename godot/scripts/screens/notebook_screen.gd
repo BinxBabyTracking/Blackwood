@@ -103,7 +103,9 @@ func _show_evidence(id: String) -> void:
 	row.add_theme_constant_override("separation", 10)
 	if e.get("boardable", false):
 		if game.on_board(id):
-			row.add_child(UI.label("Pinned on the murder board.", 18, UI.DIM))
+			var pinned := UI.label("Pinned on the murder board.", 18, UI.DIM)
+			pinned.autowrap_mode = TextServer.AUTOWRAP_OFF
+			row.add_child(pinned)
 		else:
 			row.add_child(UI.button("Pin to the murder board", func() -> void:
 				await game.pin(id)
