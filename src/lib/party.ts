@@ -1,6 +1,6 @@
 import "server-only";
 import { createHmac, randomBytes, randomInt, timingSafeEqual } from "node:crypto";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -161,9 +161,23 @@ export async function actingUser(caseId: string, asGuest = false): Promise<{ use
     }
     return null;
   }
+  // The desktop game client (Godot) signs in through /api/client/login and sends its token as a bearer header.
+  const bearer = await bearerUserId();
+  if (bearer) return { userId: bearer, guest: null, lobby: null };
   const supabase = await createClient();
   const user = supabase ? (await supabase.auth.getUser()).data.user : null;
   return user ? { userId: user.id, guest: null, lobby: null } : null;
+}
+
+/** The investigator named by an `Authorization: Bearer <access token>` header, checked with Supabase, or null. */
+export async function bearerUserId(): Promise<string | null> {
+  const h = (await headers()).get("authorization") ?? "";
+  const m = /^Bearer\s+(.+)$/i.exec(h);
+  if (!m) return null;
+  const db = createAdminClient();
+  if (!db) return null;
+  const { data } = await db.auth.getUser(m[1].trim());
+  return data.user?.id ?? null;
 }
 
 /** Audio and transcription requests come from a guest screen when that page is under /party/. */
