@@ -88,6 +88,8 @@ var _mic_player: AudioStreamPlayer
 var _mic_record: AudioEffectRecord
 # The line being spoken: its text and, when the server has it, when each letter is said (for the mouth).
 var _talk := {}
+## For checking mouths in screenshots: -- --jaw=0.6 holds every mouth open.
+var _debug_jaw := 0.0
 var voice_volume := 1.0
 
 # Interview in a room: the camera turns to the person's face.
@@ -1127,7 +1129,7 @@ func _process(dt: float) -> void:
 	voice_level = lerpf(voice_level, goal, minf(1.0, dt * 18.0))
 	var talker := _person_here(_speaker) if _speaker != "" else ""
 	for id in room.people:
-		room.set_jaw(id, voice_level if id == talker else 0.0)
+		room.set_jaw(id, voice_level if id == talker else _debug_jaw)
 	if _face_id != "":
 		_interview_camera(dt)
 	if player.enabled and screen == null:
@@ -1409,6 +1411,8 @@ func _take_shot(path: String) -> void:
 	var s: Array = data.get("starts", {}).get(here, data.get("start", [0, 0, 0]))
 	var pitch := -6.0
 	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--jaw="):
+			_debug_jaw = float(arg.substr(6))
 		if arg.begins_with("--look="):
 			var v := arg.substr(7).split(",")
 			s = [float(v[0]), float(v[1]), float(v[2])]
