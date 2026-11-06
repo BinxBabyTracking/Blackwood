@@ -5,7 +5,8 @@ extends Node
 ## exactly as on the website. The desktop client only sends what the player did.
 
 const SESSION_FILE := "user://session.cfg"
-const DEFAULT_BASE := "https://blackwoodinvestigation.com"
+## The site answers on www; the bare domain redirects there, and a redirected sign-in loses its details.
+const DEFAULT_BASE := "https://www.blackwoodinvestigation.com"
 
 var base := DEFAULT_BASE
 var access_token := ""
@@ -20,6 +21,8 @@ func _ready() -> void:
 		access_token = String(cfg.get_value("session", "access", ""))
 		refresh_token = String(cfg.get_value("session", "refresh", ""))
 		email = String(cfg.get_value("session", "email", ""))
+	if base.trim_suffix("/") == "https://blackwoodinvestigation.com":
+		base = DEFAULT_BASE
 	# A different server for testing: --server=https://... on the command line.
 	for arg in OS.get_cmdline_user_args() + OS.get_cmdline_args():
 		if arg.begins_with("--server="):
