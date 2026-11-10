@@ -28,6 +28,8 @@ import { adminTickets, categoryLabel, type TicketStatus } from "@/lib/support";
 import { NameCheck } from "@/components/portal/name-check";
 import { AdminSection } from "@/components/portal/admin-section";
 import { ArtStudio } from "@/components/portal/art-studio";
+import { MeshyPrompts } from "@/components/portal/meshy-prompts";
+import { meshyText } from "@/lib/meshy";
 import { VoiceStudio } from "@/components/portal/voice-studio";
 import { voiceCases } from "@/lib/voice-studio";
 import { artKeyStatus, artRows, pricesFor, roomSpecs } from "@/lib/art-studio";
@@ -51,6 +53,7 @@ const TABS = [
   { id: "music", label: "Music and sounds", blurb: "Each case's music and room sound, made with ElevenLabs." },
   { id: "voices", label: "Voices", blurb: "The voice of every person in each case." },
   { id: "artwork", label: "Artwork", blurb: "Every painting in the game, made with OpenAI or uploaded, case by case." },
+  { id: "models", label: "3D prompts", blurb: "Every 3D model's Meshy prompt, case by case and room by room, ready to copy. Upload each GLB on the Artwork tab, beside its reference picture." },
 ] as const;
 type Tab = (typeof TABS)[number]["id"];
 
@@ -95,7 +98,7 @@ async function Admin({ searchParams }: { searchParams: Promise<Record<string, st
         </section>
       ) : (
         <div className="space-y-14">
-          {tab === "spending" ? <Spending /> : tab === "support" ? <SupportAdmin filter={typeof q.status === "string" ? q.status : "open"} /> : tab === "players" ? <Players /> : tab === "music" ? <Soundtracks /> : tab === "voices" ? <Voices /> : <Artwork />}
+          {tab === "spending" ? <Spending /> : tab === "support" ? <SupportAdmin filter={typeof q.status === "string" ? q.status : "open"} /> : tab === "players" ? <Players /> : tab === "music" ? <Soundtracks /> : tab === "voices" ? <Voices /> : tab === "models" ? <ModelPrompts /> : <Artwork />}
           <form action={lockAdmin}>
             <button type="submit" className="text-sm text-smoke underline-offset-4 hover:text-paper hover:underline">
               Lock the Admin page on this device
@@ -575,6 +578,46 @@ async function Artwork() {
               // The full prompt is loaded on request, and the original wording is sent only for an edited prompt: with
               // walkable rooms a case can have hundreds of pictures, and the page stays light.
               rows={list.map((r) => ({ ...r, defaultSubject: r.edited ? r.defaultSubject : "", prices: pricesFor(r.id) }))}
+            />
+          </AdminSection>
+        );
+      })}
+    </>
+  );
+}
+
+/** Every 3D model entry's Meshy prompt, by case and room, to copy into Meshy. */
+async function ModelPrompts() {
+  const rows = await artRows().catch(() => null);
+  if (!rows) return null;
+  const models = rows.filter((r) => r.kind === "model");
+  const roomName = new Map(roomSpecs().map((x) => [x.id, x.name]));
+  const groups = [...new Set(models.map((r) => r.group))].sort();
+  /** "chr001_jingle_office_model_timebag" -> "Timebag": the part after _model_. */
+  const short = (id: string) => {
+    const n = id.split("_model_")[1] ?? id;
+    return n.charAt(0).toUpperCase() + n.slice(1).replace(/_/g, " ");
+  };
+  return (
+    <>
+      {groups.map((g) => {
+        const list = models.filter((r) => r.group === g);
+        const todo = list.filter((r) => r.liveModel == null).length;
+        return (
+          <AdminSection key={g} id={`models-${g}`} title={`3D prompts: ${g} ${loadCase(g)?.title ?? SERIES.find((s) => s.id === g)?.title ?? ""}${todo ? ` (${todo} to make)` : ""}`.trim()} className="max-w-4xl">
+            <p className="mt-2 text-sm text-smoke">
+              In Meshy, paste a prompt into Text to 3D, or use Image to 3D with the model&apos;s reference picture from the Artwork tab. Download the model as GLB and upload it on the
+              Artwork tab under the same name. Models are listed in the order of their rooms; a model used in several rooms is listed once, under the first.
+            </p>
+            <MeshyPrompts
+              rows={list.map((r) => ({
+                id: r.id,
+                name: short(r.id),
+                room: (r.room && roomName.get(r.room)) || "Other",
+                prompt: meshyText(r.subject, g),
+                image: r.current,
+                hasModel: r.liveModel != null || r.models.length > 0,
+              }))}
             />
           </AdminSection>
         );

@@ -16,6 +16,8 @@ const TIER_KEY = "bw-art-tier";
 export type StudioRow = {
   id: string;
   kind: string;
+  /** The case it belongs to (CHR001), for the Meshy prompt's style line. */
+  group?: string;
   subject: string;
   defaultSubject: string;
   edited: boolean;
@@ -474,14 +476,14 @@ function ModelControls({ r, busy, onPatch, onSay }: { r: StudioRow; busy: boolea
       <p className="text-xs text-smoke">
         In Meshy, use Image to 3D with the picture above (or Text to 3D with this prompt), then download the model as GLB and upload it here.
       </p>
-      <p className="mt-1.5 rounded-[2px] bg-black/30 p-2 font-mono text-[0.7rem] text-paper/90">{meshyText(r.subject)}</p>
+      <p className="mt-1.5 rounded-[2px] bg-black/30 p-2 font-mono text-[0.7rem] text-paper/90">{meshyText(r.subject, r.group)}</p>
       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
         <button
           type="button"
           className="text-brass underline-offset-4 hover:underline"
           onClick={async () => {
             try {
-              await navigator.clipboard.writeText(meshyText(r.subject));
+              await navigator.clipboard.writeText(meshyText(r.subject, r.group));
               onSay({ state: "done", note: "Meshy prompt copied." });
             } catch {
               onSay({ state: "error", note: "Couldn't copy. Select the prompt and copy it by hand." });
