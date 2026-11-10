@@ -4,7 +4,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 /*
  * Case music and room sound. Each track is made once with ElevenLabs (music
- * with Eleven Music, room sound with seamless-loop sound effects) from the
+ * with Eleven Music, room sound with seamless-loop sound effects, one-shot
+ * sound effects for the 3D client with sound effects) from the
  * Admin page, kept in the private "narration" bucket, and served to players by
  * /api/case-audio. Nothing is generated while someone plays.
  */
@@ -23,7 +24,7 @@ function db() {
 
 /** Which tracks of a case have been made, with when. */
 export async function soundtrackStatus(caseId: string): Promise<Record<string, string>> {
-  const { data } = await db().storage.from(BUCKET).list(`soundtrack/${caseId}`, { limit: 100 });
+  const { data } = await db().storage.from(BUCKET).list(`soundtrack/${caseId}`, { limit: 1000 });
   return Object.fromEntries((data ?? []).map((f) => [f.name.replace(/\.mp3$/, ""), f.updated_at ?? f.created_at ?? ""]));
 }
 
@@ -49,7 +50,7 @@ export async function generateTrack(caseId: string, t: SoundtrackDef) {
           body: JSON.stringify({
             text: t.prompt,
             model_id: "eleven_text_to_sound_v2",
-            loop: true,
+            loop: t.kind === "ambience",
             duration_seconds: Math.min(30, Math.max(1, t.seconds)),
             prompt_influence: 0.4,
           }),

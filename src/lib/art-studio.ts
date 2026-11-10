@@ -101,8 +101,8 @@ export function pricesFor(id: string): Record<Tier, number> {
 }
 
 /** Which case an image belongs to, from its id: c002_ev_e11 is C002; site and travel art is shared. */
-/** The case an image belongs to, from its id prefix: c004_, s001c05_, hallow001_. Anything else is the site's own. */
-export const groupOf = (id: string) => /^([cs]\d{3}(?:c\d{2})?|hallow\d{3})_/.exec(id)?.[1].toUpperCase() ?? "Shared";
+/** The case an image belongs to, from its id prefix: c004_, s001c05_, hallow001_, chr001_. Anything else is the site's own. */
+export const groupOf = (id: string) => /^([cs]\d{3}(?:c\d{2})?|hallow\d{3}|chr\d{3})_/.exec(id)?.[1].toUpperCase() ?? "Shared";
 
 /** For flat-lit walkable art: what may be written in a picture. */
 const WORDS =

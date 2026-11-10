@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { makeTrack } from "@/app/actions/soundtrack";
 
-type Track = { key: string; label: string; kind: "music" | "ambience"; seconds: number; made: string | null };
+type Track = { key: string; label: string; kind: "music" | "ambience" | "sfx"; seconds: number; made: string | null };
 type Status = { state: "idle" | "making" | "done" | "error"; note?: string; v?: number };
 
 /** One row per track: listen to it, or make (or remake) it. "Make all missing" works through them one at a time. */
@@ -46,7 +46,7 @@ export function SoundtrackPanel({ caseId, tracks }: { caseId: string; tracks: Tr
               <div className="min-w-[14rem] flex-1">
                 <p className="text-paper">{t.label}</p>
                 <p className="font-mono text-xs text-smoke">
-                  {t.kind === "music" ? `Music, ${Math.round(t.seconds / 60 * 10) / 10} min` : `Room sound, ${t.seconds}s loop`} ·{" "}
+                  {t.kind === "music" ? `Music, ${Math.round(t.seconds / 60 * 10) / 10} min` : t.kind === "sfx" ? `Sound effect, ${t.seconds}s` : `Room sound, ${t.seconds}s loop`} ·{" "}
                   {st.state === "making"
                     ? "Making… (music can take a minute or two)"
                     : st.state === "error"

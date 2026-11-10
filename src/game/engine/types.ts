@@ -671,11 +671,12 @@ export interface FinalReport {
 
 /** A piece of music or room sound made with ElevenLabs from the Admin page. */
 export interface SoundtrackDef {
-  /** Asset key, e.g. "music.theme" or "amb.diner". */
+  /** Asset key, e.g. "music.theme", "amb.diner" or "sfx.door". */
   key: string;
-  kind: "music" | "ambience";
+  /** sfx: a one-shot sound effect (not looped), at most 30 seconds, for the 3D client to play on events. */
+  kind: "music" | "ambience" | "sfx";
   label: string;
-  /** Music: the track length. Ambience: one seamless loop (at most 30). */
+  /** Music: the track length. Ambience: one seamless loop (at most 30). Sfx: the clip length (at most 30). */
   seconds: number;
   prompt: string;
 }
