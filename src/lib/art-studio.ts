@@ -4,6 +4,7 @@ import manifestJson from "../../art/manifest.json";
 import generated from "@/art/generated.json";
 import { liveArtUrl, liveModelUrl } from "@/art/painted";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { meshyText } from "@/lib/meshy";
 
 /*
  * The Admin artwork studio. Every image in art/manifest.json can be made with
@@ -600,37 +601,46 @@ export async function meshyStatus() {
   return { configured: true as const, from: k.from, balance: "balance" in b ? Number(b.balance) : null, error: "error" in b ? String(b.error) : null };
 }
 
-/** Starts a Meshy Image to 3D task for a model entry, from its current reference picture. */
+/**
+ * Starts a Meshy task for a model entry: Image to 3D from its reference picture when there is one (best for
+ * keeping the case's style), otherwise Text to 3D from its prompt (a preview mesh, then a textured refine).
+ * The running task is kept as "i:<id>" (image), "tp:<id>" (text preview) or "tr:<id>" (text refine).
+ */
 export async function startMeshyModel(id: string, origin: string) {
   const img = manifest.images.find((i) => i.id === id);
   if (!img || !isModelKind(img.kind)) throw new Error("That isn't a 3D model entry.");
-  const { data: row } = await db().from("art_images").select("meshy_task").eq("id", id).maybeSingle();
-  if ((row as { meshy_task: string | null } | null)?.meshy_task) return { task: (row as { meshy_task: string }).meshy_task, already: true };
-  const bytes = await currentBytes(id, origin);
-  if (!bytes) throw new Error("Make the model's reference picture on the Artwork tab first.");
-  const png = await sharp(bytes).png().toBuffer();
-  const created = await meshy("/openapi/v1/image-to-3d", {
-    method: "POST",
-    body: JSON.stringify({
-      image_url: `data:image/png;base64,${png.toString("base64")}`,
-      ai_model: "latest",
-      should_texture: true,
-      enable_pbr: false,
-      texture_resolution: "2k",
-      // Game-sized: remeshed to a modest triangle count so rooms with many models stay fast.
-      should_remesh: true,
-      topology: "triangle",
-      target_polycount: 20000,
-      // Keep the reference picture's look (the case's art style) rather than Meshy's own enhancement.
-      image_enhancement: false,
-      target_formats: ["glb"],
-    }),
-  });
-  const task = String(created.result ?? "");
-  if (!task) throw new Error("Meshy didn't return a task.");
+  const { data: row } = await db().from("art_images").select("meshy_task, subject").eq("id", id).maybeSingle();
+  const r = row as { meshy_task: string | null; subject: string | null } | null;
+  if (r?.meshy_task) return { task: r.meshy_task, already: true, from: r.meshy_task.startsWith("t") ? ("prompt" as const) : ("picture" as const) };
+  const bytes = await currentBytes(id, origin).catch(() => null);
+  const common = { should_remesh: true, topology: "triangle", target_polycount: 20000, target_formats: ["glb"], ai_model: "latest" };
+  let task: string;
+  if (bytes) {
+    const png = await sharp(bytes).png().toBuffer();
+    const created = await meshy("/openapi/v1/image-to-3d", {
+      method: "POST",
+      body: JSON.stringify({
+        ...common,
+        image_url: `data:image/png;base64,${png.toString("base64")}`,
+        should_texture: true,
+        enable_pbr: false,
+        texture_resolution: "2k",
+        // Keep the reference picture's look (the case's art style) rather than Meshy's own enhancement.
+        image_enhancement: false,
+      }),
+    });
+    task = `i:${String(created.result ?? "")}`;
+  } else {
+    const created = await meshy("/openapi/v2/text-to-3d", {
+      method: "POST",
+      body: JSON.stringify({ ...common, mode: "preview", prompt: meshyText(r?.subject ?? img.subject, groupOf(id)) }),
+    });
+    task = `tp:${String(created.result ?? "")}`;
+  }
+  if (task.endsWith(":")) throw new Error("Meshy didn't return a task.");
   const { error } = await db().from("art_images").upsert({ id, meshy_task: task, meshy_started_at: new Date().toISOString(), updated_at: new Date().toISOString() }, { onConflict: "id" });
   if (error) throw new Error(error.message);
-  return { task, already: false };
+  return { task, already: false, from: bytes ? ("picture" as const) : ("prompt" as const) };
 }
 
 export type MeshyCheck =
@@ -645,13 +655,25 @@ export async function checkMeshyModel(id: string): Promise<MeshyCheck> {
   const r = row as { meshy_task: string | null; live_model: number | null } | null;
   if (!r?.meshy_task) return { state: "none" };
   const clear = () => db().from("art_images").update({ meshy_task: null, meshy_started_at: null }).eq("id", id);
-  const t = await meshy(`/openapi/v1/image-to-3d/${encodeURIComponent(r.meshy_task)}`);
+  // Older tasks were stored without a prefix: those are Image to 3D.
+  const [kind, taskId] = r.meshy_task.includes(":") ? (r.meshy_task.split(":", 2) as [string, string]) : ["i", r.meshy_task];
+  const path = kind === "i" ? "/openapi/v1/image-to-3d" : "/openapi/v2/text-to-3d";
+  const t = await meshy(`${path}/${encodeURIComponent(taskId)}`);
   const status = String(t.status ?? "");
+  const progress = Number(t.progress ?? 0);
   if (status === "FAILED" || status === "CANCELED") {
     await clear();
     return { state: "failed", note: `Meshy ${status === "FAILED" ? "couldn't make it" : "canceled it"}${t.task_error?.message ? `: ${t.task_error.message}` : "."} No credits are used for a failed model.` };
   }
-  if (status !== "SUCCEEDED") return { state: "working", progress: Number(t.progress ?? 0), status };
+  // Text to 3D runs in two halves: the preview mesh, then the textured refine.
+  if (status !== "SUCCEEDED") return { state: "working", progress: kind === "tp" ? Math.round(progress / 2) : kind === "tr" ? 50 + Math.round(progress / 2) : progress, status };
+  if (kind === "tp") {
+    const refined = await meshy("/openapi/v2/text-to-3d", { method: "POST", body: JSON.stringify({ mode: "refine", preview_task_id: taskId, enable_pbr: false, target_formats: ["glb"] }) });
+    const next = String(refined.result ?? "");
+    if (!next) throw new Error("Meshy didn't start texturing the model. Check again.");
+    await db().from("art_images").update({ meshy_task: `tr:${next}` }).eq("id", id);
+    return { state: "working", progress: 50, status: "TEXTURING" };
+  }
   const url = t.model_urls?.glb ?? t.model_url;
   if (!url) {
     await clear();

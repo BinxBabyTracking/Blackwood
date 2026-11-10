@@ -109,7 +109,7 @@ export async function artFullPrompt(id: string, subject: string): Promise<Result
 }
 
 /** Admin: starts making a 3D model with Meshy from its reference picture. */
-export async function startMeshy(id: string): Promise<Result<{ task: string; already: boolean }>> {
+export async function startMeshy(id: string): Promise<Result<{ task: string; already: boolean; from: "picture" | "prompt" }>> {
   if (!(await admin())) return { error: "Not allowed." };
   try {
     return { ok: true, ...(await startMeshyModel(id, await origin())) };

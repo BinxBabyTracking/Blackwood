@@ -63,7 +63,7 @@ export function MeshyPrompts({ rows, canMake }: { rows: MeshyRow[]; canMake: boo
     for (const r of rows) if (r.running) void follow(r.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const ready = (r: MeshyRow) => Boolean(r.image) && !r.hasModel && !jobs[r.id];
+  const ready = (r: MeshyRow) => !r.hasModel && !jobs[r.id];
   const makeAll = async () => {
     setBatch(true);
     stop.current = false;
@@ -146,18 +146,14 @@ export function MeshyPrompts({ rows, canMake }: { rows: MeshyRow[]; canMake: boo
                         {copied === r.id ? "Copied" : copied === `fail:${r.id}` ? "Couldn't copy: select the prompt and copy it by hand" : "Copy prompt"}
                       </button>
                       {canMake ? (
-                        r.image ? (
-                          <button
-                            type="button"
-                            disabled={Boolean(jobs[r.id] && jobs[r.id].state !== "error" && jobs[r.id].state !== "done")}
-                            className="text-brass underline-offset-4 hover:underline disabled:opacity-50"
-                            onClick={() => make(r.id)}
-                          >
-                            {r.hasModel || jobs[r.id]?.state === "done" ? "Make again with Meshy" : "Make with Meshy"}
-                          </button>
-                        ) : (
-                          <span className="text-xs text-smoke">Make its reference picture on the Artwork tab first</span>
-                        )
+                        <button
+                          type="button"
+                          disabled={Boolean(jobs[r.id] && jobs[r.id].state !== "error" && jobs[r.id].state !== "done")}
+                          className="text-brass underline-offset-4 hover:underline disabled:opacity-50"
+                          onClick={() => make(r.id)}
+                        >
+                          {r.hasModel || jobs[r.id]?.state === "done" ? "Make again with Meshy" : r.image ? "Make with Meshy (from the picture)" : "Make with Meshy (from the prompt)"}
+                        </button>
                       ) : null}
                       {jobs[r.id] ? (
                         <span className={`text-xs ${jobs[r.id].state === "error" ? "text-[#e2a7a2]" : jobs[r.id].state === "done" ? "text-[#9fc79a]" : "text-smoke"}`}>

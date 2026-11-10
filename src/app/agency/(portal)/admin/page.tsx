@@ -617,7 +617,7 @@ async function ModelPrompts() {
           <p className="text-smoke">No Meshy key is set, so models can&apos;t be made from here yet. Add MESHY_API_KEY in Vercel; until then, copy the prompts into Meshy by hand.</p>
         )}
         <p className="mt-1 text-smoke">
-          &quot;Make with Meshy&quot; sends the model&apos;s reference picture to Meshy&apos;s Image to 3D (textured, about 20,000 triangles), waits a few minutes and saves the GLB. A model&apos;s first one goes live
+          &quot;Make with Meshy&quot; uses the model&apos;s reference picture when it has one (Meshy&apos;s Image to 3D, the best way to keep the case&apos;s style), or else its prompt (Text to 3D: a mesh, then its textures, so it takes a little longer). Models come out textured, about 20,000 triangles, and are saved as GLB. A model&apos;s first one goes live
           by itself; later ones wait for you to choose them on the Artwork tab. Keep this page open while models are being made: they carry on at Meshy if you leave, and pick up again when you come back.
         </p>
       </div>
