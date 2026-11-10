@@ -6,7 +6,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import type { InvestigationState } from "@/game/engine/types";
 import { walkAsk } from "@/app/actions/walk-test";
-import type { WalkHotspot, WalkHouse, WalkRoomDef, WalkWall } from "./c001-house";
+import type { WalkHotspot, WalkHouse, WalkOutside, WalkRoomDef, WalkTrim, WalkWall } from "./c001-house";
 import { liveBoardKey, makeLiveBoard, type LiveBoard } from "./live-board";
 
 /*
@@ -33,6 +33,43 @@ function wallFrame(r: WalkRoomDef, side: Side) {
   if (side === "back") return { pos: [cx, cz + d / 2], rot: Math.PI, width: w, normal: [0, -1] };
   if (side === "left") return { pos: [cx - w / 2, cz], rot: Math.PI / 2, width: d, normal: [1, 0] };
   return { pos: [cx + w / 2, cz], rot: -Math.PI / 2, width: d, normal: [-1, 0] };
+}
+
+/**
+ * The parts of a band of wall (x0..x1 by y0..y1, metres) not covered by any hole: the band is cut into
+ * columns at every hole edge, and each column keeps the stretches between its holes. Holes may touch the
+ * floor or the ends of the wall (a doorway), which a shape with holes can't do.
+ */
+export function wallRects(x0: number, x1: number, y0: number, y1: number, holes: { x0: number; x1: number; y0: number; y1: number }[]) {
+  const inBand = holes.filter((h) => h.x1 > x0 && h.x0 < x1 && h.y1 > y0 && h.y0 < y1);
+  const xs = [...new Set([x0, x1, ...inBand.flatMap((h) => [h.x0, h.x1]).filter((x) => x > x0 && x < x1)])].sort((a, b) => a - b);
+  const out: { x0: number; x1: number; y0: number; y1: number }[] = [];
+  for (let i = 0; i < xs.length - 1; i++) {
+    const a = xs[i], b = xs[i + 1];
+    if (b - a < 1e-4) continue;
+    const mid = (a + b) / 2;
+    const cut = inBand.filter((h) => h.x0 <= mid && h.x1 >= mid).map((h) => [Math.max(y0, h.y0), Math.min(y1, h.y1)]).sort((p, q) => p[0] - q[0]);
+    let y = y0;
+    for (const [c0, c1] of cut) {
+      if (c0 > y + 1e-4) out.push({ x0: a, x1: b, y0: y, y1: c0 });
+      y = Math.max(y, c1);
+    }
+    if (y1 > y + 1e-4) out.push({ x0: a, x1: b, y0: y, y1 });
+  }
+  return out;
+}
+
+/** The stretches of a wall's length (0..len) left for a run of trim at heights y0..y1, around the openings it meets. */
+export function trimRuns(len: number, y0: number, y1: number, holes: { x0: number; x1: number; y0: number; y1: number }[]) {
+  const cuts = holes.filter((h) => h.y0 < y1 && h.y1 > y0).map((h) => [Math.max(0, h.x0), Math.min(len, h.x1)]).sort((a, b) => a[0] - b[0]);
+  const out: number[][] = [];
+  let x = 0;
+  for (const [c0, c1] of cuts) {
+    if (c0 > x + 1e-3) out.push([x, c0]);
+    x = Math.max(x, c1);
+  }
+  if (len > x + 1e-3) out.push([x, len]);
+  return out;
 }
 
 /** A window screen of wm by hm metres with an L-shaped cut, left of the faucet so it can be seen over it. */
@@ -259,6 +296,39 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
     const plaster = new THREE.MeshLambertMaterial({ color: 0xd8bf98, side: THREE.DoubleSide });
     const trim = new THREE.MeshLambertMaterial({ color: 0x4a2c1a, side: THREE.DoubleSide });
     const outsides: { mat: THREE.MeshBasicMaterial; day: THREE.Texture; night: THREE.Texture }[] = [];
+    // Ceiling lights drawn as their own pictures, lit with their room's light (joined to lampMats below).
+    const fixtureMats: { lamp: string; mat: THREE.MeshLambertMaterial }[] = [];
+    // Wall pieces that only show on one visit.
+    const pieceVisits: { obj: THREE.Object3D; visit: string }[] = [];
+    // A tileable texture, repeating every `tileM` metres on geometry whose UVs are in metres.
+    const tileTex = (url: string) => {
+      const t = loadTex(url);
+      t.wrapS = t.wrapT = THREE.RepeatWrapping;
+      return t;
+    };
+    // A plane of a x b metres whose UVs are in metres scaled by 1/tile, starting at (u0, v0) metres.
+    const tiledPlane = (w: number, h: number, u0: number, v0: number, tile: number) => {
+      const g = new THREE.PlaneGeometry(w, h);
+      const uv = g.attributes.uv as THREE.BufferAttribute;
+      for (let i = 0; i < uv.count; i++) uv.setXY(i, (u0 + uv.getX(i) * w) / tile, (v0 + uv.getY(i) * h) / tile);
+      return g;
+    };
+    // The view outside an opening: the picture runs on past its edges as a mirror image, as for painted walls.
+    const addOutside = (g: THREE.Group, o: WalkOutside, xCentre: number) => {
+      const P = 5;
+      const wrap = (t: THREE.Texture) => {
+        t.wrapS = t.wrapT = THREE.MirroredRepeatWrapping;
+        t.repeat.set(P, P);
+        t.offset.set(-(P - 1) / 2, -(P - 1) / 2);
+        return t;
+      };
+      const dayT = wrap(loadTex(o.day));
+      const mat = new THREE.MeshBasicMaterial({ map: dayT });
+      outsides.push({ mat, day: dayT, night: o.night === o.day ? dayT : wrap(loadTex(o.night)) });
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(o.width * P, ((o.width * 864) / 1536) * P), mat);
+      m.position.set(xCentre, o.y, -WALL - o.distance);
+      g.add(m);
+    };
     const roomLights = new Map<string, { light: THREE.PointLight; ceil: THREE.MeshLambertMaterial; power: number }>();
 
     // The depth of an opening: strips from the wall's face back through its thickness.
@@ -272,7 +342,87 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
       parent.add(m);
     };
 
+    /**
+     * A wall made of a tileable surface with its pieces placed on it: any length lines up, and openings are
+     * real holes through the wall's thickness.
+     */
+    const buildTiledWall = (r: WalkRoomDef, side: Side, def: WalkWall) => {
+      const H = r.size[2];
+      const f = wallFrame(r, side);
+      const g = new THREE.Group();
+      g.position.set(f.pos[0], 0, f.pos[1]);
+      g.rotation.y = f.rot;
+      const W = f.width;
+      const tint = r.tint ?? 1;
+      const holes = (def.pieces ?? []).filter((p) => p.opening).map((p) => ({ x0: p.x - W / 2, x1: p.x + p.w - W / 2, y0: p.y, y1: p.y + p.h }));
+      const surface = (tex: string, tile: number, y0: number, y1: number, z: number) => {
+        const t = tileTex(tex);
+        const mat = new THREE.MeshLambertMaterial({ map: t, color: new THREE.Color(tint, tint, tint) });
+        mat.shadowSide = THREE.DoubleSide;
+        for (const q of wallRects(-W / 2, W / 2, y0, y1, holes)) {
+          const m = cast(new THREE.Mesh(tiledPlane(q.x1 - q.x0, q.y1 - q.y0, q.x0 + W / 2, q.y0, tile), mat));
+          m.position.set((q.x0 + q.x1) / 2, (q.y0 + q.y1) / 2, z);
+          g.add(m);
+        }
+      };
+      const tile = def.tile ?? 1.2;
+      const split = def.lower ? Math.min(H, Math.max(0, def.lower.to)) : 0;
+      surface(def.tex, tile, split, H, 0);
+      if (def.lower) surface(def.lower.tex, def.lower.tile ?? tile, 0, split, 0);
+      // The far side: blocks light except through the openings, never drawn.
+      const shade = new THREE.MeshLambertMaterial({ colorWrite: false, depthWrite: false });
+      for (const q of wallRects(-W / 2, W / 2, 0, H, holes)) {
+        const m = new THREE.Mesh(new THREE.PlaneGeometry(q.x1 - q.x0, q.y1 - q.y0), shade);
+        m.position.set((q.x0 + q.x1) / 2, (q.y0 + q.y1) / 2, -WALL);
+        m.castShadow = true;
+        g.add(m);
+      }
+      // The depth of each opening, and a wooden sill under a window.
+      for (const h of holes) {
+        const c = [new THREE.Vector2(h.x0, h.y0), new THREE.Vector2(h.x1, h.y0), new THREE.Vector2(h.x1, h.y1), new THREE.Vector2(h.x0, h.y1)];
+        for (let i = 0; i < 4; i++) {
+          if (i === 0 && h.y0 < 0.01) continue; // a doorway's floor is the floor
+          strip(g, c[i], c[(i + 1) % 4], i === 0 ? trim : plaster);
+        }
+      }
+      for (const p of def.pieces ?? []) {
+        const mat = new THREE.MeshLambertMaterial({ map: loadTex(p.tex), alphaTest: 0.5, color: new THREE.Color(tint, tint, tint) });
+        const m = cast(new THREE.Mesh(new THREE.PlaneGeometry(p.w, p.h), mat));
+        m.position.set(p.x + p.w / 2 - W / 2, p.y + p.h / 2, 0.006);
+        g.add(m);
+        if (p.visit && !game) {
+          pieceVisits.push({ obj: m, visit: p.visit });
+          m.visible = p.visit === visitRef.current;
+        }
+        if (p.opening && p.outside) addOutside(g, p.outside, p.x + p.w / 2 - W / 2);
+      }
+      // Molding all the way along the wall, broken only where an opening meets it.
+      const runTrim = (t: WalkTrim, yMid: number) => {
+        const depth = t.depth ?? 0.02;
+        const y0 = yMid - t.h / 2, y1 = yMid + t.h / 2;
+        const tex = tileTex(t.tex);
+        const mat = new THREE.MeshLambertMaterial({ map: tex, color: new THREE.Color(tint, tint, tint) });
+        // The texture is a 1536 x 1024 picture of the molding's face: one repeat is 1.5 times its height long.
+        const repeatM = t.h * 1.5;
+        for (const [a, b] of trimRuns(W, y0, y1, holes.map((h) => ({ ...h, x0: h.x0 + W / 2, x1: h.x1 + W / 2 })))) {
+          // Runs reaching a corner go on by their depth, so the two walls' trim meets cleanly.
+          const s0 = a < 1e-3 ? a - depth : a, s1 = b > W - 1e-3 ? b + depth : b;
+          const geo = new THREE.BoxGeometry(s1 - s0, t.h, depth);
+          const uv = geo.attributes.uv as THREE.BufferAttribute;
+          for (let i = 0; i < uv.count; i++) uv.setX(i, (uv.getX(i) * (s1 - s0) + s0) / repeatM);
+          const m = cast(new THREE.Mesh(geo, mat));
+          m.position.set((s0 + s1) / 2 - W / 2, yMid, depth / 2 + 0.001);
+          g.add(m);
+        }
+      };
+      if (r.trim?.base) runTrim(r.trim.base, r.trim.base.h / 2);
+      if (r.trim?.rail) runTrim(r.trim.rail, r.trim.rail.at);
+      if (r.trim?.crown) runTrim(r.trim.crown, H - r.trim.crown.h / 2);
+      scene.add(g);
+    };
+
     const buildWall = (r: WalkRoomDef, side: Side, def: WalkWall) => {
+      if (def.tile || def.pieces || def.lower) return buildTiledWall(r, side, def);
       const H = r.size[2];
       const f = wallFrame(r, side);
       const g = new THREE.Group();
@@ -338,10 +488,19 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
       floor.position.set(cx, 0, cz);
       floor.receiveShadow = true;
       scene.add(floor);
-      const ceil = cast(new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshLambertMaterial({ map: loadTex(r.ceil.tex), color: tc, emissive: 0x000000, emissiveMap: r.light.glow ? loadTex(r.light.glow) : null })));
+      const ceil = cast(new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshLambertMaterial({ map: loadTex(r.ceil.tex, r.ceil.repeat ?? 1), color: tc, emissive: 0x000000, emissiveMap: r.light.glow ? loadTex(r.light.glow) : null })));
       ceil.rotation.x = Math.PI / 2;
       ceil.position.set(cx, H, cz);
       scene.add(ceil);
+      for (const fx of r.fixtures ?? []) {
+        const t = loadTex(fx.tex);
+        const mat = new THREE.MeshLambertMaterial({ map: t, alphaTest: 0.5, color: tc, emissive: 0x000000, emissiveMap: fx.light ? t : null });
+        const m = new THREE.Mesh(new THREE.PlaneGeometry(fx.size[0], fx.size[1]), mat);
+        m.rotation.x = Math.PI / 2;
+        m.position.set(fx.pos[0], H - 0.012, fx.pos[1]);
+        scene.add(m);
+        if (fx.light) fixtureMats.push({ lamp: r.light.id, mat });
+      }
       for (const side of ["front", "back", "left", "right"] as Side[]) {
         const def = r.walls[side];
         if (def) buildWall(r, side, def);
@@ -421,6 +580,7 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
     const gl = new GLTFLoader(manager);
     const lampMats = new Map<string, THREE.MeshLambertMaterial[]>();
     const lampLights = new Map<string, { light: THREE.PointLight; power: number }[]>();
+    for (const { lamp, mat } of fixtureMats) lampMats.set(lamp, [...(lampMats.get(lamp) ?? []), mat]);
     const visitGroups: { visit: string; obj: THREE.Object3D }[] = [];
     const showGroups: { id: string; obj: THREE.Object3D }[] = [];
     const rigs: Rig[] = [];
@@ -857,6 +1017,7 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
       },
       setVisit: (v) => {
         for (const g of visitGroups) g.obj.visible = g.visit === v;
+        for (const g of pieceVisits) g.obj.visible = g.visit === v;
       },
       release: () => document.exitPointerLock?.(),
       sit: (st) => {

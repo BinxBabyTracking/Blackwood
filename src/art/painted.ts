@@ -11,3 +11,5 @@ export const painted: Record<string, { url: string }> = { ...committedArt };
 
 /** Where a live Admin-made version is served from. */
 export const liveArtUrl = (id: string, version: number) => `/art/gen/${id}-${version}.webp`;
+/** Where a 3D model (a Meshy GLB uploaded on the Admin page) is served from. */
+export const liveModelUrl = (id: string, version: number) => `/art/gen/${id}-${version}.glb`;

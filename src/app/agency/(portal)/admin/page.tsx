@@ -30,7 +30,7 @@ import { AdminSection } from "@/components/portal/admin-section";
 import { ArtStudio } from "@/components/portal/art-studio";
 import { VoiceStudio } from "@/components/portal/voice-studio";
 import { voiceCases } from "@/lib/voice-studio";
-import { artKeyStatus, artRows, fullPrompt, pricesFor } from "@/lib/art-studio";
+import { artKeyStatus, artRows, pricesFor, roomSpecs } from "@/lib/art-studio";
 
 export const metadata: Metadata = { title: "Admin", robots: { index: false, follow: false } };
 
@@ -567,7 +567,15 @@ async function Artwork() {
               Every picture in this case, made with OpenAI at the quality you choose. A new version waits for you to choose it; players only see the version marked live.
               {g === "Shared" ? " The site and travel pictures change after the next site update, not straight away." : ""}
             </p>
-            <ArtStudio keyNote={keyNote} rows={list.map((r) => ({ ...r, prompt: fullPrompt(r.id, r.subject), prices: pricesFor(r.id) }))} />
+            <ArtStudio
+              keyNote={keyNote}
+              rooms={roomSpecs()
+                .filter((x) => x.case.toUpperCase() === g)
+                .map((x) => ({ id: x.id, name: x.name, sizeFt: x.sizeFt, reuse: x.reuse, note: x.note, type: x.type }))}
+              // The full prompt is loaded on request, and the original wording is sent only for an edited prompt: with
+              // walkable rooms a case can have hundreds of pictures, and the page stays light.
+              rows={list.map((r) => ({ ...r, defaultSubject: r.edited ? r.defaultSubject : "", prices: pricesFor(r.id) }))}
+            />
           </AdminSection>
         );
       })}

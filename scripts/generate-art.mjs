@@ -60,6 +60,12 @@ function promptFor(img) {
   const k = manifest.kinds[img.kind];
   const person = img.person ? `${manifest.people[img.person]}. ` : "";
   // A case can have its own style line (its year and place), and an image its own framing.
+  // Walkable-room kinds are flat-lit, in the case's look line instead (see art/WALKABLE.md).
+  if (k.look) {
+    const key = img.style ?? "c001";
+    const look = manifest.looks?.[key] ?? manifest.looks?.c001 ?? "";
+    return `${look} The only readable words are the ones the subject spells out, printed exactly as written and correctly spelled; anything else with writing on it is soft and unreadable. No logos, brand names, watermarks or signatures.\n\n${img.suffix ?? k.suffix}\n\nSubject: ${person}${img.subject}`;
+  }
   const style = img.style ? manifest.styles[img.style] : manifest.style;
   return `${style}\n\n${img.suffix ?? k.suffix}\n\nSubject: ${person}${img.subject}`;
 }
@@ -99,7 +105,7 @@ async function call(img, attempt = 1) {
   const prompt = promptFor(img);
   const ref = img.reference ? join(outDir, `${img.reference}.webp`) : null;
   const used = model;
-  const common = { model: used, prompt, size: k.size, quality: k.quality, background: k.background, output_format: "webp", output_compression: 88, n: 1 };
+  const common = { model: used, prompt, size: img.size ?? k.size, quality: k.quality, background: k.background, output_format: "webp", output_compression: 88, n: 1 };
   let res;
   if (ref && existsSync(ref)) {
     // Same person: draw the full figure from their portrait.

@@ -1,6 +1,6 @@
 # Artwork Studio
 
-How Blackwood artwork is made, Oct 27, 2026. Read this before adding or changing art for any case.
+How Blackwood artwork is made, Oct 27, 2026 (walkable rooms added Nov 10, 2026). Read this before adding or changing art for any case.
 
 ## Where art comes from
 
@@ -32,6 +32,18 @@ Generated and uploaded pictures are finished the same way as `import-art.mjs`: f
 1. **`assets.ts` must use the shared painting list and be rebuildable.** Import `painted` from `@/art/painted` (never `generated.json` directly), and export `buildAssets()` with `export const assets = buildAssets();`. Register it in `BUILD` in `src/game/registry.ts` next to the case. Without this, Admin-made art for that case never reaches players.
 2. **Text that matters is spelled out in the prompt.** For a headline, sign, label or name on a door, quote the exact words line by line and say they must be printed exactly as written. Everything else stays soft and unreadable; the full wording lives in the evidence text.
 3. **Every image has a manifest entry**, so it appears on Admin. A picture added only as a file in `public/art` can't be regenerated there.
+
+## Walkable rooms (every case after C001)
+
+Cases after C001 are played in walkable 3D rooms, and their old flat scene paintings (`background`, `panorama`, `pov`, `strip`, `sprite`, `figure`) are no longer listed on Admin. Pictures already made for them stay in the game until the walkable rooms replace them. The full contract is `art/WALKABLE.md`; in short:
+
+- **Kinds:** `wall`, `floor` and `ceiling` are seamless tiles; `trim` is a length of baseboard, chair rail or crown molding that code runs around the room; `piece` is one thing on a wall (door, window, picture, board) cut out with transparent glass; `fixture` is a ceiling light seen from below; `outside` is the view through a window or around an outdoor place; `model` is a Meshy 3D model; `turn` is a person's front, side or back view for their 3D character, drawn from their portrait.
+- **Flat light:** these kinds use the case's `looks` line (style, era and palette, no lighting) instead of its lit `styles` line, because the rooms are lit in code.
+- **Rooms:** `rooms` in the manifest holds one record per location: its size in feet (about 50% more floor area than C001's rooms), which tiles, trim and pieces go where, the 3D models and who is found there. Admin shows each case's pictures grouped by room with the room's size, and a Room filter.
+- **3D models:** a `model` row's picture is the reference for Meshy's Image to 3D. **Copy Meshy prompt** copies the text version. **Upload 3D model (GLB)** sends the file Meshy makes straight to storage (up to 50 MB; it skips the server's request limit with a signed upload), records it in `art_models`, and makes it the one in use (`art_images.live_model`). Files are `art/<id>-<version>.glb`, served at `/art/gen/<id>-<version>.glb`.
+- **Character views:** every person with a portrait gets `<case>_turn_<person>_front`, `_side` and `_back`. Make the portrait first; the side and back views also look at the front view.
+- **Adding or changing a case's list:** write a file in the format of `art/WALKABLE.md` and run `node scripts/merge-walkable-art.mjs <file.json>`. It checks ids, kinds, sizes and room references, retires the old 2D entries, applies prompt fixes and adds the character views. `--turns-only <prefix>` adds just the character views (C001 has them this way).
+- **In the walk viewer** (`src/game/walk/walk-viewer.tsx`), a wall with `tile`, `lower` or `pieces` is built as a tiled surface with real openings cut through it for doors and windows, pieces laid on it, and the room's `trim` (baseboard, chair rail, crown) run along every wall and broken at openings. Rooms can also have `fixtures` (ceiling lights that glow with the room light) and a tiling `ceil.repeat`.
 
 ## A case's own travel scenes
 

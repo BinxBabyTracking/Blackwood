@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { generateArt, saveArtSubject, setArtLive, uploadArt } from "@/app/actions/art";
+import { artFullPrompt, chooseModel, finishModelUpload, generateArt, saveArtSubject, setArtLive, startModelUpload, uploadArt } from "@/app/actions/art";
+import { meshyText } from "@/lib/meshy";
+import { getBrowserClient } from "@/lib/supabase/client";
 
 export type Tier = "draft" | "standard" | "best";
 const TIERS: { id: Tier; label: string; note: string }[] = [
@@ -21,10 +23,19 @@ export type StudioRow = {
   committed: string | null;
   live: number | null;
   versions: { version: number; url: string; createdAt: string; source: string; model: string | null; cost: number }[];
-  prompt: string;
+  /** The full prompt, once loaded. */
+  prompt?: string;
   /** Rough cost of one image at each quality setting. */
   prices: Record<Tier, number>;
+  /** The walkable room it belongs to. */
+  room: string | null;
+  /** For a 3D model: the uploaded GLB files and the one the game uses, and the text to paste into Meshy. */
+  models: { version: number; url: string; createdAt: string; bytes: number }[];
+  liveModel: number | null;
 };
+
+/** A walkable room, for its heading: name, size in feet, and a note. */
+export type StudioRoom = { id: string; name: string; sizeFt?: number[]; reuse?: string; note?: string; type?: string };
 
 type Status = { state: "idle" | "busy" | "done" | "error"; note?: string };
 
@@ -40,6 +51,22 @@ const KIND: Record<string, string> = {
   pov: "Point of view",
   map: "Map",
   face: "Talking frame",
+  wall: "Wall surface (tiles)",
+  floor: "Floor (tiles)",
+  ceiling: "Ceiling (tiles)",
+  trim: "Trim (runs around the room)",
+  piece: "Wall piece",
+  fixture: "Ceiling light",
+  outside: "View outside",
+  model: "3D model (Meshy)",
+  turn: "3D character view",
+};
+
+const roomLine = (r: StudioRoom) => {
+  if (r.reuse) return `Uses the ${r.reuse} room.`;
+  const [w, d, h] = r.sizeFt ?? [];
+  if (!w || !d) return "";
+  return `${w} x ${d} ft${h ? `, ${h} ft ${r.type === "exterior" ? "tall surroundings" : "ceiling"}` : ""} (${Math.round(w * d)} sq ft)${r.type === "exterior" ? ", outdoors" : ""}.`;
 };
 
 
@@ -48,7 +75,10 @@ const KIND: Record<string, string> = {
  * missing ones (one after another), upload your own, and choose which version
  * players see. Nothing changes for players until a version is made live.
  */
-export function ArtStudio({ rows: initial, keyNote }: { rows: StudioRow[]; keyNote: string | null }) {
+export function ArtStudio({ rows: given, keyNote, rooms = [] }: { rows: StudioRow[]; keyNote: string | null; rooms?: StudioRoom[] }) {
+  // The original wording comes only for edited prompts; otherwise it is the subject itself.
+  const initial = useMemo(() => given.map((r) => ({ ...r, defaultSubject: r.defaultSubject || r.subject })), [given]);
+  const [roomFilter, setRoomFilter] = useState<string>("all");
   const [rows, setRows] = useState(initial);
   const [status, setStatus] = useState<Record<string, Status>>({});
   const [running, setRunning] = useState<null | { done: number; total: number; current: string }>(null);
@@ -84,7 +114,21 @@ export function ArtStudio({ rows: initial, keyNote }: { rows: StudioRow[]; keyNo
 
   const missing = rows.filter((r) => !r.current);
   const toReview = rows.filter((r) => r.versions.length && r.versions[0].version !== r.live);
-  const shown = filter === "missing" ? missing : filter === "review" ? toReview : rows;
+  const byFilter = filter === "missing" ? missing : filter === "review" ? toReview : rows;
+  const shown = roomFilter === "all" ? byFilter : byFilter.filter((r) => (r.room ?? "") === (roomFilter === "none" ? "" : roomFilter));
+  // Shown in order: the case's people, evidence and maps first, then room by room.
+  const sections = useMemo(() => {
+    const out: { room: StudioRoom | null; rows: StudioRow[] }[] = [];
+    const loose = shown.filter((r) => !r.room);
+    if (loose.length) out.push({ room: null, rows: loose });
+    const known = new Map(rooms.map((x) => [x.id, x]));
+    const order = [...rooms.map((x) => x.id), ...new Set(shown.map((r) => r.room).filter((x): x is string => Boolean(x) && !known.has(x as string)))];
+    for (const id of order) {
+      const list = shown.filter((r) => r.room === id);
+      if (list.length) out.push({ room: known.get(id) ?? { id, name: id }, rows: list });
+    }
+    return out;
+  }, [shown, rooms]);
   const spent = useMemo(() => rows.reduce((n, r) => n + r.versions.reduce((m, v) => m + v.cost, 0), 0), [rows]);
 
   const patch = (id: string, f: (r: StudioRow) => StudioRow) => setRows((rs) => rs.map((r) => (r.id === id ? f(r) : r)));
@@ -223,14 +267,42 @@ export function ArtStudio({ rows: initial, keyNote }: { rows: StudioRow[]; keyNo
             {label}
           </button>
         ))}
+        {rooms.length ? (
+          <label className="flex items-center gap-1.5 text-smoke">
+            Room
+            <select className="field py-1 text-xs" value={roomFilter} onChange={(e) => setRoomFilter(e.target.value)}>
+              <option value="all">All rooms</option>
+              <option value="none">People, evidence and maps</option>
+              {rooms.map((x) => (
+                <option key={x.id} value={x.id}>
+                  {x.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
         <span className="ml-auto font-mono text-smoke">Spent on this case so far: about ${spent.toFixed(2)}</span>
       </div>
 
-      <ul className="mt-4 divide-y divide-rule/60 border-y border-rule">
-        {shown.map((r) => (
-          <ArtRowView key={r.id} r={r} status={status[r.id]} busy={Boolean(running) || status[r.id]?.state === "busy"} onMake={() => make(r, false)} onChoose={(v) => choose(r, v)} onPatch={(f) => patch(r.id, f)} onSay={(s) => say(r.id, s)} />
-        ))}
-      </ul>
+      {sections.map((sec) => (
+        <section key={sec.room?.id ?? "loose"} className="mt-5">
+          {sec.room ? (
+            <header className="border-b border-brass/40 pb-1.5">
+              <h4 className="text-sm font-semibold text-paper">
+                {sec.room.name} <span className="ml-2 font-mono text-xs font-normal text-smoke">{roomLine(sec.room)}</span>
+              </h4>
+              {sec.room.note ? <p className="mt-0.5 text-xs text-smoke">{sec.room.note}</p> : null}
+            </header>
+          ) : rooms.length ? (
+            <h4 className="border-b border-brass/40 pb-1.5 text-sm font-semibold text-paper">People, evidence and maps</h4>
+          ) : null}
+          <ul className="divide-y divide-rule/60 border-b border-rule">
+            {sec.rows.map((r) => (
+              <ArtRowView key={r.id} r={r} status={status[r.id]} busy={Boolean(running) || status[r.id]?.state === "busy"} onMake={() => make(r, false)} onChoose={(v) => choose(r, v)} onPatch={(f) => patch(r.id, f)} onSay={(s) => say(r.id, s)} />
+            ))}
+          </ul>
+        </section>
+      ))}
     </div>
   );
 }
@@ -286,7 +358,7 @@ function ArtRowView({
                 onClick={async () => {
                   const res = await saveArtSubject(r.id, text);
                   if ("error" in res) return onSay({ state: "error", note: res.error });
-                  onPatch((x) => ({ ...x, subject: text.trim() || x.defaultSubject, edited: Boolean(text.trim()) && text.trim() !== x.defaultSubject }));
+                  onPatch((x) => ({ ...x, prompt: undefined, subject: text.trim() || x.defaultSubject, edited: Boolean(text.trim()) && text.trim() !== x.defaultSubject }));
                   setEditing(false);
                   onSay({ state: "done", note: "Prompt saved. Generate to use it." });
                 }}
@@ -304,7 +376,7 @@ function ArtRowView({
         ) : (
           <p className="mt-1 text-sm text-paper/90">{r.subject}</p>
         )}
-        {full ? <pre className="mt-2 max-h-48 overflow-auto whitespace-pre-wrap rounded-[2px] bg-black/30 p-2 font-mono text-[0.7rem] text-smoke">{r.prompt}</pre> : null}
+        {full ? <pre className="mt-2 max-h-48 overflow-auto whitespace-pre-wrap rounded-[2px] bg-black/30 p-2 font-mono text-[0.7rem] text-smoke">{r.prompt ?? "Loading…"}</pre> : null}
 
         <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
           <button type="button" disabled={busy} onClick={onMake} className="font-semibold text-brass underline-offset-4 hover:underline disabled:opacity-50">
@@ -315,7 +387,17 @@ function ArtRowView({
               Edit prompt
             </button>
           ) : null}
-          <button type="button" className="text-smoke hover:text-paper" onClick={() => setFull((f) => !f)}>
+          <button
+            type="button"
+            className="text-smoke hover:text-paper"
+            onClick={async () => {
+              setFull((f) => !f);
+              if (!full) {
+                const res = await artFullPrompt(r.id, r.subject).catch(() => null);
+                if (res && "prompt" in res) onPatch((x) => ({ ...x, prompt: res.prompt }));
+              }
+            }}
+          >
             {full ? "Hide full prompt" : "Full prompt"}
           </button>
           <button type="button" disabled={busy} className="text-smoke hover:text-paper disabled:opacity-50" onClick={() => file.current?.click()}>
@@ -347,6 +429,7 @@ function ArtRowView({
           ) : null}
         </div>
 
+        {r.kind === "model" ? <ModelControls r={r} busy={busy} onPatch={onPatch} onSay={onSay} /> : null}
         {r.versions.length ? (
           <div className="mt-3">
             <p className="text-xs text-smoke">{waiting ? "New version waiting for review. Choose which one players see:" : "Versions:"}</p>
@@ -376,5 +459,97 @@ function ArtRowView({
         ) : null}
       </div>
     </li>
+  );
+}
+
+/**
+ * A 3D model entry: copy its Meshy prompt (the picture above is the reference for Meshy's image-to-3D),
+ * upload the GLB Meshy makes, and choose which upload the game uses.
+ */
+function ModelControls({ r, busy, onPatch, onSay }: { r: StudioRow; busy: boolean; onPatch: (f: (r: StudioRow) => StudioRow) => void; onSay: (s: Status) => void }) {
+  const file = useRef<HTMLInputElement>(null);
+  const mb = (n: number) => `${(n / 1048576).toFixed(1)} MB`;
+  return (
+    <div className="mt-3 rounded-[2px] border border-white/10 bg-black/20 p-3">
+      <p className="text-xs text-smoke">
+        In Meshy, use Image to 3D with the picture above (or Text to 3D with this prompt), then download the model as GLB and upload it here.
+      </p>
+      <p className="mt-1.5 rounded-[2px] bg-black/30 p-2 font-mono text-[0.7rem] text-paper/90">{meshyText(r.subject)}</p>
+      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+        <button
+          type="button"
+          className="text-brass underline-offset-4 hover:underline"
+          onClick={async () => {
+            try {
+              await navigator.clipboard.writeText(meshyText(r.subject));
+              onSay({ state: "done", note: "Meshy prompt copied." });
+            } catch {
+              onSay({ state: "error", note: "Couldn't copy. Select the prompt and copy it by hand." });
+            }
+          }}
+        >
+          Copy Meshy prompt
+        </button>
+        <button type="button" disabled={busy} className="text-brass underline-offset-4 hover:underline disabled:opacity-50" onClick={() => file.current?.click()}>
+          Upload 3D model (GLB)
+        </button>
+        <input
+          ref={file}
+          type="file"
+          accept=".glb,model/gltf-binary"
+          className="hidden"
+          onChange={async (e) => {
+            const f = e.target.files?.[0];
+            e.target.value = "";
+            if (!f) return;
+            if (f.size > 50 * 1048576) return onSay({ state: "error", note: `That file is ${mb(f.size)}; the limit is 50 MB. In Meshy, lower the polygon count or texture size and download again.` });
+            onSay({ state: "busy", note: `Uploading ${mb(f.size)}…` });
+            const start = await startModelUpload(r.id).catch(() => ({ error: "The connection dropped. Try again." }));
+            if ("error" in start) return onSay({ state: "error", note: start.error });
+            const sb = getBrowserClient();
+            if (!sb) return onSay({ state: "error", note: "Storage isn't configured on this site." });
+            const up = await sb.storage.from("art").uploadToSignedUrl(start.path, start.token, f, { contentType: "model/gltf-binary", upsert: true });
+            if (up.error) return onSay({ state: "error", note: `The upload failed: ${up.error.message}` });
+            const done = await finishModelUpload(r.id, start.version).catch(() => ({ error: "The connection dropped. Try again." }));
+            if ("error" in done) return onSay({ state: "error", note: done.error });
+            onPatch((x) => ({ ...x, liveModel: done.version, models: [{ version: done.version, url: done.url, createdAt: new Date().toISOString(), bytes: done.bytes }, ...x.models] }));
+            onSay({ state: "done", note: `Model ${done.version} uploaded (${mb(done.bytes)}) and in use.` });
+          }}
+        />
+      </div>
+      {r.models.length ? (
+        <ul className="mt-2 space-y-1 text-xs">
+          {r.models.slice(0, 6).map((m) => (
+            <li key={m.version} className="flex flex-wrap items-center gap-x-3">
+              <a href={m.url} className="font-mono text-paper underline-offset-4 hover:underline">
+                model v{m.version}
+              </a>
+              <span className="text-smoke">
+                {mb(m.bytes)}, {new Date(m.createdAt).toLocaleDateString()}
+              </span>
+              {r.liveModel === m.version ? (
+                <span className="text-brass">in use</span>
+              ) : (
+                <button
+                  type="button"
+                  disabled={busy}
+                  className="text-brass underline-offset-4 hover:underline disabled:opacity-50"
+                  onClick={async () => {
+                    const res = await chooseModel(r.id, m.version);
+                    if ("error" in res) return onSay({ state: "error", note: res.error });
+                    onPatch((x) => ({ ...x, liveModel: m.version }));
+                    onSay({ state: "done", note: `Model ${m.version} is in use.` });
+                  }}
+                >
+                  Use this one
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-2 text-xs text-smoke">No 3D model uploaded yet.</p>
+      )}
+    </div>
   );
 }

@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { refreshArt } from "@/game/registry";
 import { hasAdminAccess } from "@/lib/admin-gate";
-import { generateImage, setLive, setSubject, uploadImage, type Tier } from "@/lib/art-studio";
+import { confirmModel, fullPrompt, generateImage, modelUploadTarget, setLive, setLiveModel, setSubject, uploadImage, type Tier } from "@/lib/art-studio";
 import { requireInvestigator } from "@/lib/investigator";
 
 type Result<T> = ({ ok: true } & T) | { error: string };
@@ -69,4 +69,41 @@ export async function uploadArt(fd: FormData): Promise<Result<{ version: number;
   } catch (e) {
     return fail(e, "The upload failed.");
   }
+}
+
+/** Admin: where to upload a new GLB for a 3D model entry (the browser uploads it straight to storage). */
+export async function startModelUpload(id: string): Promise<Result<{ version: number; path: string; token: string }>> {
+  if (!(await admin())) return { error: "Not allowed." };
+  try {
+    return { ok: true, ...(await modelUploadTarget(id)) };
+  } catch (e) {
+    return fail(e, "The upload couldn't start.");
+  }
+}
+
+/** Admin: records an uploaded GLB and makes it the one the game uses. */
+export async function finishModelUpload(id: string, version: number): Promise<Result<{ version: number; url: string; bytes: number }>> {
+  if (!(await admin())) return { error: "Not allowed." };
+  try {
+    return { ok: true, ...(await confirmModel(id, version)) };
+  } catch (e) {
+    return fail(e, "The model couldn't be saved.");
+  }
+}
+
+/** Admin: chooses which uploaded GLB the game uses (null for none). */
+export async function chooseModel(id: string, version: number | null): Promise<Result<object>> {
+  if (!(await admin())) return { error: "Not allowed." };
+  try {
+    await setLiveModel(id, version);
+    return { ok: true };
+  } catch (e) {
+    return fail(e, "That couldn't be changed.");
+  }
+}
+
+/** Admin: the full prompt an image is made from (loaded when asked for, to keep the Artwork tab light). */
+export async function artFullPrompt(id: string, subject: string): Promise<Result<{ prompt: string }>> {
+  if (!(await admin())) return { error: "Not allowed." };
+  return { ok: true, prompt: fullPrompt(id, subject) };
 }

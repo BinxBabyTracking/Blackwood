@@ -2,7 +2,7 @@ import "server-only";
 import sharp from "sharp";
 import manifestJson from "../../art/manifest.json";
 import generated from "@/art/generated.json";
-import { liveArtUrl } from "@/art/painted";
+import { liveArtUrl, liveModelUrl } from "@/art/painted";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /*
@@ -13,9 +13,28 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * "art" bucket (art/<id>-<version>.webp) and served by /art/gen/<id>-<version>.webp.
  */
 
-type Kind = { size: string; quality: "low" | "medium" | "high"; background: "opaque" | "transparent"; suffix: string };
-type ImageDef = { id: string; kind: string; subject: string; style?: string; suffix?: string; person?: string; reference?: string };
-const manifest = manifestJson as unknown as { style: string; styles?: Record<string, string>; kinds: Record<string, Kind>; people: Record<string, string>; images: ImageDef[] };
+/** look: a walkable-room kind, drawn flat-lit in the case's look line (looks) instead of its lit painting style. */
+type Kind = { size: string; quality: "low" | "medium" | "high"; background: "opaque" | "transparent"; suffix: string; look?: boolean };
+/**
+ * size overrides the kind's (wall pieces come tall, wide or square); room is the walkable room it belongs to;
+ * also lists more pictures to draw from beside the reference (a side view also sees the front view).
+ */
+type ImageDef = { id: string; kind: string; subject: string; style?: string; suffix?: string; person?: string; reference?: string; also?: string[]; size?: string; room?: string };
+/** A walkable room: its size and what goes where. See art/WALKABLE.md. */
+export type RoomSpec = { id: string; case: string; location?: string; name: string; type?: "interior" | "exterior"; sizeFt?: number[]; reuse?: string; note?: string; [k: string]: unknown };
+const manifest = manifestJson as unknown as {
+  style: string;
+  styles?: Record<string, string>;
+  looks?: Record<string, string>;
+  kinds: Record<string, Kind>;
+  people: Record<string, string>;
+  images: ImageDef[];
+  rooms?: RoomSpec[];
+};
+/** Every walkable room record, for showing each room's size and pieces on Admin. */
+export const roomSpecs = (): RoomSpec[] => manifest.rooms ?? [];
+/** Kinds that are a 3D model made in Meshy: the picture is its reference, and a GLB file is uploaded for it. */
+export const isModelKind = (kind: string) => kind === "model";
 const committed = (generated as { images: Record<string, { url: string }> }).images;
 
 const BUCKET = "art";
@@ -66,8 +85,8 @@ const PRICE: Record<string, Record<"low" | "medium" | "high", number>> = {
 };
 
 /** Rough price of one image of a kind at a quality setting, in dollars. Edits from a reference image cost a little more. */
-function costOf(k: Kind, model: string, quality: "low" | "medium" | "high", edit = false) {
-  const base = (PRICE[model] ?? PRICE["gpt-image-1.5"])[quality] * (k.size === "1024x1024" ? 1 : 1.5);
+function costOf(k: Kind, model: string, quality: "low" | "medium" | "high", edit = false, size = k.size) {
+  const base = (PRICE[model] ?? PRICE["gpt-image-1.5"])[quality] * (size === "1024x1024" ? 1 : 1.5);
   return Math.round(base * (edit ? 1.2 : 1) * 1000) / 1000;
 }
 
@@ -77,7 +96,7 @@ export function pricesFor(id: string): Record<Tier, number> {
   const k = img ? manifest.kinds[img.kind] : undefined;
   const out = { draft: 0, standard: 0, best: 0 };
   if (!k) return out;
-  for (const t of Object.keys(TIERS) as Tier[]) out[t] = costOf(k, process.env.OPENAI_IMAGE_MODEL || TIERS[t].model, TIERS[t].quality, Boolean(img?.reference));
+  for (const t of Object.keys(TIERS) as Tier[]) out[t] = costOf(k, process.env.OPENAI_IMAGE_MODEL || TIERS[t].model, TIERS[t].quality, Boolean(img?.reference), img?.size);
   return out;
 }
 
@@ -85,12 +104,29 @@ export function pricesFor(id: string): Record<Tier, number> {
 /** The case an image belongs to, from its id prefix: c004_, s001c05_, hallow001_. Anything else is the site's own. */
 export const groupOf = (id: string) => /^([cs]\d{3}(?:c\d{2})?|hallow\d{3})_/.exec(id)?.[1].toUpperCase() ?? "Shared";
 
+/** For flat-lit walkable art: what may be written in a picture. */
+const WORDS =
+  "The only readable words are the ones the subject spells out, printed exactly as written and correctly spelled; anything else with writing on it is soft and unreadable. No logos, brand names, watermarks or signatures.";
+
+/** The case's style key for an image: its own, else its id prefix (c002_, s001c03_ falls back to s001). */
+function styleKey(img: ImageDef) {
+  if (img.style) return img.style;
+  const g = groupOf(img.id).toLowerCase();
+  return g === "shared" ? "c001" : g;
+}
+
 function promptFor(img: ImageDef, subject: string) {
   const k = manifest.kinds[img.kind];
   const person = img.person && manifest.people[img.person] ? `${manifest.people[img.person]}. ` : "";
+  if (k.look) {
+    const key = styleKey(img);
+    const look = manifest.looks?.[key] ?? manifest.looks?.[key.slice(0, 4)] ?? manifest.looks?.c001 ?? "";
+    return `${look} ${WORDS}\n\n${img.suffix ?? k.suffix}\n\nSubject: ${person}${subject}`;
+  }
   const style = img.style && manifest.styles?.[img.style] ? manifest.styles[img.style] : manifest.style;
   return `${style}\n\n${img.suffix ?? k.suffix}\n\nSubject: ${person}${subject}`;
 }
+
 
 export interface ArtRow {
   id: string;
@@ -105,15 +141,26 @@ export interface ArtRow {
   live: number | null;
   versions: { version: number; url: string; createdAt: string; source: string; model: string | null; cost: number }[];
   cost: number;
+  /** The walkable room it belongs to. */
+  room: string | null;
+  /** For a model: the 3D files uploaded, newest first, and which one the game uses. */
+  models: { version: number; url: string; createdAt: string; bytes: number }[];
+  liveModel: number | null;
 }
 
 /** Every image, with what's live, every version made, and its prompt. */
 export async function artRows(): Promise<ArtRow[]> {
-  const [{ data: imgs }, { data: vers }] = await Promise.all([
-    db().from("art_images").select("id, live_version, subject"),
-    db().from("art_versions").select("image_id, version, created_at, source, model, cost_usd").order("version", { ascending: false }).limit(5000),
+  const [{ data: imgs }, { data: vers }, { data: mods }] = await Promise.all([
+    db().from("art_images").select("id, live_version, live_model, subject"),
+    db().from("art_versions").select("image_id, version, created_at, source, model, cost_usd").order("version", { ascending: false }).limit(20000),
+    db().from("art_models").select("image_id, version, created_at, size_bytes").order("version", { ascending: false }).limit(20000),
   ]);
-  const meta = new Map(((imgs ?? []) as { id: string; live_version: number | null; subject: string | null }[]).map((r) => [r.id, r]));
+  const meta = new Map(((imgs ?? []) as { id: string; live_version: number | null; live_model: number | null; subject: string | null }[]).map((r) => [r.id, r]));
+  const modelsOf = new Map<string, ArtRow["models"]>();
+  for (const v of (mods ?? []) as { image_id: string; version: number; created_at: string; size_bytes: number }[]) {
+    const list = modelsOf.get(v.image_id) ?? modelsOf.set(v.image_id, []).get(v.image_id)!;
+    list.push({ version: v.version, url: liveModelUrl(v.image_id, v.version), createdAt: v.created_at, bytes: Number(v.size_bytes) });
+  }
   const byImage = new Map<string, ArtRow["versions"]>();
   for (const v of (vers ?? []) as { image_id: string; version: number; created_at: string; source: string; model: string | null; cost_usd: number }[]) {
     const list = byImage.get(v.image_id) ?? byImage.set(v.image_id, []).get(v.image_id)!;
@@ -136,6 +183,9 @@ export async function artRows(): Promise<ArtRow[]> {
       live,
       versions,
       cost: versions.reduce((n, v) => n + v.cost, 0),
+      room: img.room ?? null,
+      models: modelsOf.get(img.id) ?? [],
+      liveModel: m?.live_model ?? null,
     };
   });
 }
@@ -202,6 +252,7 @@ const SIZE: Record<string, [number, number]> = {
   panorama: [1920, 1080],
   pov: [1920, 1080],
   map: [1600, 1200],
+  outside: [1920, 1080],
 };
 
 /**
@@ -273,6 +324,15 @@ async function clearShadow(input: Buffer) {
 }
 
 async function finish(kind: string, input: Buffer) {
+  // Wall pieces, ceiling lights and model references: cut out, trimmed to the thing itself, so a piece's
+  // picture is exactly the size it is placed at on the wall.
+  if (kind === "piece" || kind === "fixture" || kind === "model") {
+    const cut = await cutOut(input);
+    const trimmed = await sharp(cut).trim({ threshold: 1 }).toBuffer();
+    return sharp(trimmed).resize({ width: 1536, height: 1536, fit: "inside", withoutEnlargement: true }).webp({ quality: 90, alphaQuality: 92 }).toBuffer();
+  }
+  // Tileable surfaces and trim are kept exactly as painted, at full size, so they repeat cleanly.
+  if (kind === "wall" || kind === "floor" || kind === "ceiling" || kind === "trim" || kind === "turn") return sharp(input).webp({ quality: 92 }).toBuffer();
   if (kind === "figure" || kind === "sprite" || kind === "strip") {
     const cut = await cutOut(input);
     const trimmed = await sharp(kind === "strip" ? cut : await clearShadow(cut)).trim({ threshold: 1 }).toBuffer();
@@ -350,18 +410,26 @@ export async function generateImage(id: string, origin: string, tier: Tier = "st
   const ref = img.reference ? await currentBytes(img.reference, origin) : null;
   // A talking-portrait frame is only ever an edit of the portrait; made from nothing it would be someone else.
   if (img.kind === "face" && !ref) throw new Error(`Make the portrait (${img.reference}) first.`);
+  if (img.kind === "turn" && !ref) throw new Error(`Make the portrait (${img.reference}) first.`);
+  // More pictures to draw from (a side view also sees the front view), when they exist.
+  const extra: { id: string; bytes: Buffer }[] = [];
+  for (const a of img.also ?? []) {
+    const b = await currentBytes(a, origin).catch(() => null);
+    if (b) extra.push({ id: a, bytes: b });
+  }
 
   const quality = TIERS[tier]?.quality ?? "medium";
   // A figure painted without feet is painted again, up to twice, before it's kept.
   let footRetries = 0;
   for (let attempt = 0; attempt < 6; attempt++) {
     const model = modelFor(tier);
-    const common = { model, prompt, size: k.size, quality, background: k.background, output_format: "webp", output_compression: 88, n: 1 };
+    const common = { model, prompt, size: img.size ?? k.size, quality, background: k.background, output_format: "webp", output_compression: 88, n: 1 };
     let res: Response;
     if (ref) {
       const form = new FormData();
       for (const [kk, v] of Object.entries(common)) form.append(kk, String(v));
       form.append("image[]", new Blob([new Uint8Array(ref)], { type: "image/webp" }), `${img.reference}.webp`);
+      for (const x of extra) form.append("image[]", new Blob([new Uint8Array(x.bytes)], { type: "image/webp" }), `${x.id}.webp`);
       res = await fetch(`${API_BASE}/v1/images/edits`, { method: "POST", headers: { Authorization: `Bearer ${key.key}` }, body: form, signal: AbortSignal.timeout(240000) });
     } else {
       res = await fetch(`${API_BASE}/v1/images/generations`, {
@@ -396,7 +464,7 @@ export async function generateImage(id: string, origin: string, tier: Tier = "st
       continue;
     }
     const version = await nextVersion(id);
-    const cost = costOf(k, model, quality, Boolean(ref));
+    const cost = costOf(k, model, quality, Boolean(ref), img.size);
     const saved = await store(id, version, webp, { source: "generated", model: `${model} (${quality})`, prompt, cost });
     return { ...saved, model: `${model}, ${quality}`, cost };
   }
@@ -443,4 +511,49 @@ export async function setSubject(id: string, subject: string) {
 export function fullPrompt(id: string, subject: string) {
   const img = manifest.images.find((i) => i.id === id);
   return img ? promptFor(img, subject) : "";
+}
+
+/**
+ * 3D models (Meshy GLB files) for model entries. A GLB is often larger than a server request allows, so the
+ * browser uploads it straight to storage with a one-time signed upload, then the server records it.
+ */
+async function nextModelVersion(id: string) {
+  const { data } = await db().from("art_models").select("version").eq("image_id", id).order("version", { ascending: false }).limit(1);
+  return (((data ?? []) as { version: number }[])[0]?.version ?? 0) + 1;
+}
+
+/** Where the browser uploads a new GLB for a model: a signed upload to art/<id>-<version>.glb. */
+export async function modelUploadTarget(id: string) {
+  const img = manifest.images.find((i) => i.id === id);
+  if (!img || !isModelKind(img.kind)) throw new Error("That isn't a 3D model entry.");
+  const version = await nextModelVersion(id);
+  const path = `art/${id}-${version}.glb`;
+  const { data, error } = await db().storage.from(BUCKET).createSignedUploadUrl(path, { upsert: true });
+  if (error || !data) throw new Error(`Storage would not accept the upload: ${error?.message ?? "no upload address"}`);
+  return { version, path: data.path, token: data.token };
+}
+
+/** Records an uploaded GLB and makes it the one the game uses. */
+export async function confirmModel(id: string, version: number) {
+  const img = manifest.images.find((i) => i.id === id);
+  if (!img || !isModelKind(img.kind)) throw new Error("That isn't a 3D model entry.");
+  const file = `${id}-${version}.glb`;
+  const { data: listed } = await db().storage.from(BUCKET).list("art", { search: file, limit: 5 });
+  const found = (listed ?? []).find((f) => f.name === file);
+  if (!found) throw new Error("The upload didn't arrive. Try again.");
+  const head = await readArtFile(file);
+  const bytes = head ? Buffer.from(head) : null;
+  if (!bytes || bytes.subarray(0, 4).toString("latin1") !== "glTF") throw new Error("That file isn't a GLB (binary glTF). In Meshy, download the model as GLB.");
+  const { error } = await db().from("art_models").insert({ image_id: id, version, size_bytes: bytes.length });
+  if (error) throw new Error(`Recording the model failed: ${error.message}`);
+  const { error: e2 } = await db().from("art_images").upsert({ id, live_model: version, updated_at: new Date().toISOString() }, { onConflict: "id" });
+  if (e2) throw new Error(e2.message);
+  return { version, url: liveModelUrl(id, version), bytes: bytes.length };
+}
+
+/** Chooses which uploaded GLB the game uses. */
+export async function setLiveModel(id: string, version: number | null) {
+  if (!manifest.images.some((i) => i.id === id && isModelKind(i.kind))) throw new Error("Unknown model.");
+  const { error } = await db().from("art_images").upsert({ id, live_model: version, updated_at: new Date().toISOString() }, { onConflict: "id" });
+  if (error) throw new Error(error.message);
 }

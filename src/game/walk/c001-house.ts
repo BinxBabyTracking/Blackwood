@@ -46,14 +46,35 @@ export type WalkWall = {
   /** A window screen over this opening (u0, u1, v0, v1), with the case's L-shaped cut. */
   screen?: number[];
   outside?: WalkOutside;
+  /**
+   * A plain tileable surface instead of one painted picture: the texture repeats every `tile` metres, and
+   * everything on the wall is a piece. Walls built this way can be any length.
+   */
+  tile?: number;
+  /** A second tileable surface below this height in metres (wainscot or tile under a chair rail). */
+  lower?: { tex: string; tile?: number; to: number };
+  /** Things on or in the wall (doors, windows, pictures, boards), each its own cut-out picture. */
+  pieces?: WalkPiece[];
 };
+/**
+ * One thing on a wall: x is its left edge in metres from the left end of the wall (seen from inside the room),
+ * y its bottom above the floor, w and h its size. An opening cuts a hole through the wall behind it (a window
+ * you see out of, a doorway you walk through), with the view outside seen through it.
+ */
+export type WalkPiece = { tex: string; x: number; y: number; w: number; h: number; opening?: boolean; outside?: WalkOutside; visit?: string };
+/** A run of molding all the way around a room: its texture repeats along its length; h is its height and depth how far it stands off the wall, in metres. */
+export type WalkTrim = { tex: string; h: number; depth?: number };
 export type WalkRoomDef = {
   id: string;
   name: string;
   center: number[];
   size: number[];
   floor: { tex: string; repeat?: number };
-  ceil: { tex: string };
+  ceil: { tex: string; repeat?: number };
+  /** Baseboard, chair rail (its centre `at` metres up) and crown molding, run around every wall in code and broken at openings. */
+  trim?: { base?: WalkTrim; rail?: WalkTrim & { at: number }; crown?: WalkTrim };
+  /** Ceiling lights seen from below (x, z centre and size in metres); a lit one glows with the room's light. */
+  fixtures?: { tex: string; pos: number[]; size: number[]; light?: boolean }[];
   /** The ceiling light: glow is the ceiling picture with only the lit glass left, shown bright when it is switched on. */
   light: { id: string; at: number[]; power: number; glow?: string; startOn?: boolean };
   /** In the case: the location this room is, and the hotspot that goes there (walking in through a doorway). */
