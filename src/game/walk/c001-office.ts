@@ -212,6 +212,10 @@ export const C001_OFFICE: WalkHouse = {
    "file": "/rooms/c001-office/models/board.glb",
    "size": 1.55,
    "fit": "x",
+   "liveBoard": {
+    "w": 0.78,
+    "h": 0.8
+   },
    "pos": [
     -2.084,
     1.05,

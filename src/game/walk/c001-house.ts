@@ -22,6 +22,11 @@ export type WalkModel = {
   solid?: boolean;
   /** Only on this visit (rooms that change between visits). */
   visit?: string;
+  /**
+   * The murder board: in the case, what the player has pinned and strung is drawn on this model's front (its +z side
+   * before rotY), over this share of its width and height (the cork inside the frame).
+   */
+  liveBoard?: { w: number; h: number; dy?: number };
 };
 export type WalkHotspot = {
   id: string; kind: "inspect" | "switch" | "seat"; label: string; text?: string; light?: string; at: number[]; visit?: string;

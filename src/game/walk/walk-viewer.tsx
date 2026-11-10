@@ -7,6 +7,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import type { InvestigationState } from "@/game/engine/types";
 import { walkAsk } from "@/app/actions/walk-test";
 import type { WalkHotspot, WalkHouse, WalkRoomDef, WalkWall } from "./c001-house";
+import { liveBoardKey, makeLiveBoard, type LiveBoard } from "./live-board";
 
 /*
  * A walkable house: every room is loaded up front, so you walk from one into the next with no loading.
@@ -161,6 +162,8 @@ export type WalkGame = {
   busy: boolean;
   /** Interviewing someone standing here: the camera turns to their face (on the left of the screen) and their mouth follows the line being spoken. */
   interview?: { characterId: string; line: { src: string; text: string } | null } | null;
+  /** What's on the murder board, drawn on the board in the room so it can be seen without opening it. */
+  board?: LiveBoard;
   onHotspot: (id: string) => void;
 };
 
@@ -200,6 +203,13 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
     }
   });
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  // The board in the room, once its model has loaded: redrawn whenever what's pinned or strung changes.
+  const liveBoardRef = useRef<ReturnType<typeof makeLiveBoard> | null>(null);
+  const boardKey = liveBoardKey(game?.board);
+  useEffect(() => {
+    const b = gameRef.current?.board;
+    if (b) liveBoardRef.current?.draw(b);
+  }, [boardKey]);
 
   useEffect(() => {
     const mount = mountRef.current!;
@@ -486,6 +496,14 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
         const rig = poseRig(grp);
         if (rig) rigs.push(rig);
         if (M.talk) people.set(M.talk, { grp, rig, rotY: ((M.rotY ?? 0) * Math.PI) / 180 });
+        if (M.liveBoard && game) {
+          // Laid just in front of the cork, in the model's own space, so it turns and scales with the board.
+          const lb = makeLiveBoard(size.x * M.liveBoard.w, size.y * M.liveBoard.h);
+          lb.mesh.position.set(0, size.y / 2 + (M.liveBoard.dy ?? 0) * size.y, size.z / 2 + 0.004 / k);
+          grp.add(lb.mesh);
+          liveBoardRef.current = lb;
+          if (gameRef.current?.board) lb.draw(gameRef.current.board);
+        }
         if (game && M.showIf) {
           showGroups.push({ id: M.showIf, obj: grp });
           grp.visible = gameRef.current?.visible.includes(M.showIf) ?? false;
@@ -857,6 +875,8 @@ export function WalkViewer({ house, title, game }: { house: WalkHouse; title: st
     };
     return () => {
       cancelAnimationFrame(raf);
+      liveBoardRef.current?.dispose();
+      liveBoardRef.current = null;
       document.removeEventListener("keydown", kd, true);
       document.removeEventListener("keyup", ku, true);
       document.removeEventListener("keydown", onUseKey, true);

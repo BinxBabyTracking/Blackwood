@@ -812,6 +812,14 @@ export function InvestigationShell({
             attention: Object.fromEntries(view.location.hotspots.filter((h) => h.attention).map((h) => [h.id, h.callout])),
             busy: layer !== null || menu,
             interview: inRoom && talkingTo ? { characterId: talkingTo.characterId, line: roomLine } : null,
+            board: {
+              items: view.board.items.map((it) => {
+                const e = view.evidence.find((x) => x.id === it.id);
+                const c = e ? undefined : view.characters.find((x) => x.id === it.id);
+                return { id: it.id, x: it.x, y: it.y, title: e?.title ?? c?.name ?? it.id, image: e?.image ?? c?.portrait ?? "", person: !e };
+              }),
+              connections: view.board.connections,
+            },
             onHotspot: (id) => {
               handled(id);
               if (view.location.hotspots.find((h) => h.id === id)?.local === "rolling") {
