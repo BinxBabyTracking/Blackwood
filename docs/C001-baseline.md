@@ -104,8 +104,14 @@ Every evidence item is reached exactly one way: a scene hotspot, a document, a d
 Players ask questions in their own words, typed or spoken; the server decides the answer. The browser never sees the case's answers, solution or knowledge.
 
 1. **Authored answer first.** The question is matched against each authored question's keywords. A clear match plays the scripted answer and applies its effects (evidence, timeline, flags).
-2. **AI answer otherwise.** Claude (Haiku) answers in character from that person's persona and the knowledge facts they have unlocked. If the answer used a fact tied to an authored entry, that entry counts as asked, so wording never blocks progress.
-3. **Cache.** Unscripted answers are cached by question meaning plus unlocked knowledge, so the next player asking the same thing costs nothing.
+2. **AI answer otherwise.** Claude (Haiku, thinking off) answers in character from that person's persona and the knowledge facts they have unlocked. If the answer used a fact tied to an authored entry, that entry counts as asked, so wording never blocks progress. Answers should sound like a person, not a database (`src/lib/interview/understand.ts`):
+   - Facts are retold in the person's own words and with feeling, and may be told vividly as long as they mean the same thing (an unpaid refill becomes "he stiffed me for his refill").
+   - People may add color about themselves, their work and the place, but never anything that could act as a clue: no new names, times, places, events, or details of anyone else's looks, clothes, car or movements.
+   - Never a bare "I don't know". A missing detail gets the closest thing the person does know ("never got a good look at him, but I remember the jacket").
+   - A question that takes something for granted gets a natural reaction without confirming it ("I didn't know anyone was murdered"), then what they can tell.
+   - A question that belongs to someone else gets pointed there, by name only if the player already knows of that person or the facts name them, and never with what that person would say.
+   So every case gets this for free; write each person's facts so there is something close to say about the obvious questions (how a customer looked, what they drank, where they sat).
+3. **Cache.** Unscripted answers are cached by question meaning plus unlocked knowledge and the people the player knows of, so the next player asking the same thing costs nothing. Follow-ups ("what did he look like?") are cached too, filed under what the person had just said.
 4. **Outside the case.** People only know the case; anything else gets a short answer. The interview screen says so under the question box.
 
 Rules that make it fair and affordable:

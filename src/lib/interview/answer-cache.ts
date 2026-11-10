@@ -40,10 +40,20 @@ export function subject(question: string) {
   return [...new Set(concepts(question))].sort();
 }
 
-/** A fingerprint of what a character knows right now (the facts available to them). */
-export function knowledgeKey(characterId: string, knownFactIndices: number[]) {
-  return createHash("sha256").update(`${characterId}|${[...knownFactIndices].sort((a, b) => a - b).join(",")}`).digest("hex").slice(0, 32);
+/**
+ * A fingerprint of what a character knows right now (the facts available to
+ * them), plus anything else the answer depends on: the people the player knows
+ * of, and for a follow-up, what the character just said.
+ */
+export function knowledgeKey(characterId: string, knownFactIndices: number[], extra: string[] = []) {
+  return createHash("sha256")
+    .update(`${characterId}|${[...knownFactIndices].sort((a, b) => a - b).join(",")}|${extra.filter(Boolean).sort().join("|")}`)
+    .digest("hex")
+    .slice(0, 32);
 }
+
+/** Follow-ups are short ("what did he look like?"), so they need only one subject word: their context is in the key. */
+const minConcepts = (followUp: boolean) => (followUp ? 1 : MIN_CONCEPTS);
 
 type Row = { id: number; kind: "entry" | "answer"; question_norm: string; concepts: string[]; entry_id: string | null; answer: string | null; facts: number[] | null; hits: number };
 
@@ -58,15 +68,17 @@ export async function findCached(
   question: string,
   knowledge: string,
   entryOk: (id: string) => boolean,
+  followUp = false,
 ): Promise<CachedResult | null> {
   const db = createAdminClient();
   const subj = subject(question);
-  if (!db || subj.length < MIN_CONCEPTS) return null;
+  if (!db || subj.length < minConcepts(followUp)) return null;
   const norm = normalise(question);
   const fields = "id, kind, question_norm, concepts, entry_id, answer, facts, hits";
   try {
     const [entries, answers] = await Promise.all([
-      db.from(TABLE).select(fields).eq("case_id", caseId).eq("character_id", characterId).eq("kind", "entry").limit(500),
+      // A follow-up's routing depends on what was just said, so it is filed under the same key as its answers.
+      db.from(TABLE).select(fields).eq("case_id", caseId).eq("character_id", characterId).eq("kind", "entry").eq("knowledge_key", followUp ? knowledge : "").limit(500),
       db.from(TABLE).select(fields).eq("case_id", caseId).eq("character_id", characterId).eq("kind", "answer").eq("knowledge_key", knowledge).limit(500),
     ]);
     if (entries.error || answers.error) return null;
@@ -94,13 +106,14 @@ export async function saveCached(
   question: string,
   knowledge: string,
   result: CachedResult,
+  followUp = false,
 ) {
   const db = createAdminClient();
   const subj = subject(question);
-  if (!db || subj.length < MIN_CONCEPTS) return;
+  if (!db || subj.length < minConcepts(followUp)) return;
   const row =
     result.match !== null
-      ? { kind: "entry", knowledge_key: "", entry_id: result.match, answer: null, facts: [] as number[] }
+      ? { kind: "entry", knowledge_key: followUp ? knowledge : "", entry_id: result.match, answer: null, facts: [] as number[] }
       : result.composed
         ? { kind: "answer", knowledge_key: knowledge, entry_id: null, answer: result.composed, facts: result.facts ?? [] }
         : null;

@@ -336,7 +336,8 @@ function photographable(h: HotspotDef) {
   return h.interaction.type === "inspect" && !h.interaction.evidence;
 }
 
-function knownCharacters(def: CaseDefinition, s: InvestigationState) {
+/** The people the player knows of so far: in the case file, met, or turned up along the way. */
+export function knownCharacters(def: CaseDefinition, s: InvestigationState) {
   return def.characters.filter((c) => s.talkedTo.includes(c.id) || (c.known ? check(c.known, s) : s.flags.includes("casefile_read")));
 }
 

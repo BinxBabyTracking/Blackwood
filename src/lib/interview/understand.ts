@@ -1,6 +1,7 @@
 import "server-only";
 import { after } from "next/server";
-import { acceptedOffer, interviewCandidates, knownFacts } from "@/game/engine/engine";
+import { acceptedOffer, interviewCandidates, knownCharacters, knownFacts } from "@/game/engine/engine";
+import { check } from "@/game/engine/rules";
 import { bestMatch } from "@/game/engine/matcher";
 import { recordUsage } from "@/lib/usage";
 import { findCached, knowledgeKey, saveCached } from "./answer-cache";
@@ -13,7 +14,9 @@ import type { CaseDefinition, InvestigationState } from "@/game/engine/types";
  *    the story's effects (timeline entries, follow-ups, evidence), so they win.
  * 2. Otherwise the character answers in their own words from their knowledge:
  *    only the facts unlocked so far, in their own version of events. If those
- *    facts don't cover the question, they say they don't know.
+ *    facts don't cover the question, they answer the way a real witness would:
+ *    what they do remember that's closest, a reaction to anything the question
+ *    takes for granted, or the name of someone who would know.
  *
  * Step 2, and better routing in step 1, need ANTHROPIC_API_KEY. The model is
  * shown the allowed entries' neutral wording, the unlocked facts and the recent
@@ -47,6 +50,13 @@ function lastEntry(s: InvestigationState, characterId: string) {
     if (l.speaker === characterId && l.q && l.q !== "none") return l.q;
   }
   return null;
+}
+
+/** What the character said last, for filing a follow-up under it. */
+function lastLine(s: InvestigationState, characterId: string) {
+  const lines = s.conversations[characterId] ?? [];
+  for (let i = lines.length - 1; i >= 0; i--) if (lines[i].speaker === characterId) return lines[i].text.slice(0, 400);
+  return "";
 }
 
 /** The last failure talking to the interview model, kept so the Admin page can show it. */
@@ -94,9 +104,13 @@ export async function interpretQuestion(
 
   // Someone may already have asked this, or something with the same subject, at the same point in the case.
   const facts = knownFacts(def, s, characterId);
-  const knowledge = knowledgeKey(characterId, facts.map((f) => f.index));
-  // A follow-up depends on the conversation, so it is never answered from, or saved to, the shared cache.
-  const cached = followUp ? null : await findCached(def.id, characterId, text, knowledge, (id) => candidates.some((q) => q.id === id));
+  // People this character might send the investigator to: everyone the player knows of, alive, but not this person.
+  const others = knownCharacters(def, s).filter((c) => c.id !== characterId && !(c.deceased && check(c.deceased, s)));
+  // A follow-up ("what did he look like?") is filed under what the character just said, so it is shared with
+  // every player who asks the same thing right after the same answer.
+  const said = followUp ? lastLine(s, characterId) : "";
+  const knowledge = knowledgeKey(characterId, facts.map((f) => f.index), [...others.map((c) => c.id), said ? `after:${said}` : ""]);
+  const cached = await findCached(def.id, characterId, text, knowledge, (id) => candidates.some((q) => q.id === id), followUp);
   if (cached) {
     if (ctx) recordUsage({ userId: ctx.userId, sessionId: ctx.sessionId, caseId: def.id, characterId, service: "claude", purpose: "interview", model: MODEL, saved: true });
     return cached;
@@ -126,13 +140,16 @@ export async function interpretQuestion(
     "Judge an entry by its answer, not only its wording: 'What car does Mercer drive?' is answered by an entry whose answer describes his car, even if that entry is worded 'Does Mercer bring his car here?'.",
     "Prefer an entry not yet answered. An [already answered] entry only fits if the question really asks the same thing again.",
     "Asking for, or to see, an object the character has is covered by the entry that hands it over; prefer that entry.",
-    `Otherwise, answer as ${person.name}, in character, using ONLY the FACTS listed. Reply exactly: ANSWER <reply>`,
+    `Otherwise, answer as ${person.name}, in character, from the FACTS listed. Reply exactly: ANSWER <reply>`,
     "Then, on a new line, list the numbers of the facts your answer states or relies on: USED <numbers separated by commas>, or USED none.",
-    "Rules for ANSWER:",
-    "- Use only the FACTS. Never invent names, times, places, events, evidence, motives or opinions about guilt that the facts do not state.",
-    "- Treat the question as part of the conversation: a follow-up ('what did he look like?', 'what else?') is about what was just discussed.",
-    "- If the facts do not give the exact detail asked, say so briefly in character, then share what you DO know that is closest to it, the way a real witness would. Example: asked what a customer looked like when the facts only mention his jacket, say you didn't get a good look, all you remember is the jacket. Do not guess or invent the missing detail.",
-    "- Only if nothing in the facts relates at all, say plainly in character that you don't know. Never say you can't answer 'right now'.",
+    "Start your reply with ENTRY or ANSWER. Write nothing before it and nothing after the USED line.",
+    "How to answer like a real person, not a database:",
+    "- Talk the way this person talks. Retell a fact in your own words and with feeling, the way you'd tell it across a counter, rather than reciting it. A fact may be told vividly as long as it means the same thing: an unpaid refill can be 'he stiffed me for his refill'.",
+    "- You may add color about yourself, your work, your day, your feelings and the place you are in, the way people fill out an answer. Never add anything that could act as a clue: no new names, times, places, events, evidence, motives, or details of anyone else's looks, clothes, car, words or movements beyond what the FACTS say.",
+    "- Never answer with a bare 'I don't know'. When the FACTS don't hold the exact detail asked, say so the way a real witness would, then give whatever you DO know that is closest. Asked what a customer looked like when the facts only mention his jacket: you never got a good look at him, but you remember the jacket, and how he left.",
+    "- If the question takes something for granted that your facts don't say you know (that someone was murdered, that you saw something), react to it as this person would, without confirming it: surprise, a correction, a question back. Then answer what you can. Asked 'who did you serve the night she was murdered?' when you don't know of any murder: you didn't know anyone was murdered, then tell what you remember of that night.",
+    "- If the question is really for someone else, say so and point the investigator to them, by name only if they are among PEOPLE THE INVESTIGATOR KNOWS OF or your FACTS name them. Point to someone only when this person would plausibly think of them (the police for police matters, family for family matters, someone your facts mention). Never say what that person would tell them.",
+    "- Treat the question as part of the conversation: a follow-up ('what did he look like?', 'what else?') is about what was just discussed. Don't repeat an answer word for word; if asked again, say it differently or add how you feel about it.",
     "- Never accuse anyone and never confess. Some facts are the character's own claims; state them as the character would.",
     def.speech
       ? `- One to three short spoken sentences. ${def.speech.style} American spelling (check, color, neighbor, jewelry). No stage directions, no quotation marks, no em dashes.`
@@ -144,6 +161,7 @@ export async function interpretQuestion(
   const user = [
     `AUTHORED ENTRIES:\n${entries || "(none)"}`,
     `FACTS ${person.name} knows:\n${facts.map((x) => `[${x.index}] ${x.text}`).join("\n") || "(none)"}`,
+    others.length ? `PEOPLE THE INVESTIGATOR KNOWS OF (name, role):\n${others.map((c) => `${c.name}, ${c.role}`).join("\n")}` : "",
     recent ? `CONVERSATION SO FAR:\n${recent}` : "",
     `INVESTIGATOR ASKS: ${text}`,
   ]
@@ -154,7 +172,7 @@ export async function interpretQuestion(
     const res = await fetch(`${API_BASE}/v1/messages`, {
       method: "POST",
       headers: headers(),
-      body: JSON.stringify({ model: MODEL, max_tokens: 220, system, messages: [{ role: "user", content: user }] }),
+      body: JSON.stringify({ model: MODEL, max_tokens: 420, thinking: { type: "disabled" }, system, messages: [{ role: "user", content: user }] }),
       signal: AbortSignal.timeout(9000),
     });
     if (!res.ok) {
@@ -179,12 +197,20 @@ export async function interpretQuestion(
     const entry = /^ENTRY\s+([a-z0-9_]+)/i.exec(out);
     if (entry) {
       if (!candidates.some((q) => q.id === entry[1])) return { match: local, composed: null };
-      if (!followUp) after(() => saveCached(def.id, characterId, text, knowledge, { match: entry[1], composed: null }));
+      after(() => saveCached(def.id, characterId, text, knowledge, { match: entry[1], composed: null }, followUp));
       return { match: entry[1], composed: null };
     }
-    const answer = /^ANSWER\s*:?\s*([\s\S]+?)\s*(?:\n\s*USED\b\s*:?\s*([^\n]*))?\s*$/i.exec(out);
-    // A reply that ran out of room, or that thinks out loud about its instructions, never reaches the player.
-    if (answer && (body.stop_reason === "max_tokens" || answer[2] === undefined || leaksInstructions(answer[1]))) {
+    const answer = /ANSWER\s*:?\s*([\s\S]+?)\s*(?:\n\s*USED\b\s*:?\s*([^\n]*))?\s*$/i.exec(out);
+    // A reply that ran out of room keeps its finished sentences; one with none, or that thinks out loud
+    // about its instructions, never reaches the player.
+    if (answer && (body.stop_reason === "max_tokens" || answer[2] === undefined)) {
+      const done = /^([\s\S]*[.!?])(?:\s|$)/.exec(answer[1].replace(/\n\s*USED[\s\S]*$/i, "").trim());
+      if (done && !leaksInstructions(done[1])) {
+        answer[1] = done[1];
+        answer[2] = "";
+      }
+    }
+    if (answer && (answer[2] === undefined || leaksInstructions(answer[1]))) {
       after(() => noteFailure(`Discarded an interview reply that broke format: ${answer[1].slice(0, 160)}`).catch(() => undefined));
       return { match: local, composed: null };
     }
@@ -192,9 +218,10 @@ export async function interpretQuestion(
       const allowed = new Set(facts.map((x) => x.index));
       const used = [...(answer[2] ?? "").matchAll(/\d+/g)].map((m) => Number(m[0])).filter((n) => allowed.has(n));
       const result = { match: null, composed: answer[1].trim(), facts: used };
-      if (!followUp) after(() => saveCached(def.id, characterId, text, knowledge, result));
+      after(() => saveCached(def.id, characterId, text, knowledge, result, followUp));
       return result;
     }
+    after(() => noteFailure(`Interview reply had no ENTRY or ANSWER (${body.stop_reason ?? "?"}): ${out.slice(0, 160) || "(no text)"}`).catch(() => undefined));
     return { match: local, composed: null };
   } catch (e) {
     console.error("interview: falling back to the built-in matcher:", (e as Error).message);
@@ -225,7 +252,7 @@ export async function testInterviewModel(): Promise<{ ok: boolean; model: string
     const res = await fetch(`${API_BASE}/v1/messages`, {
       method: "POST",
       headers: headers(),
-      body: JSON.stringify({ model: MODEL, max_tokens: 10, messages: [{ role: "user", content: "Reply with the single word OK." }] }),
+      body: JSON.stringify({ model: MODEL, max_tokens: 10, thinking: { type: "disabled" }, messages: [{ role: "user", content: "Reply with the single word OK." }] }),
       signal: AbortSignal.timeout(15000),
     });
     const text = (await res.text().catch(() => "")).replace(/sk-ant-[A-Za-z0-9_-]+/g, "[key]");
