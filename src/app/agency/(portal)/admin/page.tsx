@@ -639,6 +639,7 @@ async function ModelPrompts() {
                 image: r.current,
                 hasModel: r.liveModel != null || r.models.length > 0,
                 running: live.has(r.id),
+                modelUrl: (r.models.find((m) => m.version === r.liveModel) ?? r.models[0])?.url ?? null,
               }))}
               canMake={status.configured}
             />

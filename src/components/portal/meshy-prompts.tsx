@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { checkMeshy, startMeshy } from "@/app/actions/art";
+import { ModelPreview } from "@/components/portal/model-preview";
 
 export type MeshyRow = {
   id: string;
@@ -15,9 +16,11 @@ export type MeshyRow = {
   hasModel: boolean;
   /** A Meshy task is running for it. */
   running: boolean;
+  /** The GLB to preview: the live one, else the newest. */
+  modelUrl: string | null;
 };
 
-type Job = { state: "starting" | "working" | "done" | "error"; note?: string; progress?: number };
+type Job = { state: "starting" | "working" | "done" | "error"; note?: string; progress?: number; url?: string };
 /** Meshy takes a few minutes per model; this many run at once with "Make all". */
 const AT_ONCE = 3;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -30,6 +33,7 @@ export function MeshyPrompts({ rows, canMake }: { rows: MeshyRow[]; canMake: boo
   const [copied, setCopied] = useState<string | null>(null);
   const [jobs, setJobs] = useState<Record<string, Job>>({});
   const [batch, setBatch] = useState(false);
+  const [open, setOpen] = useState<Record<string, boolean>>({});
   const stop = useRef(false);
   const say = (id: string, j: Job) => setJobs((m) => ({ ...m, [id]: j }));
 
@@ -38,7 +42,7 @@ export function MeshyPrompts({ rows, canMake }: { rows: MeshyRow[]; canMake: boo
     for (let i = 0; i < 120; i++) {
       const r = await checkMeshy(id).catch(() => ({ error: "The connection dropped; checking again." }));
       if ("error" in r) say(id, { state: "working", note: r.error });
-      else if (r.check.state === "done") return say(id, { state: "done", note: `Made${r.check.live ? " and live in the game" : "; choose it on the Artwork tab"}${r.check.credits ? `, ${r.check.credits} credits` : ""}.` }), true;
+      else if (r.check.state === "done") return say(id, { state: "done", url: r.check.url, note: `Made${r.check.live ? " and live in the game" : "; choose it on the Artwork tab"}${r.check.credits ? `, ${r.check.credits} credits` : ""}.` }), true;
       else if (r.check.state === "failed") return say(id, { state: "error", note: r.check.note }), false;
       else if (r.check.state === "none") return say(id, { state: "error", note: "No Meshy task is running for it." }), false;
       else say(id, { state: "working", progress: r.check.progress });
@@ -155,6 +159,11 @@ export function MeshyPrompts({ rows, canMake }: { rows: MeshyRow[]; canMake: boo
                           {r.hasModel || jobs[r.id]?.state === "done" ? "Make again with Meshy" : r.image ? "Make with Meshy (from the picture)" : "Make with Meshy (from the prompt)"}
                         </button>
                       ) : null}
+                      {jobs[r.id]?.url ?? r.modelUrl ? (
+                        <button type="button" className="text-brass underline-offset-4 hover:underline" onClick={() => setOpen((o) => ({ ...o, [r.id]: !o[r.id] }))}>
+                          {open[r.id] ? "Hide 3D preview" : "Preview 3D"}
+                        </button>
+                      ) : null}
                       {jobs[r.id] ? (
                         <span className={`text-xs ${jobs[r.id].state === "error" ? "text-[#e2a7a2]" : jobs[r.id].state === "done" ? "text-[#9fc79a]" : "text-smoke"}`}>
                           {jobs[r.id].state === "starting"
@@ -165,6 +174,7 @@ export function MeshyPrompts({ rows, canMake }: { rows: MeshyRow[]; canMake: boo
                         </span>
                       ) : null}
                     </div>
+                    {open[r.id] && (jobs[r.id]?.url ?? r.modelUrl) ? <ModelPreview url={(jobs[r.id]?.url ?? r.modelUrl)!} className="mt-2 aspect-square w-full max-w-sm bg-black/30" /> : null}
                   </div>
                 </li>
               ))}

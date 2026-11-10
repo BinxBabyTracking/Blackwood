@@ -647,7 +647,7 @@ export type MeshyCheck =
   | { state: "none" }
   | { state: "working"; progress: number; status: string }
   | { state: "failed"; note: string }
-  | { state: "done"; version: number; bytes: number; live: boolean; credits: number };
+  | { state: "done"; version: number; bytes: number; live: boolean; credits: number; url: string };
 
 /** Checks a model's Meshy task; once it has succeeded, stores the GLB as a new version. */
 export async function checkMeshyModel(id: string): Promise<MeshyCheck> {
@@ -698,7 +698,7 @@ export async function checkMeshyModel(id: string): Promise<MeshyCheck> {
     .from("art_images")
     .update({ meshy_task: null, meshy_started_at: null, ...(live ? { live_model: version } : {}), updated_at: new Date().toISOString() })
     .eq("id", id);
-  return { state: "done", version, bytes: bytes.length, live, credits };
+  return { state: "done", version, bytes: bytes.length, live, credits, url: liveModelUrl(id, version) };
 }
 
 /** Model ids with a Meshy task still running, for picking up where Admin left off. */

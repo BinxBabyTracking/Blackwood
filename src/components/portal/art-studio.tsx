@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { artFullPrompt, chooseModel, finishModelUpload, generateArt, saveArtSubject, setArtLive, startModelUpload, uploadArt } from "@/app/actions/art";
 import { meshyText } from "@/lib/meshy";
+import { ModelPreview } from "@/components/portal/model-preview";
 import { getBrowserClient } from "@/lib/supabase/client";
 
 export type Tier = "draft" | "standard" | "best";
@@ -470,6 +471,7 @@ function ArtRowView({
  */
 function ModelControls({ r, busy, onPatch, onSay }: { r: StudioRow; busy: boolean; onPatch: (f: (r: StudioRow) => StudioRow) => void; onSay: (s: Status) => void }) {
   const file = useRef<HTMLInputElement>(null);
+  const [preview, setPreview] = useState<number | null>(null);
   const mb = (n: number) => `${(n / 1048576).toFixed(1)} MB`;
   return (
     <div className="mt-3 rounded-[2px] border border-white/10 bg-black/20 p-3">
@@ -529,6 +531,9 @@ function ModelControls({ r, busy, onPatch, onSay }: { r: StudioRow; busy: boolea
               <span className="text-smoke">
                 {mb(m.bytes)}, {new Date(m.createdAt).toLocaleDateString()}
               </span>
+              <button type="button" className="text-brass underline-offset-4 hover:underline" onClick={() => setPreview(preview === m.version ? null : m.version)}>
+                {preview === m.version ? "Hide preview" : "Preview 3D"}
+              </button>
               {r.liveModel === m.version ? (
                 <span className="text-brass">in use</span>
               ) : (
@@ -552,6 +557,9 @@ function ModelControls({ r, busy, onPatch, onSay }: { r: StudioRow; busy: boolea
       ) : (
         <p className="mt-2 text-xs text-smoke">No 3D model uploaded yet.</p>
       )}
+      {preview != null && r.models.find((m) => m.version === preview) ? (
+        <ModelPreview url={r.models.find((m) => m.version === preview)!.url} className="mt-2 aspect-square w-full max-w-sm bg-black/30" />
+      ) : null}
     </div>
   );
 }
