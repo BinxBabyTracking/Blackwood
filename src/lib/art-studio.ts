@@ -557,3 +557,130 @@ export async function setLiveModel(id: string, version: number | null) {
   const { error } = await db().from("art_images").upsert({ id, live_model: version, updated_at: new Date().toISOString() }, { onConflict: "id" });
   if (error) throw new Error(error.message);
 }
+
+/*
+ * Making 3D models with Meshy's API (Image to 3D from the model's reference picture). The key is the
+ * MESHY_API_KEY server setting or, until that is set, the one saved in site settings (meshy_api_key).
+ * A Meshy task takes a few minutes, longer than one request, so a model is started, then checked from
+ * Admin every few seconds; when it has finished the server downloads the GLB, stores it as a new
+ * version (source "meshy") and, if the model has no live version yet, makes it live.
+ */
+const MESHY = (process.env.MESHY_API_BASE ?? "https://api.meshy.ai").replace(/\/$/, "");
+
+async function meshyKey() {
+  if (process.env.MESHY_API_KEY) return { key: process.env.MESHY_API_KEY, from: "server setting" as const };
+  const { data } = await db().from("site_settings").select("value").eq("key", "meshy_api_key").maybeSingle();
+  const v = (data as { value: unknown } | null)?.value;
+  return typeof v === "string" && v.startsWith("msy_") ? { key: v, from: "site settings" as const } : null;
+}
+
+async function meshy(path: string, init?: RequestInit) {
+  const k = await meshyKey();
+  if (!k) throw new Error("No Meshy key is set. Add MESHY_API_KEY in Vercel.");
+  const res = await fetch(`${MESHY}${path}`, {
+    ...init,
+    headers: { Authorization: `Bearer ${k.key}`, "Content-Type": "application/json", ...(init?.headers ?? {}) },
+    signal: AbortSignal.timeout(60000),
+  });
+  const text = await res.text();
+  if (!res.ok) {
+    if (res.status === 401) throw new Error("Meshy rejected the API key.");
+    if (res.status === 402) throw new Error("Meshy says there aren't enough credits for this.");
+    if (res.status === 429) throw new Error("Meshy is busy (too many tasks at once). Try again in a minute.");
+    throw new Error(`Meshy returned ${res.status}. ${text.slice(0, 200)}`);
+  }
+  return text ? JSON.parse(text) : {};
+}
+
+/** Whether a Meshy key is set, where from, and the account's credit balance. */
+export async function meshyStatus() {
+  const k = await meshyKey().catch(() => null);
+  if (!k) return { configured: false as const };
+  const b = await meshy("/openapi/v1/balance").catch((e: unknown) => ({ error: e instanceof Error ? e.message : "Couldn't reach Meshy." }));
+  return { configured: true as const, from: k.from, balance: "balance" in b ? Number(b.balance) : null, error: "error" in b ? String(b.error) : null };
+}
+
+/** Starts a Meshy Image to 3D task for a model entry, from its current reference picture. */
+export async function startMeshyModel(id: string, origin: string) {
+  const img = manifest.images.find((i) => i.id === id);
+  if (!img || !isModelKind(img.kind)) throw new Error("That isn't a 3D model entry.");
+  const { data: row } = await db().from("art_images").select("meshy_task").eq("id", id).maybeSingle();
+  if ((row as { meshy_task: string | null } | null)?.meshy_task) return { task: (row as { meshy_task: string }).meshy_task, already: true };
+  const bytes = await currentBytes(id, origin);
+  if (!bytes) throw new Error("Make the model's reference picture on the Artwork tab first.");
+  const png = await sharp(bytes).png().toBuffer();
+  const created = await meshy("/openapi/v1/image-to-3d", {
+    method: "POST",
+    body: JSON.stringify({
+      image_url: `data:image/png;base64,${png.toString("base64")}`,
+      ai_model: "latest",
+      should_texture: true,
+      enable_pbr: false,
+      texture_resolution: "2k",
+      // Game-sized: remeshed to a modest triangle count so rooms with many models stay fast.
+      should_remesh: true,
+      topology: "triangle",
+      target_polycount: 20000,
+      // Keep the reference picture's look (the case's art style) rather than Meshy's own enhancement.
+      image_enhancement: false,
+      target_formats: ["glb"],
+    }),
+  });
+  const task = String(created.result ?? "");
+  if (!task) throw new Error("Meshy didn't return a task.");
+  const { error } = await db().from("art_images").upsert({ id, meshy_task: task, meshy_started_at: new Date().toISOString(), updated_at: new Date().toISOString() }, { onConflict: "id" });
+  if (error) throw new Error(error.message);
+  return { task, already: false };
+}
+
+export type MeshyCheck =
+  | { state: "none" }
+  | { state: "working"; progress: number; status: string }
+  | { state: "failed"; note: string }
+  | { state: "done"; version: number; bytes: number; live: boolean; credits: number };
+
+/** Checks a model's Meshy task; once it has succeeded, stores the GLB as a new version. */
+export async function checkMeshyModel(id: string): Promise<MeshyCheck> {
+  const { data: row } = await db().from("art_images").select("meshy_task, live_model").eq("id", id).maybeSingle();
+  const r = row as { meshy_task: string | null; live_model: number | null } | null;
+  if (!r?.meshy_task) return { state: "none" };
+  const clear = () => db().from("art_images").update({ meshy_task: null, meshy_started_at: null }).eq("id", id);
+  const t = await meshy(`/openapi/v1/image-to-3d/${encodeURIComponent(r.meshy_task)}`);
+  const status = String(t.status ?? "");
+  if (status === "FAILED" || status === "CANCELED") {
+    await clear();
+    return { state: "failed", note: `Meshy ${status === "FAILED" ? "couldn't make it" : "canceled it"}${t.task_error?.message ? `: ${t.task_error.message}` : "."} No credits are used for a failed model.` };
+  }
+  if (status !== "SUCCEEDED") return { state: "working", progress: Number(t.progress ?? 0), status };
+  const url = t.model_urls?.glb ?? t.model_url;
+  if (!url) {
+    await clear();
+    return { state: "failed", note: "Meshy finished but gave no GLB file." };
+  }
+  const res = await fetch(url, { signal: AbortSignal.timeout(120000) });
+  if (!res.ok) throw new Error(`Downloading the model from Meshy failed (${res.status}). Check again.`);
+  const bytes = Buffer.from(await res.arrayBuffer());
+  if (bytes.subarray(0, 4).toString("latin1") !== "glTF") throw new Error("Meshy's file isn't a GLB. Check again.");
+  if (bytes.length > 50 * 1048576) {
+    await clear();
+    return { state: "failed", note: `Meshy's model is ${(bytes.length / 1048576).toFixed(1)} MB, over the 50 MB limit.` };
+  }
+  const version = await nextModelVersion(id);
+  const { error: up } = await db().storage.from(BUCKET).upload(`art/${id}-${version}.glb`, new Blob([bytes], { type: "model/gltf-binary" }), { contentType: "model/gltf-binary", upsert: true });
+  if (up) throw new Error(`Saving the model failed: ${up.message}`);
+  const credits = Number(t.consumed_credits ?? 0);
+  const { error } = await db().from("art_models").insert({ image_id: id, version, size_bytes: bytes.length, source: "meshy", credits });
+  if (error) throw new Error(`Recording the model failed: ${error.message}`);
+  const live = r.live_model == null;
+  await db()
+    .from("art_images")
+    .update({ meshy_task: null, meshy_started_at: null, ...(live ? { live_model: version } : {}), updated_at: new Date().toISOString() })
+    .eq("id", id);
+  return { state: "done", version, bytes: bytes.length, live, credits };
+}
+
+/** Model ids with a Meshy task still running, for picking up where Admin left off. */
+export async function meshyRunning(): Promise<string[]> {
+  const { data } = await db().from("art_images").select("id").not("meshy_task", "is", null);
+  return ((data ?? []) as { id: string }[]).map((r) => r.id);
+}

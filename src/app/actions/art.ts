@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { refreshArt } from "@/game/registry";
 import { hasAdminAccess } from "@/lib/admin-gate";
-import { confirmModel, fullPrompt, generateImage, modelUploadTarget, setLive, setLiveModel, setSubject, uploadImage, type Tier } from "@/lib/art-studio";
+import { checkMeshyModel, confirmModel, fullPrompt, generateImage, modelUploadTarget, setLive, setLiveModel, setSubject, startMeshyModel, uploadImage, type MeshyCheck, type Tier } from "@/lib/art-studio";
 import { requireInvestigator } from "@/lib/investigator";
 
 type Result<T> = ({ ok: true } & T) | { error: string };
@@ -106,4 +106,28 @@ export async function chooseModel(id: string, version: number | null): Promise<R
 export async function artFullPrompt(id: string, subject: string): Promise<Result<{ prompt: string }>> {
   if (!(await admin())) return { error: "Not allowed." };
   return { ok: true, prompt: fullPrompt(id, subject) };
+}
+
+/** Admin: starts making a 3D model with Meshy from its reference picture. */
+export async function startMeshy(id: string): Promise<Result<{ task: string; already: boolean }>> {
+  if (!(await admin())) return { error: "Not allowed." };
+  try {
+    return { ok: true, ...(await startMeshyModel(id, await origin())) };
+  } catch (e) {
+    console.error("startMeshy", id, e instanceof Error ? e.message : e);
+    return fail(e, "Meshy could not start the model.");
+  }
+}
+
+/** Admin: checks a Meshy model; stores it once it's finished. */
+export async function checkMeshy(id: string): Promise<Result<{ check: MeshyCheck }>> {
+  if (!(await admin())) return { error: "Not allowed." };
+  try {
+    const check = await checkMeshyModel(id);
+    if (check.state === "done" && check.live) await refreshArt(true);
+    return { ok: true, check };
+  } catch (e) {
+    console.error("checkMeshy", id, e instanceof Error ? e.message : e);
+    return fail(e, "Couldn't check the model.");
+  }
 }

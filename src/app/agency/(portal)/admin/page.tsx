@@ -32,7 +32,7 @@ import { MeshyPrompts } from "@/components/portal/meshy-prompts";
 import { meshyText } from "@/lib/meshy";
 import { VoiceStudio } from "@/components/portal/voice-studio";
 import { voiceCases } from "@/lib/voice-studio";
-import { artKeyStatus, artRows, pricesFor, roomSpecs } from "@/lib/art-studio";
+import { artKeyStatus, artRows, meshyRunning, meshyStatus, pricesFor, roomSpecs } from "@/lib/art-studio";
 
 export const metadata: Metadata = { title: "Admin", robots: { index: false, follow: false } };
 
@@ -588,8 +588,9 @@ async function Artwork() {
 
 /** Every 3D model entry's Meshy prompt, by case and room, to copy into Meshy. */
 async function ModelPrompts() {
-  const rows = await artRows().catch(() => null);
+  const [rows, status, running] = await Promise.all([artRows().catch(() => null), meshyStatus().catch(() => ({ configured: false as const })), meshyRunning().catch(() => [] as string[])]);
   if (!rows) return null;
+  const live = new Set(running);
   const models = rows.filter((r) => r.kind === "model");
   const roomName = new Map(roomSpecs().map((x) => [x.id, x.name]));
   const groups = [...new Set(models.map((r) => r.group))].sort();
@@ -600,6 +601,26 @@ async function ModelPrompts() {
   };
   return (
     <>
+      <div className="max-w-4xl rounded-[2px] border border-rule bg-black/20 p-4 text-sm">
+        {status.configured ? (
+          <p className="text-paper">
+            Meshy is connected
+            {status.balance != null ? (
+              <>
+                : <span className="font-semibold">{status.balance.toLocaleString("en-US")} credits</span> left
+              </>
+            ) : null}
+            .{status.error ? <span className="text-[#e2a7a2]"> {status.error}</span> : null}
+            {status.from === "site settings" ? <span className="text-smoke"> Using the temporary key saved in site settings; move it to MESHY_API_KEY in Vercel when you can.</span> : null}
+          </p>
+        ) : (
+          <p className="text-smoke">No Meshy key is set, so models can&apos;t be made from here yet. Add MESHY_API_KEY in Vercel; until then, copy the prompts into Meshy by hand.</p>
+        )}
+        <p className="mt-1 text-smoke">
+          &quot;Make with Meshy&quot; sends the model&apos;s reference picture to Meshy&apos;s Image to 3D (textured, about 20,000 triangles), waits a few minutes and saves the GLB. A model&apos;s first one goes live
+          by itself; later ones wait for you to choose them on the Artwork tab. Keep this page open while models are being made: they carry on at Meshy if you leave, and pick up again when you come back.
+        </p>
+      </div>
       {groups.map((g) => {
         const list = models.filter((r) => r.group === g);
         const todo = list.filter((r) => r.liveModel == null).length;
@@ -617,7 +638,9 @@ async function ModelPrompts() {
                 prompt: meshyText(r.subject, g),
                 image: r.current,
                 hasModel: r.liveModel != null || r.models.length > 0,
+                running: live.has(r.id),
               }))}
+              canMake={status.configured}
             />
           </AdminSection>
         );
