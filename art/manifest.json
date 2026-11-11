@@ -88919,26 +88919,26 @@
           "image": "chr001_marigold_office_model_desk",
           "atFt": [
             9,
-            7
+            7.5
           ],
-          "facing": "back",
+          "facing": "front",
           "sizeFt": [
-            5,
-            2.5,
-            2.5
+            6,
+            3,
+            2.7
           ]
         },
         {
           "image": "chr001_jingle_office_model_chair",
           "atFt": [
             9,
-            5
+            4.9
           ],
           "facing": "back",
           "sizeFt": [
-            2,
-            2,
-            3
+            1.7,
+            1.7,
+            2.6
           ]
         },
         {

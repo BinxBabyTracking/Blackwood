@@ -183,7 +183,10 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         const t = tiled(url);
         const mat = t ? new THREE.MeshLambertMaterial({ map: t }) : plain(0xb8a890);
         for (const q of wallRects(-W / 2, W / 2, y0, y1, holes)) {
-          const m = new THREE.Mesh(tiledPlane(q.x1 - q.x0, q.y1 - q.y0, q.x0 + W / 2, q.y0, tile), mat);
+          // One tile runs floor to ceiling (or the height of its band) and repeats left to right, square.
+          const band = Math.max(0.3, y1 - y0);
+          void tile;
+          const m = new THREE.Mesh(tiledPlane(q.x1 - q.x0, q.y1 - q.y0, q.x0 + W / 2, q.y0 - y0, band), mat);
           m.position.set((q.x0 + q.x1) / 2, (q.y0 + q.y1) / 2, 0);
           wg.add(m);
         }

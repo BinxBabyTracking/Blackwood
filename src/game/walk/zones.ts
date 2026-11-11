@@ -190,7 +190,8 @@ export function buildWorld(opts: {
 
   // Smaller floor plans indoors (the records were drawn half as big again for multiplayer), then the doors.
   for (const z of zones) {
-    if (!z.outdoor && (opts.shrink ?? 1) < 1) shrinkZone(z, opts.shrink!);
+    if (!z.outdoor && (opts.shrink ?? 1) < 1) shrinkZone(z, fitShrink(z, opts.shrink!));
+    if (!z.outdoor && (opts.shrink ?? 1) < 1) fillRoom(z);
     if (!z.outdoor) clearWalls(z);
     if (!z.outdoor) lowerCeiling(z);
     z.doors = doorsOf(z, pendingDoors.get(z) ?? []);
@@ -381,15 +382,16 @@ function clearWalls(z: Zone) {
 }
 
 /**
- * Indoor ceilings no taller than the room needs: the top of its tallest furniture, or just above its tallest door,
- * and never under 8 feet. Pictures and windows hung higher than that slide down (and shrink if they must) to fit.
+ * Indoor ceilings no taller than the room needs: a foot above its tallest door, or the top of its tallest furniture
+ * when that is higher (a tall room for a reason). Pictures and windows hung higher than that slide down (and shrink if they must) to fit.
  */
 function lowerCeiling(z: Zone) {
   const H = z.size[2];
   const isDoor = (p: ZonePiece) => !!p.to || /door/.test(p.label);
-  let need = 8 * FT;
-  for (const side of SIDES) for (const p of z.walls[side].pieces) if (isDoor(p)) need = Math.max(need, p.y + p.h + 0.5 * FT);
-  for (const m of z.models) need = Math.max(need, m.elev + m.size[2]);
+  let door = 0;
+  for (const side of SIDES) for (const p of z.walls[side].pieces) if (isDoor(p)) door = Math.max(door, p.y + p.h);
+  let need = door ? door + 1 * FT : 8 * FT;
+  for (const m of z.models) need = Math.max(need, m.elev + m.size[2] + 0.25 * FT);
   const Hn = Math.min(H, need);
   for (const side of SIDES)
     for (const p of z.walls[side].pieces) {
@@ -405,4 +407,92 @@ function lowerCeiling(z: Zone) {
       p.y = Math.max(1 * FT, room - p.h);
     }
   z.size = [z.size[0], z.size[1], Hn];
+}
+
+const floorArea = (z: Zone) =>
+  z.models.filter((m) => m.solid && m.elev < 0.05).reduce((a, m) => a + m.size[0] * m.size[1], 0) + z.people.length * 0.6;
+
+/**
+ * How far to shrink a room's floor plan: enough that its furniture covers about a quarter of the floor, between
+ * 55% and `max`, and never so far that a furniture group or a wall's doors and windows no longer fit.
+ */
+function fitShrink(z: Zone, max: number) {
+  const [W, D] = z.size;
+  let k = Math.sqrt(floorArea(z) / (0.25 * W * D));
+  k = Math.min(max, Math.max(0.55, k));
+  let kmin = 0;
+  for (const m of z.models) {
+    const f = footprint(m);
+    kmin = Math.max(kmin, (f.x1 - f.x0 + 0.4) / W, (f.z1 - f.z0 + 0.4) / D);
+  }
+  for (const side of SIDES) {
+    const L = side === "front" || side === "back" ? W : D;
+    const fixed = z.walls[side].pieces.filter((p) => p.fixed).reduce((a, p) => a + p.w + 0.3, 0.3);
+    kmin = Math.max(kmin, fixed / L);
+  }
+  return Math.min(1, Math.max(k, kmin));
+}
+
+/** Plain furniture that can stand in a room more than once. */
+const COPYABLE = /bench|shel(f|ves)|stool|crate|sack|table|chair|cabinet|rack|barrel|files|bookcase|apparatus|haybale|dresser|lectern|counter|stall|coalbin|tack|cart|toyshelf|workbench|marver|pipes/;
+
+/**
+ * Fills a sparse room with second copies of its plain furniture, standing against the walls clear of doors,
+ * windows, pictures and everything else, until the furniture covers about a third of the floor.
+ */
+function fillRoom(z: Zone) {
+  const [W, D] = z.size;
+  const target = 0.32 * W * D;
+  const cands = z.models.filter((m) => COPYABLE.test(m.id) && m.elev < 0.05 && m.solid).sort((a, b) => b.size[0] * b.size[1] - a.size[0] * a.size[1]);
+  if (!cands.length) return;
+  const seen = new Set<string>();
+  const kinds = cands.filter((m) => !seen.has(m.id) && seen.add(m.id));
+  const doorPts = SIDES.flatMap((side) => z.walls[side].pieces.filter((p) => p.to || /door/.test(p.label)).map((p) => wallPoint(side, W, D, p.x + p.w / 2).at));
+  const fits = (m: ZoneModel) => {
+    const f = footprint(m);
+    if (f.x0 < -W / 2 + 0.03 || f.x1 > W / 2 - 0.03 || f.z0 < -D / 2 + 0.03 || f.z1 > D / 2 - 0.03) return false;
+    for (const o of z.models) {
+      if (o.elev > 0.05 && o.size[2] < 0.3) continue;
+      const g = footprint(o);
+      if (f.x0 < g.x1 + 0.5 && g.x0 < f.x1 + 0.5 && f.z0 < g.z1 + 0.5 && g.z0 < f.z1 + 0.5) return false;
+    }
+    for (const [x, y] of doorPts) if (x > f.x0 - 1.6 && x < f.x1 + 1.6 && y > f.z0 - 1.6 && y < f.z1 + 1.6) return false;
+    // Not in front of anything on the walls it stands against.
+    const top = m.elev + m.size[2];
+    const against: [Side, number, number][] = [];
+    if (f.z0 + D / 2 < 0.4) against.push(["front", f.x0 + W / 2, f.x1 + W / 2]);
+    if (D / 2 - f.z1 < 0.4) against.push(["back", W / 2 - f.x1, W / 2 - f.x0]);
+    if (f.x0 + W / 2 < 0.4) against.push(["left", D / 2 - f.z1, D / 2 - f.z0]);
+    if (W / 2 - f.x1 < 0.4) against.push(["right", f.z0 + D / 2, f.z1 + D / 2]);
+    for (const [side, u0, u1] of against) for (const p of z.walls[side].pieces) if (p.y < top && u0 < p.x + p.w + 0.1 && p.x - 0.1 < u1) return false;
+    return true;
+  };
+  let area = floorArea(z);
+  let added = 0;
+  for (let round = 0; round < 3 && area < target && added < 8; round++)
+    for (const src of kinds) {
+      if (area >= target || added >= 8) break;
+      const [sw, sd] = src.size;
+      // Back against a wall, facing into the room.
+      const spots: { pos: number[]; rotY: number }[] = [];
+      for (let u = -W / 2 + sw / 2 + 0.05; u <= W / 2 - sw / 2 - 0.05; u += 0.3) {
+        spots.push({ pos: [u, -D / 2 + sd / 2 + 0.05], rotY: ROT.back });
+        spots.push({ pos: [u, D / 2 - sd / 2 - 0.05], rotY: ROT.front });
+      }
+      for (let u = -D / 2 + sw / 2 + 0.05; u <= D / 2 - sw / 2 - 0.05; u += 0.3) {
+        spots.push({ pos: [-W / 2 + sd / 2 + 0.05, u], rotY: ROT.right });
+        spots.push({ pos: [W / 2 - sd / 2 - 0.05, u], rotY: ROT.left });
+      }
+      // Furthest from what's already there first, so copies spread out.
+      const dist = (p: number[]) => Math.min(...z.models.map((o) => Math.hypot(o.pos[0] - p[0], o.pos[1] - p[1])));
+      spots.sort((a, b) => dist(b.pos) - dist(a.pos));
+      for (const sp of spots) {
+        const copy: ZoneModel = { ...src, pos: sp.pos, rotY: sp.rotY, rotX: 0 };
+        if (!fits(copy)) continue;
+        z.models.push(copy);
+        area += sw * sd;
+        added++;
+        break;
+      }
+    }
 }

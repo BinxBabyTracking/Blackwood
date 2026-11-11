@@ -18,8 +18,8 @@ const HEIGHTS: Record<string, Record<string, number>> = {
 };
 const DEFAULT_HEIGHT: Record<string, number> = { CHR001: 1.05 };
 const DEFAULT_EYE: Record<string, number> = { CHR001: 0.95 };
-/** Indoor floor plans are drawn half as big again for multiplayer; this brings them back down (heights stay). */
-const DEFAULT_SHRINK: Record<string, number> = { CHR001: 0.7 };
+/** The most an indoor floor plan keeps (each room shrinks further to fit what is in it; heights stay). */
+const DEFAULT_SHRINK: Record<string, number> = { CHR001: 0.75 };
 
 /**
  * A case's whole walkable world from its room records and the art live on Admin:
