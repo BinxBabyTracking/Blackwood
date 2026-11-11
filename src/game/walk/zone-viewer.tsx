@@ -912,6 +912,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
               pl2.box = new THREE.Box3().setFromObject(grp);
             }
             reblock();
+            snapOut();
             const ex = dressModel(M, grp, parent);
             if (pl2) pl2.extra = ex;
             if (M === sel) showBox(grp);
@@ -1173,15 +1174,22 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       if (x < -w / 2 + RADIUS || x > w / 2 - RADIUS || zz < -d / 2 + RADIUS || zz > d / 2 - RADIUS) return false;
       return !blockers.some((b) => x > b.x0 - RADIUS && x < b.x1 + RADIUS && zz > b.z0 - RADIUS && zz < b.z1 + RADIUS);
     }
+    /** Puts you on the nearest open ground if you're standing inside something. */
+    function snapOut() {
+      if (!current || free(pos.x, pos.z)) return;
+      for (let r = 0.15; r < 30; r += 0.15)
+        for (let a = 0; a < Math.PI * 2; a += Math.PI / 16) {
+          const x = pos.x + Math.cos(a) * r, zz = pos.z + Math.sin(a) * r;
+          if (free(x, zz)) {
+            pos.x = x;
+            pos.z = zz;
+            return;
+          }
+        }
+    }
     const move = (dx: number, dz: number) => {
-      const z = current!;
-      // Already inside something (a model loaded bigger than planned): walk out freely, but stay in the room.
-      if (!free(pos.x, pos.z)) {
-        const [w, d] = z.size;
-        pos.x = Math.max(-w / 2 + RADIUS, Math.min(w / 2 - RADIUS, pos.x + dx));
-        pos.z = Math.max(-d / 2 + RADIUS, Math.min(d / 2 - RADIUS, pos.z + dz));
-        return;
-      }
+      // Inside something (a model loaded bigger than planned): step out to the nearest open ground first.
+      if (!free(pos.x, pos.z)) snapOut();
       if (free(pos.x + dx, pos.z + dz)) {
         pos.x += dx;
         pos.z += dz;
