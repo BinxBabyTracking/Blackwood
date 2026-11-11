@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { GLTFLoader, type GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
 import { trimRuns, wallRects } from "./walk-viewer";
+import { heightAt } from "./zones";
 import type { Side, World, Zone, ZoneWall } from "./zones";
 
 /*
@@ -47,7 +48,7 @@ function labelSprite(text: string) {
 }
 
 /** A round, layered Christmas tree with ornaments, little lights and a star. */
-function christmasTree(h: number, w: number, pos: number[], elev: number) {
+function christmasTree(h: number, w: number, pos: number[], elev: number, decorated = true) {
   const g = new THREE.Group();
   const trunkH = h * 0.08;
   const trunk = new THREE.Mesh(new THREE.CylinderGeometry(w * 0.05, w * 0.06, trunkH, 12), new THREE.MeshLambertMaterial({ color: 0x5a3a22 }));
@@ -55,7 +56,7 @@ function christmasTree(h: number, w: number, pos: number[], elev: number) {
   g.add(trunk);
   const green = new THREE.MeshLambertMaterial({ color: 0x1f6b3a, flatShading: true });
   const snow = new THREE.MeshLambertMaterial({ color: 0xf2f6ff, flatShading: true });
-  const tiers = 6;
+  const tiers = decorated ? 6 : 5;
   const colors = [0xd8282f, 0xf2c230, 0x2f6fd8, 0xe8e8f0, 0xb03ad0, 0x2fb04a];
   let seed = 7;
   const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
@@ -71,7 +72,7 @@ function christmasTree(h: number, w: number, pos: number[], elev: number) {
     const cap = new THREE.Mesh(new THREE.ConeGeometry(r * 0.55, th * 0.3, 14, 1), snow);
     cap.position.y = y + th * 0.82;
     g.add(cap);
-    const n = Math.round(10 * (1 - t) + 4);
+    const n = decorated ? Math.round(10 * (1 - t) + 4) : 0;
     for (let k = 0; k < n; k++) {
       const a = (k / n) * Math.PI * 2 + rnd();
       const rr = r * (0.55 + rnd() * 0.3);
@@ -84,13 +85,14 @@ function christmasTree(h: number, w: number, pos: number[], elev: number) {
       g.add(ball);
     }
   }
+  g.position.set(pos[0], elev, pos[1]);
+  if (!decorated) return g;
   const star = new THREE.Mesh(new THREE.OctahedronGeometry(w * 0.05), new THREE.MeshLambertMaterial({ color: 0xfff2b0, emissive: 0xffe08a, emissiveIntensity: 1 }));
   star.position.y = h + w * 0.02;
   g.add(star);
   const glow = new THREE.PointLight(0xffd59a, 12, h * 0.9, 1.4);
   glow.position.y = h * 0.5;
   g.add(glow);
-  g.position.set(pos[0], elev, pos[1]);
   return g;
 }
 
@@ -326,7 +328,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     /** The surroundings of an outdoor place: a tall painted band just past each edge. */
     const buildBackdrop = (z: Zone, side: Side, url: string | null, g: THREE.Group) => {
       const f = wallFrame(z, side);
-      const H = Math.max(z.size[2], 9);
+      const H = Math.max(z.size[2], 9) + (z.terrain ? 8 : 0);
       const W = f.width + 40;
       const t = tex(url);
       let mat: THREE.Material;
@@ -341,7 +343,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       const wg = new THREE.Group();
       wg.position.set(f.pos[0], 0, f.pos[1]);
       wg.rotation.y = f.rot;
-      m.position.set(0, H / 2 - 0.5, -14);
+      const low = z.terrain ? Math.min(...z.terrain.pads.map((p) => p.h)) - 2 : -0.5;
+      m.position.set(0, H / 2 + low, -14);
       wg.add(m);
       g.add(wg);
     };
@@ -397,11 +400,66 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       }
 
       // Ground, ceiling, decals.
-      const ft = tiled(z.floor.tex);
+      const T = z.terrain;
+      const ft = tiled(T?.floor ?? z.floor.tex);
       const floorW = z.outdoor ? w + 60 : w, floorD = z.outdoor ? d + 60 : d;
-      const floor = new THREE.Mesh(tiledPlane(floorW, floorD, 0, 0, z.floor.tile), ft ? new THREE.MeshLambertMaterial({ map: ft }) : plain(z.outdoor ? 0xe8eef8 : 0x8a6a4a));
-      floor.rotation.x = -Math.PI / 2;
-      root.add(floor);
+      if (T) {
+        // Rolling snowy ground, a vertex every metre and a half.
+        const nx = Math.ceil(floorW / 1.5), nz = Math.ceil(floorD / 1.5);
+        const g = new THREE.PlaneGeometry(floorW, floorD, nx, nz);
+        g.rotateX(-Math.PI / 2);
+        const pa = g.attributes.position as THREE.BufferAttribute, uv = g.attributes.uv as THREE.BufferAttribute;
+        for (let i = 0; i < pa.count; i++) {
+          const x = pa.getX(i), zz = pa.getZ(i);
+          pa.setY(i, heightAt(T, x, zz));
+          uv.setXY(i, x / z.floor.tile, -zz / z.floor.tile);
+        }
+        g.computeVertexNormals();
+        root.add(new THREE.Mesh(g, ft ? new THREE.MeshLambertMaterial({ map: ft }) : plain(0xe8eef8)));
+        // Cobbled paths laid over it.
+        const pt = tiled(T.path);
+        const pmat = pt ? new THREE.MeshLambertMaterial({ map: pt, polygonOffset: true, polygonOffsetFactor: -2 }) : plain(0x8a8a90);
+        for (const path of T.paths) {
+          const pts: number[][] = [];
+          for (let i = 1; i < path.pts.length; i++) {
+            const a = path.pts[i - 1], b = path.pts[i];
+            const L = Math.hypot(b[0] - a[0], b[1] - a[1]);
+            const n = Math.max(1, Math.ceil(L / 0.75));
+            for (let k = i === 1 ? 0 : 1; k <= n; k++) pts.push([a[0] + ((b[0] - a[0]) * k) / n, a[1] + ((b[1] - a[1]) * k) / n]);
+          }
+          const pos2: number[] = [], uvs: number[] = [], idx: number[] = [];
+          let along = 0;
+          pts.forEach((q, i) => {
+            const prev = pts[Math.max(0, i - 1)], next = pts[Math.min(pts.length - 1, i + 1)];
+            let dx = next[0] - prev[0], dz = next[1] - prev[1];
+            const len = Math.hypot(dx, dz) || 1;
+            dx /= len;
+            dz /= len;
+            if (i > 0) along += Math.hypot(q[0] - pts[i - 1][0], q[1] - pts[i - 1][1]);
+            for (const side of [-1, 1]) {
+              const x = q[0] - dz * side * (path.w / 2), zz = q[1] + dx * side * (path.w / 2);
+              pos2.push(x, heightAt(T, x, zz) + 0.04, zz);
+              uvs.push(((side + 1) / 2) * (path.w / 1.8), along / 1.8);
+            }
+            if (i > 0) {
+              const o = i * 2;
+              idx.push(o - 2, o - 1, o, o - 1, o + 1, o);
+            }
+          });
+          const pg = new THREE.BufferGeometry();
+          pg.setAttribute("position", new THREE.Float32BufferAttribute(pos2, 3));
+          pg.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+          pg.setIndex(idx);
+          pg.computeVertexNormals();
+          const mesh = new THREE.Mesh(pg, pmat);
+          mesh.material.side = THREE.DoubleSide;
+          root.add(mesh);
+        }
+      } else {
+        const floor = new THREE.Mesh(tiledPlane(floorW, floorD, 0, 0, z.floor.tile), ft ? new THREE.MeshLambertMaterial({ map: ft }) : plain(z.outdoor ? 0xe8eef8 : 0x8a6a4a));
+        floor.rotation.x = -Math.PI / 2;
+        root.add(floor);
+      }
       if (z.ceiling) {
         const ct = tiled(z.ceiling.tex);
         const ceil = new THREE.Mesh(tiledPlane(w, d, 0, 0, z.ceiling.tile), ct ? new THREE.MeshLambertMaterial({ map: ct }) : plain(0xd8cbb0));
@@ -454,19 +512,46 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         g.fillRect(0, 0, 64, 64);
         return new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false });
       })();
+      const haloMat = (() => {
+        const c = document.createElement("canvas");
+        c.width = c.height = 64;
+        const g = c.getContext("2d")!;
+        const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+        gr.addColorStop(0, "rgba(255,214,140,0.9)");
+        gr.addColorStop(0.3, "rgba(255,190,110,0.35)");
+        gr.addColorStop(1, "rgba(255,170,90,0)");
+        g.fillStyle = gr;
+        g.fillRect(0, 0, 64, 64);
+        return new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true });
+      })();
       for (const M of z.models) {
         const turned = Math.abs(M.rotY) === 90;
         const fw = turned ? M.size[1] : M.size[0], fd = turned ? M.size[0] : M.size[1];
-        if (M.solid && M.elev < 0.05 && M.size[2] > 0.25) blockers.push({ x0: M.pos[0] - fw / 2, x1: M.pos[0] + fw / 2, z0: M.pos[1] - fd / 2, z1: M.pos[1] + fd / 2 });
+        const ground = heightAt(z.terrain, M.pos[0], M.pos[1]);
+        const onGround = M.elev - ground < 0.05;
+        if (M.block != null) blockers.push({ x0: M.pos[0] - M.block, x1: M.pos[0] + M.block, z0: M.pos[1] - M.block, z1: M.pos[1] + M.block });
+        else if (M.solid && onGround && M.size[2] > 0.25) blockers.push({ x0: M.pos[0] - fw / 2, x1: M.pos[0] + fw / 2, z0: M.pos[1] - fd / 2, z1: M.pos[1] + fd / 2 });
         const sh = new THREE.Mesh(new THREE.PlaneGeometry(fw * 1.2, fd * 1.2), contact);
         sh.rotation.x = -Math.PI / 2;
         sh.position.set(M.pos[0], M.elev + 0.006, M.pos[1]);
-        if (M.elev < 0.05) root.add(sh);
-        if (M.light && lamps < 10) {
+        if (onGround && !M.scatter) root.add(sh);
+        if (M.light && z.outdoor) {
+          // A soft glow round every outdoor lamp.
+          const halo = new THREE.Sprite(haloMat);
+          const top = M.elev + M.size[2] * 0.85;
+          halo.position.set(M.pos[0], top, M.pos[1]);
+          halo.scale.setScalar(2.2);
+          root.add(halo);
+        }
+        if (M.light && lamps < 10 && !M.scatter) {
           lamps++;
           const pl = new THREE.PointLight(0xffc77a, z.outdoor ? 10 : 4, z.outdoor ? 14 : 8, 1.6);
           pl.position.set(M.pos[0], M.elev + M.size[2] * 0.9, M.pos[1]);
           root.add(pl);
+        }
+        if (!M.file && M.scatter) {
+          if (/pine/.test(M.id)) root.add(christmasTree(M.size[2], M.size[0], M.pos, M.elev, false));
+          continue;
         }
         if (!M.file) {
           const box = new THREE.Mesh(new THREE.BoxGeometry(M.size[0], M.size[2], M.size[1]), new THREE.MeshLambertMaterial({ color: 0x9a7ad0, transparent: true, opacity: 0.35 }));
@@ -584,7 +669,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
             obj.position.y = -box.min.y;
             grp.add(obj);
             grp.scale.setScalar(k);
-            grp.position.set(P.pos[0], 0, P.pos[1]);
+            grp.position.set(P.pos[0], heightAt(z.terrain, P.pos[0], P.pos[1]), P.pos[1]);
             grp.rotation.y = P.rotY;
             parent.add(grp);
             const hb = head as THREE.Bone | null;
@@ -765,6 +850,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       const fx = -Math.sin(look.yaw), fz = -Math.cos(look.yaw);
       const rx = Math.cos(look.yaw), rz = -Math.sin(look.yaw);
       if (len > 0.01) move((fx * f + rx * s) * sp, (fz * f + rz * s) * sp);
+      pos.y = EYE + heightAt(z.terrain, pos.x, pos.z);
       camera.position.copy(pos);
       camera.rotation.set(look.pitch, look.yaw, 0, "YXZ");
 
@@ -831,7 +917,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           a.setY(i, y);
         }
         a.needsUpdate = true;
-        snow.position.set(pos.x, 0, pos.z);
+        snow.position.set(pos.x, pos.y - EYE, pos.z);
       }
       stars.position.set(pos.x, 0, pos.z);
       renderer.render(scene, camera);

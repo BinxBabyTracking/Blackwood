@@ -34834,21 +34834,21 @@
       "id": "chr001_ev_ce013",
       "kind": "evidence",
       "style": "chr001",
-      "subject": "The small iron access hatch in the snowy stone plinth of a great village clock, its edges smeared with fresh black soot, boot marks in the snow in front of it.",
+      "subject": "The heavy iron grate locked over the mouth of an old round stone well in the snow, its bars and padlock smeared with fresh black soot, boot marks in the snow around it.",
       "suffix": "A close-up storybook illustration of the object, bright and colorful, warm cheerful light with a little magical sparkle, a softly blurred festive background, the subject filling most of the frame."
     },
     {
       "id": "chr001_ev_ce014",
       "kind": "evidence",
       "style": "chr001",
-      "subject": "The face of a great outdoor village clock in carved stone and brass against a dark blue sky, its hands four minutes behind a small brass pocket watch held up in a gloved hand in front of it.",
+      "subject": "The small round clock face on the gable of a snowy old stone well-house, its hands four minutes behind a small brass pocket watch held up in a gloved hand in front of it.",
       "suffix": "A close-up storybook illustration of the object, bright and colorful, warm cheerful light with a little magical sparkle, a softly blurred festive background, the subject filling most of the frame."
     },
     {
       "id": "chr001_ev_ce015",
       "kind": "evidence",
       "style": "chr001",
-      "subject": "An old leather-bound key ledger open on a workbench, columns of names and dates in faded ink, and one heading in gold leaf reading exactly: KEEPERS OF THE SQUARE CLOCK, the last line reading exactly: Garrick Thorne, sole key",
+      "subject": "An old leather-bound key ledger open on a workbench, columns of names and dates in faded ink, and one heading in gold leaf reading exactly: KEEPERS OF THE OLD WELL, the last line reading exactly: Garrick Thorne, sole key",
       "suffix": "A close-up storybook illustration of the object, bright and colorful, warm cheerful light with a little magical sparkle, a softly blurred festive background, the subject filling most of the frame."
     },
     {
@@ -36919,6 +36919,62 @@
         "chr001_turn_guard_front"
       ],
       "subject": "Seen exactly from behind, facing away from the viewer, the back of the head and hair fully visible. The same clothes, shoes and hair as the front view, seen from the back."
+    },
+    {
+      "id": "chr001_village_square_model_well",
+      "kind": "model",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "The village's old well-house: a round well of rough gray fieldstone about 7 feet across with a heavy iron grate padlocked over its mouth, four stout timber posts holding up a little pointed shingle roof heavy with snow, a wooden winch with a coiled rope and a bucket, and a small round cream clock face set in the front gable of the roof. 8 feet wide, 8 feet deep, 12 feet tall."
+    },
+    {
+      "id": "chr001_clock_base_model_bucket",
+      "kind": "model",
+      "style": "chr001",
+      "room": "chr001_clock_base",
+      "subject": "An old wooden well bucket bound with iron hoops, tipped on its side on a ledge of frosty stone, a coil of frayed rope beside it. 2 feet wide, 2 feet deep, 2 feet tall."
+    },
+    {
+      "id": "chr001_village_model_pine_a",
+      "kind": "model",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "A tall slender snow-covered fir tree, fully round and three-dimensional, layered drooping branches heavy with snow, the same from every side. 12 feet wide, 12 feet deep, 30 feet tall."
+    },
+    {
+      "id": "chr001_village_model_pine_b",
+      "kind": "model",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "A short plump snow-covered spruce tree, fully round and three-dimensional, thick snowy boughs down to the ground, the same from every side. 10 feet wide, 10 feet deep, 16 feet tall."
+    },
+    {
+      "id": "chr001_village_model_pine_c",
+      "kind": "model",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "A small young fir tree in the snow, fully round and three-dimensional, a few strings of tiny warm glowing lights and red bows on its branches. 6 feet wide, 6 feet deep, 9 feet tall."
+    },
+    {
+      "id": "chr001_village_model_bush",
+      "kind": "model",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "A low round evergreen bush half buried in snow, a few red berries showing. 4 feet wide, 4 feet deep, 3 feet tall."
+    },
+    {
+      "id": "chr001_village_model_rock",
+      "kind": "model",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "A rounded gray boulder with a thick cap of snow and a little frost on its sides. 5 feet wide, 4 feet deep, 3 feet tall."
+    },
+    {
+      "id": "chr001_village_model_lantern",
+      "kind": "model",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "A short wooden post by a path with a glowing iron lantern hanging from a little hook at its top, a sprig of holly tied below, snow on the lantern's roof. 1 foot wide, 1 foot deep, 5 feet tall."
     }
   ],
   "styles": {
@@ -87050,14 +87106,14 @@
       "id": "chr001_village_square",
       "case": "CHR001",
       "location": "village_square",
-      "name": "The village square",
+      "name": "The village",
       "type": "exterior",
       "sizeFt": [
-        180,
-        180,
-        40
+        390,
+        500,
+        60
       ],
-      "note": "The hub of the North Pole. You come out of the Bureau (its front at the back edge) and face the clock tower at the front edge. Santa's Workshop is on the left edge, the Archives on the right. The great clock stands in the middle with the Christmas tree beside it. Arches lead to Clockmakers' Row (front left), the stable yard (front right) and Holly Lane (back right). The Lab and the Guard house stand at the back left and middle right.",
+      "note": "The whole North Pole village in one walkable place on snowy hills. The clock tower stands on the hill at the north. Below it the square, with the old well-house in the middle and the great tree, ringed by Santa's Workshop (west), the Archives and the Guard house (east), the Engineering Lab and the Bureau (south). Clockmakers' Row runs north from the square's west side; Holly Lane's cottages sit down the slope to the northeast; the stables and sleigh hangar are down the hill to the southeast. Woods, lamps and lanterns between.",
       "floor": {
         "image": "chr001_village_square_floor",
         "tileFt": 8
@@ -87088,8 +87144,8 @@
         {
           "image": "chr001_village_square_model_bureau",
           "atFt": [
-            90,
-            200
+            180,
+            310
           ],
           "facing": "front",
           "sizeFt": [
@@ -87099,23 +87155,10 @@
           ]
         },
         {
-          "image": "chr001_village_square_model_tower",
-          "atFt": [
-            90,
-            -8
-          ],
-          "facing": "back",
-          "sizeFt": [
-            24,
-            24,
-            70
-          ]
-        },
-        {
           "image": "chr001_village_square_model_workshop",
           "atFt": [
-            -30,
-            80
+            60,
+            190
           ],
           "facing": "right",
           "sizeFt": [
@@ -87127,8 +87170,8 @@
         {
           "image": "chr001_village_square_model_archives",
           "atFt": [
-            205,
-            60
+            295,
+            170
           ],
           "facing": "left",
           "sizeFt": [
@@ -87140,8 +87183,8 @@
         {
           "image": "chr001_village_square_model_lab",
           "atFt": [
-            30,
-            170
+            120,
+            280
           ],
           "facing": "front",
           "sizeFt": [
@@ -87153,8 +87196,8 @@
         {
           "image": "chr001_village_square_model_guardhouse",
           "atFt": [
-            200,
-            130
+            290,
+            240
           ],
           "facing": "left",
           "sizeFt": [
@@ -87164,23 +87207,10 @@
           ]
         },
         {
-          "image": "chr001_village_square_model_greatclock",
-          "atFt": [
-            90,
-            90
-          ],
-          "facing": "back",
-          "sizeFt": [
-            6,
-            6,
-            20
-          ]
-        },
-        {
           "image": "chr001_village_square_model_tree",
           "atFt": [
-            60,
-            70
+            150,
+            180
           ],
           "facing": "back",
           "sizeFt": [
@@ -87192,8 +87222,8 @@
         {
           "image": "chr001_village_square_model_lamppost",
           "atFt": [
-            70,
-            110
+            160,
+            220
           ],
           "facing": "back",
           "sizeFt": [
@@ -87205,8 +87235,8 @@
         {
           "image": "chr001_village_square_model_lamppost",
           "atFt": [
-            110,
-            110
+            200,
+            220
           ],
           "facing": "back",
           "sizeFt": [
@@ -87218,8 +87248,8 @@
         {
           "image": "chr001_village_square_model_lamppost",
           "atFt": [
-            70,
-            50
+            160,
+            160
           ],
           "facing": "back",
           "sizeFt": [
@@ -87231,8 +87261,8 @@
         {
           "image": "chr001_village_square_model_lamppost",
           "atFt": [
-            110,
-            50
+            200,
+            160
           ],
           "facing": "back",
           "sizeFt": [
@@ -87244,8 +87274,8 @@
         {
           "image": "chr001_village_square_model_stall",
           "atFt": [
-            130,
-            100
+            220,
+            210
           ],
           "facing": "left",
           "sizeFt": [
@@ -87257,8 +87287,8 @@
         {
           "image": "chr001_village_square_model_stall",
           "atFt": [
-            130,
-            115
+            220,
+            225
           ],
           "facing": "left",
           "sizeFt": [
@@ -87270,8 +87300,8 @@
         {
           "image": "chr001_village_square_model_bench",
           "atFt": [
-            100,
-            100
+            190,
+            210
           ],
           "facing": "front",
           "sizeFt": [
@@ -87283,8 +87313,8 @@
         {
           "image": "chr001_village_square_model_sled",
           "atFt": [
-            120,
-            140
+            210,
+            250
           ],
           "facing": "front",
           "sizeFt": [
@@ -87294,42 +87324,291 @@
           ]
         },
         {
-          "image": "chr001_village_square_model_arch",
+          "image": "chr001_village_square_model_tower",
           "atFt": [
+            190,
+            40
+          ],
+          "facing": "back",
+          "sizeFt": [
+            24,
+            24,
+            70
+          ],
+          "note": "on the hill at the north of the village"
+        },
+        {
+          "image": "chr001_village_square_model_well",
+          "atFt": [
+            180,
+            200
+          ],
+          "facing": "back",
+          "sizeFt": [
+            8,
+            8,
+            12
+          ]
+        },
+        {
+          "image": "chr001_clockmakers_row_model_thorneshop",
+          "atFt": [
+            12,
+            60
+          ],
+          "facing": "right",
+          "sizeFt": [
             20,
-            10
-          ],
-          "facing": "back",
-          "sizeFt": [
-            12,
-            2,
-            13
+            26,
+            26
           ]
         },
         {
-          "image": "chr001_village_square_model_arch",
+          "image": "chr001_clockmakers_row_model_corwinshop",
           "atFt": [
-            160,
-            10
-          ],
-          "facing": "back",
-          "sizeFt": [
-            12,
-            2,
-            13
-          ]
-        },
-        {
-          "image": "chr001_village_square_model_arch",
-          "atFt": [
-            178,
-            160
+            88,
+            50
           ],
           "facing": "left",
           "sizeFt": [
+            18,
+            24,
+            24
+          ]
+        },
+        {
+          "image": "chr001_clockmakers_row_model_glassworks",
+          "atFt": [
+            90,
+            100
+          ],
+          "facing": "left",
+          "sizeFt": [
+            26,
+            32,
+            22
+          ]
+        },
+        {
+          "image": "chr001_village_square_model_lamppost",
+          "atFt": [
+            30,
+            30
+          ],
+          "facing": "back",
+          "sizeFt": [
+            1.5,
+            1.5,
+            10
+          ]
+        },
+        {
+          "image": "chr001_village_square_model_lamppost",
+          "atFt": [
+            70,
+            80
+          ],
+          "facing": "back",
+          "sizeFt": [
+            1.5,
+            1.5,
+            10
+          ]
+        },
+        {
+          "image": "chr001_clockmakers_row_model_cart",
+          "atFt": [
+            60,
+            70
+          ],
+          "facing": "front",
+          "sizeFt": [
+            3,
+            6,
+            3
+          ]
+        },
+        {
+          "image": "chr001_clockmakers_row_model_snowbank",
+          "atFt": [
+            25,
+            110
+          ],
+          "facing": "front",
+          "sizeFt": [
+            3,
+            10,
+            3
+          ]
+        },
+        {
+          "image": "chr001_holly_lane_model_thornehouse",
+          "atFt": [
+            290,
+            55
+          ],
+          "facing": "right",
+          "sizeFt": [
+            24,
+            22,
+            20
+          ]
+        },
+        {
+          "image": "chr001_holly_lane_model_cottage",
+          "atFt": [
+            290,
+            25
+          ],
+          "facing": "right",
+          "sizeFt": [
+            22,
+            20,
+            19
+          ]
+        },
+        {
+          "image": "chr001_holly_lane_model_cottage",
+          "atFt": [
+            362,
+            40
+          ],
+          "facing": "left",
+          "sizeFt": [
+            22,
+            20,
+            19
+          ]
+        },
+        {
+          "image": "chr001_holly_lane_model_cottage",
+          "atFt": [
+            362,
+            75
+          ],
+          "facing": "left",
+          "sizeFt": [
+            22,
+            20,
+            19
+          ]
+        },
+        {
+          "image": "chr001_holly_lane_model_fence",
+          "atFt": [
+            304,
+            55
+          ],
+          "facing": "right",
+          "sizeFt": [
             12,
-            2,
-            13
+            0.5,
+            3
+          ]
+        },
+        {
+          "image": "chr001_village_square_model_lamppost",
+          "atFt": [
+            326,
+            50
+          ],
+          "facing": "back",
+          "sizeFt": [
+            1.5,
+            1.5,
+            10
+          ]
+        },
+        {
+          "image": "chr001_stable_yard_model_stables",
+          "atFt": [
+            250,
+            400
+          ],
+          "facing": "right",
+          "sizeFt": [
+            70,
+            45,
+            28
+          ],
+          "note": "long side along the left edge"
+        },
+        {
+          "image": "chr001_stable_yard_model_hangar",
+          "atFt": [
+            335,
+            380
+          ],
+          "facing": "front",
+          "sizeFt": [
+            80,
+            70,
+            40
+          ]
+        },
+        {
+          "image": "chr001_stable_yard_model_railfence",
+          "atFt": [
+            280,
+            450
+          ],
+          "facing": "front",
+          "sizeFt": [
+            16,
+            0.5,
+            4
+          ]
+        },
+        {
+          "image": "chr001_stable_yard_model_railfence",
+          "atFt": [
+            296,
+            450
+          ],
+          "facing": "front",
+          "sizeFt": [
+            16,
+            0.5,
+            4
+          ]
+        },
+        {
+          "image": "chr001_stable_yard_model_haybales",
+          "atFt": [
+            285,
+            430
+          ],
+          "facing": "front",
+          "sizeFt": [
+            8,
+            4,
+            5
+          ]
+        },
+        {
+          "image": "chr001_stable_yard_model_reindeer",
+          "atFt": [
+            290,
+            460
+          ],
+          "facing": "right",
+          "sizeFt": [
+            3,
+            7,
+            7
+          ]
+        },
+        {
+          "image": "chr001_village_square_model_lamppost",
+          "atFt": [
+            300,
+            420
+          ],
+          "facing": "back",
+          "sizeFt": [
+            1.5,
+            1.5,
+            10
           ]
         }
       ],
@@ -87337,36 +87616,12 @@
         {
           "image": "chr001_village_square_floor_path",
           "atFt": [
-            90,
-            90
+            180,
+            200
           ],
           "sizeFt": [
-            60,
-            60
-          ],
-          "tileFt": 6
-        },
-        {
-          "image": "chr001_village_square_floor_path",
-          "atFt": [
-            90,
-            150
-          ],
-          "sizeFt": [
-            10,
-            60
-          ],
-          "tileFt": 6
-        },
-        {
-          "image": "chr001_village_square_floor_path",
-          "atFt": [
-            90,
-            30
-          ],
-          "sizeFt": [
-            10,
-            60
+            56,
+            56
           ],
           "tileFt": 6
         }
@@ -87397,41 +87652,323 @@
           "to": "guard_house"
         },
         {
-          "model": "chr001_village_square_model_arch",
-          "atFt": [
-            20,
-            10
-          ],
-          "to": "clockmakers_row",
-          "note": "front left arch; three arches share one model, so atFt says which"
-        },
-        {
-          "model": "chr001_village_square_model_arch",
-          "atFt": [
-            160,
-            10
-          ],
-          "to": "stable_yard",
-          "note": "front right arch"
-        },
-        {
-          "model": "chr001_village_square_model_arch",
-          "atFt": [
-            178,
-            160
-          ],
-          "to": "holly_lane",
-          "note": "back right arch"
-        },
-        {
-          "model": "chr001_village_square_model_greatclock",
+          "model": "chr001_village_square_model_well",
           "to": "clock_base",
-          "note": "the plinth hatch: needs Garrick's key, Aldric's master key or a Guard order"
+          "note": "down the well; the grate needs Garrick's key, Aldric's master key or a Guard order"
+        },
+        {
+          "model": "chr001_clockmakers_row_model_thorneshop",
+          "to": "garrick_workshop"
+        },
+        {
+          "model": "chr001_clockmakers_row_model_corwinshop",
+          "to": "corwin_shop"
+        },
+        {
+          "model": "chr001_clockmakers_row_model_glassworks",
+          "to": "glassworks"
+        },
+        {
+          "model": "chr001_holly_lane_model_thornehouse",
+          "to": "thorne_parlor"
+        },
+        {
+          "model": "chr001_stable_yard_model_stables",
+          "to": "stables"
+        },
+        {
+          "model": "chr001_stable_yard_model_hangar",
+          "to": "hangar"
         }
       ],
       "people": [
-        "bertram"
-      ]
+        "bertram",
+        "dasha"
+      ],
+      "merges": [
+        "clockmakers_row",
+        "holly_lane",
+        "stable_yard"
+      ],
+      "terrain": {
+        "floorImage": "chr001_village_square_floor",
+        "pathImage": "chr001_village_square_floor_path",
+        "pads": [
+          {
+            "rectFt": [
+              80,
+              110,
+              285,
+              340
+            ],
+            "heightFt": 0,
+            "fallFt": 25
+          },
+          {
+            "rectFt": [
+              8,
+              150,
+              110,
+              235
+            ],
+            "heightFt": 0,
+            "fallFt": 20
+          },
+          {
+            "rectFt": [
+              0,
+              0,
+              110,
+              150
+            ],
+            "heightFt": 0,
+            "fallFt": 25
+          },
+          {
+            "rectFt": [
+              270,
+              140,
+              330,
+              265
+            ],
+            "heightFt": 0,
+            "fallFt": 20
+          },
+          {
+            "rectFt": [
+              270,
+              0,
+              390,
+              95
+            ],
+            "heightFt": -10,
+            "fallFt": 40
+          },
+          {
+            "rectFt": [
+              205,
+              350,
+              390,
+              500
+            ],
+            "heightFt": -14,
+            "fallFt": 45
+          },
+          {
+            "rectFt": [
+              165,
+              15,
+              215,
+              65
+            ],
+            "heightFt": 26,
+            "fallFt": 55
+          }
+        ],
+        "hills": [
+          [
+            40,
+            420,
+            22,
+            60
+          ],
+          [
+            10,
+            300,
+            14,
+            35
+          ],
+          [
+            380,
+            240,
+            16,
+            40
+          ],
+          [
+            130,
+            470,
+            12,
+            45
+          ],
+          [
+            250,
+            20,
+            10,
+            30
+          ],
+          [
+            120,
+            20,
+            9,
+            28
+          ],
+          [
+            60,
+            250,
+            6,
+            25
+          ]
+        ],
+        "paths": [
+          {
+            "pointsFt": [
+              [
+                190,
+                72
+              ],
+              [
+                188,
+                95
+              ],
+              [
+                182,
+                115
+              ],
+              [
+                180,
+                172
+              ]
+            ],
+            "widthFt": 9
+          },
+          {
+            "pointsFt": [
+              [
+                180,
+                228
+              ],
+              [
+                180,
+                290
+              ]
+            ],
+            "widthFt": 9
+          },
+          {
+            "pointsFt": [
+              [
+                152,
+                200
+              ],
+              [
+                100,
+                190
+              ],
+              [
+                60,
+                165
+              ],
+              [
+                50,
+                130
+              ],
+              [
+                48,
+                70
+              ],
+              [
+                50,
+                5
+              ]
+            ],
+            "widthFt": 9
+          },
+          {
+            "pointsFt": [
+              [
+                208,
+                200
+              ],
+              [
+                255,
+                185
+              ],
+              [
+                300,
+                140
+              ],
+              [
+                330,
+                95
+              ],
+              [
+                332,
+                40
+              ],
+              [
+                332,
+                5
+              ]
+            ],
+            "widthFt": 8
+          },
+          {
+            "pointsFt": [
+              [
+                200,
+                222
+              ],
+              [
+                235,
+                280
+              ],
+              [
+                255,
+                330
+              ],
+              [
+                285,
+                360
+              ],
+              [
+                300,
+                420
+              ],
+              [
+                305,
+                495
+              ]
+            ],
+            "widthFt": 9
+          }
+        ],
+        "lampEveryFt": 45,
+        "scatter": [
+          {
+            "images": [
+              "chr001_village_model_pine_a",
+              "chr001_village_model_pine_b",
+              "chr001_village_model_pine_c"
+            ],
+            "count": 140,
+            "clearFt": 12
+          },
+          {
+            "images": [
+              "chr001_village_model_bush"
+            ],
+            "count": 40,
+            "clearFt": 6
+          },
+          {
+            "images": [
+              "chr001_village_model_rock"
+            ],
+            "count": 18,
+            "clearFt": 8
+          }
+        ]
+      },
+      "spotsFt": {
+        "dasha": [
+          262,
+          352
+        ],
+        "bertram": [
+          200,
+          222
+        ]
+      }
     },
     {
       "id": "chr001_tower_workshop",
@@ -88292,14 +88829,14 @@
       "id": "chr001_clock_base",
       "case": "CHR001",
       "location": "clock_base",
-      "name": "Under the great clock",
+      "name": "Down the old well",
       "type": "interior",
       "sizeFt": [
         12,
         12,
         9
       ],
-      "note": "A cramped stone room inside the great clock's plinth. Reached from the tunnels (back wall door) or by the iron hatch from the square (front wall, needs a key). The Chronometer is hidden on the ledge up inside the clock case after 12:12 in a loop where it was stolen.",
+      "note": "A cramped stone chamber at the bottom of the old well's shaft. Reached by the iron ladder down the well from the square (it needs the well grate's key) or from the steam tunnels (back wall door). The Chronometer is hidden on the stone ledge beside the old bucket after 12:12 in a loop where it was stolen.",
       "wall": {
         "image": "chr001_tower_workshop_wall",
         "tileFt": 4
@@ -88314,17 +88851,7 @@
       },
       "fixtures": [],
       "walls": {
-        "front": [
-          {
-            "image": "chr001_tunnels_piece_door",
-            "fromLeftFt": 4,
-            "bottomFt": 0,
-            "widthFt": 3,
-            "heightFt": 4,
-            "opening": true,
-            "to": "village_square"
-          }
-        ],
+        "front": [],
         "back": [
           {
             "image": "chr001_tunnels_piece_door",
@@ -88341,37 +88868,38 @@
       },
       "models": [
         {
-          "image": "chr001_clock_base_model_weights",
+          "image": "chr001_tower_cellar_model_ladder",
           "atFt": [
-            3,
-            6
+            6,
+            1
           ],
-          "facing": "right",
+          "facing": "back",
           "sizeFt": [
-            2,
-            1,
-            7
+            1.5,
+            0.5,
+            9
           ],
-          "elevFt": 2
+          "note": "up the well shaft to the grate in the square"
         },
         {
-          "image": "chr001_clock_base_model_case",
+          "image": "chr001_clock_base_model_bucket",
           "atFt": [
-            8,
+            9,
             6
           ],
           "facing": "left",
           "sizeFt": [
-            4,
-            4,
-            9
-          ]
+            2,
+            2,
+            2
+          ],
+          "elevFt": 1.5
         },
         {
           "image": "chr001_chronometer_chamber_model_chronometer",
           "atFt": [
-            8,
-            6
+            9,
+            7
           ],
           "facing": "back",
           "sizeFt": [
@@ -88379,11 +88907,18 @@
             0.2,
             0.85
           ],
-          "elevFt": 6.5,
+          "elevFt": 1.6,
           "note": "hidden here only after Garrick has stolen it"
         }
       ],
-      "people": []
+      "people": [],
+      "doors": [
+        {
+          "model": "chr001_tower_cellar_model_ladder",
+          "to": "village_square",
+          "note": "up the well; the grate needs Garrick's key, Aldric's master key or a Guard order"
+        }
+      ]
     },
     {
       "id": "chr001_toy_floor",
@@ -89580,7 +90115,8 @@
           "to": "village_square"
         }
       ],
-      "people": []
+      "people": [],
+      "mergedInto": "chr001_village_square"
     },
     {
       "id": "chr001_garrick_workshop",
@@ -90131,7 +90667,8 @@
           "to": "village_square"
         }
       ],
-      "people": []
+      "people": [],
+      "mergedInto": "chr001_village_square"
     },
     {
       "id": "chr001_thorne_parlor",
@@ -90457,7 +90994,8 @@
       ],
       "people": [
         "dasha"
-      ]
+      ],
+      "mergedInto": "chr001_village_square"
     },
     {
       "id": "chr001_stables",

@@ -10,7 +10,7 @@ Seasonal: December only (`available_month` 12). 1 to 6 investigators. Price set 
 - **Look:** bright, whimsical animated-film fantasy. Elves are small, round, gnome-like folk about half a grown person's height; Santa and Mrs. Claus are full-sized. Dialogue is playful and warm; the murder is still a murder, told without gore.
 - **Where loop 1 starts.** Loop 1 starts at the clock tower at 12:20 PM, where the investigators have just arrived; every later loop starts in the Jingle Division office at 8:00 AM. (`startLocation` is `jingle_office`; loop 1 overrides it.)
 - **Aldric's keys (CE007).** Aldric hangs his key ring on the KEEPER'S KEYS hook while he works at the bench, and wears it on his belt chain when he leaves the workshop. Garrick takes it from the hook. Before the murder the keys are on the hook (or on Aldric).
-- **Garrick leaves by the square, not the stables.** After hiding the Chronometer he climbs out of the plinth hatch onto the square while everyone is running to the tower, so Dasha never sees him come back out of the boiler room. Corwin sees him arrive back on Clockmakers' Row at about 12:30 with soot on his sleeve (a new fact for Corwin, and the red herring's one true clue).
+- **Garrick leaves by the square, not the stables.** After hiding the Chronometer he climbs up the old well and out through its grate onto the square while everyone is running to the tower, so Dasha never sees him come back out of the boiler room. Corwin sees him arrive back on Clockmakers' Row at about 12:30 with soot on his sleeve (a new fact for Corwin, and the red herring's one true clue).
 - **Aldric's spring visit to the Archives** is in the visitor log too: "Apr 3. Aldric. Guild records, the rebuilding." It shows Aldric looked into the Thorne gear eight months before Garrick did.
 - **The gear puller (CE031)** was borrowed by Aldric on Dec 19 to lift the bloodline gears out at the evening winding. It is on his workshop shelves.
 - **The clock runs in real time** (1 in-world minute = 5 real seconds), shared by everyone, not on actions as in HALLOW001. See "The clock".
@@ -78,8 +78,8 @@ This is what happens in loop 1 and in any later loop where nobody changes it. Al
 | **12:02 PM** | **Pip returns and finds Aldric.** The tower has no bell-tube, so he runs across the square to the Guard house, shouting. The square empties toward the tower. | Pip, Vell |
 | 12:08 | Two guards reach the tower. | Vell |
 | 12:10 | Captain Vell arrives, sends a runner to the Bureau. | Vell |
-| 12:12 | Garrick, under the great clock, hides the Chronometer on the ledge inside the clock case. | CE029, CE013, CE014 (the square clock starts running slow) |
-| 12:15 | Garrick climbs out of the plinth hatch onto the empty side of the square, locks it, and walks to Clockmakers' Row. | CE013 |
+| 12:12 | Garrick, at the bottom of the old well, hides the Chronometer on the stone ledge beside the old bucket. | CE029, CE013, CE014 (lifting the grate knocks the well-house clock's winding rod, and the little clock starts running slow) |
+| 12:15 | Garrick climbs up the well and out through the grate onto the empty side of the square, padlocks it, and walks to Clockmakers' Row. | CE013 |
 | **12:20** | **Loop 1 begins. The investigators arrive at the tower** with Chief Inspector Ashby. | |
 | 12:30 | Garrick reaches his workshop. Corwin, at his shop window, sees soot on his sleeve. | Corwin |
 | 2:00 | Aldric's appointment with Santa (he never comes). Santa asks Marigold where he is. | Marigold, Santa |
@@ -93,7 +93,7 @@ He spent the morning on the toy floor and went to check the stable clock at 11:1
 
 ### Closing report only
 
-Not said by anyone, anywhere, in the first loop: the words of the 11:35 confrontation; the blow; Garrick dragging Aldric; taking the keys and the Chronometer; the hiding place inside the great clock (it is found, not told, unless Garrick confesses).
+Not said by anyone, anywhere, in the first loop: the words of the 11:35 confrontation; the blow; Garrick dragging Aldric; taking the keys and the Chronometer; the hiding place down the old well (it is found, not told, unless Garrick confesses).
 
 ## Christmas Eve when Aldric lives
 
@@ -136,7 +136,7 @@ From 8:00 AM in any loop after the first. Everyone follows the original day unti
 
 Shown the Time Bag holding an item that also exists, unchanged, in the world right now (a second set of Aldric's keys, a second crank, a second glassworks slip), Santa recognizes his own Bag's magic and believes the investigators. From then on in that loop he will:
 - order Captain Vell to post any guards asked for (up to four);
-- order the great clock's plinth opened;
+- order the old well's grate opened;
 - order Garrick held until the 6:00 PM winding (not longer without grounds; see Arrest);
 - move his 2:00 PM appointment with Aldric earlier if asked.
 
@@ -162,7 +162,7 @@ Garrick's decisions come from a fixed list of moves scored by the game; the inte
 | Hold | At the hatch or the tower door, he sees a guard, finds the hatch bolted, or more than one person with Aldric | Waits up to 30 minutes out of sight, then tries the tower's front door once at a quiet moment; if that fails too, gives up until the evening winding |
 | Confront | In the workshop, alone with Aldric | As the original day: the murder at the end of the confrontation, about 14 minutes after he arrives |
 | Interrupted | Anyone enters during the confrontation | No murder. He leaves by the hatch if he can, otherwise says he came to talk |
-| Hide | After a theft | The great clock (12:12 if on the original timing) |
+| Hide | After a theft | The old well (12:12 if on the original timing) |
 | Evening attempt | 6:00 PM winding, if he is free and has not been brought round | Attends as technician; when the chamber opens he tries to take the Chronometer. Two or more investigators or a guard in the chamber: he does not try. One investigator: he tries, and is caught in the act |
 | Flee | He knows he is suspected (questioned twice about the tower or tunnels, shown his own papers, or sees a guard posted at his workshop), or the evening attempt fails | Heads for the supply sleigh in the hangar; leaves at 9:00 PM if not stopped. In the hangar he can be caught |
 | Surrender | Cornered: in a room with investigators and a guard and no way out, or held and shown CE005 with CE006 | Confesses |
@@ -216,15 +216,15 @@ Then the old Chronometer's bloodline gears are stilled for good and the Evergree
 | CE004 | The clean gear train | Workshop, after a death | photo | no | |
 | CE005 | The winding crank | Workshop peg; on the wrong peg with traces after 11:52 | yes | yes | A sting (CE032) |
 | CE006 | The burned rag | Workshop stove, after 11:52 | yes | yes (to tie Garrick) | Confession; CE032 |
-| CE007 | Aldric's keys | Missing from the hook after 11:53; found in Garrick's coat (his workshop) or under the great clock with the Chronometer | yes (the keys) | yes | Santa's master keys |
+| CE007 | Aldric's keys | Missing from the hook after 11:53; found in Garrick's coat (his workshop) or down the old well with the Chronometer | yes (the keys) | yes | Santa's master keys |
 | CE008 | The empty case | Chamber, after 11:56 | photo | yes | A confession |
 | CE009 | Pip's statement | Pip, any loop | statement | no | |
 | CE010 | The unbolted hatch | Workshop floor, from 11:33 | photo | yes | CE012 with the tunnel sign |
 | CE011 | The toy floor shift board | Toy floor, from 11:10 | photo | no | Bertram |
 | CE012 | Dasha's statement | Dasha, from 11:15 | statement | yes | Following Garrick |
-| CE013 | Soot on the plinth hatch | Square, from 12:15 in a loop with a theft | photo | yes | Garrick's key ledger (CE015) |
-| CE014 | The slow square clock | Square, from 12:12 in a loop with a theft | photo | no | |
-| CE015 | The square clock key ledger | Garrick's workshop, locked cabinet (Garrick's key, or Santa's order) | yes | no | |
+| CE013 | Soot on the well grate | Square, from 12:15 in a loop with a theft | photo | yes | Garrick's key ledger (CE015) |
+| CE014 | The slow well-house clock | Square, from 12:12 in a loop with a theft | photo | no | |
+| CE015 | The well-house key ledger | Garrick's workshop, locked cabinet (Garrick's key, or Santa's order) | yes | no | |
 | CE016 | The Archives visitor log | Archives, any loop | yes (the page) | yes | Quill |
 | CE017 | The Tithe Register | Archives lectern, any loop | photo | yes | Quill |
 | CE018 | Mira's letters | Thornes' parlor, any loop (Mira gives them if asked kindly) | yes | yes | Mrs. Claus |
@@ -238,7 +238,7 @@ Then the old Chronometer's bloodline gears are stilled for good and the Evergree
 | CE026 | Santa's appointment book | Marigold's desk | yes (the page) | no | Marigold |
 | CE027 | Garrick's note | Garrick's workbench, any loop | yes | yes | |
 | CE028 | Garrick's sketches | Garrick's workshop wall, any loop | yes | no | |
-| CE029 | The Christmas Chronometer | Under the great clock from 12:12 in a loop with a theft; else the chamber | never | yes | A confession |
+| CE029 | The Christmas Chronometer | Down the old well from 12:12 in a loop with a theft; else the chamber | never | yes | A confession |
 | CE030 | Corwin's letter | Corwin's counter, any loop | yes | no | |
 | CE031 | The gear puller | Aldric's workshop shelves, any loop | yes | yes (for D) | Glint |
 | CE032 | Caught in the act (Bureau report) | Made when a sting catches Garrick | record | no | |
@@ -294,7 +294,7 @@ No loss endings: the case can always go on. A wrong report is returned as in eve
 ## Contradictions found while writing
 
 1. The design had the body found at 12:02 by Pip ringing the bell-tube, but the tower has no bell-tube. Pip runs across the square to the Guard house shouting; Vell sends a runner to the Bureau.
-2. Dasha "never saw him come back out," yet Garrick had to return to his workshop. He leaves by the plinth hatch onto the square while the crowd runs to the tower; Corwin sees him arrive back.
+2. Dasha "never saw him come back out," yet Garrick had to return to his workshop. He leaves by the well grate onto the square while the crowd runs to the tower; Corwin sees him arrive back.
 3. The design put the keys both on the hook and on Aldric. He hangs them on the hook while he works.
 4. The design let Santa order Garrick held with no end. A Santa order lasts only until the 6:00 PM winding, so a sting or a confession is still needed.
 5. The 6:00 PM winding needs Garrick by custom, but a held Garrick cannot attend. If he is held, Aldric winds alone (with Pip); the true ending then needs Garrick brought round and released to the chamber under guard, or Aldric and Pip's slow hour.

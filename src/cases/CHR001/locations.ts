@@ -17,7 +17,7 @@ const PLACES: [id: string, name: string, subtitle: string][] = [
   ["chronometer_chamber", "The Chronometer Chamber", "The top of the clock tower"],
   ["tower_cellar", "The Tower Cellar", "Under the clock tower"],
   ["tunnels", "The Steam Tunnels", "Under the village"],
-  ["clock_base", "Under the Great Clock", "Inside the plinth"],
+  ["clock_base", "Down the Old Well", "At the bottom of the well shaft"],
   ["toy_floor", "Santa's Workshop", "The toy floor"],
   ["santa_office", "Santa's Office", "Santa's Workshop"],
   ["marigold_office", "Marigold Tinsel's Office", "Santa's Workshop"],
