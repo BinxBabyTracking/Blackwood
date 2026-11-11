@@ -6,7 +6,7 @@ import * as THREE from "three";
 import { GLTFLoader, type GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
 import { trimRuns, wallRects } from "./walk-viewer";
-import { doorsOf, floorSize, heightAt, layoutOf } from "./zones";
+import { doorsOf, floorSize, groundAt, heightAt, layoutOf } from "./zones";
 import { clearRoomLayout, saveRoomLayout } from "@/app/actions/art";
 import type { Side, World, Zone, ZoneModel, ZoneWall } from "./zones";
 
@@ -211,6 +211,74 @@ const KERB_MAT = (() => {
 })();
 const SNOW_MAT = new THREE.MeshStandardMaterial({ color: 0xf3f6ff, roughness: 0.9, side: THREE.DoubleSide });
 
+
+/* ---------- Stairs built in code: wooden flights and landings you can walk up ---------- */
+const STEP_MAT = new THREE.MeshStandardMaterial({ color: 0x9a6436, roughness: 0.8 });
+const BOARD_MAT = new THREE.MeshStandardMaterial({ color: 0x6b4226, roughness: 0.85 });
+const RAIL_MAT = new THREE.MeshStandardMaterial({ color: 0x5a3420, roughness: 0.7 });
+
+function buildStairs(z: Zone, root: THREE.Object3D) {
+  const [W, D] = z.size;
+  const nearWall = (v: number, half: number) => Math.abs(Math.abs(v) - half) < 0.15;
+  for (const st of z.stairs ?? []) {
+    const [ax0, az0, ax1, az1] = st.rect;
+    const x0 = Math.min(ax0, ax1), x1 = Math.max(ax0, ax1), z0 = Math.min(az0, az1), z1 = Math.max(az0, az1);
+    if (!st.axis) {
+      // Landing: a thick floor on posts.
+      const slab = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, 0.2, z1 - z0), STEP_MAT);
+      slab.position.set((x0 + x1) / 2, st.h0 - 0.1, (z0 + z1) / 2);
+      root.add(slab);
+      for (const [px, pz] of [[x0, z0], [x1, z0], [x0, z1], [x1, z1]]) {
+        if (nearWall(px, W / 2) || nearWall(pz, D / 2)) continue;
+        const post = new THREE.Mesh(new THREE.BoxGeometry(0.14, st.h0, 0.14), BOARD_MAT);
+        post.position.set(px + (px === x0 ? 0.07 : -0.07), st.h0 / 2, pz + (pz === z0 ? 0.07 : -0.07));
+        root.add(post);
+      }
+      continue;
+    }
+    const alongX = st.axis === "x";
+    const from = st.from!, to = st.to!;
+    const L = Math.abs(to - from), dh = st.h1 - st.h0;
+    const n = Math.max(2, Math.round(Math.abs(dh) / 0.18));
+    const across = alongX ? z1 - z0 : x1 - x0;
+    const mid = alongX ? (z0 + z1) / 2 : (x0 + x1) / 2;
+    const at = (t: number) => from + (to - from) * t;
+    const hAt = (t: number) => st.h0 + dh * t;
+    for (let i = 0; i < n; i++) {
+      const top = Math.max(hAt(i / n), hAt((i + 1) / n));
+      const c = at((i + 0.5) / n);
+      const tall = Math.abs(dh) / n + 0.06;
+      const box = new THREE.Mesh(alongX ? new THREE.BoxGeometry(L / n + 0.01, tall, across) : new THREE.BoxGeometry(across, tall, L / n + 0.01), STEP_MAT);
+      box.position.set(alongX ? c : mid, top - tall / 2, alongX ? mid : c);
+      root.add(box);
+    }
+    // The board under the flight, and a handrail on the open side.
+    const ang = Math.atan2(dh, to - from);
+    const len = Math.hypot(L, dh);
+    const cx = alongX ? (from + to) / 2 : mid, cz = alongX ? mid : (from + to) / 2;
+    const under = new THREE.Mesh(alongX ? new THREE.BoxGeometry(len, 0.12, across) : new THREE.BoxGeometry(across, 0.12, len), BOARD_MAT);
+    under.position.set(cx, (st.h0 + st.h1) / 2 - 0.22, cz);
+    if (alongX) under.rotation.z = ang;
+    else under.rotation.x = -ang;
+    root.add(under);
+    const open = alongX ? (nearWall(z0, D / 2) ? z1 : z0) : nearWall(x0, W / 2) ? x1 : x0;
+    const inset = alongX ? (open === z1 ? -0.05 : 0.05) : open === x1 ? -0.05 : 0.05;
+    const rail = new THREE.Mesh(alongX ? new THREE.BoxGeometry(len, 0.07, 0.07) : new THREE.BoxGeometry(0.07, 0.07, len), RAIL_MAT);
+    rail.position.set(alongX ? cx : open + inset, (st.h0 + st.h1) / 2 + 0.85, alongX ? open + inset : cz);
+    if (alongX) rail.rotation.z = ang;
+    else rail.rotation.x = -ang;
+    root.add(rail);
+    const posts = Math.max(2, Math.round(L / 0.5));
+    for (let k = 0; k <= posts; k++) {
+      const t = k / posts;
+      const p = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.85, 0.05), RAIL_MAT);
+      const a = at(t);
+      p.position.set(alongX ? a : open + inset, hAt(t) + 0.43, alongX ? open + inset : a);
+      root.add(p);
+    }
+  }
+}
+
 /** A label floating over something not made yet. */
 function labelSprite(text: string) {
   const c = document.createElement("canvas");
@@ -369,6 +437,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       g.fillRect(0, 0, 64, 64);
       return new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true });
     })();
+    let standY = 0;
     let personBlocks: { x0: number; x1: number; z0: number; z1: number }[] = [];
     const placed = new Map<ZoneModel, { shadow: THREE.Mesh; grp?: THREE.Object3D; box?: THREE.Box3; extra?: THREE.Object3D[] }>();
     let sel: ZoneModel | null = null;
@@ -975,12 +1044,14 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       }
       if (!want) setReady(true);
 
+      if (z.stairs) buildStairs(z, root);
       reblock();
       // Where you arrive: at the door back to where you came from, a step inside, facing in.
       const back = arriveFrom ? z.doors.find((dr) => dr.to === arriveFrom) : null;
       if (back) {
-        const step = back.kind === "wall" ? 1.1 : 1.7;
+        const step = back.kind === "wall" ? ((back.y ?? 0) > 0.3 ? 0.6 : 1.1) : 1.7;
         pos.set(back.at[0] + back.normal[0] * step, EYE, back.at[1] + back.normal[1] * step);
+        standY = back.y ?? 0;
         look.yaw = Math.atan2(-back.normal[0], -back.normal[1]);
       } else {
         const entry = z.doors.find((dr) => dr.kind === "wall" && dr.normal[1] < 0) ?? z.doors[0];
@@ -993,6 +1064,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         }
       }
       look.pitch = 0;
+      if (!back) standY = z.stairs ? 0 : heightAt(z.terrain, pos.x, pos.z);
       if (keep) {
         pos.set(keep.x, EYE, keep.z);
         look.yaw = keep.yaw;
@@ -1187,14 +1259,21 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           }
         }
     }
+    /** Steps to (x, z) if there's room and ground within a step of where you stand (stairs, landings, floor). */
+    const tryTo = (x: number, zz: number) => {
+      const z = current!;
+      if (!free(x, zz)) return false;
+      const g = z.stairs ? groundAt(z, x, zz, standY) : heightAt(z.terrain, x, zz);
+      if (g == null) return false;
+      standY = g;
+      pos.x = x;
+      pos.z = zz;
+      return true;
+    };
     const move = (dx: number, dz: number) => {
       // Inside something (a model loaded bigger than planned): step out to the nearest open ground first.
       if (!free(pos.x, pos.z)) snapOut();
-      if (free(pos.x + dx, pos.z + dz)) {
-        pos.x += dx;
-        pos.z += dz;
-      } else if (free(pos.x + dx, pos.z)) pos.x += dx;
-      else if (free(pos.x, pos.z + dz)) pos.z += dz;
+      if (!tryTo(pos.x + dx, pos.z + dz)) if (!tryTo(pos.x + dx, pos.z)) tryTo(pos.x, pos.z + dz);
     };
 
     const keys = new Set<string>();
@@ -1308,7 +1387,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       const fx = -Math.sin(look.yaw), fz = -Math.cos(look.yaw);
       const rx = Math.cos(look.yaw), rz = -Math.sin(look.yaw);
       if (len > 0.01) move((fx * f + rx * s) * sp, (fz * f + rz * s) * sp);
-      pos.y = EYE + heightAt(z.terrain, pos.x, pos.z);
+      if (!z.stairs) standY = heightAt(z.terrain, pos.x, pos.z);
+      pos.y = EYE + standY;
       camera.position.copy(pos);
       camera.rotation.set(look.pitch, look.yaw, 0, "YXZ");
 
@@ -1320,6 +1400,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         // Along the door's face and how far in front of it.
         const out = dx * dr.normal[0] + dz * dr.normal[1];
         const along = Math.abs(dx * dr.normal[1] - dz * dr.normal[0]);
+        if (dr.y != null && Math.abs(standY - dr.y) > 0.6) continue;
         const pass = dr.kind === "pass";
         if (along < dr.span + 0.2 && (pass ? Math.abs(out) < 1.2 : out < (dr.kind === "model" ? 1.4 : 0.9) && out > -1.5)) {
           hit = dr.to;

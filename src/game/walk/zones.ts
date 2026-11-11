@@ -29,7 +29,9 @@ export type Terrain = {
   hills: number[][];
   paths: { pts: number[][]; w: number }[];
 };
-export type ZoneDoor = { to: string; label: string; at: number[]; span: number; normal: number[]; kind: "wall" | "model" | "pass"; mi?: number };
+export type ZoneDoor = { to: string; label: string; at: number[]; span: number; normal: number[]; kind: "wall" | "model" | "pass"; mi?: number; y?: number };
+/** A flight of stairs (height running along an axis) or a landing (flat), in zone metres. */
+export type Stair = { rect: number[]; h0: number; h1: number; axis?: "x" | "z"; from?: number; to?: number };
 export type ZonePerson = { id: string; name: string; file: string | null; height: number; pos: number[]; rotY: number };
 export type Zone = {
   id: string;
@@ -48,6 +50,7 @@ export type Zone = {
   doors: ZoneDoor[];
   people: ZonePerson[];
   terrain?: Terrain;
+  stairs?: Stair[];
 };
 export type Side = "front" | "back" | "left" | "right";
 export type World = { caseId: string; name: string; start: string; zones: Zone[]; missing: string[] };
@@ -227,21 +230,35 @@ export function buildWorld(opts: {
   for (const z of zones) {
     const rec = opts.records.find((r) => r.id === z.room);
     const saved = opts.saved?.(z.room);
+    // Stairs built in code (they replace any Meshy stair and landing in the room).
+    const stairRec = rec?.stairs as { rectFt: number[]; hFt?: number; axis?: "x" | "z"; fromFt?: number; toFt?: number; h0Ft?: number; h1Ft?: number }[] | undefined;
+    if (stairRec) {
+      const [W0, D0] = z.size;
+      z.stairs = stairRec.map((st) => {
+        const r4 = [st.rectFt[0] * FT - W0 / 2, st.rectFt[1] * FT - D0 / 2, st.rectFt[2] * FT - W0 / 2, st.rectFt[3] * FT - D0 / 2];
+        const off = st.axis === "x" ? W0 / 2 : D0 / 2;
+        return st.axis
+          ? { rect: r4, axis: st.axis, from: st.fromFt! * FT - off, to: st.toFt! * FT - off, h0: st.h0Ft! * FT, h1: st.h1Ft! * FT }
+          : { rect: r4, h0: st.hFt! * FT, h1: st.hFt! * FT };
+      });
+      z.models = z.models.filter((mm) => !/_model_(stair|landing)$/.test(mm.id));
+    }
     if (saved) {
       applySaved(z, saved, opts.model);
+      if (z.stairs) z.models = z.models.filter((mm) => !/_model_(stair|landing)$/.test(mm.id));
       if (z.outdoor && rec?.terrain) dressLand(z, rec.terrain as LandRec, opts.model, pic, true);
       z.doors = doorsOf(z);
       continue;
     }
     if (!z.outdoor) {
       // Shrink as far as the room allows while you can still walk between all its doors.
-      const small = z.size[0] * z.size[1] < 250 * FT * FT;
+      const small = z.size[0] * z.size[1] < 250 * FT * FT || !!z.stairs;
       const orig = structuredClone(z);
       let k = !small && (opts.shrink ?? 1) < 1 ? fitShrink(z, opts.shrink!) : 1;
       for (;;) {
         const t = structuredClone(orig);
         if (k < 1) shrinkZone(t, k);
-        if ((opts.shrink ?? 1) < 1) fillRoom(t);
+        if ((opts.shrink ?? 1) < 1 && !t.stairs) fillRoom(t);
         clearWalls(t);
         lowerCeiling(t);
         t.doors = doorsOf(t);
@@ -319,7 +336,7 @@ export function doorsOf(z: Zone): ZoneDoor[] {
     for (const p of z.walls[side].pieces)
       if (p.to) {
         const wp = wallPoint(side, w, d, p.x + p.w / 2);
-        out.push({ to: p.to, label: p.label, at: wp.at, span: p.w / 2, normal: wp.normal, kind: "wall" });
+        out.push({ to: p.to, label: p.label, at: wp.at, span: p.w / 2, normal: wp.normal, kind: "wall", y: p.y });
       }
   for (const m of z.models) {
     if (!m.door) continue;
@@ -458,6 +475,7 @@ function lowerCeiling(z: Zone) {
   let door = 0;
   for (const side of SIDES) for (const p of z.walls[side].pieces) if (isDoor(p)) door = Math.max(door, p.y + p.h);
   let need = door ? door + 1 * FT : 8 * FT;
+  for (const st of z.stairs ?? []) need = Math.max(need, Math.max(st.h0, st.h1) + 8 * FT);
   for (const m of z.models) need = Math.max(need, m.elev + m.size[2] + 0.25 * FT);
   const Hn = Math.min(H, need);
   for (const side of SIDES)
@@ -777,4 +795,31 @@ export function layoutOf(z: Zone): SavedLayout {
     fixtures: z.fixtures,
     decals: z.decals,
   };
+}
+
+/** Heights of stairs and landings under a point (none if there are none there). */
+export function stairHeights(z: Zone, x: number, y: number) {
+  const out: number[] = [];
+  for (const st of z.stairs ?? []) {
+    const [x0, z0, x1, z1] = st.rect;
+    if (x < Math.min(x0, x1) || x > Math.max(x0, x1) || y < Math.min(z0, z1) || y > Math.max(z0, z1)) continue;
+    if (!st.axis) out.push(st.h0);
+    else {
+      const c = st.axis === "x" ? x : y;
+      const t = Math.max(0, Math.min(1, (c - st.from!) / (st.to! - st.from!)));
+      out.push(st.h0 + (st.h1 - st.h0) * t);
+    }
+  }
+  return out;
+}
+
+/** Where you stand at a point, coming from height cur: the floor (if there's headroom) or a stair, within a step. */
+export function groundAt(z: Zone, x: number, y: number, cur: number) {
+  const base = heightAt(z.terrain, x, y);
+  const hs = stairHeights(z, x, y);
+  const cands = hs.length ? [...hs] : [base];
+  if (hs.length && hs.every((h) => h - base > 1.9)) cands.push(base);
+  let best: number | null = null;
+  for (const c of cands) if (Math.abs(c - cur) <= 0.45 && (best == null || Math.abs(c - cur) < Math.abs(best - cur))) best = c;
+  return best;
 }

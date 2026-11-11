@@ -88309,7 +88309,7 @@
         20,
         30
       ],
-      "note": "The tall shaft inside the tower. Enter at floor level from Aldric's workshop through the arch in the back wall. The stair climbs the left wall to a landing at 22 feet and the chamber door in the front wall. The pendulum hangs in the middle. A good hiding place for a sting.",
+      "note": "The tall shaft inside the tower. Enter at floor level from Aldric's workshop through the arch in the back wall. A wooden stair (built in code) climbs round the walls in three flights with two landings: up the right wall, across the back wall over the arch, up the left wall to the landing at 22 feet and the chamber door in the front wall. The pendulum hangs in the middle. A good hiding place for a sting.",
       "wall": {
         "image": "chr001_tower_workshop_wall",
         "tileFt": 4
@@ -88419,7 +88419,75 @@
           ]
         }
       ],
-      "people": []
+      "people": [],
+      "stairs": [
+        {
+          "rectFt": [
+            0,
+            0,
+            5.9,
+            3.6
+          ],
+          "hFt": 22
+        },
+        {
+          "rectFt": [
+            0,
+            3.6,
+            3.3,
+            13.85
+          ],
+          "axis": "z",
+          "fromFt": 3.6,
+          "toFt": 13.85,
+          "h0Ft": 22,
+          "h1Ft": 14.67
+        },
+        {
+          "rectFt": [
+            0,
+            13.85,
+            3.6,
+            20
+          ],
+          "hFt": 14.67
+        },
+        {
+          "rectFt": [
+            3.6,
+            16.7,
+            13.85,
+            20
+          ],
+          "axis": "x",
+          "fromFt": 3.6,
+          "toFt": 13.85,
+          "h0Ft": 14.67,
+          "h1Ft": 7.33
+        },
+        {
+          "rectFt": [
+            13.85,
+            16.4,
+            20,
+            20
+          ],
+          "hFt": 7.33
+        },
+        {
+          "rectFt": [
+            16.7,
+            6.15,
+            20,
+            16.4
+          ],
+          "axis": "z",
+          "fromFt": 16.4,
+          "toFt": 6.15,
+          "h0Ft": 7.33,
+          "h1Ft": 0
+        }
+      ]
     },
     {
       "id": "chr001_chronometer_chamber",
