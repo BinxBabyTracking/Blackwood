@@ -8,13 +8,14 @@ import type { CharacterDef, Condition } from "@/game/engine/types";
  * timeline are approved; until then nobody can be questioned.
  *
  * Voices: each voiceId is only a stand-in until a voice is designed on the
- * Admin page from the direction. North Pole elves speak warm, old-fashioned
- * American English with a faint Scandinavian lilt; Santa and Mrs. Claus speak
- * plain, warm American English.
+ * Admin page from the direction. North Pole elves are small, gnome-like folk
+ * with bright, lively, characterful voices and a light Scandinavian lilt, like
+ * an animated Christmas film; Santa and Mrs. Claus are full-sized and speak
+ * warm American English.
  */
 
 const never: Condition = { not: { always: true } };
-const LILT = "Warm, old-fashioned American English with a faint Scandinavian lilt, as all North Pole elves speak.";
+const LILT = "A North Pole elf: small, round, gnome-like folk, so a bright, slightly higher, lively voice with a twinkle of mischief and a light, musical Scandinavian lilt in warm American English, like a character in an animated Christmas film; never squeaky, sped up or chipmunk-like.";
 
 type Person = {
   id: string;
@@ -39,7 +40,7 @@ const PEOPLE: Person[] = [
     ],
     locationId: "tower_workshop",
     voiceId: "JBFqnCBsd6RMkjVDRZzb",
-    direction: `Very old man, gentle, dry, patient and a little amused, a craftsman's precise way of speaking, slow but never frail. ${LILT}`,
+    direction: `Very old elf, gentle, dry, twinkly and a little amused, a craftsman's precise way of speaking, slow and creaky like an old clock but never frail, a soft chuckle in his voice. ${LILT}`,
     persona: "Kind, exact, secretive about his work, tired of carrying a weight alone. Speaks in short, careful sentences and dislikes being hurried.",
   },
   {
@@ -52,7 +53,7 @@ const PEOPLE: Person[] = [
     ],
     locationId: "garrick_workshop",
     voiceId: "CYw3kZ02Hs0563khs1Fj",
-    direction: `Man in his forties, a skilled tradesman: low, steady, plain spoken and polite, grief held tightly under the surface, becoming clipped and hard when pushed. ${LILT}`,
+    direction: `Middle-aged elf, gruff and low for an elf, a tradesman's plain, steady speech, polite, grief held tightly under the surface, becoming clipped and hard when pushed. ${LILT}`,
     persona: "Proud, quiet, devoted to his daughter, carrying a terrible plan. Gives his own account and never volunteers it.",
   },
   {
@@ -62,7 +63,7 @@ const PEOPLE: Person[] = [
     bio: ["Sixty-two, young for an elf, but she looks very old. Paints toys at the workshop. Lives with her father on Holly Lane."],
     locationId: "toy_floor",
     voiceId: "pMsXgVXv3BLzUgSXRplE",
-    direction: `Woman who sounds young but tired and a little breathless, gentle, warm, wry about her own frailty, never self-pitying. ${LILT}`,
+    direction: `Elf woman who sounds young but tired and a little breathless, gentle, warm and wry, a soft laugh, never self-pitying. ${LILT}`,
     persona: "Gentle, funny, worried about her father. Knows she is aging too fast, does not know why, and does not know what he plans.",
   },
   {
@@ -72,7 +73,7 @@ const PEOPLE: Person[] = [
     bio: ["Forty, very young for an elf. Apprentice to the Keeper of Time for six years. Found Aldric's body."],
     locationId: "tower_workshop",
     voiceId: "bIHbv24MWmeRgasZH58o",
-    direction: `Young man of about twenty, eager, quick, nervous, talks a little too fast, devoted to his master. ${LILT}`,
+    direction: `Young elf, very eager, quick and nervous, talks a little too fast and trips over his words, bright and earnest, devoted to his master. ${LILT}`,
     persona: "Earnest, anxious, observant about clocks and careless about everything else. Knows Aldric was building something, not what.",
   },
   {
@@ -82,7 +83,7 @@ const PEOPLE: Person[] = [
     bio: ["The final authority at the North Pole. Prepares for his journey on Christmas Eve from his office off the toy floor."],
     locationId: "santa_office",
     voiceId: "pNInz6obpgDQGcFmaJgB",
-    direction: "Elderly man with a deep, warm, unhurried American voice, kind and wise, with real authority and, today, a weight of worry. Never a jolly caricature; laughs rarely and softly.",
+    direction: "Santa Claus: a big, elderly man with a deep, rich, warm, rumbling American voice, kind, twinkly and wise, a soft hearty chuckle, with real authority and, today, a weight of worry.",
     persona: "Warm, wise, responsible for everyone. Trusts his Bureau. Recognizes his own Time Bag's magic when he sees it.",
   },
   {
@@ -92,7 +93,7 @@ const PEOPLE: Person[] = [
     bio: ["Knows everyone at the North Pole and most of their business. An old friend of Mira Thorne."],
     locationId: "kitchen",
     voiceId: "21m00Tcm4TlvDq8ikWAM",
-    direction: "Elderly woman, warm, brisk, shrewd and teasing, plain American English, a voice used to running a busy kitchen.",
+    direction: "Mrs. Claus: an elderly woman, warm, cozy, brisk, shrewd and teasing, a merry laugh, warm American English, a voice used to running a busy Christmas kitchen.",
     persona: "Kind, sharp, a little nosy, protective of Mira. Notices who comes and goes.",
   },
   {
@@ -102,7 +103,7 @@ const PEOPLE: Person[] = [
     bio: ["Runs Santa's day. Keeps his appointment book."],
     locationId: "marigold_office",
     voiceId: "EXAVITQu4vr4xnSDxMaL",
-    direction: `Woman in her fifties, brisk, efficient, precise, impatient with anything off schedule, dry humor. ${LILT}`,
+    direction: `Elf woman, brisk, crisp and efficient, precise, a little bossy, impatient with anything off schedule, dry humor. ${LILT}`,
     persona: "Efficient, protective of Santa's time, exact about appointments.",
   },
   {
@@ -112,7 +113,7 @@ const PEOPLE: Person[] = [
     bio: ["Commands the Guard. Posts guards and holds anyone detained in the Guard house cells."],
     locationId: "guard_house",
     voiceId: "FGY2WhTYpPnrIDTdsKH5",
-    direction: `Woman of about forty, a guard captain: level, dry, direct, skeptical, few words. ${LILT}`,
+    direction: `Elf woman, a guard captain: lower and steadier than most elves, level, dry, direct and skeptical, few words, a hint of a smile underneath. ${LILT}`,
     persona: "Practical and skeptical. Acts only on grounds she can see in front of her; evidence from another timeline only confuses her.",
   },
   {
@@ -122,7 +123,7 @@ const PEOPLE: Person[] = [
     bio: ["Keeps the Archives, the Tithe Register and the visitor log."],
     locationId: "archives",
     voiceId: "GBv7mTt0atIp3Br8iCZE",
-    direction: `Old man, dry, exact, pedantic and soft spoken, fond of the precise word. ${LILT}`,
+    direction: `Very old elf, dry, fussy, exact and soft spoken, a bookish wheeze, fond of the precise word and delighted by old records. ${LILT}`,
     persona: "Meticulous, a stickler for the log, delighted when someone takes an interest in old records.",
   },
   {
@@ -132,7 +133,7 @@ const PEOPLE: Person[] = [
     bio: ["Runs the Lab on the square. Built a large glass globe to Aldric's drawings."],
     locationId: "lab",
     voiceId: "pFZP5JQG7iQjIQuC4Bku",
-    direction: `Woman in her forties, quick, clever, distracted, exact, a little impatient, warm underneath. ${LILT}`,
+    direction: `Elf woman, quick, clever and scatterbrained, talks fast when excited, exact, a little impatient, warm underneath. ${LILT}`,
     persona: "Brilliant and busy. Annoyed that her gear puller has gone missing. Does not know what the globe is for.",
   },
   {
@@ -142,7 +143,7 @@ const PEOPLE: Person[] = [
     bio: ["Keeps a clock shop on Clockmakers' Row. Has a long-running grievance with the Keeper of Time."],
     locationId: "corwin_shop",
     voiceId: "pqHfZKP75CvOlQylNhV4",
-    direction: `Man in his fifties, fussy, aggrieved, nasal, quick to complain, a little pompous. ${LILT}`,
+    direction: `Elf man, fussy, aggrieved and nasal, quick to complain, pompous and theatrical, huffs and sniffs. ${LILT}`,
     persona: "Petty, proud of his clocks, furious that Aldric keeps retuning them. Loud but harmless.",
   },
   {
@@ -152,7 +153,7 @@ const PEOPLE: Person[] = [
     bio: ["Runs the reindeer stables and the stable yard."],
     locationId: "stables",
     voiceId: "ThT5KcBeYPX3keUQqHPh",
-    direction: `Woman of about thirty, outdoorsy, frank, practical, warm with animals and blunt with people. ${LILT}`,
+    direction: `Young elf woman, outdoorsy, frank and cheerful, practical, warm with animals and blunt with people, a hearty laugh. ${LILT}`,
     persona: "Straightforward and observant about who comes through her stables.",
   },
   {
@@ -162,7 +163,7 @@ const PEOPLE: Person[] = [
     bio: ["Runs the toy floor and its shift board."],
     locationId: "toy_floor",
     voiceId: "iP95p4xoKVk53GoZ742B",
-    direction: `Big man of about sixty, booming, hearty, harried, organized, a foreman's voice. ${LILT}`,
+    direction: `Big, round elf, booming, hearty and jolly, harried, a foreman's voice that carries across a busy workshop. ${LILT}`,
     persona: "Busy, friendly, proud of his floor, knows who signed out and when.",
   },
   {
@@ -172,7 +173,7 @@ const PEOPLE: Person[] = [
     bio: ["Heads the Jingle Division of the Silver Bell Bureau. Briefs the investigators."],
     locationId: "jingle_office",
     voiceId: "XrExE9yKIg1WjnnlVkGX",
-    direction: `Woman in her fifties, calm, dry, serious, authoritative and economical, a senior detective. ${LILT}`,
+    direction: `Elf woman, calm, dry and serious, authoritative and economical, a senior detective, a rare dry wit. ${LILT}`,
     persona: "The investigators' chief and contact. Serious, fair, never gives answers away.",
   },
   {
@@ -182,7 +183,7 @@ const PEOPLE: Person[] = [
     bio: ["One of Captain Vell's guards. Can be posted where the investigators ask."],
     locationId: "guard_house",
     voiceId: "onwK4e9ZLuTAKqWW03F9",
-    direction: `Man of about thirty, formal, brief, polite, by the book. ${LILT}`,
+    direction: `Young elf, formal, brief and polite, by the book, trying hard to sound official. ${LILT}`,
     persona: "Formal and brief. Follows orders.",
     onBoard: false,
   },

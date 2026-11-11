@@ -3,9 +3,9 @@ import type { SoundtrackDef } from "@/game/engine/types";
 /*
  * CHR001's music, room sound and sound effects, made once with ElevenLabs from
  * the Admin page and served from storage. Christmas Eve at Santa's North Pole
- * in the polar night: warm, old-fashioned and a little magical, with a murder
- * at its heart, so never jolly-cartoonish and never horror. Clocks, bells and
- * clockwork run through everything. Sound effects (kind "sfx") are one-shots
+ * in the polar night, in the case's art style: whimsical, magical and full of
+ * Christmas sparkle, like a lavish animated Christmas film, with a mystery at
+ * its heart but never horror. Clocks, bells and clockwork run through everything. Sound effects (kind "sfx") are one-shots
  * for the walkable 3D client to play on events.
  */
 const room = (key: string, label: string, prompt: string): SoundtrackDef => ({ key, kind: "ambience", label, seconds: 30, prompt: `${prompt} Seamless loop.` });
@@ -18,7 +18,7 @@ export const SOUNDTRACK: SoundtrackDef[] = [
     label: "Case theme",
     seconds: 150,
     prompt:
-      "Warm, old-fashioned orchestral mystery score for a murder on Christmas Eve in Santa's snowbound elf village. A celesta and music box carry a gentle, slightly sad Christmas melody over pizzicato strings that tick like a clock, soft French horn and sleigh bells far in the background, low cello underneath for a sense of something wrong. Wonder and unease together, never jolly, never horror. Even dynamics throughout, ends the way it begins so it can loop. Instrumental only.",
+      "Whimsical, magical orchestral theme for a Christmas mystery in Santa's North Pole, like the score of a lavish animated Christmas film. A playful celesta and glockenspiel melody over bouncy pizzicato strings that tick like a clock, sleigh bells, a twinkling harp, a cheeky bassoon answering the tune, a warm choir of woodwinds, with just a hint of mystery in a few minor turns. Bright, wondrous and full of Christmas sparkle. Even dynamics, ends the way it begins so it can loop. Instrumental only.",
   },
   {
     key: "music.investigation",
@@ -26,7 +26,7 @@ export const SOUNDTRACK: SoundtrackDef[] = [
     label: "Investigation",
     seconds: 150,
     prompt:
-      "Quiet, thoughtful investigation underscore for detectives searching a snowy fairy-tale village on Christmas Eve. A steady clock-like tick on wood blocks and muted pizzicato, a soft glockenspiel figure that keeps circling back, warm low clarinet and strings, a hint of sleigh bells. Curious and focused, never tense enough to tire the ear. Steady dynamics so it can loop. Instrumental only.",
+      "Light, curious, playful sneaking music for little elf detectives searching Santa's village on Christmas Eve. Tiptoeing pizzicato strings and a ticking wood block, a mischievous clarinet and bassoon, a twinkling glockenspiel motif that keeps circling back, soft sleigh bells and a music box shimmer. Clever and Christmassy, never tense enough to tire the ear. Steady dynamics so it can loop. Instrumental only.",
   },
   {
     key: "music.countdown",
@@ -34,7 +34,7 @@ export const SOUNDTRACK: SoundtrackDef[] = [
     label: "The countdown",
     seconds: 150,
     prompt:
-      "Tense underscore for the last hours of a magical countdown before time resets on Christmas Eve. A relentless ticking pulse on harpsichord and plucked strings, a celesta motif of four notes climbing, deep tolling bell notes every few bars, low strings slowly building but never peaking, a heartbeat-like bass drum. Urgent and wondrous. Steady dynamics from start to end so it can loop. Instrumental only.",
+      "Exciting, magical race-against-the-clock music for Christmas Eve in Santa's workshop. A fast ticking pulse on xylophone and pizzicato, a celesta motif of four notes climbing, jingling sleigh bells, galloping strings, bright brass fanfares, big bell chimes every few bars. Urgent but fun and adventurous, like an animated Christmas caper. Steady dynamics so it can loop. Instrumental only.",
   },
   {
     key: "music.morning_again",
@@ -42,7 +42,7 @@ export const SOUNDTRACK: SoundtrackDef[] = [
     label: "Christmas Eve, again (after a reset)",
     seconds: 90,
     prompt:
-      "A gentle, uncanny morning cue for waking up on the same Christmas Eve again after time has rewound. A music box plays a simple Christmas melody slightly too slowly, then a soft string chord swells as if remembering, a single clear bell, distant children's choir humming without words, warm and strange. Calm dynamics, can loop. Instrumental only.",
+      "A magical, slightly funny cue for waking up on the very same Christmas Eve morning again after time has rewound. A music box plays a cheerful Christmas tune, a cartoonish rewinding harp glissando, twinkling celesta, a sleepy bassoon yawn, then bright strings and sleigh bells as the day begins anew. Wondrous and playful. Calm dynamics, can loop. Instrumental only.",
   },
   {
     key: "music.sting",
@@ -50,7 +50,7 @@ export const SOUNDTRACK: SoundtrackDef[] = [
     label: "The trap (waiting in hiding)",
     seconds: 150,
     prompt:
-      "Hushed suspense cue for investigators hiding in a clock tower waiting to catch a killer in the act on Christmas Eve. Very quiet ticking of many clocks, a sustained low string note, soft tremolo violins, a muted horn motif that never resolves, occasional single chimes of a tiny bell. Breath-held and patient. Even, very quiet dynamics so it can loop. Instrumental only.",
+      "Playful hush-hush suspense for elves hiding in a clock tower to catch a thief in the act on Christmas Eve. Quiet tiptoeing pizzicato, many tiny clocks ticking, a sneaky low bassoon and muted trumpet, occasional tiny bell tinkles, a held breath of tremolo strings. Sneaky and fun rather than scary. Even, quiet dynamics so it can loop. Instrumental only.",
   },
   {
     key: "music.restored",
@@ -58,7 +58,7 @@ export const SOUNDTRACK: SoundtrackDef[] = [
     label: "Ending: Christmas Restored",
     seconds: 120,
     prompt:
-      "A warm, relieved but bittersweet closing theme for Christmas Eve saved after a murder was stopped. Full gentle orchestra: strings and horns take up a Christmas melody first heard on a music box, celesta and sleigh bells join, a soft choir without words, the clock-tick motif slowing to stillness. Hopeful, with a trace of sadness for what is not yet fixed. Instrumental only.",
+      "A joyful, heartwarming ending theme for Christmas Eve saved in Santa's North Pole. Full sparkling orchestra in the style of an animated Christmas film: soaring strings and horns take up the music box melody, celesta, harp and sleigh bells, a wordless children's choir, ending on a warm chord and a tinkle of bells. Happy with a touch of tenderness. Instrumental only.",
   },
   {
     key: "music.forever",
@@ -66,17 +66,17 @@ export const SOUNDTRACK: SoundtrackDef[] = [
     label: "Ending: Christmas Restored, Forever",
     seconds: 150,
     prompt:
-      "A soaring, joyful true-ending theme for the first Christmas in centuries that costs no one any years of their life. A music box Christmas melody grows into full orchestra and wordless choir, church bells and sleigh bells ringing together, horns in triumph, strings warm and wide, ending on a held chord and one clear bell. Moving and grand without being loud for its own sake. Instrumental only.",
+      "A grand, soaring, magical finale for the best Christmas ever: Santa's sleigh takes off and every bell at the North Pole rings. Huge joyful orchestra and wordless choir, trumpets in triumph, cascading celesta and glockenspiel, sleigh bells, church bells and a music box melody bursting into full color, ending on a big shining chord and one clear bell. Pure Christmas wonder. Instrumental only.",
   },
 
   // Room sound. Polar night everywhere: wind, snow, distant bells and clocks.
   room("amb.bureau_hall", "Room sound: the Bureau front hall", "A warm timber front hall on a snowy night in an old-fashioned village. A pot-bellied stove ticking and crackling, wind outside the heavy door, a wall clock ticking, a door bell tinkling faintly somewhere, muffled footsteps on boards."),
   room("amb.jingle_office", "Room sound: the Jingle Division office", "A quiet pine-paneled investigators' office on a snowy night. A log fire crackling, several small clocks ticking on a mantel slightly out of step, wind against the windows, the soft hiss of a brass speaking tube, papers shifting. Calm and focused."),
   room("amb.village_square", "Room sound: the village square", "Outdoors in a snowy elf village square on Christmas Eve at night. Soft wind, footsteps crunching in snow, distant cheerful voices and a carol being hummed, sleigh bells passing far off, the deep slow tick of a big outdoor clock, a market stall's canvas flapping."),
-  room("amb.tower_workshop", "Room sound: Aldric's workshop", "Inside the stone base of an old clock tower. The heavy, slow tick and clunk of huge tower clock gears close by, a small iron stove crackling, wind whistling at a narrow window, tiny tinkle of brass parts. Still and echoing."),
-  room("amb.gear_gallery", "Room sound: the gear gallery", "Inside a tall stone clock tower shaft. A giant pendulum swinging with a deep whoosh and tock, big gears grinding slowly overhead, wooden stairs creaking, wind moaning far above, cold echo."),
+  room("amb.tower_workshop", "Room sound: Aldric's workshop", "Inside the stone base of an old clock tower. The heavy, slow tick and clunk of huge tower clock gears close by, a small iron stove crackling, wind whistling at a narrow window, tiny tinkle of brass parts. Cozy, magical and a little echoing."),
+  room("amb.gear_gallery", "Room sound: the gear gallery", "Inside a tall stone clock tower shaft. A giant pendulum swinging with a deep whoosh and tock, big gears grinding slowly overhead, wooden stairs creaking, wind whistling far above, a faint twinkle of magic."),
   room("amb.chronometer_chamber", "Room sound: the Chronometer chamber", "A small room at the very top of a clock tower behind its great clock faces. The huge hands moving with a soft heavy clunk each minute, wind against the glass faces, a very faint high magical shimmer like a glass harmonica, a delicate fast ticking."),
-  room("amb.tower_cellar", "Room sound: the tower cellar", "A stone cellar under a clock tower. Muffled heavy ticking from the floor above, dripping water, coal shifting in a bin, a draft whistling under an iron door."),
+  room("amb.tower_cellar", "Room sound: the tower cellar", "A stone cellar under a clock tower. Muffled heavy ticking from the floor above, dripping water, coal shifting in a bin, a draft whistling under an iron door, a mouse squeaking."),
   room("amb.tunnels", "Room sound: the steam tunnels", "A long brick steam tunnel under a snowy village. Steam pipes hissing and ticking as they expand, echoing drips, a distant rumble of a boiler, faint footsteps far down the tunnel, a low hum."),
   room("amb.clock_base", "Room sound: under the great clock", "A cramped stone space inside the base of a big outdoor clock. Heavy chains and weights creaking slowly, a deep close tick, muffled wind and village voices outside through thick stone."),
   room("amb.toy_floor", "Room sound: the toy floor", "Santa's busy toy workshop on Christmas Eve. Many elves hammering, sawing and sanding wood, a wooden roller conveyor rumbling, toy drums and bells being tested, cheerful chatter and a whistle, paper being wrapped, all at a gentle distance."),
@@ -90,12 +90,12 @@ export const SOUNDTRACK: SoundtrackDef[] = [
   room("amb.corwin_shop", "Room sound: Corwin's clock shop", "A small shop crowded with clocks: ticking everywhere, a cuckoo clock calling once, a mantel clock chiming a quarter hour, a shop bell, a floorboard creaking."),
   room("amb.glassworks", "Room sound: the glassworks", "A small glassworks. A furnace roaring steadily, a blowpipe rolling on a steel table, glass clinking in a rack, a bellows breathing, wind outside."),
   room("amb.holly_lane", "Room sound: Holly Lane", "Outdoors on a quiet snowy lane of cottages at night. Soft wind, snow falling from a branch, a distant church-like bell, muffled carol singing from inside a cottage, footsteps in snow, a gate creaking."),
-  room("amb.thorne_parlor", "Room sound: the Thornes' parlor", "A small cottage parlor at night. A low fire whispering, a single slow clock ticking, wind against a leaded window, a teacup set down. Quiet and sad."),
+  room("amb.thorne_parlor", "Room sound: the Thornes' parlor", "A small cottage parlor at night. A low fire whispering, a single slow clock ticking, wind against a leaded window, a teacup set down. Cozy and gentle."),
   room("amb.stable_yard", "Room sound: the stable yard", "Outdoors by reindeer stables and a sleigh hangar on a snowy night. Wind across open snowfields, reindeer snorting and stamping, harness bells jingling, a hangar door rattling, lantern chains creaking."),
   room("amb.stables", "Room sound: the stables", "Inside timber reindeer stables at night. Reindeer shifting in straw, snorts and soft grunts, bells on halters jingling, a hay fork, wind in the eaves, a boiler rumbling behind a wall."),
   room("amb.boiler_room", "Room sound: the boiler room", "A small boiler room. A big boiler roaring and ticking, steam hissing from a valve, pipes knocking, coal settling."),
   room("amb.hangar", "Room sound: the sleigh hangar", "A huge timber sleigh hangar on Christmas Eve. Echoing space, wind against tall doors, elves loading sacks at a distance, harness bells, a lantern creaking, a creak of timber."),
-  room("amb.guard_house", "Room sound: the Guard house", "A plain timber guard house at night. A small stove ticking, a ring of keys jingling, a chair creaking, wind outside, a cell door rattling faintly."),
+  room("amb.guard_house", "Room sound: the Guard house", "A plain timber guard house at night. A small stove ticking, a ring of keys jingling, a chair creaking, wind outside, a cell door rattling faintly, a guard humming a carol."),
 
   // Sound effects for the 3D client.
   sfx("sfx.chronometer_chime", "Chronometer chime (the moment of death)", 6, "A single magical chime from a great golden pocket watch: a pure, clear bell tone with a shimmering glassy halo that rings out and slowly fades, then a soft deep tick. Otherworldly but beautiful."),

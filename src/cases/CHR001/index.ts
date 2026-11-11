@@ -64,7 +64,7 @@ export const CHR001: CaseDefinition = {
   ],
   speech: {
     setting:
-      "Santa's North Pole on Christmas Eve, in the polar night: a timeless, old-fashioned elf village of timber, stone and clockwork, with no modern technology. The Keeper of Time, Aldric, has been found dead in his clock tower workshop and the Christmas Chronometer is gone. The investigators are elves of the Silver Bell Bureau's Jingle Division. People speak warm, old-fashioned American English.",
+      "Santa's North Pole on Christmas Eve, in the polar night: a timeless, old-fashioned elf village of timber, stone and clockwork, with no modern technology. The Keeper of Time, Aldric, has been found dead in his clock tower workshop and the Christmas Chronometer is gone. The investigators are elves of the Silver Bell Bureau's Jingle Division. Elves are small, gnome-like folk; Santa and Mrs. Claus are full-sized. Everyone speaks warm, lively American English, with a playful, storybook Christmas charm.",
     style:
       "Answer in one to four short spoken sentences, in character, in American English. No em dashes or en dashes. Never state anything the character does not know. Never confess to a crime. Never say who killed Aldric. Nobody remembers an earlier loop of the day, even when told about it.",
   },
