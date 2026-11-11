@@ -66,6 +66,12 @@ async function World({ searchParams }: { searchParams: Promise<Record<string, st
     }
   }
 
+  // Models Meshy built facing the wrong way, turned in Edit mode.
+  const turns = new Map<string, number>();
+  if (db) {
+    const { data } = await db.from("art_turns").select("image_id, turn").like("image_id", `${prefix}\\_%`);
+    for (const r of (data ?? []) as { image_id: string; turn: number }[]) turns.set(r.image_id, r.turn);
+  }
   const heights = HEIGHTS[caseId] ?? {};
   const world = buildWorld({
     caseId,
@@ -81,6 +87,7 @@ async function World({ searchParams }: { searchParams: Promise<Record<string, st
       victim: /\bvictim\b/i.test(c.role ?? ""),
     })),
     character: (id) => models.get(`${prefix}_char_${id}`) ?? null,
+    turn: (id) => turns.get(id) ?? 0,
     start: one(q.at) ?? def.startLocation,
     shrink: Number.isFinite(Number(one(q.shrink))) && Number(one(q.shrink)) > 0 ? Number(one(q.shrink)) : (DEFAULT_SHRINK[caseId] ?? 1),
   });

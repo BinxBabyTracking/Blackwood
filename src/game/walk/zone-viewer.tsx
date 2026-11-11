@@ -7,6 +7,7 @@ import { GLTFLoader, type GLTF } from "three/examples/jsm/loaders/GLTFLoader.js"
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
 import { trimRuns, wallRects } from "./walk-viewer";
 import { heightAt } from "./zones";
+import { turnModel } from "@/app/actions/art";
 import type { Side, World, Zone, ZoneWall } from "./zones";
 
 /*
@@ -27,6 +28,120 @@ function wallFrame(z: Zone, side: Side) {
   if (side === "back") return { pos: [0, d / 2], rot: Math.PI, width: w };
   if (side === "left") return { pos: [-w / 2, 0], rot: Math.PI / 2, width: d };
   return { pos: [w / 2, 0], rot: -Math.PI / 2, width: d };
+}
+
+
+/* ---------- Cobbles: real rounded stones in rows, granite kerbs with snow along each side ---------- */
+
+const COBBLE = (() => {
+  const g = new THREE.SphereGeometry(0.5, 6, 3);
+  const p = g.attributes.position as THREE.BufferAttribute;
+  for (let i = 0; i < p.count; i++) if (p.getY(i) < 0) p.setY(i, p.getY(i) * 0.25);
+  g.computeVertexNormals();
+  return g;
+})();
+const STONE_MAT = new THREE.MeshLambertMaterial({ color: 0xffffff });
+const KERB = new THREE.BoxGeometry(0.22, 0.16, 0.6);
+const SNOW_CAP = new THREE.BoxGeometry(0.2, 0.04, 0.54);
+let seedC = 99;
+const rndC = () => ((seedC = (seedC * 16807) % 2147483647) / 2147483647);
+
+/** Stones in a chunk, as one instanced mesh (so whole chunks drop out of view when behind you). */
+function stoneChunk(list: { p: THREE.Vector3; yaw: number; s: THREE.Vector3 }[], color: (i: number) => THREE.Color) {
+  const mesh = new THREE.InstancedMesh(COBBLE, STONE_MAT, list.length);
+  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler();
+  list.forEach((st, i) => {
+    q.setFromEuler(e.set((rndC() - 0.5) * 0.12, st.yaw, (rndC() - 0.5) * 0.12));
+    mesh.setMatrixAt(i, m4.compose(st.p, q, st.s));
+    mesh.setColorAt(i, color(i));
+  });
+  mesh.computeBoundingSphere();
+  return mesh;
+}
+const stoneColor = () => {
+  const g = 0.17 + rndC() * 0.13;
+  return new THREE.Color().setRGB(g, g * 1.02, g * 1.1);
+};
+
+/** Lays a cobbled path along points pts (already split into short steps), w metres wide, with kerbs. */
+function layCobbles(root: THREE.Object3D, T: NonNullable<Zone["terrain"]>, pts: number[][], w: number) {
+  const ROW = 0.2;
+  let chunk: { p: THREE.Vector3; yaw: number; s: THREE.Vector3 }[] = [];
+  const kerbs: { p: THREE.Vector3; yaw: number }[] = [];
+  let along = 0, nextRow = 0, nextKerb = 0, row = 0, chunkStart = 0;
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i - 1], b = pts[i];
+    const L = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    if (!L) continue;
+    const ux = (b[0] - a[0]) / L, uz = (b[1] - a[1]) / L;
+    const yaw = Math.atan2(ux, uz);
+    while (nextRow < along + L) {
+      const d = nextRow - along;
+      const cx = a[0] + ux * d, cz = a[1] + uz * d;
+      // One row of stones across the path, staggered every other row.
+      let off = -w / 2 + (row % 2 ? 0.12 : 0);
+      while (off < w / 2 - 0.05) {
+        const len = 0.2 + rndC() * 0.12;
+        const mid = Math.min(off + len / 2, w / 2 - 0.08);
+        const x = cx + uz * mid, z = cz - ux * mid;
+        chunk.push({ p: new THREE.Vector3(x, heightAt(T, x, z) + 0.035, z), yaw: yaw + Math.PI / 2, s: new THREE.Vector3(len * 0.92, 0.13 + rndC() * 0.04, ROW * 0.9) });
+        off += len;
+      }
+      row++;
+      nextRow += ROW;
+      if (nextRow - chunkStart > 12) {
+        root.add(stoneChunk(chunk, stoneColor));
+        chunk = [];
+        chunkStart = nextRow;
+      }
+    }
+    while (nextKerb < along + L) {
+      const d = nextKerb - along;
+      const cx = a[0] + ux * d, cz = a[1] + uz * d;
+      for (const side of [-1, 1]) {
+        const x = cx + uz * side * (w / 2 + 0.12), z = cz - ux * side * (w / 2 + 0.12);
+        kerbs.push({ p: new THREE.Vector3(x, heightAt(T, x, z) + 0.05, z), yaw });
+      }
+      nextKerb += 0.64;
+    }
+    along += L;
+  }
+  if (chunk.length) root.add(stoneChunk(chunk, stoneColor));
+  if (!kerbs.length) return;
+  const km = new THREE.InstancedMesh(KERB, new THREE.MeshLambertMaterial({ color: 0xffffff }), kerbs.length);
+  const cm = new THREE.InstancedMesh(SNOW_CAP, new THREE.MeshLambertMaterial({ color: 0xf2f6ff }), kerbs.length);
+  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler();
+  kerbs.forEach((k, i) => {
+    q.setFromEuler(e.set(0, k.yaw + (rndC() - 0.5) * 0.06, 0));
+    km.setMatrixAt(i, m4.compose(k.p, q, new THREE.Vector3(1, 1, 1)));
+    const g = 0.34 + rndC() * 0.1;
+    km.setColorAt(i, new THREE.Color().setRGB(g, g, g * 1.05));
+    cm.setMatrixAt(i, m4.compose(new THREE.Vector3(k.p.x, k.p.y + 0.09, k.p.z), q, new THREE.Vector3(1, 1, 1)));
+  });
+  km.computeBoundingSphere();
+  cm.computeBoundingSphere();
+  root.add(km, cm);
+}
+
+/** Fills a rectangle (the square) with rows of cobbles, in chunks. */
+function layCobbleArea(root: THREE.Object3D, T: NonNullable<Zone["terrain"]>, c: number[], size: number[]) {
+  const [w, d] = size;
+  const CH = 8;
+  for (let cz = -d / 2; cz < d / 2; cz += CH)
+    for (let cx = -w / 2; cx < w / 2; cx += CH) {
+      const list: { p: THREE.Vector3; yaw: number; s: THREE.Vector3 }[] = [];
+      let row = Math.round((cz + d / 2) / 0.2);
+      for (let z = cz; z < Math.min(cz + CH, d / 2); z += 0.2, row++) {
+        let x = cx + (row % 2 ? 0.12 : 0);
+        while (x < Math.min(cx + CH, w / 2)) {
+          const len = 0.2 + rndC() * 0.12;
+          const px = c[0] + x + len / 2, pz = c[1] + z + 0.1;
+          list.push({ p: new THREE.Vector3(px, heightAt(T, px, pz) + 0.035, pz), yaw: 0, s: new THREE.Vector3(len * 0.92, 0.13 + rndC() * 0.04, 0.18) });
+          x += len;
+        }
+      }
+      if (list.length) root.add(stoneChunk(list, stoneColor));
+    }
 }
 
 /** A label floating over something not made yet. */
@@ -128,6 +243,11 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
   const [progress, setProgress] = useState(0);
   const [ready, setReady] = useState(false);
   const [menu, setMenu] = useState(false);
+  const [edit, setEdit] = useState(false);
+  const editRef = useRef(false);
+  const [picked, setPicked] = useState<{ id: string; label: string } | null>(null);
+  const [saving, setSaving] = useState("");
+  const turnRef = useRef<(id: string, delta: number) => void>(() => {});
   const [showMissing, setShowMissing] = useState(false);
   const [near, setNear] = useState<string | null>(null);
   const [touch, setTouch] = useState(false);
@@ -370,7 +490,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       g.add(wg);
     };
 
-    const build = (z: Zone, arriveFrom?: string) => {
+    const build = (z: Zone, arriveFrom?: string, keep?: { x: number; z: number; yaw: number; pitch: number }) => {
       const my = ++token;
       if (root) {
         scene.remove(root);
@@ -438,8 +558,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         g.computeVertexNormals();
         root.add(new THREE.Mesh(g, ft ? new THREE.MeshLambertMaterial({ map: ft }) : plain(0xe8eef8)));
         // Cobbled paths laid over it.
-        const pt = tiled(T.path);
-        const pmat = pt ? new THREE.MeshLambertMaterial({ map: pt, polygonOffset: true, polygonOffsetFactor: -2 }) : plain(0x8a8a90);
+        const pmat = new THREE.MeshLambertMaterial({ color: 0x23252b, polygonOffset: true, polygonOffsetFactor: -2 });
         for (const path of T.paths) {
           const pts: number[][] = [];
           for (let i = 1; i < path.pts.length; i++) {
@@ -475,36 +594,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           const mesh = new THREE.Mesh(pg, pmat);
           mesh.material.side = THREE.DoubleSide;
           root.add(mesh);
-          // Kerbs: a row of rounded stones down each side, a little snow on top.
-          const stones: number[][] = [];
-          let run = 0;
-          for (let i = 1; i < pts.length; i++) {
-            const a = pts[i - 1], b = pts[i];
-            const L = Math.hypot(b[0] - a[0], b[1] - a[1]);
-            const ux = (b[0] - a[0]) / (L || 1), uz = (b[1] - a[1]) / (L || 1);
-            for (let d = (0.42 - run) % 0.42; d < L; d += 0.42) {
-              const cx = a[0] + ux * d, cz = a[1] + uz * d;
-              for (const side of [-1, 1]) stones.push([cx - uz * side * (path.w / 2 + 0.06), cz + ux * side * (path.w / 2 + 0.06), Math.atan2(ux, uz)]);
-            }
-            run = (run + L) % 0.42;
-          }
-          const sg = new THREE.BoxGeometry(0.22, 0.2, 0.38, 1, 1, 1);
-          const stone = new THREE.InstancedMesh(sg, new THREE.MeshLambertMaterial({ color: 0xffffff }), stones.length);
-          const capG = new THREE.BoxGeometry(0.2, 0.05, 0.34);
-          const caps = new THREE.InstancedMesh(capG, new THREE.MeshLambertMaterial({ color: 0xf4f7ff }), stones.length);
-          const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), c = new THREE.Color();
-          stones.forEach(([x, zz, rot], i) => {
-            const y = heightAt(T, x, zz);
-            const tilt = ((i * 7919) % 100) / 100 - 0.5;
-            q.setFromEuler(e.set(tilt * 0.08, rot + tilt * 0.15, tilt * 0.06));
-            m4.compose(new THREE.Vector3(x, y + 0.07, zz), q, new THREE.Vector3(1, 0.85 + Math.abs(tilt) * 0.4, 1));
-            stone.setMatrixAt(i, m4);
-            const g = 0.42 + ((i * 2654435761) % 100) / 100 * 0.18;
-            stone.setColorAt(i, c.setRGB(g, g, g * 1.04));
-            m4.compose(new THREE.Vector3(x, y + 0.19 + Math.abs(tilt) * 0.06, zz), q, new THREE.Vector3(1, 1, 1));
-            caps.setMatrixAt(i, m4);
-          });
-          root.add(stone, caps);
+          layCobbles(root, T, pts, path.w);
         }
       } else {
         const floor = new THREE.Mesh(tiledPlane(floorW, floorD, 0, 0, z.floor.tile), ft ? new THREE.MeshLambertMaterial({ map: ft }) : plain(z.outdoor ? 0xe8eef8 : 0x8a6a4a));
@@ -519,6 +609,15 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         root.add(ceil);
       }
       for (const dc of z.decals) {
+        if (T && dc.tex && dc.tex === T.path) {
+          // A cobbled area (the square): grout under rows of stones.
+          const g = new THREE.Mesh(new THREE.PlaneGeometry(dc.size[0], dc.size[1]), new THREE.MeshLambertMaterial({ color: 0x23252b, polygonOffset: true, polygonOffsetFactor: -2 }));
+          g.rotation.x = -Math.PI / 2;
+          g.position.set(dc.pos[0], heightAt(T, dc.pos[0], dc.pos[1]) + 0.03, dc.pos[1]);
+          root.add(g);
+          layCobbleArea(root, T, dc.pos, dc.size);
+          continue;
+        }
         const t = dc.tile ? tiled(dc.tex) : tex(dc.tex);
         if (!t) continue;
         const geo = dc.tile ? tiledPlane(dc.size[0], dc.size[1], 0, 0, dc.tile) : new THREE.PlaneGeometry(dc.size[0], dc.size[1]);
@@ -653,6 +752,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
             grp.scale.setScalar(k);
             grp.rotation.y = (M.rotY * Math.PI) / 180;
             grp.position.set(M.pos[0], M.elev, M.pos[1]);
+            grp.userData.modelId = M.id;
+            grp.userData.label = M.label;
             parent.add(grp);
             if (M.lights) {
               grp.updateMatrixWorld(true);
@@ -756,6 +857,11 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         }
       }
       look.pitch = 0;
+      if (keep) {
+        pos.set(keep.x, EYE, keep.z);
+        look.yaw = keep.yaw;
+        look.pitch = keep.pitch;
+      }
       // Never start inside something: the nearest clear floor, spiralling out.
       if (!free(pos.x, pos.z)) {
         let found = false;
@@ -783,6 +889,34 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       }, 220);
     };
     build(zone);
+    // Edit mode: turn a model Meshy built facing the wrong way (every copy, everywhere), and rebuild in place.
+    turnRef.current = (id: string, delta: number) => {
+      for (const zz of world.zones)
+        for (const m of zz.models)
+          if (m.id === id) {
+            m.turn = (m.turn ?? 0) + delta;
+            m.rotY = ((((m.rotY + delta + 180) % 360) + 360) % 360) - 180;
+          }
+      if (current) build(current, undefined, { x: pos.x, z: pos.z, yaw: look.yaw, pitch: look.pitch });
+    };
+    const ray = new THREE.Raycaster();
+    let pickBox: THREE.Box3Helper | null = null;
+    const pick = (cx: number, cy: number) => {
+      const r = canvas.getBoundingClientRect();
+      ray.setFromCamera(new THREE.Vector2(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1), camera);
+      const hits = root ? ray.intersectObject(root, true) : [];
+      for (const h of hits) {
+        let o: THREE.Object3D | null = h.object;
+        while (o && !o.userData.modelId) o = o.parent;
+        if (!o) continue;
+        if (pickBox) pickBox.removeFromParent();
+        pickBox = new THREE.Box3Helper(new THREE.Box3().setFromObject(o), 0xffd23b);
+        root!.add(pickBox);
+        setPicked({ id: o.userData.modelId, label: o.userData.label });
+        return;
+      }
+      setPicked(null);
+    };
 
     // Moving and bumping.
     function free(x: number, zz: number) {
@@ -813,7 +947,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     window.addEventListener("keydown", kd);
     window.addEventListener("keyup", ku);
     const canvas = renderer.domElement;
-    const onClick = () => {
+    const onClick = (e: MouseEvent) => {
+      if (editRef.current) return pick(e.clientX, e.clientY);
       if (!("ontouchstart" in window)) canvas.requestPointerLock?.();
     };
     const onMouse = (e: MouseEvent) => {
@@ -1010,6 +1145,19 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           {nearZone ? <p className="mt-1 text-xs text-brass">To {nearZone.name}: keep walking</p> : null}
         </div>
         <div className="flex shrink-0 gap-3">
+          <button
+            type="button"
+            className={`underline-offset-4 hover:underline ${edit ? "text-paper" : "text-brass"}`}
+            onClick={() => {
+              const v = !edit;
+              setEdit(v);
+              editRef.current = v;
+              setPicked(null);
+              if (v) document.exitPointerLock?.();
+            }}
+          >
+            {edit ? "Done" : "Edit"}
+          </button>
           <button type="button" className="text-brass underline-offset-4 hover:underline" onClick={() => setMenu((m) => !m)}>
             Places
           </button>
@@ -1040,6 +1188,43 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
             </button>
           ) : null}
           {showMissing ? <p className="px-2 text-[0.65rem] leading-relaxed text-smoke">{world.missing.join(", ")}</p> : null}
+        </div>
+      ) : null}
+      {edit ? (
+        <div className="absolute inset-x-2 bottom-40 mx-auto max-w-md rounded-[2px] border border-rule bg-black/85 p-3 text-sm">
+          {picked ? (
+            <>
+              <p className="font-semibold">{picked.label}</p>
+              <p className="text-xs text-smoke">Turns every copy of this model, in every room.</p>
+              <div className="mt-2 flex gap-2">
+                {[
+                  ["↺ 90°", -90],
+                  ["180°", 180],
+                  ["↻ 90°", 90],
+                ].map(([label, delta]) => (
+                  <button
+                    key={label}
+                    type="button"
+                    disabled={!!saving}
+                    className="flex-1 rounded-[2px] bg-brass px-2 py-1.5 font-semibold text-ink disabled:opacity-50"
+                    onClick={async () => {
+                      const id = picked.id;
+                      const before = world.zones.flatMap((z) => z.models).find((m) => m.id === id)?.turn ?? 0;
+                      setSaving("Saving…");
+                      const res = await turnModel(id, before + (delta as number)).catch(() => ({ error: "The connection dropped." }));
+                      setSaving("error" in res ? res.error : "");
+                      if (!("error" in res)) turnRef.current(id, delta as number);
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {saving ? <p className="mt-1 text-xs text-smoke">{saving}</p> : null}
+            </>
+          ) : (
+            <p className="text-xs text-smoke">Tap a piece of furniture or a building that faces the wrong way. Walking still works.</p>
+          )}
         </div>
       ) : null}
       <div ref={stickRef} className={`absolute bottom-8 left-8 h-28 w-28 rounded-full border border-white/30 bg-white/10 ${touch ? "" : "hidden"}`}>

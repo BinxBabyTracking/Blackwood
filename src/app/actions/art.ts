@@ -173,3 +173,20 @@ export async function finishCharacterUpload(person: string, version: number): Pr
     return fail(e, "The character couldn't be saved.");
   }
 }
+
+/** Admin: turns a 3D model (every copy, in every room) because Meshy built it facing the wrong way. */
+export async function turnModel(imageId: string, turn: number): Promise<Result<{ turn: number }>> {
+  if (!(await admin())) return { error: "Not allowed." };
+  if (!/^[a-z0-9_]+$/.test(imageId)) return { error: "Unknown model." };
+  const t = ((((Math.round(turn / 90) * 90 + 180) % 360) + 360) % 360) - 180;
+  try {
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const db = createAdminClient();
+    if (!db) return { error: "The database isn't configured." };
+    const { error } = await db.from("art_turns").upsert({ image_id: imageId, turn: t, updated_at: new Date().toISOString() }, { onConflict: "image_id" });
+    if (error) return { error: error.message };
+    return { ok: true, turn: t };
+  } catch (e) {
+    return fail(e, "Couldn't save the turn.");
+  }
+}

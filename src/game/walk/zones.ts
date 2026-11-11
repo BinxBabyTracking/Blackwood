@@ -10,7 +10,7 @@
 
 export type ZonePiece = { tex: string | null; x: number; y: number; w: number; h: number; opening: boolean; outside: string | null; label: string; to: string | null; fixed: boolean };
 export type ZoneWall = { tex: string | null; tile: number; lower: { tex: string | null; tile: number; to: number } | null; pieces: ZonePiece[]; backdrop: string | null };
-export type ZoneModel = { id: string; file: string | null; label: string; pos: number[]; elev: number; rotY: number; rotX: number; size: number[]; solid: boolean; light: boolean; scatter?: boolean; block?: number; level?: number; lights?: boolean };
+export type ZoneModel = { id: string; file: string | null; label: string; pos: number[]; elev: number; rotY: number; rotX: number; size: number[]; solid: boolean; light: boolean; scatter?: boolean; block?: number; level?: number; lights?: boolean; face?: string; turn?: number };
 /** Rolling ground for an outdoor place (metres, zone-centred): flat pads blended into hills, and paths. */
 export type Terrain = {
   floor: string | null;
@@ -39,13 +39,15 @@ export type Zone = {
   people: ZonePerson[];
   terrain?: Terrain;
 };
+type Pending = { i: number; to: string; through: boolean };
 export type Side = "front" | "back" | "left" | "right";
 export type World = { caseId: string; name: string; start: string; zones: Zone[]; missing: string[] };
 
 const FT = 0.3048;
 const SIDES: Side[] = ["front", "back", "left", "right"];
-/** Turn (degrees) that points a Meshy model's front at that wall (Meshy models face -z as made). */
-const ROT: Record<string, number> = { back: 180, front: 0, left: 90, right: -90 };
+/** Turn (degrees) that points a model's front at that wall. Meshy isn't consistent, so a model can carry its own extra turn (art_turns). */
+const ROT: Record<string, number> = { back: 0, front: 180, left: -90, right: 90 };
+const norm = (deg: number) => ((((deg + 180) % 360) + 360) % 360) - 180;
 const NORMAL: Record<string, number[]> = { back: [0, 1], front: [0, -1], left: [-1, 0], right: [1, 0] };
 
 type Rec = Record<string, unknown> & { id: string; location?: string; name: string; type?: string; sizeFt?: number[]; note?: string };
@@ -80,6 +82,8 @@ export function buildWorld(opts: {
   people: Person[];
   character: (id: string) => string | null;
   start?: string;
+  /** Extra turn (degrees) for a model Meshy built facing the wrong way. */
+  turn?: (id: string) => number;
   /** Scale indoor floor plans (not heights) by this; 1 keeps the records' sizes. */
   shrink?: number;
 }): World {
@@ -91,7 +95,7 @@ export function buildWorld(opts: {
     return u;
   };
   const zones: Zone[] = [];
-  const pendingDoors = new Map<Zone, { m: ZoneModel; to: string; through: boolean }[]>();
+  const pendingDoors = new Map<Zone, Pending[]>();
 
   for (const r of opts.records) {
     if (r.reuse || r.mergedInto || !r.sizeFt) continue;
@@ -101,7 +105,7 @@ export function buildWorld(opts: {
     const wallRec = (r.wall ?? {}) as { image?: string; tileFt?: number; lower?: string; lowerTo?: number };
     const railAt = ((r.trim as Record<string, { atIn?: number }> | undefined)?.rail?.atIn ?? 34) / 12;
     const walls = {} as Record<Side, ZoneWall>;
-    const pending: { m: ZoneModel; to: string; through: boolean }[] = [];
+    const pending: Pending[] = [];
     for (const side of SIDES) {
       const list = ((r.walls as Record<string, Img[]> | undefined)?.[side] ?? []) as Img[];
       const backdrop = list.find((p) => p.outside && !p.image);
@@ -138,7 +142,9 @@ export function buildWorld(opts: {
           label: nice(id),
           pos: [mx * FT - w / 2, mz * FT - d / 2],
           elev,
-          rotY: ROT[(m.facing as string) ?? "back"] ?? 0,
+          rotY: norm((ROT[(m.facing as string) ?? "back"] ?? 0) + (opts.turn?.(id) ?? 0)),
+          face: (m.facing as string) ?? "back",
+          turn: opts.turn?.(id) ?? 0,
           rotX: Number(m.rotX ?? 0),
           size: s,
           solid: m.solid !== false,
@@ -155,7 +161,7 @@ export function buildWorld(opts: {
       const m = at ? cands.sort((a, b) => Math.hypot(a.pos[0] - (at[0] * FT - w / 2), a.pos[1] - (at[1] * FT - d / 2)) - Math.hypot(b.pos[0] - (at[0] * FT - w / 2), b.pos[1] - (at[1] * FT - d / 2)))[0] : cands[0];
       if (!m) continue;
       const through = /arch|gate|ladder|hatch|trapdoor|well/.test(m.id);
-      pending.push({ m, to: dd.to, through });
+      pending.push({ i: models.indexOf(m), to: dd.to, through });
       if (through) m.solid = false;
     }
 
@@ -211,12 +217,26 @@ export function buildWorld(opts: {
 
   // Smaller floor plans indoors (the records were drawn half as big again for multiplayer), then the doors.
   for (const z of zones) {
-    const small = z.size[0] * z.size[1] < 250 * FT * FT;
-    if (!z.outdoor && !small && (opts.shrink ?? 1) < 1) shrinkZone(z, fitShrink(z, opts.shrink!));
-    if (!z.outdoor && (opts.shrink ?? 1) < 1) fillRoom(z);
-    if (!z.outdoor) clearWalls(z);
-    if (!z.outdoor) lowerCeiling(z);
-    z.doors = doorsOf(z, pendingDoors.get(z) ?? []);
+    const pend = pendingDoors.get(z) ?? [];
+    if (!z.outdoor) {
+      // Shrink as far as the room allows while you can still walk between all its doors.
+      const small = z.size[0] * z.size[1] < 250 * FT * FT;
+      const orig = structuredClone(z);
+      let k = !small && (opts.shrink ?? 1) < 1 ? fitShrink(z, opts.shrink!) : 1;
+      for (;;) {
+        const t = structuredClone(orig);
+        if (k < 1) shrinkZone(t, k);
+        if ((opts.shrink ?? 1) < 1) fillRoom(t);
+        clearWalls(t);
+        lowerCeiling(t);
+        t.doors = doorsOf(t, pend);
+        if (k >= 1 || walkable(t)) {
+          Object.assign(z, t);
+          break;
+        }
+        k = Math.min(1, k + 0.05);
+      }
+    } else z.doors = doorsOf(z, pend);
     const rec = opts.records.find((r) => r.id === z.room);
     if (z.outdoor && rec?.terrain) dressLand(z, rec.terrain as LandRec, opts.model, pic);
   }
@@ -278,7 +298,7 @@ function spot(z: Zone, goalAt?: number[]) {
 }
 
 /** Every way out of a zone: wall pieces that lead somewhere, and buildings, arches, ladders and hatches. */
-function doorsOf(z: Zone, pending: { m: ZoneModel; to: string; through: boolean }[]): ZoneDoor[] {
+function doorsOf(z: Zone, pending: Pending[]): ZoneDoor[] {
   const [w, d] = z.size;
   const out: ZoneDoor[] = [];
   for (const side of SIDES)
@@ -287,8 +307,9 @@ function doorsOf(z: Zone, pending: { m: ZoneModel; to: string; through: boolean 
         const wp = wallPoint(side, w, d, p.x + p.w / 2);
         out.push({ to: p.to, label: p.label, at: wp.at, span: p.w / 2, normal: wp.normal, kind: "wall" });
       }
-  for (const { m, to, through } of pending) {
-    const facing = Object.entries(ROT).find(([, v]) => v === m.rotY)?.[0] ?? "back";
+  for (const { i, to, through } of pending) {
+    const m = z.models[i];
+    const facing = m.face ?? "back";
     const n = NORMAL[facing];
     const [mw, md] = m.size;
     // Walk-through things (arches, ladders, hatches) are entered at their middle; buildings at their front face.
@@ -666,4 +687,48 @@ function sizeOf(id: string) {
     chr001_village_model_rock: [5, 4, 3],
   };
   return (ft[id] ?? [4, 4, 4]).map((v) => v * FT);
+}
+
+/** Whether every door of a room can be reached from every other, round the furniture. */
+function walkable(z: Zone) {
+  const [W, D] = z.size;
+  const R = 0.3, C = 0.15;
+  const nx = Math.floor(W / C), nz = Math.floor(D / C);
+  const blocks = z.models.filter((m) => m.solid && m.elev < 0.05 && m.size[2] > 0.25).map(footprint);
+  const free = (i: number, j: number) => {
+    const x = -W / 2 + (i + 0.5) * C, y = -D / 2 + (j + 0.5) * C;
+    if (x < -W / 2 + R || x > W / 2 - R || y < -D / 2 + R || y > D / 2 - R) return false;
+    return !blocks.some((b) => x > b.x0 - R && x < b.x1 + R && y > b.z0 - R && y < b.z1 + R);
+  };
+  const ok = new Uint8Array(nx * nz);
+  for (let i = 0; i < nx; i++) for (let j = 0; j < nz; j++) ok[i * nz + j] = free(i, j) ? 1 : 0;
+  const cellNear = (x: number, y: number) => {
+    let best = -1, bd = 0.8;
+    for (let i = 0; i < nx; i++)
+      for (let j = 0; j < nz; j++) {
+        if (!ok[i * nz + j]) continue;
+        const d = Math.hypot(-W / 2 + (i + 0.5) * C - x, -D / 2 + (j + 0.5) * C - y);
+        if (d < bd) {
+          bd = d;
+          best = i * nz + j;
+        }
+      }
+    return best;
+  };
+  const goals = z.doors.map((d) => (d.kind === "pass" ? cellNear(d.at[0], d.at[1]) : cellNear(d.at[0] + d.normal[0] * 0.6, d.at[1] + d.normal[1] * 0.6)));
+  if (goals.some((g) => g < 0)) return false;
+  if (goals.length < 2) return true;
+  const seen = new Uint8Array(nx * nz);
+  const q = [goals[0]];
+  seen[goals[0]] = 1;
+  while (q.length) {
+    const c = q.pop()!;
+    const i = Math.floor(c / nz), j = c % nz;
+    for (const [a, b] of [[i + 1, j], [i - 1, j], [i, j + 1], [i, j - 1]])
+      if (a >= 0 && b >= 0 && a < nx && b < nz && ok[a * nz + b] && !seen[a * nz + b]) {
+        seen[a * nz + b] = 1;
+        q.push(a * nz + b);
+      }
+  }
+  return goals.every((g) => seen[g]);
 }
