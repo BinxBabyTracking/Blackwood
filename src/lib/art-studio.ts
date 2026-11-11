@@ -820,3 +820,46 @@ export async function setLiveCharacter(key: string, version: number) {
   const { error } = await db().from("art_images").upsert({ id, live_model: version, updated_at: new Date().toISOString() }, { onConflict: "id" });
   if (error) throw new Error(error.message);
 }
+
+/** Where the browser uploads a finished 3D character (a rigged GLB made elsewhere, such as Tripo) for a person. */
+export async function characterUploadTarget(key: string) {
+  if (!manifest.people?.[key]) throw new Error("Unknown person.");
+  const { prefix, name } = personParts(key);
+  const id = `${prefix}_char_${name}`;
+  const version = await nextModelVersion(id);
+  const { data, error } = await db().storage.from(BUCKET).createSignedUploadUrl(`art/${id}-${version}.glb`, { upsert: true });
+  if (error || !data) throw new Error(`Storage would not accept the upload: ${error?.message ?? "no upload address"}`);
+  return { version, path: data.path, token: data.token };
+}
+
+/** What a GLB holds that matters for a character: its skeleton and face shapes. */
+function glbCharacterReport(bytes: Buffer) {
+  if (bytes.subarray(0, 4).toString("latin1") !== "glTF") throw new Error("That file isn't a GLB (binary glTF).");
+  const len = bytes.readUInt32LE(12);
+  const json = JSON.parse(bytes.subarray(20, 20 + len).toString("utf8")) as {
+    skins?: { joints: number[] }[];
+    meshes?: { extras?: { targetNames?: string[] } }[];
+  };
+  const bones = json.skins?.[0]?.joints.length ?? 0;
+  const shapes = [...new Set((json.meshes ?? []).flatMap((m) => m.extras?.targetNames ?? []))];
+  const report = [bones ? `${bones} bones` : "no skeleton (it won't animate)"];
+  report.push(shapes.length ? `face shapes: ${shapes.join(", ")}` : "no face shapes (the mouth won't move)");
+  return report;
+}
+
+/** Records an uploaded 3D character and makes it the one the game uses. */
+export async function confirmCharacter(key: string, version: number) {
+  if (!manifest.people?.[key]) throw new Error("Unknown person.");
+  const { prefix, name } = personParts(key);
+  const id = `${prefix}_char_${name}`;
+  const file = `${id}-${version}.glb`;
+  const head = await readArtFile(file);
+  if (!head) throw new Error("The upload didn't arrive. Try again.");
+  const bytes = Buffer.from(head);
+  const report = glbCharacterReport(bytes);
+  const { error } = await db().from("art_models").insert({ image_id: id, version, size_bytes: bytes.length, source: "upload" });
+  if (error) throw new Error(`Recording the character failed: ${error.message}`);
+  const { error: e2 } = await db().from("art_images").upsert({ id, live_model: version, updated_at: new Date().toISOString() }, { onConflict: "id" });
+  if (e2) throw new Error(e2.message);
+  return { version, url: liveModelUrl(id, version), bytes: bytes.length, report };
+}

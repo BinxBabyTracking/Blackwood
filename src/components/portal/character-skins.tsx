@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { chooseCharacter, makeCharacter } from "@/app/actions/art";
+import { chooseCharacter, finishCharacterUpload, makeCharacter, startCharacterUpload } from "@/app/actions/art";
+import { getBrowserClient } from "@/lib/supabase/client";
 import { ModelPreview } from "@/components/portal/model-preview";
 
 export type SkinRow = {
@@ -44,6 +45,24 @@ export function CharacterSkins({ rows: initial, bases }: { rows: SkinRow[]; base
     setOpen((o) => ({ ...o, [r.person]: res.version }));
     say(r.person, { state: "done", note: `Version ${res.version} made${res.live ? " and in use" : "; choose it below to use it"}. ${res.report.join("; ")}.` });
     return true;
+  };
+  const upload = async (r: SkinRow, f: File) => {
+    if (!/\.glb$/i.test(f.name)) return say(r.person, { state: "error", note: "Choose a .glb file." });
+    if (f.size > 50 * 1048576) return say(r.person, { state: "error", note: `That file is ${mb(f.size)}; the limit is 50 MB.` });
+    say(r.person, { state: "busy", note: `Uploading ${f.name} (${mb(f.size)})…` });
+    const start = await startCharacterUpload(r.person).catch(() => ({ error: "The connection dropped. Try again." }));
+    if ("error" in start) return say(r.person, { state: "error", note: start.error });
+    const sb = getBrowserClient();
+    if (!sb) return say(r.person, { state: "error", note: "Storage isn't configured on this site." });
+    const up = await sb.storage.from("art").uploadToSignedUrl(start.path, start.token, f, { contentType: "model/gltf-binary", upsert: true });
+    if (up.error) return say(r.person, { state: "error", note: `The upload failed: ${up.error.message}` });
+    const done = await finishCharacterUpload(r.person, start.version).catch(() => ({ error: "The connection dropped. Try again." }));
+    if ("error" in done) return say(r.person, { state: "error", note: done.error });
+    setRows((list) =>
+      list.map((x) => (x.person === r.person ? { ...x, liveModel: done.version, models: [{ version: done.version, url: done.url, createdAt: new Date().toISOString(), bytes: done.bytes }, ...x.models] } : x)),
+    );
+    setOpen((o) => ({ ...o, [r.person]: done.version }));
+    say(r.person, { state: "done", note: `Version ${done.version} uploaded and in use: ${done.report.join("; ")}.` });
   };
   const missing = rows.filter((r) => r.ready && !r.models.length && !jobs[r.person]);
   const makeAll = async () => {
@@ -108,6 +127,19 @@ export function CharacterSkins({ rows: initial, bases }: { rows: SkinRow[]; base
                   ) : (
                     <span className="text-xs text-smoke">Make the front, side and back views on the Artwork tab first</span>
                   )}
+                  <label className={`cursor-pointer text-brass underline-offset-4 hover:underline ${job?.state === "busy" ? "pointer-events-none opacity-50" : ""}`}>
+                    Upload GLB
+                    <input
+                      type="file"
+                      accept=".glb,model/gltf-binary"
+                      className="hidden"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        e.target.value = "";
+                        if (f) upload(r, f);
+                      }}
+                    />
+                  </label>
                 </div>
                 {job ? <p className={`mt-1 text-xs ${job.state === "error" ? "text-[#e2a7a2]" : job.state === "done" ? "text-[#9fc79a]" : "text-smoke"}`}>{job.note}</p> : null}
                 {r.models.length ? (

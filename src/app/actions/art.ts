@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { refreshArt } from "@/game/registry";
 import { hasAdminAccess } from "@/lib/admin-gate";
-import { checkMeshyModel, confirmModel, fullPrompt, generateImage, modelUploadTarget, setLive, setLiveModel, setSubject, startMeshyModel, uploadImage, skinPerson, setLiveCharacter, type MeshyCheck, type Tier } from "@/lib/art-studio";
+import { checkMeshyModel, confirmModel, fullPrompt, generateImage, modelUploadTarget, setLive, setLiveModel, setSubject, startMeshyModel, uploadImage, skinPerson, setLiveCharacter, characterUploadTarget, confirmCharacter, type MeshyCheck, type Tier } from "@/lib/art-studio";
 import { requireInvestigator } from "@/lib/investigator";
 
 type Result<T> = ({ ok: true } & T) | { error: string };
@@ -151,5 +151,25 @@ export async function chooseCharacter(person: string, version: number): Promise<
     return { ok: true };
   } catch (e) {
     return fail(e, "Couldn't choose that version.");
+  }
+}
+
+/** Admin: where to upload a finished 3D character GLB for a person (the browser uploads it straight to storage). */
+export async function startCharacterUpload(person: string): Promise<Result<{ version: number; path: string; token: string }>> {
+  if (!(await admin())) return { error: "Not allowed." };
+  try {
+    return { ok: true, ...(await characterUploadTarget(person)) };
+  } catch (e) {
+    return fail(e, "The upload couldn't start.");
+  }
+}
+
+/** Admin: records an uploaded 3D character and makes it the one the game uses. */
+export async function finishCharacterUpload(person: string, version: number): Promise<Result<{ version: number; url: string; bytes: number; report: string[] }>> {
+  if (!(await admin())) return { error: "Not allowed." };
+  try {
+    return { ok: true, ...(await confirmCharacter(person, version)) };
+  } catch (e) {
+    return fail(e, "The character couldn't be saved.");
   }
 }
