@@ -151,11 +151,26 @@ export interface ArtRow {
 }
 
 /** Every image, with what's live, every version made, and its prompt. */
+/**
+ * Every row of a table, a page at a time: the database hands back at most 1,000 rows per request, and there are
+ * more pictures than that (CHR001 alone has 300), so a single select silently missed some (shown as not made).
+ */
+async function allRows(table: string, cols: string, order: string, ascending: boolean): Promise<{ data: unknown[] }> {
+  const out: unknown[] = [];
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await db().from(table).select(cols).order(order, { ascending }).order(table === "art_images" ? "id" : "image_id").range(from, from + 999);
+    if (error) throw new Error(error.message);
+    out.push(...(data ?? []));
+    if (!data || data.length < 1000) break;
+  }
+  return { data: out };
+}
+
 export async function artRows(): Promise<ArtRow[]> {
   const [{ data: imgs }, { data: vers }, { data: mods }] = await Promise.all([
-    db().from("art_images").select("id, live_version, live_model, subject"),
-    db().from("art_versions").select("image_id, version, created_at, source, model, cost_usd").order("version", { ascending: false }).limit(20000),
-    db().from("art_models").select("image_id, version, created_at, size_bytes").order("version", { ascending: false }).limit(20000),
+    allRows("art_images", "id, live_version, live_model, subject", "id", true),
+    allRows("art_versions", "image_id, version, created_at, source, model, cost_usd", "version", false),
+    allRows("art_models", "image_id, version, created_at, size_bytes", "version", false),
   ]);
   const meta = new Map(((imgs ?? []) as { id: string; live_version: number | null; live_model: number | null; subject: string | null }[]).map((r) => [r.id, r]));
   const modelsOf = new Map<string, ArtRow["models"]>();

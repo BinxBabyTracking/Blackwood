@@ -75,9 +75,14 @@ export async function refreshArt(force = false) {
   artCheckedAt = Date.now();
   const db = createAdminClient();
   if (!db) return;
-  const { data, error } = await db.from("art_images").select("id, live_version").not("live_version", "is", null);
-  if (error) return;
-  const rows = (data ?? []) as { id: string; live_version: number }[];
+  // A page at a time: the database hands back at most 1,000 rows per request.
+  const rows: { id: string; live_version: number }[] = [];
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await db.from("art_images").select("id, live_version").not("live_version", "is", null).order("id").range(from, from + 999);
+    if (error) return;
+    rows.push(...((data ?? []) as { id: string; live_version: number }[]));
+    if (!data || data.length < 1000) break;
+  }
   const sig = rows.map((r) => `${r.id}:${r.live_version}`).sort().join("|");
   if (sig === artSignature) return;
   artSignature = sig;
