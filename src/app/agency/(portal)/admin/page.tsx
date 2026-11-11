@@ -29,6 +29,7 @@ import { NameCheck } from "@/components/portal/name-check";
 import { AdminSection } from "@/components/portal/admin-section";
 import { ArtStudio } from "@/components/portal/art-studio";
 import { MeshyPrompts } from "@/components/portal/meshy-prompts";
+import { ModelPreview } from "@/components/portal/model-preview";
 import { meshyText } from "@/lib/meshy";
 import { VoiceStudio } from "@/components/portal/voice-studio";
 import { voiceCases } from "@/lib/voice-studio";
@@ -621,6 +622,28 @@ async function ModelPrompts() {
           by itself; later ones wait for you to choose them on the Artwork tab. Keep this page open while models are being made: they carry on at Meshy if you leave, and pick up again when you come back.
         </p>
       </div>
+      <AdminSection id="models-base" title="Base characters" className="max-w-4xl">
+        <p className="mt-2 text-sm text-smoke">
+          The rigged bodies every person is skinned from: an elf boy and an elf girl, built from MakeHuman&apos;s CC0 assets, one shared 163-bone skeleton, with eyes,
+          eyebrows, hair, an outfit and shoes as separate pieces. See scripts/characters/README.md.
+        </p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          {[
+            ["Elf boy", "/models/base/elf_boy.glb"],
+            ["Elf girl", "/models/base/elf_girl.glb"],
+          ].map(([label, url]) => (
+            <div key={url}>
+              <p className="text-sm text-paper">
+                {label}{" "}
+                <a href={url} className="text-brass underline-offset-4 hover:underline">
+                  download GLB
+                </a>
+              </p>
+              <ModelPreview url={url} className="mt-1 aspect-square w-full bg-black/30" />
+            </div>
+          ))}
+        </div>
+      </AdminSection>
       {groups.map((g) => {
         const list = models.filter((r) => r.group === g);
         const todo = list.filter((r) => r.liveModel == null).length;
