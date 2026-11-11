@@ -118,6 +118,9 @@ export function CharacterTest({ caseId, id, name, url }: { caseId: string; id: s
         if (head) headRest = (head as THREE.Bone).quaternion.clone();
         if (chest) chestRest = (chest as THREE.Bone).quaternion.clone();
         scene.add(root);
+        const feet = new THREE.Box3().setFromObject(root);
+        root.position.y -= feet.min.y;
+        root.updateMatrixWorld(true);
         const box3 = new THREE.Box3().setFromObject(root);
         const size = box3.getSize(new THREE.Vector3());
         const c = box3.getCenter(new THREE.Vector3());
