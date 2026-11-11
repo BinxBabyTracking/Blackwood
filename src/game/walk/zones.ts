@@ -44,7 +44,8 @@ export type World = { caseId: string; name: string; start: string; zones: Zone[]
 
 const FT = 0.3048;
 const SIDES: Side[] = ["front", "back", "left", "right"];
-const ROT: Record<string, number> = { back: 0, front: 180, left: -90, right: 90 };
+/** Turn (degrees) that points a Meshy model's front at that wall (Meshy models face -z as made). */
+const ROT: Record<string, number> = { back: 180, front: 0, left: 90, right: -90 };
 const NORMAL: Record<string, number[]> = { back: [0, 1], front: [0, -1], left: [-1, 0], right: [1, 0] };
 
 type Rec = Record<string, unknown> & { id: string; location?: string; name: string; type?: string; sizeFt?: number[]; note?: string };
@@ -444,8 +445,8 @@ const floorArea = (z: Zone) =>
  */
 function fitShrink(z: Zone, max: number) {
   const [W, D] = z.size;
-  let k = Math.sqrt(floorArea(z) / (0.25 * W * D));
-  k = Math.min(max, Math.max(0.55, k));
+  let k = Math.sqrt(floorArea(z) / (0.18 * W * D));
+  k = Math.min(max, Math.max(0.65, k));
   let kmin = 0;
   for (const m of z.models) {
     const f = footprint(m);

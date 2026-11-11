@@ -475,6 +475,36 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           const mesh = new THREE.Mesh(pg, pmat);
           mesh.material.side = THREE.DoubleSide;
           root.add(mesh);
+          // Kerbs: a row of rounded stones down each side, a little snow on top.
+          const stones: number[][] = [];
+          let run = 0;
+          for (let i = 1; i < pts.length; i++) {
+            const a = pts[i - 1], b = pts[i];
+            const L = Math.hypot(b[0] - a[0], b[1] - a[1]);
+            const ux = (b[0] - a[0]) / (L || 1), uz = (b[1] - a[1]) / (L || 1);
+            for (let d = (0.42 - run) % 0.42; d < L; d += 0.42) {
+              const cx = a[0] + ux * d, cz = a[1] + uz * d;
+              for (const side of [-1, 1]) stones.push([cx - uz * side * (path.w / 2 + 0.06), cz + ux * side * (path.w / 2 + 0.06), Math.atan2(ux, uz)]);
+            }
+            run = (run + L) % 0.42;
+          }
+          const sg = new THREE.BoxGeometry(0.22, 0.2, 0.38, 1, 1, 1);
+          const stone = new THREE.InstancedMesh(sg, new THREE.MeshLambertMaterial({ color: 0xffffff }), stones.length);
+          const capG = new THREE.BoxGeometry(0.2, 0.05, 0.34);
+          const caps = new THREE.InstancedMesh(capG, new THREE.MeshLambertMaterial({ color: 0xf4f7ff }), stones.length);
+          const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), c = new THREE.Color();
+          stones.forEach(([x, zz, rot], i) => {
+            const y = heightAt(T, x, zz);
+            const tilt = ((i * 7919) % 100) / 100 - 0.5;
+            q.setFromEuler(e.set(tilt * 0.08, rot + tilt * 0.15, tilt * 0.06));
+            m4.compose(new THREE.Vector3(x, y + 0.07, zz), q, new THREE.Vector3(1, 0.85 + Math.abs(tilt) * 0.4, 1));
+            stone.setMatrixAt(i, m4);
+            const g = 0.42 + ((i * 2654435761) % 100) / 100 * 0.18;
+            stone.setColorAt(i, c.setRGB(g, g, g * 1.04));
+            m4.compose(new THREE.Vector3(x, y + 0.19 + Math.abs(tilt) * 0.06, zz), q, new THREE.Vector3(1, 1, 1));
+            caps.setMatrixAt(i, m4);
+          });
+          root.add(stone, caps);
         }
       } else {
         const floor = new THREE.Mesh(tiledPlane(floorW, floorD, 0, 0, z.floor.tile), ft ? new THREE.MeshLambertMaterial({ map: ft }) : plain(z.outdoor ? 0xe8eef8 : 0x8a6a4a));
