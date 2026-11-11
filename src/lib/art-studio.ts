@@ -863,3 +863,12 @@ export async function confirmCharacter(key: string, version: number) {
   if (e2) throw new Error(e2.message);
   return { version, url: liveModelUrl(id, version), bytes: bytes.length, report };
 }
+
+/** The GLB the game uses for a person's 3D character, or null when none is chosen. */
+export async function liveCharacterUrl(key: string) {
+  const { prefix, name } = personParts(key);
+  const id = `${prefix}_char_${name}`;
+  const { data } = await db().from("art_images").select("live_model").eq("id", id).maybeSingle();
+  const v = (data as { live_model: number | null } | null)?.live_model;
+  return v == null ? null : liveModelUrl(id, v);
+}

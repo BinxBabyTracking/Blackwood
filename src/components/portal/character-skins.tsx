@@ -104,6 +104,14 @@ export function CharacterSkins({ rows: initial, bases }: { rows: SkinRow[]; base
                   <p className="text-paper">{r.name}</p>
                   <p className="font-mono text-[0.65rem] text-smoke">{r.person}</p>
                   {r.liveModel != null ? <p className="text-xs text-[#9fc79a]">In use: v{r.liveModel}</p> : null}
+                  {r.liveModel != null ? (
+                    <a
+                      href={`/agency/testing/character?case=${r.group.toUpperCase()}&id=${r.person.slice(r.person.indexOf("_") + 1)}`}
+                      className="text-xs text-brass underline-offset-4 hover:underline"
+                    >
+                      Test talking
+                    </a>
+                  ) : null}
                 </div>
                 <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
                   <label className="text-smoke">
