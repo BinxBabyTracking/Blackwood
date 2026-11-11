@@ -18,10 +18,12 @@ const HEIGHTS: Record<string, Record<string, number>> = {
 };
 const DEFAULT_HEIGHT: Record<string, number> = { CHR001: 1.05 };
 const DEFAULT_EYE: Record<string, number> = { CHR001: 0.95 };
+/** Indoor floor plans are drawn half as big again for multiplayer; this brings them back down (heights stay). */
+const DEFAULT_SHRINK: Record<string, number> = { CHR001: 0.7 };
 
 /**
  * A case's whole walkable world from its room records and the art live on Admin:
- * /agency/testing/world?case=CHR001 (and &at=<place> to start somewhere, &eye=<metres> for your eye height).
+ * /agency/testing/world?case=CHR001 (and &at=<place> to start somewhere, &eye=<metres> for your eye height, &shrink=<0..1> for indoor floor size).
  * Owner only.
  */
 export default function WorldPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
@@ -80,6 +82,7 @@ async function World({ searchParams }: { searchParams: Promise<Record<string, st
     })),
     character: (id) => models.get(`${prefix}_char_${id}`) ?? null,
     start: one(q.at) ?? def.startLocation,
+    shrink: Number.isFinite(Number(one(q.shrink))) && Number(one(q.shrink)) > 0 ? Number(one(q.shrink)) : (DEFAULT_SHRINK[caseId] ?? 1),
   });
   const eye = Number(one(q.eye));
   return <ZoneViewer world={world} title={`${def.title} (testing)`} eye={Number.isFinite(eye) && eye > 0.3 ? eye : (DEFAULT_EYE[caseId] ?? 1.6)} />;

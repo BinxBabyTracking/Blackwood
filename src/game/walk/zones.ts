@@ -8,7 +8,7 @@
  * Metres, floor at y 0, each zone centred on x/z 0 with its front wall toward -z (as the C001 house).
  */
 
-export type ZonePiece = { tex: string | null; x: number; y: number; w: number; h: number; opening: boolean; outside: string | null; label: string };
+export type ZonePiece = { tex: string | null; x: number; y: number; w: number; h: number; opening: boolean; outside: string | null; label: string; to: string | null; fixed: boolean };
 export type ZoneWall = { tex: string | null; tile: number; lower: { tex: string | null; tile: number; to: number } | null; pieces: ZonePiece[]; backdrop: string | null };
 export type ZoneModel = { id: string; file: string | null; label: string; pos: number[]; elev: number; rotY: number; rotX: number; size: number[]; solid: boolean; light: boolean };
 export type ZoneDoor = { to: string; label: string; at: number[]; span: number; normal: number[]; kind: "wall" | "model" | "pass" };
@@ -70,6 +70,8 @@ export function buildWorld(opts: {
   people: Person[];
   character: (id: string) => string | null;
   start?: string;
+  /** Scale indoor floor plans (not heights) by this; 1 keeps the records' sizes. */
+  shrink?: number;
 }): World {
   const missing = new Set<string>();
   const pic = (id?: unknown) => {
@@ -79,6 +81,7 @@ export function buildWorld(opts: {
     return u;
   };
   const zones: Zone[] = [];
+  const pendingDoors = new Map<Zone, { m: ZoneModel; to: string; through: boolean }[]>();
 
   for (const r of opts.records) {
     if (r.reuse || !r.sizeFt) continue;
@@ -88,7 +91,7 @@ export function buildWorld(opts: {
     const wallRec = (r.wall ?? {}) as { image?: string; tileFt?: number; lower?: string; lowerTo?: number };
     const railAt = ((r.trim as Record<string, { atIn?: number }> | undefined)?.rail?.atIn ?? 34) / 12;
     const walls = {} as Record<Side, ZoneWall>;
-    const doors: ZoneDoor[] = [];
+    const pending: { m: ZoneModel; to: string; through: boolean }[] = [];
     for (const side of SIDES) {
       const list = ((r.walls as Record<string, Img[]> | undefined)?.[side] ?? []) as Img[];
       const backdrop = list.find((p) => p.outside && !p.image);
@@ -96,11 +99,8 @@ export function buildWorld(opts: {
       for (const p of list) {
         if (!p.image) continue;
         const x = Number(p.fromLeftFt ?? 0) * FT, y = Number(p.bottomFt ?? 0) * FT, pw = Number(p.widthFt ?? 3) * FT, ph = Number(p.heightFt ?? 7) * FT;
-        pieces.push({ tex: pic(p.image), x, y, w: pw, h: ph, opening: !!p.opening, outside: p.opening ? pic(p.outside) : null, label: nice(p.image) });
-        if (p.to && typeof p.to === "string") {
-          const wp = wallPoint(side, w, d, x + pw / 2);
-          doors.push({ to: p.to, label: nice(p.image), at: wp.at, span: pw / 2, normal: wp.normal, kind: "wall" });
-        }
+        const fixedSize = !!p.opening || !!p.to || /door|window|arch|hatch/.test(String(p.image));
+        pieces.push({ tex: pic(p.image), x, y, w: pw, h: ph, opening: !!p.opening, outside: p.opening ? pic(p.outside) : null, label: nice(p.image), to: typeof p.to === "string" ? p.to : null, fixed: fixedSize });
       }
       walls[side] = {
         tex: outdoor ? null : pic(wallRec.image),
@@ -143,16 +143,8 @@ export function buildWorld(opts: {
       const cands = models.filter((m) => m.id === dd.model);
       const m = at ? cands.sort((a, b) => Math.hypot(a.pos[0] - (at[0] * FT - w / 2), a.pos[1] - (at[1] * FT - d / 2)) - Math.hypot(b.pos[0] - (at[0] * FT - w / 2), b.pos[1] - (at[1] * FT - d / 2)))[0] : cands[0];
       if (!m) continue;
-      const facing = Object.entries(ROT).find(([, v]) => v === m.rotY)?.[0] ?? "back";
-      const n = NORMAL[facing];
-      const [mw, md] = m.size;
-      // Walk-through things (arches, ladders, hatches) are entered at their middle; buildings at their front face.
       const through = /arch|gate|ladder|hatch|trapdoor/.test(m.id);
-      const reach = through ? 0 : md / 2 + 0.3;
-      let at2 = [m.pos[0] + n[0] * reach, m.pos[1] + n[1] * reach];
-      // Keep the trigger where you can stand (a building on the edge of the square).
-      at2 = [Math.max(-w / 2 + 0.35, Math.min(w / 2 - 0.35, at2[0])), Math.max(-d / 2 + 0.35, Math.min(d / 2 - 0.35, at2[1]))];
-      doors.push({ to: dd.to, label: nice(m.id), at: at2, span: through ? Math.max(0.6, mw / 2 - 0.3) : Math.max(0.9, Math.min(mw / 3, 3)), normal: n, kind: through ? "pass" : "model" });
+      pending.push({ m, to: dd.to, through });
       if (through) m.solid = false;
     }
 
@@ -190,9 +182,18 @@ export function buildWorld(opts: {
         tile: dc.tileFt ? Number(dc.tileFt) * FT : 0,
         rotY: Number(dc.rotY ?? 0),
       })),
-      doors,
+      doors: [],
       people: [],
     });
+    pendingDoors.set(zones[zones.length - 1], pending);
+  }
+
+  // Smaller floor plans indoors (the records were drawn half as big again for multiplayer), then the doors.
+  for (const z of zones) {
+    if (!z.outdoor && (opts.shrink ?? 1) < 1) shrinkZone(z, opts.shrink!);
+    if (!z.outdoor) clearWalls(z);
+    if (!z.outdoor) lowerCeiling(z);
+    z.doors = doorsOf(z, pendingDoors.get(z) ?? []);
   }
 
   // A way back through every door: a hatch you climb down has its ladder, so the ladder's room gets the hatch.
@@ -246,4 +247,162 @@ function spot(z: Zone) {
     for (let gz = -d / 2 + 0.8; gz <= d / 2 - 0.8; gz += 0.4)
       if (clear(gx, gz) && (!best || Math.hypot(gx - goal[0], gz - goal[1]) < Math.hypot(best[0] - goal[0], best[1] - goal[1]))) best = [gx, gz];
   return best ?? goal;
+}
+
+/** Every way out of a zone: wall pieces that lead somewhere, and buildings, arches, ladders and hatches. */
+function doorsOf(z: Zone, pending: { m: ZoneModel; to: string; through: boolean }[]): ZoneDoor[] {
+  const [w, d] = z.size;
+  const out: ZoneDoor[] = [];
+  for (const side of SIDES)
+    for (const p of z.walls[side].pieces)
+      if (p.to) {
+        const wp = wallPoint(side, w, d, p.x + p.w / 2);
+        out.push({ to: p.to, label: p.label, at: wp.at, span: p.w / 2, normal: wp.normal, kind: "wall" });
+      }
+  for (const { m, to, through } of pending) {
+    const facing = Object.entries(ROT).find(([, v]) => v === m.rotY)?.[0] ?? "back";
+    const n = NORMAL[facing];
+    const [mw, md] = m.size;
+    // Walk-through things (arches, ladders, hatches) are entered at their middle; buildings at their front face.
+    const reach = through ? 0 : md / 2 + 0.3;
+    const at = [m.pos[0] + n[0] * reach, m.pos[1] + n[1] * reach];
+    // Keep the trigger where you can stand (a building on the edge of the square).
+    const at2 = [Math.max(-w / 2 + 0.35, Math.min(w / 2 - 0.35, at[0])), Math.max(-d / 2 + 0.35, Math.min(d / 2 - 0.35, at[1]))];
+    out.push({ to, label: m.label, at: at2, span: through ? Math.max(0.6, mw / 2 - 0.3) : Math.max(0.9, Math.min(mw / 3, 3)), normal: n, kind: through ? "pass" : "model" });
+    if (through) m.solid = false;
+  }
+  return out;
+}
+
+const footprint = (m: ZoneModel) => {
+  const turned = Math.abs(m.rotY) === 90;
+  const fw = turned ? m.size[1] : m.size[0], fd = turned ? m.size[0] : m.size[1];
+  return { x0: m.pos[0] - fw / 2, x1: m.pos[0] + fw / 2, z0: m.pos[1] - fd / 2, z1: m.pos[1] + fd / 2 };
+};
+
+/**
+ * Shrinks a room's floor plan by k, keeping heights and the sizes of furniture, doors and windows. Furniture that
+ * stands together (a table and its chairs) moves as one; anything against a wall stays against it. Pictures on the
+ * walls (boards, maps) shrink with the wall.
+ */
+function shrinkZone(z: Zone, k: number) {
+  const [W, D] = z.size;
+  const Wn = W * k, Dn = D * k;
+  const NEAR = 1.0;
+  // Furniture groups: footprints within half a metre of each other.
+  const ms = z.models;
+  const parent = ms.map((_, i) => i);
+  const find = (i: number): number => (parent[i] === i ? i : (parent[i] = find(parent[i])));
+  const fp = ms.map(footprint);
+  for (let i = 0; i < ms.length; i++)
+    for (let j = i + 1; j < ms.length; j++) {
+      const a = fp[i], b = fp[j];
+      if (a.x0 < b.x1 + 0.5 && b.x0 < a.x1 + 0.5 && a.z0 < b.z1 + 0.5 && b.z0 < a.z1 + 0.5) parent[find(i)] = find(j);
+    }
+  const groups = new Map<number, number[]>();
+  ms.forEach((_, i) => groups.set(find(i), [...(groups.get(find(i)) ?? []), i]));
+  const axis = (lo: number, hi: number, half: number, halfN: number) => {
+    const gapLo = lo + half, gapHi = half - hi;
+    if (gapLo < NEAR && gapLo <= gapHi) return -halfN + gapLo - lo;
+    if (gapHi < NEAR) return halfN - gapHi - hi;
+    const c = (lo + hi) / 2;
+    return c * k - c;
+  };
+  for (const idx of groups.values()) {
+    const x0 = Math.min(...idx.map((i) => fp[i].x0)), x1 = Math.max(...idx.map((i) => fp[i].x1));
+    const z0 = Math.min(...idx.map((i) => fp[i].z0)), z1 = Math.max(...idx.map((i) => fp[i].z1));
+    const dx = axis(x0, x1, W / 2, Wn / 2), dz = axis(z0, z1, D / 2, Dn / 2);
+    for (const i of idx) ms[i].pos = [ms[i].pos[0] + dx, ms[i].pos[1] + dz];
+  }
+  // Wall pieces: pictures shrink with the wall; doors and windows keep their size and their place near a corner.
+  for (const side of SIDES) {
+    const L = side === "front" || side === "back" ? W : D;
+    const Ln = L * k;
+    const list = z.walls[side].pieces;
+    for (const p of list) {
+      if (!p.fixed) {
+        const c = p.x + p.w / 2;
+        p.w *= k;
+        p.h *= k;
+        p.x = c * k - p.w / 2;
+      } else {
+        const gapL = p.x, gapR = L - p.x - p.w;
+        if (gapL < NEAR && gapL <= gapR) p.x = gapL;
+        else if (gapR < NEAR) p.x = Ln - gapR - p.w;
+        else p.x = (p.x + p.w / 2) * k - p.w / 2;
+      }
+    }
+    // Nothing overlapping on the same wall: push apart, then pull back inside the wall.
+    const sorted = [...list].sort((a, b) => a.x - b.x);
+    for (let i = 1; i < sorted.length; i++) {
+      const a = sorted[i - 1], b = sorted[i];
+      if (a.y < b.y + b.h && b.y < a.y + a.h && b.x < a.x + a.w + 0.15) b.x = a.x + a.w + 0.15;
+    }
+    for (let i = sorted.length - 1; i >= 0; i--) {
+      const b = sorted[i];
+      const limit = i === sorted.length - 1 ? Ln - 0.1 : sorted[i + 1].x - 0.15;
+      if (b.x + b.w > limit) b.x = Math.max(0.1, limit - b.w);
+    }
+  }
+  z.fixtures = z.fixtures.map((f) => ({ ...f, pos: [f.pos[0] * k, f.pos[1] * k] }));
+  z.decals = z.decals.map((dc) => ({ ...dc, pos: [dc.pos[0] * k, dc.pos[1] * k], size: [dc.size[0] * k, dc.size[1] * k] }));
+  z.size = [Wn, Dn, z.size[2]];
+}
+
+/** Moves furniture standing against a wall out from in front of the pictures, doors and windows on that wall. */
+function clearWalls(z: Zone) {
+  const [W, D] = z.size;
+  for (const m of z.models) {
+    const f = footprint(m);
+    const walls: { side: Side; along: [number, number]; L: number; set: (u0: number) => void }[] = [];
+    // Positions along each wall measured from its left end (seen from inside), as the pieces are.
+    if (f.z0 + D / 2 < 0.6) walls.push({ side: "front", along: [f.x0 + W / 2, f.x1 + W / 2], L: W, set: (u0) => (m.pos = [u0 - W / 2 + (f.x1 - f.x0) / 2, m.pos[1]]) });
+    if (D / 2 - f.z1 < 0.6) walls.push({ side: "back", along: [W / 2 - f.x1, W / 2 - f.x0], L: W, set: (u0) => (m.pos = [W / 2 - u0 - (f.x1 - f.x0) / 2, m.pos[1]]) });
+    if (f.x0 + W / 2 < 0.6) walls.push({ side: "left", along: [D / 2 - f.z1, D / 2 - f.z0], L: D, set: (u0) => (m.pos = [m.pos[0], D / 2 - u0 - (f.z1 - f.z0) / 2]) });
+    if (W / 2 - f.x1 < 0.6) walls.push({ side: "right", along: [f.z0 + D / 2, f.z1 + D / 2], L: D, set: (u0) => (m.pos = [m.pos[0], u0 - D / 2 + (f.z1 - f.z0) / 2]) });
+    for (const wl of walls) {
+      const len = wl.along[1] - wl.along[0];
+      const blocks = z.walls[wl.side].pieces.filter((p) => p.y < m.elev + m.size[2] && m.elev < p.y + p.h).map((p) => [p.x - 0.1, p.x + p.w + 0.1]);
+      const hits = (u0: number) => blocks.some(([a, b]) => u0 < b && a < u0 + len);
+      if (!hits(wl.along[0])) continue;
+      // The nearest clear stretch, either way along the wall.
+      let best: number | null = null;
+      for (let step = 0.1; step < wl.L; step += 0.1) {
+        for (const u0 of [wl.along[0] - step, wl.along[0] + step])
+          if (u0 >= 0.05 && u0 + len <= wl.L - 0.05 && !hits(u0)) {
+            best = u0;
+            break;
+          }
+        if (best != null) break;
+      }
+      if (best != null) wl.set(best);
+    }
+  }
+}
+
+/**
+ * Indoor ceilings no taller than the room needs: the top of its tallest furniture, or just above its tallest door,
+ * and never under 8 feet. Pictures and windows hung higher than that slide down (and shrink if they must) to fit.
+ */
+function lowerCeiling(z: Zone) {
+  const H = z.size[2];
+  const isDoor = (p: ZonePiece) => !!p.to || /door/.test(p.label);
+  let need = 8 * FT;
+  for (const side of SIDES) for (const p of z.walls[side].pieces) if (isDoor(p)) need = Math.max(need, p.y + p.h + 0.5 * FT);
+  for (const m of z.models) need = Math.max(need, m.elev + m.size[2]);
+  const Hn = Math.min(H, need);
+  for (const side of SIDES)
+    for (const p of z.walls[side].pieces) {
+      if (isDoor(p)) continue;
+      const room = Hn - 0.4 * FT;
+      if (p.y + p.h <= room) continue;
+      if (p.h > room - 1 * FT) {
+        const k = (room - 1 * FT) / p.h;
+        p.x += (p.w * (1 - k)) / 2;
+        p.w *= k;
+        p.h *= k;
+      }
+      p.y = Math.max(1 * FT, room - p.h);
+    }
+  z.size = [z.size[0], z.size[1], Hn];
 }

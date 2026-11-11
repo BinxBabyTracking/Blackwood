@@ -112,6 +112,49 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       } else onReady?.(t);
       return t;
     };
+    // A window or door picture often has see-through margins round its frame; crop them so the frame fills the hole.
+    const bounds = new Map<string, Promise<number[] | null>>();
+    const opaqueBounds = (url: string, img: HTMLImageElement) => {
+      if (!bounds.has(url))
+        bounds.set(
+          url,
+          Promise.resolve().then(() => {
+            const S = 160;
+            const c = document.createElement("canvas");
+            c.width = c.height = S;
+            const g = c.getContext("2d", { willReadFrequently: true });
+            if (!g) return null;
+            g.drawImage(img, 0, 0, S, S);
+            const a = g.getImageData(0, 0, S, S).data;
+            let x0 = S, x1 = -1, y0 = S, y1 = -1;
+            for (let y = 0; y < S; y++)
+              for (let x = 0; x < S; x++)
+                if (a[(y * S + x) * 4 + 3] > 128) {
+                  if (x < x0) x0 = x;
+                  if (x > x1) x1 = x;
+                  if (y < y0) y0 = y;
+                  if (y > y1) y1 = y;
+                }
+            return x1 < 0 ? null : [x0 / S, (x1 + 1) / S, y0 / S, (y1 + 1) / S];
+          }),
+        );
+      return bounds.get(url)!;
+    };
+    const cropToFrame = (url: string, t: THREE.Texture, mat: THREE.MeshLambertMaterial) => {
+      const apply = (img: HTMLImageElement) =>
+        opaqueBounds(url, img).then((b) => {
+          if (!b || (b[0] < 0.01 && b[1] > 0.99 && b[2] < 0.01 && b[3] > 0.99)) return;
+          const c = t.clone();
+          c.repeat.set(b[1] - b[0], b[3] - b[2]);
+          c.offset.set(b[0], 1 - b[3]);
+          c.needsUpdate = true;
+          mat.map = c;
+          mat.needsUpdate = true;
+        });
+      const img = t.image as HTMLImageElement | undefined;
+      if (img && img.complete && img.naturalWidth) apply(img);
+      else tex(url, (tt) => apply(tt.image as HTMLImageElement));
+    };
     const tiled = (url: string | null) => {
       const t = tex(url);
       if (!t) return null;
@@ -169,6 +212,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       for (const p of def.pieces) {
         const t = tex(p.tex);
         const mat = t ? new THREE.MeshLambertMaterial({ map: t, alphaTest: 0.5, side: THREE.DoubleSide }) : new THREE.MeshLambertMaterial({ color: 0x8a5a3a, transparent: true, opacity: 0.6 });
+        if (t && p.opening) cropToFrame(p.tex!, t, mat);
         const m = new THREE.Mesh(new THREE.PlaneGeometry(p.w, p.h), mat);
         m.position.set(p.x + p.w / 2 - W / 2, p.y + p.h / 2, 0.01);
         wg.add(m);
@@ -181,10 +225,10 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           // What's seen through it: the view outside, or a warm dark doorway.
           const view = tex(p.outside);
           const back = new THREE.Mesh(
-            new THREE.PlaneGeometry(Math.max(p.w * 3, 6), Math.max(p.h * 2.2, 4)),
+            new THREE.PlaneGeometry(Math.max(p.w * 6, 8), Math.max(p.h * 4, 6)),
             view ? new THREE.MeshBasicMaterial({ map: view, fog: false }) : new THREE.MeshBasicMaterial({ color: 0x1a0f08 }),
           );
-          back.position.set(p.x + p.w / 2 - W / 2, p.y + p.h / 2, view ? -2.5 : -WALL - 0.02);
+          back.position.set(p.x + p.w / 2 - W / 2, p.y + p.h / 2, view ? -1.4 : -WALL - 0.02);
           if (!view) back.scale.set(p.w / back.geometry.parameters.width, p.h / back.geometry.parameters.height, 1);
           wg.add(back);
         }
@@ -397,6 +441,32 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
             grp.rotation.y = (M.rotY * Math.PI) / 180;
             grp.position.set(M.pos[0], M.elev, M.pos[1]);
             parent.add(grp);
+            // A stove gets its pipe run up to the ceiling, from wherever its own stub of pipe ends.
+            if (!z.outdoor && /stove/.test(M.id)) {
+              grp.updateMatrixWorld(true);
+              const wb = new THREE.Box3().setFromObject(grp);
+              const cut = wb.max.y - (wb.max.y - wb.min.y) * 0.06;
+              const top = new THREE.Box3();
+              const v = new THREE.Vector3();
+              grp.traverse((o) => {
+                const mesh = o as THREE.Mesh;
+                if (!mesh.isMesh) return;
+                const pa = mesh.geometry.getAttribute("position");
+                for (let i = 0; i < pa.count; i += 3) {
+                  v.fromBufferAttribute(pa, i).applyMatrix4(mesh.matrixWorld);
+                  if (v.y >= cut) top.expandByPoint(v);
+                }
+              });
+              if (!top.isEmpty() && H - wb.max.y > 0.05) {
+                const r = THREE.MathUtils.clamp(Math.min(top.max.x - top.min.x, top.max.z - top.min.z) / 2, 0.04, 0.12);
+                const len = H - wb.max.y + 0.02;
+                const pipe = new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, 16, 1, true), new THREE.MeshLambertMaterial({ color: 0x2b2522, side: THREE.DoubleSide }));
+                pipe.position.set((top.min.x + top.max.x) / 2, wb.max.y - 0.01 + len / 2, (top.min.z + top.max.z) / 2);
+                const collar = new THREE.Mesh(new THREE.CylinderGeometry(r * 1.6, r * 1.6, 0.03, 16), new THREE.MeshLambertMaterial({ color: 0x1c1816 }));
+                collar.position.set(pipe.position.x, H - 0.015, pipe.position.z);
+                parent.add(pipe, collar);
+              }
+            }
           })
           .catch(() => {
             const s = labelSprite("couldn't load " + M.label);
@@ -469,6 +539,20 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         }
       }
       look.pitch = 0;
+      // Never start inside something: the nearest clear floor, spiralling out.
+      if (!free(pos.x, pos.z)) {
+        let found = false;
+        for (let r = 0.2; r < 8 && !found; r += 0.2)
+          for (let a = 0; a < Math.PI * 2; a += Math.PI / 12) {
+            const x = pos.x + Math.cos(a) * r, zz = pos.z + Math.sin(a) * r;
+            if (free(x, zz)) {
+              pos.x = x;
+              pos.z = zz;
+              found = true;
+              break;
+            }
+          }
+      }
       cooldown = 1;
     };
     goRef.current = (to: string, from?: string) => {
@@ -484,12 +568,12 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     build(zone);
 
     // Moving and bumping.
-    const free = (x: number, zz: number) => {
+    function free(x: number, zz: number) {
       const z = current!;
       const [w, d] = z.size;
       if (x < -w / 2 + RADIUS || x > w / 2 - RADIUS || zz < -d / 2 + RADIUS || zz > d / 2 - RADIUS) return false;
       return !blockers.some((b) => x > b.x0 - RADIUS && x < b.x1 + RADIUS && zz > b.z0 - RADIUS && zz < b.z1 + RADIUS);
-    };
+    }
     const move = (dx: number, dz: number) => {
       if (free(pos.x + dx, pos.z + dz)) {
         pos.x += dx;
