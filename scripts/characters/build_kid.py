@@ -17,9 +17,10 @@ D = f"{MH}/public/data"
 SRC = f"{MH}/src/json"
 SCALE = 0.1  # MakeHuman decimeters -> meters
 
-KIND = sys.argv[1]
+KIND = sys.argv[1]  # boy | girl | man | woman
 OUT = sys.argv[2]
-SEX = "male" if KIND == "boy" else "female"
+SEX = "male" if KIND in ("boy", "man") else "female"
+ELF = KIND in ("boy", "girl")
 
 # ---------------------------------------------------------------- three.js v3 JSON
 def parse_three(d):
@@ -69,7 +70,14 @@ def T(name, w):
     return (name, w)
 
 g = SEX
-targets = [
+ADULT = [
+    # macro: a grown adult of about forty (between MakeHuman's young and old), average build
+    T(f"macrodetails/universal-{g}-young-averagemuscle-averageweight", 0.75),
+    T(f"macrodetails/universal-{g}-old-averagemuscle-averageweight", 0.25),
+    T(f"macrodetails/caucasian-{g}-young", 0.75 / 3), T(f"macrodetails/african-{g}-young", 0.75 / 3), T(f"macrodetails/asian-{g}-young", 0.75 / 3),
+    T(f"macrodetails/caucasian-{g}-old", 0.25 / 3), T(f"macrodetails/african-{g}-old", 0.25 / 3), T(f"macrodetails/asian-{g}-old", 0.25 / 3),
+]
+targets = ADULT if not ELF else [
     # macro: child, average muscle, a little round, a little short
     T(f"macrodetails/universal-{g}-child-averagemuscle-averageweight", 0.65),
     T(f"macrodetails/universal-{g}-child-averagemuscle-maxweight", 0.35),
@@ -94,6 +102,29 @@ for name, w in targets:
         print("missing target", name); continue
     delta += np.asarray(TB[tindex[name]], dtype=np.float64) * w
 V = V0 + delta.reshape(-1, 3) * 1e-3
+
+# ---------------------------------------------------------------- face shapes (for talking and blinking)
+def unit(name):
+    acc = np.zeros(NV * 3)
+    for race in ("caucasian", "african", "asian"):
+        acc += np.asarray(TB[tindex[f"expression/units/{race}/{name}"]], dtype=np.float64) / 3
+    return acc.reshape(-1, 3) * 1e-3 * SCALE
+U = {n: unit(n) for n in ["mouth-open", "mouth-retraction", "mouth-pursing", "mouth-protusion", "mouth-compression",
+                          "mouth-depression-retraction", "mouth-corner-puller", "eye-left-closure", "eye-right-closure",
+                          "mouth-parling", "mouth-eversion"]}
+# Names match the talking-portrait mouth shapes (character-animation-plan): slight, ah, ee, oh, oo, f, plus blink and smile.
+SHAPES = {
+    "mouth_slight": U["mouth-open"] * 0.25 + U["mouth-parling"] * 0.4,
+    "mouth_ah": U["mouth-open"] * 0.75,
+    "mouth_ee": U["mouth-retraction"] * 0.8 + U["mouth-open"] * 0.25,
+    "mouth_oh": U["mouth-pursing"] * 0.55 + U["mouth-open"] * 0.6,
+    "mouth_oo": U["mouth-pursing"] * 1.0 + U["mouth-protusion"] * 0.4,
+    "mouth_f": U["mouth-depression-retraction"] * 0.6 + U["mouth-eversion"] * 0.3,
+    "mouth_closed": U["mouth-compression"] * 0.8,
+    "smile": U["mouth-corner-puller"] * 1.0,
+    "blink": U["eye-left-closure"] * 1.0 + U["eye-right-closure"] * 1.0,
+}
+SHAPE_NAMES = list(SHAPES)
 
 # ---------------------------------------------------------------- skeleton
 rig = json.load(open(f"{SRC}/rigs/default.json"))
@@ -185,9 +216,9 @@ def top4(dct):
 # ---------------------------------------------------------------- meshes
 MESHES = []  # (name, positions, normals?, uvs, indices, joints, weights, material)
 
-def add_mesh(name, verts, uvs, faces, weights, material, keep=None):
-    """faces: list of (vidx tuple, uvidx tuple). Splits vertices per unique (v, uv)."""
-    key = {}; pos = []; tex = []; jnt = []; wts = []; ind = []
+def add_mesh(name, verts, uvs, faces, weights, material, keep=None, shapes=None):
+    """faces: list of (vidx tuple, uvidx tuple). Splits vertices per unique (v, uv). shapes: {name: (n,3) deltas in meters}."""
+    key = {}; pos = []; tex = []; jnt = []; wts = []; ind = []; src = []
     for vidx, uvidx in faces:
         if keep is not None and not all(keep[v] for v in vidx):
             continue
@@ -196,7 +227,7 @@ def add_mesh(name, verts, uvs, faces, weights, material, keep=None):
             u = uvidx[c] if uvidx is not None else 0
             k = (v, u)
             if k not in key:
-                key[k] = len(pos)
+                key[k] = len(pos); src.append(v)
                 pos.append(verts[v] * SCALE)
                 tex.append(uvs[u] if len(uvs) else (0, 0))
                 j, w = top4(weights[v]); jnt.append(j); wts.append(w)
@@ -206,7 +237,8 @@ def add_mesh(name, verts, uvs, faces, weights, material, keep=None):
         else:
             ind += loc
     pos = np.array(pos, dtype=np.float32); tex = np.array(tex, dtype=np.float32); tex[:, 1] = 1 - tex[:, 1]
-    MESHES.append((name, pos, tex, np.array(ind, dtype=np.uint32), np.array(jnt, dtype=np.uint16), np.array(wts, dtype=np.float32), material))
+    morph = {n: d[np.array(src)].astype(np.float32) for n, d in shapes.items()} if shapes else None
+    MESHES.append((name, pos, tex, np.array(ind, dtype=np.uint32), np.array(jnt, dtype=np.uint16), np.array(wts, dtype=np.float32), material, morph))
 
 def fit_proxy(path):
     p = json.load(open(path))
@@ -226,7 +258,8 @@ def fit_proxy(path):
     delete = p["metadata"].get("deleteVerts")
     if isinstance(delete, str):
         delete = json.loads(delete)
-    return verts, puv, [(f[0], f[2]) for f in pf], weights, p, delete
+    shapes = {n: (d[ref] * w[:, :, None]).sum(1) for n, d in SHAPES.items()}
+    return verts, puv, [(f[0], f[2]) for f in pf], weights, p, delete, shapes
 
 def tex(path, size=1024, keep_alpha=False):
     im = Image.open(path)
@@ -239,25 +272,28 @@ def tex(path, size=1024, keep_alpha=False):
     im.save(buf, "JPEG", quality=88); return buf.getvalue(), "image/jpeg"
 
 # Outfit and hair per kid
-if KIND == "boy":
-    HAIR, OUTFIT, EYE = "hair/short02/short02.json", "clothes/male_worksuit01/male_worksuit01.json", "brownlight_eye.png"
-else:
-    HAIR, OUTFIT, EYE = "hair/ponytail01/ponytail01.json", "clothes/male_casualsuit03/male_casualsuit03.json", "bluegreen_eye.png"
+HAIR, OUTFIT, EYE = {
+    "boy": ("hair/short02/short02.json", "clothes/male_worksuit01/male_worksuit01.json", "brownlight_eye.png"),
+    "girl": ("hair/ponytail01/ponytail01.json", "clothes/male_casualsuit03/male_casualsuit03.json", "bluegreen_eye.png"),
+    "man": ("hair/short02/short02.json", "clothes/male_casualsuit03/male_casualsuit03.json", "brownlight_eye.png"),
+    "woman": ("hair/bob02/bob02.json", "clothes/male_worksuit01/male_worksuit01.json", "bluegreen_eye.png"),
+}[KIND]
 SHOES = "clothes/shoes01/shoes01.json"
 
 hidden = np.zeros(NV, dtype=bool)
 proxies = []
 for nm, rel, mat in [("Outfit", OUTFIT, "outfit"), ("Shoes", SHOES, "shoes"), ("Hair", HAIR, "hair"),
-                     ("Eyes", "eyes/Low-Poly/Low-Poly.json", "eyes"), ("Eyebrows", "eyebrows/eyebrow001/eyebrow001.json", "brows")]:
-    verts, puv, pf, weights, p, delete = fit_proxy(f"{D}/proxies/{rel}")
+                     ("Eyes", "eyes/Low-Poly/Low-Poly.json", "eyes"), ("Eyebrows", "eyebrows/eyebrow001/eyebrow001.json", "brows"),
+                     ("Teeth", "teeth/Teeth_Base/Teeth_Base.json", "teeth"), ("Tongue", "tongue/tongue01/tongue01.json", "tongue")]:
+    verts, puv, pf, weights, p, delete, shapes = fit_proxy(f"{D}/proxies/{rel}")
     if delete and nm in ("Outfit", "Shoes"):
         hidden |= np.array(delete[:NV], dtype=bool)
-    proxies.append((nm, verts, puv, pf, weights, mat, os.path.dirname(f"{D}/proxies/{rel}"), p))
+    proxies.append((nm, verts, puv, pf, weights, mat, os.path.dirname(f"{D}/proxies/{rel}"), p, shapes if nm in ("Eyebrows", "Teeth", "Tongue") else None))
 
 body_faces = [(f[0], f[2]) for f in F0 if matnames[f[1]] == "body"]
-add_mesh("Body", V, UV0, body_faces, WB, "skin", keep=~hidden)
-for nm, verts, puv, pf, weights, mat, folder, p in proxies:
-    add_mesh(nm, verts, puv, pf, weights, mat)
+add_mesh("Body", V, UV0, body_faces, WB, "skin", keep=~hidden, shapes=SHAPES)
+for nm, verts, puv, pf, weights, mat, folder, p, shapes in proxies:
+    add_mesh(nm, verts, puv, pf, weights, mat, shapes=shapes)
 
 # ---------------------------------------------------------------- materials
 skin_dir = glob.glob(f"{D}/skins/young_caucasian_{SEX}/textures/young_lightskinned_{SEX}_diffuse.png")
@@ -265,7 +301,7 @@ skin_png = skin_dir[0] if skin_dir else glob.glob(f"{D}/skins/young_caucasian_*/
 def first(folder, pat):
     g = sorted(glob.glob(os.path.join(folder, "textures", pat)))
     return g[0] if g else None
-pfold = {nm: folder for nm, _, _, _, _, _, folder, _ in proxies}
+pfold = {p[0]: p[6] for p in proxies}
 MATS = {
     "skin": (skin_png, False, None),
     "outfit": (first(pfold["Outfit"], "*diffuse.png"), False, None),
@@ -273,6 +309,8 @@ MATS = {
     "hair": (first(pfold["Hair"], "*diffuse.png"), True, "MASK"),
     "eyes": (first(pfold["Eyes"], EYE), False, None),
     "brows": (first(pfold["Eyebrows"], "*.png"), True, "BLEND"),
+    "teeth": (first(pfold["Teeth"], "*.png"), False, None),
+    "tongue": (first(pfold["Tongue"], "*.png"), False, None),
 }
 
 # ---------------------------------------------------------------- glTF
@@ -324,7 +362,7 @@ gl.skins.append(G.Skin(name="Armature", joints=[first_bone + k for k in range(le
                        skeleton=first_bone + bidx[roots[0]]))
 
 mesh_nodes = []
-for name, pos, tx, ind, jn, wt, mat in MESHES:
+for name, pos, tx, ind, jn, wt, mat, morph in MESHES:
     # smooth normals
     nrm = np.zeros_like(pos); tri = ind.reshape(-1, 3)
     fn = np.cross(pos[tri[:, 1]] - pos[tri[:, 0]], pos[tri[:, 2]] - pos[tri[:, 0]])
@@ -333,10 +371,14 @@ for name, pos, tx, ind, jn, wt, mat in MESHES:
     attrs = G.Attributes(POSITION=acc(pos, 5126, "VEC3", 34962, True), NORMAL=acc(nrm.astype(np.float32), 5126, "VEC3", 34962),
                          TEXCOORD_0=acc(tx, 5126, "VEC2", 34962), JOINTS_0=acc(jn, 5123, "VEC4", 34962), WEIGHTS_0=acc(wt, 5126, "VEC4", 34962))
     prim = G.Primitive(attributes=attrs, indices=acc(ind, 5125, "SCALAR", 34963), material=matid[mat])
-    gl.meshes.append(G.Mesh(name=name, primitives=[prim]))
+    mesh = G.Mesh(name=name, primitives=[prim])
+    if morph:
+        prim.targets = [{"POSITION": acc(morph[n], 5126, "VEC3", 34962, True)} for n in SHAPE_NAMES]
+        mesh.weights = [0.0] * len(SHAPE_NAMES); mesh.extras = {"targetNames": SHAPE_NAMES}
+    gl.meshes.append(mesh)
     gl.nodes.append(G.Node(name=name, mesh=len(gl.meshes) - 1, skin=0)); mesh_nodes.append(len(gl.nodes) - 1)
 
-top = G.Node(name="Boy" if KIND == "boy" else "Girl", children=[first_bone + bidx[r] for r in roots] + mesh_nodes)
+top = G.Node(name={"boy": "Elf boy", "girl": "Elf girl", "man": "Man", "woman": "Woman"}[KIND], children=[first_bone + bidx[r] for r in roots] + mesh_nodes)
 gl.nodes.append(top)
 gl.scenes.append(G.Scene(nodes=[len(gl.nodes) - 1])); gl.scene = 0
 gl.buffers.append(G.Buffer(byteLength=len(blob)))

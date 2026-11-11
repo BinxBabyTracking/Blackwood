@@ -29,11 +29,12 @@ import { NameCheck } from "@/components/portal/name-check";
 import { AdminSection } from "@/components/portal/admin-section";
 import { ArtStudio } from "@/components/portal/art-studio";
 import { MeshyPrompts } from "@/components/portal/meshy-prompts";
+import { CharacterSkins } from "@/components/portal/character-skins";
 import { ModelPreview } from "@/components/portal/model-preview";
 import { meshyText } from "@/lib/meshy";
 import { VoiceStudio } from "@/components/portal/voice-studio";
 import { voiceCases } from "@/lib/voice-studio";
-import { artKeyStatus, artRows, meshyRunning, meshyStatus, pricesFor, roomSpecs } from "@/lib/art-studio";
+import { artKeyStatus, artRows, BASES, characterRows, meshyRunning, meshyStatus, pricesFor, roomSpecs } from "@/lib/art-studio";
 
 export const metadata: Metadata = { title: "Admin", robots: { index: false, follow: false } };
 
@@ -589,7 +590,12 @@ async function Artwork() {
 
 /** Every 3D model entry's Meshy prompt, by case and room, to copy into Meshy. */
 async function ModelPrompts() {
-  const [rows, status, running] = await Promise.all([artRows().catch(() => null), meshyStatus().catch(() => ({ configured: false as const })), meshyRunning().catch(() => [] as string[])]);
+  const [rows, status, running, chars] = await Promise.all([
+    artRows().catch(() => null),
+    meshyStatus().catch(() => ({ configured: false as const })),
+    meshyRunning().catch(() => [] as string[]),
+    characterRows().catch(() => []),
+  ]);
   if (!rows) return null;
   const live = new Set(running);
   const models = rows.filter((r) => r.kind === "model");
@@ -624,14 +630,12 @@ async function ModelPrompts() {
       </div>
       <AdminSection id="models-base" title="Base characters" className="max-w-4xl">
         <p className="mt-2 text-sm text-smoke">
-          The rigged bodies every person is skinned from: an elf boy and an elf girl, built from MakeHuman&apos;s CC0 assets, one shared 163-bone skeleton, with eyes,
-          eyebrows, hair, an outfit and shoes as separate pieces. See scripts/characters/README.md.
+          The rigged bodies every person is skinned from: an elf boy and an elf girl (the North Pole&apos;s elves) and a man and a woman (everyone full-sized), built
+          from MakeHuman&apos;s CC0 assets on one shared 163-bone skeleton, with eyes, eyebrows, teeth, a tongue, hair, an outfit and shoes as separate pieces, and
+          face shapes for talking and blinking. See scripts/characters/README.md.
         </p>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          {[
-            ["Elf boy", "/models/base/elf_boy.glb"],
-            ["Elf girl", "/models/base/elf_girl.glb"],
-          ].map(([label, url]) => (
+          {Object.entries(BASES).map(([key, label]) => [label, `/models/base/${key}.glb`]).map(([label, url]) => (
             <div key={url}>
               <p className="text-sm text-paper">
                 {label}{" "}
@@ -644,6 +648,32 @@ async function ModelPrompts() {
           ))}
         </div>
       </AdminSection>
+      {[...new Set(chars.map((c) => c.group))].sort().map((g) => {
+        const list = chars.filter((c) => c.group === g);
+        const todo = list.filter((c) => !c.models.length).length;
+        return (
+          <AdminSection key={`chars-${g}`} id={`chars-${g}`} title={`3D characters: ${g.toUpperCase()}${todo ? ` (${todo} to make)` : ""}`} className="max-w-4xl">
+            <p className="mt-2 text-sm text-smoke">
+              Paints each person&apos;s front, side and back views (Artwork tab) onto a base character and saves the result as a rigged GLB. The base is picked from the
+              person (elves are the elf boy or girl; Santa, Mrs. Claus and everyone in other cases the man or woman); change it before making if it&apos;s wrong. Beards,
+              hats and coats are painted on, not shaped yet.
+            </p>
+            <CharacterSkins
+              bases={BASES}
+              rows={list.map((c) => ({
+                person: c.person,
+                group: c.group,
+                name: c.name,
+                front: c.views.front,
+                ready: Boolean(c.views.front && c.views.side && c.views.back),
+                base: c.base,
+                models: c.models,
+                liveModel: c.liveModel,
+              }))}
+            />
+          </AdminSection>
+        );
+      })}
       {groups.map((g) => {
         const list = models.filter((r) => r.group === g);
         const todo = list.filter((r) => r.liveModel == null).length;

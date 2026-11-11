@@ -5,6 +5,7 @@ import generated from "@/art/generated.json";
 import { liveArtUrl, liveModelUrl } from "@/art/painted";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { meshyText } from "@/lib/meshy";
+import { skinCharacter } from "@/lib/skinning";
 
 /*
  * The Admin artwork studio. Every image in art/manifest.json can be made with
@@ -705,4 +706,102 @@ export async function checkMeshyModel(id: string): Promise<MeshyCheck> {
 export async function meshyRunning(): Promise<string[]> {
   const { data } = await db().from("art_images").select("id").not("meshy_task", "is", null);
   return ((data ?? []) as { id: string }[]).map((r) => r.id);
+}
+
+/*
+ * 3D characters: each person's front, side and back views (`<case>_turn_<person>_*`) painted onto a rigged base
+ * (public/models/base: elf boy, elf girl, man, woman; see scripts/characters/README.md). The result is stored like
+ * a model, as `<case>_char_<person>` versions in art_models (source "skin"), served by /art/gen/.
+ */
+export const BASES: Record<string, string> = { elf_boy: "Elf boy", elf_girl: "Elf girl", man: "Man", woman: "Woman" };
+
+const personParts = (key: string) => (key.includes("_") ? { prefix: key.slice(0, key.indexOf("_")), name: key.slice(key.indexOf("_") + 1) } : { prefix: "c001", name: key });
+const isFemale = (desc: string) => /\b(woman|girl|female|she|her|mrs\.?|lady|mother|wife|daughter)\b/i.test(desc);
+const wearsHat = (desc: string) => /\b(cap|hat|shako|hood|helmet|beanie|bonnet|fedora|turban)\b/i.test(desc);
+
+/** The base a person starts from: North Pole elves are the elf children; everyone full-sized is the man or woman. */
+export function defaultBase(key: string) {
+  const desc = manifest.people?.[key] ?? "";
+  const elf = /\belf\b/i.test(desc) && !/full-sized/i.test(desc);
+  return elf ? (isFemale(desc) ? "elf_girl" : "elf_boy") : isFemale(desc) ? "woman" : "man";
+}
+
+export type CharacterRow = {
+  person: string;
+  group: string;
+  name: string;
+  description: string;
+  views: { front: string | null; side: string | null; back: string | null };
+  base: string;
+  hat: boolean;
+  models: { version: number; url: string; createdAt: string; bytes: number }[];
+  liveModel: number | null;
+};
+
+/** Everyone with character views, for Admin's 3D characters list. */
+export async function characterRows(): Promise<CharacterRow[]> {
+  const rows = await artRows();
+  const cur = new Map(rows.map((r) => [r.id, r.current]));
+  const people = Object.keys(manifest.people ?? {});
+  const ids = people.map((k) => { const { prefix, name } = personParts(k); return `${prefix}_char_${name}`; });
+  const [{ data: mods }, { data: imgs }] = await Promise.all([
+    db().from("art_models").select("image_id, version, created_at, size_bytes").in("image_id", ids).order("version", { ascending: false }),
+    db().from("art_images").select("id, live_model").in("id", ids),
+  ]);
+  const live = new Map(((imgs ?? []) as { id: string; live_model: number | null }[]).map((r) => [r.id, r.live_model]));
+  return people.flatMap((key) => {
+    const { prefix, name } = personParts(key);
+    const t = (v: string) => `${prefix}_turn_${name}_${v}`;
+    if (!manifest.images.some((i) => i.id === t("front"))) return [];
+    const id = `${prefix}_char_${name}`;
+    const desc = manifest.people?.[key] ?? "";
+    return [{
+      person: key,
+      group: prefix,
+      name: desc.split(/[:,]/)[0].slice(0, 60),
+      description: desc,
+      views: { front: cur.get(t("front")) ?? null, side: cur.get(t("side")) ?? null, back: cur.get(t("back")) ?? null },
+      base: defaultBase(key),
+      hat: wearsHat(desc),
+      models: ((mods ?? []) as { image_id: string; version: number; created_at: string; size_bytes: number }[])
+        .filter((m) => m.image_id === id)
+        .map((m) => ({ version: m.version, url: liveModelUrl(id, m.version), createdAt: m.created_at, bytes: Number(m.size_bytes) })),
+      liveModel: live.get(id) ?? null,
+    }];
+  });
+}
+
+/** Paints a person's 3D character from their three views and stores it as a new version (live if it's the first). */
+export async function skinPerson(key: string, base: string, origin: string) {
+  if (!manifest.people?.[key]) throw new Error("Unknown person.");
+  if (!BASES[base]) throw new Error("Unknown base character.");
+  const { prefix, name } = personParts(key);
+  const [front, side, back] = await Promise.all(["front", "side", "back"].map((v) => currentBytes(`${prefix}_turn_${name}_${v}`, origin)));
+  if (!front || !side || !back) throw new Error("Make the front, side and back views on the Artwork tab first.");
+  const get = async (file: string) => {
+    const res = await fetch(new URL(`/models/base/${file}`, origin), { signal: AbortSignal.timeout(60000) });
+    if (!res.ok) throw new Error(`Couldn't load the base character (${res.status}).`);
+    return new Uint8Array(await res.arrayBuffer());
+  };
+  const [glb, kit] = await Promise.all([get(`${base}.glb`), get(`${base}.kit`)]);
+  const desc = manifest.people[key];
+  const done = await skinCharacter({ base: glb, kit, front, side, back, name: desc.split(/[:,]/)[0].slice(0, 60), hat: wearsHat(desc) });
+  const id = `${prefix}_char_${name}`;
+  const version = await nextModelVersion(id);
+  const { error: up } = await db().storage.from(BUCKET).upload(`art/${id}-${version}.glb`, new Blob([Buffer.from(done.glb)], { type: "model/gltf-binary" }), { contentType: "model/gltf-binary", upsert: true });
+  if (up) throw new Error(`Saving the character failed: ${up.message}`);
+  const { error } = await db().from("art_models").insert({ image_id: id, version, size_bytes: done.glb.length, source: "skin" });
+  if (error) throw new Error(`Recording the character failed: ${error.message}`);
+  const { data: row } = await db().from("art_images").select("live_model").eq("id", id).maybeSingle();
+  const first = (row as { live_model: number | null } | null)?.live_model == null;
+  await db().from("art_images").upsert({ id, ...(first ? { live_model: version } : {}), updated_at: new Date().toISOString() }, { onConflict: "id" });
+  return { version, url: liveModelUrl(id, version), bytes: done.glb.length, live: first, report: done.report };
+}
+
+/** Chooses which version of a person's 3D character the game uses. */
+export async function setLiveCharacter(key: string, version: number) {
+  const { prefix, name } = personParts(key);
+  const id = `${prefix}_char_${name}`;
+  const { error } = await db().from("art_images").upsert({ id, live_model: version, updated_at: new Date().toISOString() }, { onConflict: "id" });
+  if (error) throw new Error(error.message);
 }

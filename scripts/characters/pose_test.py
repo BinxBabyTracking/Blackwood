@@ -18,7 +18,9 @@ def qmul(a, b):
     x1, y1, z1, w1 = a; x2, y2, z2, w2 = b
     return np.array([w1*x2+x1*w2+y1*z2-z1*y2, w1*y2-x1*z2+y1*w2+z1*x2, w1*z2+x1*y2-y1*x2+z1*w2, w1*w2-x1*x2-y1*y2-z1*z2])
 # pose: local rotations (bone local frame: +Y along the bone)
-POSE = {"upperarm01.L": ("z", -55), "upperarm01.R": ("z", 55), "lowerarm01.L": ("x", 60), "upperleg01.R": ("x", -35), "lowerleg01.R": ("x", 60), "head": ("x", 15), "spine02": ("y", 20)}
+import os
+SHAPE = os.environ.get("SHAPE")
+POSE = {} if os.environ.get("FACEONLY") else {"upperarm01.L": ("z", -55), "upperarm01.R": ("z", 55), "lowerarm01.L": ("x", 60), "upperleg01.R": ("x", -35), "lowerleg01.R": ("x", 60), "head": ("x", 15), "spine02": ("y", 20)}
 names = {i: n.name for i, n in enumerate(g.nodes)}
 local = {}
 for i, n in enumerate(g.nodes):
@@ -39,7 +41,11 @@ sc = trimesh.Scene()
 for node in g.nodes:
     if node.mesh is None: continue
     prim = g.meshes[node.mesh].primitives[0]
-    P = arr(prim.attributes.POSITION).astype(float); jn = arr(prim.attributes.JOINTS_0); wt = arr(prim.attributes.WEIGHTS_0)
+    P = arr(prim.attributes.POSITION).astype(float)
+    tn = (g.meshes[node.mesh].extras or {}).get("targetNames") if isinstance(g.meshes[node.mesh].extras, dict) else None
+    if SHAPE and tn and SHAPE in tn:
+        P = P + arr(prim.targets[tn.index(SHAPE)]["POSITION"]).astype(float)
+    jn = arr(prim.attributes.JOINTS_0); wt = arr(prim.attributes.WEIGHTS_0)
     Ph = np.c_[P, np.ones(len(P))]
     out_p = np.zeros_like(P)
     for k in range(4):

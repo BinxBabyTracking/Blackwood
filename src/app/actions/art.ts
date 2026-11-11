@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { refreshArt } from "@/game/registry";
 import { hasAdminAccess } from "@/lib/admin-gate";
-import { checkMeshyModel, confirmModel, fullPrompt, generateImage, modelUploadTarget, setLive, setLiveModel, setSubject, startMeshyModel, uploadImage, type MeshyCheck, type Tier } from "@/lib/art-studio";
+import { checkMeshyModel, confirmModel, fullPrompt, generateImage, modelUploadTarget, setLive, setLiveModel, setSubject, startMeshyModel, uploadImage, skinPerson, setLiveCharacter, type MeshyCheck, type Tier } from "@/lib/art-studio";
 import { requireInvestigator } from "@/lib/investigator";
 
 type Result<T> = ({ ok: true } & T) | { error: string };
@@ -129,5 +129,27 @@ export async function checkMeshy(id: string): Promise<Result<{ check: MeshyCheck
   } catch (e) {
     console.error("checkMeshy", id, e instanceof Error ? e.message : e);
     return fail(e, "Couldn't check the model.");
+  }
+}
+
+/** Admin: paints a person's 3D character from their views. */
+export async function makeCharacter(person: string, base: string): Promise<Result<{ version: number; url: string; bytes: number; live: boolean; report: string[] }>> {
+  if (!(await admin())) return { error: "Not allowed." };
+  try {
+    return { ok: true, ...(await skinPerson(person, base, await origin())) };
+  } catch (e) {
+    console.error("makeCharacter", person, e instanceof Error ? e.message : e);
+    return fail(e, "Couldn't make the character.");
+  }
+}
+
+/** Admin: chooses the version of a 3D character the game uses. */
+export async function chooseCharacter(person: string, version: number): Promise<Result<object>> {
+  if (!(await admin())) return { error: "Not allowed." };
+  try {
+    await setLiveCharacter(person, version);
+    return { ok: true };
+  } catch (e) {
+    return fail(e, "Couldn't choose that version.");
   }
 }
