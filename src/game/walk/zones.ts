@@ -29,7 +29,7 @@ export type Terrain = {
   hills: number[][];
   paths: { pts: number[][]; w: number }[];
 };
-export type ZoneDoor = { to: string; label: string; at: number[]; span: number; normal: number[]; kind: "wall" | "model" | "pass" };
+export type ZoneDoor = { to: string; label: string; at: number[]; span: number; normal: number[]; kind: "wall" | "model" | "pass"; mi?: number };
 export type ZonePerson = { id: string; name: string; file: string | null; height: number; pos: number[]; rotY: number };
 export type Zone = {
   id: string;
@@ -332,7 +332,7 @@ export function doorsOf(z: Zone): ZoneDoor[] {
     const at = [m.pos[0] + n[0] * reach, m.pos[1] + n[1] * reach];
     // Keep the trigger where you can stand (a building on the edge of the square).
     const at2 = [Math.max(-w / 2 + 0.35, Math.min(w / 2 - 0.35, at[0])), Math.max(-d / 2 + 0.35, Math.min(d / 2 - 0.35, at[1]))];
-    out.push({ to, label: m.label, at: at2, span: through ? Math.max(0.6, mw / 2 - 0.3) : Math.max(0.9, Math.min(mw / 3, 3)), normal: n, kind: through ? "pass" : "model" });
+    out.push({ to, label: m.label, at: at2, span: through ? Math.max(0.6, mw / 2 - 0.3) : Math.max(0.9, Math.min(mw / 3, 3)), normal: n, kind: through ? "pass" : "model", mi: z.models.indexOf(m) });
     if (through) m.solid = false;
   }
   return out;

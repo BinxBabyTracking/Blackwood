@@ -357,8 +357,20 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     let root: THREE.Group | null = null;
     let current: Zone | null = null;
     let blockers: { x0: number; x1: number; z0: number; z1: number }[] = [];
+    const haloMatShared = (() => {
+      const c = document.createElement("canvas");
+      c.width = c.height = 64;
+      const g = c.getContext("2d")!;
+      const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+      gr.addColorStop(0, "rgba(255,214,140,0.9)");
+      gr.addColorStop(0.3, "rgba(255,190,110,0.35)");
+      gr.addColorStop(1, "rgba(255,170,90,0)");
+      g.fillStyle = gr;
+      g.fillRect(0, 0, 64, 64);
+      return new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true });
+    })();
     let personBlocks: { x0: number; x1: number; z0: number; z1: number }[] = [];
-    const placed = new Map<ZoneModel, { shadow: THREE.Mesh; grp?: THREE.Object3D }>();
+    const placed = new Map<ZoneModel, { shadow: THREE.Mesh; grp?: THREE.Object3D; box?: THREE.Box3; extra?: THREE.Object3D[] }>();
     let sel: ZoneModel | null = null;
     let pickBox: THREE.Box3Helper | null = null;
     const showBox = (o: THREE.Object3D) => {
@@ -367,6 +379,51 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       pickBox = new THREE.Box3Helper(new THREE.Box3().setFromObject(o), 0xffd23b);
       root?.add(pickBox);
     };
+    /** What goes with a model once it stands: a lamp's glow in its glass, a stove's pipe up to the ceiling. */
+    const dressModel = (M: ZoneModel, grp: THREE.Object3D, parent: THREE.Object3D) => {
+      const z = current!;
+      const H = z.size[2];
+      const out: THREE.Object3D[] = [];
+      grp.updateMatrixWorld(true);
+      if (M.light && z.outdoor) {
+        const wb = new THREE.Box3().setFromObject(grp);
+        const h = wb.max.y - wb.min.y;
+        const halo = new THREE.Sprite(haloMatShared);
+        // The glass: a lantern hangs near the top of its post; a lamp post's lantern is its top fifth.
+        halo.position.set((wb.min.x + wb.max.x) / 2, wb.min.y + h * (/lantern/.test(M.id) ? 0.7 : 0.83), (wb.min.z + wb.max.z) / 2);
+        halo.scale.setScalar(Math.max(0.9, h * 0.35));
+        parent.add(halo);
+        out.push(halo);
+      }
+            // A stove gets its pipe run up to the ceiling, from wherever its own stub of pipe ends.
+      if (!z.outdoor && /stove/.test(M.id)) {
+        grp.updateMatrixWorld(true);
+        const wb = new THREE.Box3().setFromObject(grp);
+        const cut = wb.max.y - (wb.max.y - wb.min.y) * 0.06;
+        const top = new THREE.Box3();
+        const v = new THREE.Vector3();
+        grp.traverse((o) => {
+          const mesh = o as THREE.Mesh;
+          if (!mesh.isMesh) return;
+          const pa = mesh.geometry.getAttribute("position");
+          for (let i = 0; i < pa.count; i += 3) {
+            v.fromBufferAttribute(pa, i).applyMatrix4(mesh.matrixWorld);
+            if (v.y >= cut) top.expandByPoint(v);
+          }
+        });
+        if (!top.isEmpty() && H - wb.max.y > 0.05) {
+          const r = THREE.MathUtils.clamp(Math.min(top.max.x - top.min.x, top.max.z - top.min.z) / 2, 0.04, 0.12);
+          const len = H - wb.max.y + 0.02;
+          const pipe = new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, 16, 1, true), new THREE.MeshLambertMaterial({ color: 0x2b2522, side: THREE.DoubleSide }));
+          pipe.position.set((top.min.x + top.max.x) / 2, wb.max.y - 0.01 + len / 2, (top.min.z + top.max.z) / 2);
+          const collar = new THREE.Mesh(new THREE.CylinderGeometry(r * 1.6, r * 1.6, 0.03, 16), new THREE.MeshLambertMaterial({ color: 0x1c1816 }));
+          collar.position.set(pipe.position.x, H - 0.015, pipe.position.z);
+          parent.add(pipe, collar);
+          out.push(pipe, collar);
+        }
+      }
+      return out;
+    };
     const reblock = () => {
       const z = current;
       if (!z) return;
@@ -374,9 +431,27 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       for (const M of z.models) {
         const [fw, fd] = floorSize(M);
         const onGround = M.elev - heightAt(z.terrain, M.pos[0], M.pos[1]) < 0.05;
+        const b = placed.get(M)?.box;
         if (M.block != null) blockers.push({ x0: M.pos[0] - M.block, x1: M.pos[0] + M.block, z0: M.pos[1] - M.block, z1: M.pos[1] + M.block });
-        else if (M.solid && onGround && M.size[2] > 0.25) blockers.push({ x0: M.pos[0] - fw / 2, x1: M.pos[0] + fw / 2, z0: M.pos[1] - fd / 2, z1: M.pos[1] + fd / 2 });
+        else if (M.solid && onGround && M.size[2] > 0.25) {
+          // The model's real footprint once it has loaded (a model can come out smaller or larger than planned).
+          if (b) blockers.push({ x0: b.min.x + 0.05, x1: b.max.x - 0.05, z0: b.min.z + 0.05, z1: b.max.z - 0.05 });
+          else blockers.push({ x0: M.pos[0] - fw / 2, x1: M.pos[0] + fw / 2, z0: M.pos[1] - fd / 2, z1: M.pos[1] + fd / 2 });
+        }
       }
+      // Doors into buildings: at the real front of the building.
+      z.doors.forEach((d) => {
+        if (d.kind !== "model" || d.mi == null) return;
+        const M = z.models[d.mi];
+        const b = M && placed.get(M)?.box;
+        if (!b) return;
+        const c = b.getCenter(new THREE.Vector3()), sz = b.getSize(new THREE.Vector3());
+        const half = Math.abs(d.normal[0]) > 0.5 ? sz.x / 2 : sz.z / 2;
+        const across = Math.abs(d.normal[0]) > 0.5 ? sz.z : sz.x;
+        const [W, D] = z.size;
+        d.at = [Math.max(-W / 2 + 0.35, Math.min(W / 2 - 0.35, c.x + d.normal[0] * (half + 0.3))), Math.max(-D / 2 + 0.35, Math.min(D / 2 - 0.35, c.z + d.normal[1] * (half + 0.3)))];
+        d.span = Math.max(0.9, Math.min(across / 3, 3));
+      });
     };
     let people: Person[] = [];
     let snow: THREE.Points | null = null;
@@ -755,18 +830,6 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         g.fillRect(0, 0, 64, 64);
         return new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false });
       })();
-      const haloMat = (() => {
-        const c = document.createElement("canvas");
-        c.width = c.height = 64;
-        const g = c.getContext("2d")!;
-        const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
-        gr.addColorStop(0, "rgba(255,214,140,0.9)");
-        gr.addColorStop(0.3, "rgba(255,190,110,0.35)");
-        gr.addColorStop(1, "rgba(255,170,90,0)");
-        g.fillStyle = gr;
-        g.fillRect(0, 0, 64, 64);
-        return new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true });
-      })();
       for (const M of z.models) {
         const [fw, fd] = floorSize(M);
         const ground = heightAt(z.terrain, M.pos[0], M.pos[1]);
@@ -777,14 +840,6 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         sh.position.set(M.pos[0], M.elev + 0.006, M.pos[1]);
         if (onGround && !M.scatter) root.add(sh);
         placed.set(M, { shadow: sh });
-        if (M.light && z.outdoor) {
-          // A soft glow round every outdoor lamp.
-          const halo = new THREE.Sprite(haloMat);
-          const top = M.elev + M.size[2] * 0.85;
-          halo.position.set(M.pos[0], top, M.pos[1]);
-          halo.scale.setScalar(2.2);
-          root.add(halo);
-        }
         if (M.light && lamps < 10 && !M.scatter) {
           lamps++;
           const pl = new THREE.PointLight(0xffc77a, z.outdoor ? 10 : 4, z.outdoor ? 14 : 8, 1.6);
@@ -851,37 +906,18 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
             grp.userData.k0 = k / (M.size[0] / (grp.userData.w0 = M.size[0]));
             parent.add(grp);
             const pl2 = placed.get(M);
-            if (pl2) pl2.grp = grp;
+            grp.updateMatrixWorld(true);
+            if (pl2) {
+              pl2.grp = grp;
+              pl2.box = new THREE.Box3().setFromObject(grp);
+            }
+            reblock();
+            const ex = dressModel(M, grp, parent);
+            if (pl2) pl2.extra = ex;
             if (M === sel) showBox(grp);
             if (M.lights) {
               grp.updateMatrixWorld(true);
               parent.add(stringLights(new THREE.Box3().setFromObject(grp)));
-            }
-            // A stove gets its pipe run up to the ceiling, from wherever its own stub of pipe ends.
-            if (!z.outdoor && /stove/.test(M.id)) {
-              grp.updateMatrixWorld(true);
-              const wb = new THREE.Box3().setFromObject(grp);
-              const cut = wb.max.y - (wb.max.y - wb.min.y) * 0.06;
-              const top = new THREE.Box3();
-              const v = new THREE.Vector3();
-              grp.traverse((o) => {
-                const mesh = o as THREE.Mesh;
-                if (!mesh.isMesh) return;
-                const pa = mesh.geometry.getAttribute("position");
-                for (let i = 0; i < pa.count; i += 3) {
-                  v.fromBufferAttribute(pa, i).applyMatrix4(mesh.matrixWorld);
-                  if (v.y >= cut) top.expandByPoint(v);
-                }
-              });
-              if (!top.isEmpty() && H - wb.max.y > 0.05) {
-                const r = THREE.MathUtils.clamp(Math.min(top.max.x - top.min.x, top.max.z - top.min.z) / 2, 0.04, 0.12);
-                const len = H - wb.max.y + 0.02;
-                const pipe = new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, 16, 1, true), new THREE.MeshLambertMaterial({ color: 0x2b2522, side: THREE.DoubleSide }));
-                pipe.position.set((top.min.x + top.max.x) / 2, wb.max.y - 0.01 + len / 2, (top.min.z + top.max.z) / 2);
-                const collar = new THREE.Mesh(new THREE.CylinderGeometry(r * 1.6, r * 1.6, 0.03, 16), new THREE.MeshLambertMaterial({ color: 0x1c1816 }));
-                collar.position.set(pipe.position.x, H - 0.015, pipe.position.z);
-                parent.add(pipe, collar);
-              }
             }
           })
           .catch(() => {
@@ -1022,6 +1058,10 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         g.rotation.y = (M.rotY * Math.PI) / 180;
         if (g.userData.k0) g.scale.setScalar(g.userData.k0 * (M.size[0] / g.userData.w0));
         else g.scale.set(M.size[0] / (g.userData.w0 ?? M.size[0]), 1, 1);
+        g.updateMatrixWorld(true);
+        pl.box = new THREE.Box3().setFromObject(g);
+        for (const o of pl.extra ?? []) o.removeFromParent();
+        pl.extra = g.parent ? dressModel(M, g, g.parent) : [];
         showBox(g);
       }
       if (pl?.shadow) {
@@ -1134,6 +1174,14 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       return !blockers.some((b) => x > b.x0 - RADIUS && x < b.x1 + RADIUS && zz > b.z0 - RADIUS && zz < b.z1 + RADIUS);
     }
     const move = (dx: number, dz: number) => {
+      const z = current!;
+      // Already inside something (a model loaded bigger than planned): walk out freely, but stay in the room.
+      if (!free(pos.x, pos.z)) {
+        const [w, d] = z.size;
+        pos.x = Math.max(-w / 2 + RADIUS, Math.min(w / 2 - RADIUS, pos.x + dx));
+        pos.z = Math.max(-d / 2 + RADIUS, Math.min(d / 2 - RADIUS, pos.z + dz));
+        return;
+      }
       if (free(pos.x + dx, pos.z + dz)) {
         pos.x += dx;
         pos.z += dz;
