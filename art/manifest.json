@@ -35331,7 +35331,7 @@
       "style": "chr001",
       "size": "1536x1024",
       "room": "chr001_stables",
-      "subject": "A wide sliding stable door of weathered spruce boards on an iron track, with a black iron handle."
+      "subject": "A wide sliding stable door of weathered spruce boards on an iron track, with a black iron handle and a small wreath. Plain boards only: no words, no sign, no lettering anywhere on it."
     },
     {
       "id": "chr001_stables_piece_door_boiler",
@@ -36361,7 +36361,7 @@
       "kind": "model",
       "style": "chr001",
       "room": "chr001_stable_yard",
-      "subject": "Santa's sleigh hangar: a very tall timber barn with a curved snowy roof and huge double doors facing a runway, lanterns on both sides of the doors, painted cranberry red with white trim. 80 feet wide, 70 feet deep, 40 feet tall."
+      "subject": "Santa's sleigh hangar: a very tall closed timber barn with a curved snowy roof, solid walls on all four sides (the back and sides fully closed, nothing open or hollow), huge double doors on the front facing a runway, lanterns on both sides of the doors, painted cranberry red with white trim. 80 feet wide, 70 feet deep, 40 feet tall."
     },
     {
       "id": "chr001_stable_yard_model_railfence",

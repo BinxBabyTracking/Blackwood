@@ -10,7 +10,7 @@
 
 export type ZonePiece = { tex: string | null; x: number; y: number; w: number; h: number; opening: boolean; outside: string | null; label: string; to: string | null; fixed: boolean };
 export type ZoneWall = { tex: string | null; tile: number; lower: { tex: string | null; tile: number; to: number } | null; pieces: ZonePiece[]; backdrop: string | null };
-export type ZoneModel = { id: string; file: string | null; label: string; pos: number[]; elev: number; rotY: number; rotX: number; size: number[]; solid: boolean; light: boolean; scatter?: boolean; block?: number; level?: number; lights?: boolean; face?: string; turn?: number; door?: { to: string; through: boolean } };
+export type ZoneModel = { id: string; file: string | null; label: string; pos: number[]; elev: number; rotY: number; rotX: number; size: number[]; solid: boolean; light: boolean; scatter?: boolean; block?: number; level?: number; lights?: boolean; face?: string; turn?: number; door?: { to: string; through: boolean; dir?: number } };
 
 /** A room as Ian arranged it in Edit mode: replaces the generated layout. Model heights are above the ground. */
 export type SavedLayout = {
@@ -341,9 +341,9 @@ export function doorsOf(z: Zone): ZoneDoor[] {
   for (const m of z.models) {
     if (!m.door) continue;
     const { to, through } = m.door;
-    const facing = m.face ?? "back";
-    const n = NORMAL[facing];
-    const [mw, md] = m.size;
+    // The way in faces the side set in Edit mode (degrees, world), or the side the record names.
+    const n = m.door.dir != null ? [Math.round(Math.sin((m.door.dir * Math.PI) / 180)), Math.round(Math.cos((m.door.dir * Math.PI) / 180))] : NORMAL[m.face ?? "back"];
+    const [mw, md] = Math.abs(n[0]) > 0.5 ? [floorSize(m)[1], floorSize(m)[0]] : floorSize(m);
     // Walk-through things (arches, ladders, hatches) are entered at their middle; buildings at their front face.
     const reach = through ? 0 : md / 2 + 0.3;
     const at = [m.pos[0] + n[0] * reach, m.pos[1] + n[1] * reach];

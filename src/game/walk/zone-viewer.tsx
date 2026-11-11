@@ -279,6 +279,34 @@ function buildStairs(z: Zone, root: THREE.Object3D) {
   }
 }
 
+
+/** Fieldstone for building foundations on slopes. */
+let foundationMat: THREE.Material | null = null;
+function FOUNDATION_MAT() {
+  if (foundationMat) return foundationMat;
+  const c = document.createElement("canvas");
+  c.width = c.height = 256;
+  const g = c.getContext("2d")!;
+  g.fillStyle = "#3a3c42";
+  g.fillRect(0, 0, 256, 256);
+  let seed = 7;
+  const r = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  for (let y = 0; y < 256; y += 32)
+    for (let x = -(y % 64) / 2; x < 256; x += 48 + r() * 16) {
+      const v = 95 + r() * 40;
+      g.fillStyle = `rgb(${v},${v + 2},${v + 8})`;
+      g.beginPath();
+      g.roundRect(x + 2, y + 2, 44 + r() * 10, 28, 8);
+      g.fill();
+    }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(6, 1);
+  foundationMat = new THREE.MeshStandardMaterial({ map: t, roughness: 0.9 });
+  return foundationMat;
+}
+
 /** A label floating over something not made yet. */
 function labelSprite(text: string) {
   const c = document.createElement("canvas");
@@ -380,7 +408,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
   const [menu, setMenu] = useState(false);
   const [edit, setEdit] = useState(false);
   const editRef = useRef(false);
-  const [picked, setPicked] = useState<{ label: string; size: string } | null>(null);
+  const [picked, setPicked] = useState<{ label: string; size: string; door?: boolean } | null>(null);
   const [saving, setSaving] = useState("");
   const [fine, setFine] = useState(false);
   const [roomSize, setRoomSize] = useState("");
@@ -438,6 +466,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       return new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true });
     })();
     let standY = 0;
+    let arrival: import("./zones").ZoneDoor | null = null;
     let personBlocks: { x0: number; x1: number; z0: number; z1: number }[] = [];
     const placed = new Map<ZoneModel, { shadow: THREE.Mesh; grp?: THREE.Object3D; box?: THREE.Box3; extra?: THREE.Object3D[] }>();
     let sel: ZoneModel | null = null;
@@ -980,10 +1009,31 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
               pl2.grp = grp;
               pl2.box = new THREE.Box3().setFromObject(grp);
             }
+            // A building standing on a slope: a stone foundation down to the lowest ground under it.
+            if (z.terrain && M.level != null && pl2?.box) {
+              const b = pl2.box;
+              const pts = [[b.min.x, b.min.z], [b.max.x, b.min.z], [b.min.x, b.max.z], [b.max.x, b.max.z], [(b.min.x + b.max.x) / 2, b.min.z], [(b.min.x + b.max.x) / 2, b.max.z], [b.min.x, (b.min.z + b.max.z) / 2], [b.max.x, (b.min.z + b.max.z) / 2]];
+              const low = Math.min(...pts.map(([x, zz]) => heightAt(z.terrain, x, zz)));
+              if (M.elev - low > 0.1) {
+                const fh = M.elev - low + 0.3;
+                const f = new THREE.Mesh(new THREE.BoxGeometry(b.max.x - b.min.x - 0.1, fh, b.max.z - b.min.z - 0.1), FOUNDATION_MAT());
+                f.position.set((b.min.x + b.max.x) / 2, low - 0.3 + fh / 2, (b.min.z + b.max.z) / 2);
+                parent.add(f);
+                pl2.extra = [...(pl2.extra ?? []), f];
+              }
+            }
             reblock();
+            // Just came out of this building: stand at its real way in (known now it has loaded).
+            if (arrival && arrival.mi === z.models.indexOf(M)) {
+              const d = arrival;
+              arrival = null;
+              pos.x = d.at[0] + d.normal[0] * 1.2;
+              pos.z = d.at[1] + d.normal[1] * 1.2;
+              look.yaw = Math.atan2(-d.normal[0], -d.normal[1]);
+            }
             snapOut();
             const ex = dressModel(M, grp, parent);
-            if (pl2) pl2.extra = ex;
+            if (pl2) pl2.extra = [...(pl2.extra ?? []), ...ex];
             if (M === sel) showBox(grp);
             if (M.lights) {
               grp.updateMatrixWorld(true);
@@ -1052,6 +1102,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         const step = back.kind === "wall" ? ((back.y ?? 0) > 0.3 ? 0.6 : 1.1) : 1.7;
         pos.set(back.at[0] + back.normal[0] * step, EYE, back.at[1] + back.normal[1] * step);
         standY = back.y ?? 0;
+        arrival = back.kind === "model" ? back : null;
         look.yaw = Math.atan2(-back.normal[0], -back.normal[1]);
       } else {
         const entry = z.doors.find((dr) => dr.kind === "wall" && dr.normal[1] < 0) ?? z.doors[0];
@@ -1102,7 +1153,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     const ft = (v: number) => `${(v / 0.3048).toFixed(1)} ft`;
     const describe = () => {
       if (current) setRoomSize(`${ft(current.size[0])} wide, ${ft(current.size[1])} deep, ${ft(current.size[2])} high`);
-      setPicked(sel ? { label: sel.label, size: `${ft(sel.size[0])} x ${ft(sel.size[1])} x ${ft(sel.size[2])}` } : null);
+      setPicked(sel ? { label: sel.label, size: `${ft(sel.size[0])} x ${ft(sel.size[1])} x ${ft(sel.size[2])}`, door: !!sel.door } : null);
     };
     let saveTimer: ReturnType<typeof setTimeout> | null = null;
     const save = () => {
@@ -1171,6 +1222,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       turn: (deg: number) => {
         if (!sel) return;
         sel.rotY = ((((sel.rotY + deg + 180) % 360) + 360) % 360) - 180;
+        if (sel.door?.dir != null) sel.door.dir = (sel.door.dir + deg + 360) % 360;
         refresh(sel);
         settle();
       },
@@ -1208,6 +1260,14 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         }
         rebuild();
         settle();
+      },
+      wayIn: () => {
+        if (!sel?.door || !current) return;
+        // The side of the building facing you, to the nearest quarter turn.
+        const a = (Math.atan2(pos.x - sel.pos[0], pos.z - sel.pos[1]) * 180) / Math.PI;
+        sel.door.dir = (((Math.round(a / 90) * 90) % 360) + 360) % 360;
+        settle();
+        reblock();
       },
       deselect: () => {
         sel = null;
@@ -1572,6 +1632,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
                     ["Copy", () => api.current.copy()],
                     ["Remove", () => api.current.remove()],
                     ["Let go", () => api.current.deselect()],
+                    ...(picked.door ? ([["Way in: this side", () => api.current.wayIn()]] as [string, () => void][]) : []),
                   ] as [string, () => void][]
                 ).map(([label, fn]) => (
                   <button key={label} type="button" className={`rounded-[2px] px-1 py-2 font-semibold ${label === "Remove" ? "bg-[#7a2f2a] text-paper" : "bg-brass text-ink"}`} onClick={fn}>
