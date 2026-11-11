@@ -16,3 +16,15 @@ SRC=in.glb python3 fix.py /tmp/out_raw.glb
 python3 prune.py /tmp/out_raw.glb out.glb
 SRC=out.glb PYOPENGL_PLATFORM=egl python3 check.py face
 ```
+
+## All CHR001 characters (fix_char.py)
+
+`fix_char.py OUT NAME` is the general version: it reads NAME's face measurements from `params.json` (`Y0` lip
+line, `hw` mouth half width, `k` smile curve, `eyes` and `r` eye centers and radius, `beard`, `mustache`) and cuts
+the mouth exactly along the painted mouth curve, so the lips part cleanly. Body weights are left as Tripo made them
+(`"coat": true` turns the clothing reweight back on; it tears more than it helps on Tripo's fused meshes).
+
+- `measure.py OUT.png`: front and side face renders with a ruler, for measuring a new character.
+- `add_hands.py OUT.glb`: for a Tripo rig whose hand bones aren't in the skin (Corwin): skins them and moves the
+  palm weights onto them so the wrists bend.
+- `run.sh NAME`: fix, prune and render checks into /tmp/chars/NAME (expects /tmp/chars/NAME/a.glb).
