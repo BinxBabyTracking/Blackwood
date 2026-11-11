@@ -31,118 +31,185 @@ function wallFrame(z: Zone, side: Side) {
 }
 
 
-/* ---------- Cobbles: real rounded stones in rows, granite kerbs with snow along each side ---------- */
+/* ---------- Cobbles: a detailed cobblestone surface (colour + relief) drawn once, and stone kerbs ---------- */
 
-const COBBLE = (() => {
-  const g = new THREE.SphereGeometry(0.5, 6, 3);
-  const p = g.attributes.position as THREE.BufferAttribute;
-  for (let i = 0; i < p.count; i++) if (p.getY(i) < 0) p.setY(i, p.getY(i) * 0.25);
-  g.computeVertexNormals();
-  return g;
-})();
-const STONE_MAT = new THREE.MeshLambertMaterial({ color: 0xffffff });
-const KERB = new THREE.BoxGeometry(0.22, 0.16, 0.6);
-const SNOW_CAP = new THREE.BoxGeometry(0.2, 0.04, 0.54);
-let seedC = 99;
-const rndC = () => ((seedC = (seedC * 16807) % 2147483647) / 2147483647);
+/** Metres of path one cobble tile covers. */
+const COBBLE_M = 1.6;
+let cobbleTex: { map: THREE.CanvasTexture; normal: THREE.CanvasTexture } | null = null;
 
-/** Stones in a chunk, as one instanced mesh (so whole chunks drop out of view when behind you). */
-function stoneChunk(list: { p: THREE.Vector3; yaw: number; s: THREE.Vector3 }[], color: (i: number) => THREE.Color) {
-  const mesh = new THREE.InstancedMesh(COBBLE, STONE_MAT, list.length);
-  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler();
-  list.forEach((st, i) => {
-    q.setFromEuler(e.set((rndC() - 0.5) * 0.12, st.yaw, (rndC() - 0.5) * 0.12));
-    mesh.setMatrixAt(i, m4.compose(st.p, q, st.s));
-    mesh.setColorAt(i, color(i));
-  });
-  mesh.computeBoundingSphere();
-  return mesh;
-}
-const stoneColor = () => {
-  const g = 0.17 + rndC() * 0.13;
-  return new THREE.Color().setRGB(g, g * 1.02, g * 1.1);
-};
-
-/** Lays a cobbled path along points pts (already split into short steps), w metres wide, with kerbs. */
-function layCobbles(root: THREE.Object3D, T: NonNullable<Zone["terrain"]>, pts: number[][], w: number) {
-  const ROW = 0.2;
-  let chunk: { p: THREE.Vector3; yaw: number; s: THREE.Vector3 }[] = [];
-  const kerbs: { p: THREE.Vector3; yaw: number }[] = [];
-  let along = 0, nextRow = 0, nextKerb = 0, row = 0, chunkStart = 0;
-  for (let i = 1; i < pts.length; i++) {
-    const a = pts[i - 1], b = pts[i];
-    const L = Math.hypot(b[0] - a[0], b[1] - a[1]);
-    if (!L) continue;
-    const ux = (b[0] - a[0]) / L, uz = (b[1] - a[1]) / L;
-    const yaw = Math.atan2(ux, uz);
-    while (nextRow < along + L) {
-      const d = nextRow - along;
-      const cx = a[0] + ux * d, cz = a[1] + uz * d;
-      // One row of stones across the path, staggered every other row.
-      let off = -w / 2 + (row % 2 ? 0.12 : 0);
-      while (off < w / 2 - 0.05) {
-        const len = 0.2 + rndC() * 0.12;
-        const mid = Math.min(off + len / 2, w / 2 - 0.08);
-        const x = cx + uz * mid, z = cz - ux * mid;
-        chunk.push({ p: new THREE.Vector3(x, heightAt(T, x, z) + 0.035, z), yaw: yaw + Math.PI / 2, s: new THREE.Vector3(len * 0.92, 0.13 + rndC() * 0.04, ROW * 0.9) });
-        off += len;
-      }
-      row++;
-      nextRow += ROW;
-      if (nextRow - chunkStart > 12) {
-        root.add(stoneChunk(chunk, stoneColor));
-        chunk = [];
-        chunkStart = nextRow;
+/** Rows of rounded, tightly packed stones with thin dark grout; tiles seamlessly both ways. */
+function cobbleTextures() {
+  if (cobbleTex) return cobbleTex;
+  const S = 1024;
+  let seed = 4242;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const hc = document.createElement("canvas");
+  hc.width = hc.height = S;
+  const h = hc.getContext("2d")!;
+  const cc = document.createElement("canvas");
+  cc.width = cc.height = S;
+  const c = cc.getContext("2d")!;
+  h.fillStyle = "#000";
+  h.fillRect(0, 0, S, S);
+  c.fillStyle = "#16171b";
+  c.fillRect(0, 0, S, S);
+  const rows = 11;
+  const rh = S / rows;
+  const gap = 5;
+  const stone = (x: number, y: number, w: number, hh: number, tone: number) => {
+    for (const dx of [-S, 0, S]) {
+      const X = x + dx;
+      if (X + w < 0 || X > S) continue;
+      const r = Math.min(w, hh) * 0.42;
+      // Height: a soft dome, highest in the middle.
+      const g = h.createRadialGradient(X + w * 0.5, y + hh * 0.45, 2, X + w * 0.5, y + hh * 0.5, Math.max(w, hh) * 0.62);
+      g.addColorStop(0, "#fff");
+      g.addColorStop(0.55, "#c8c8c8");
+      g.addColorStop(1, "#3a3a3a");
+      h.fillStyle = g;
+      h.beginPath();
+      h.roundRect(X, y, w, hh, r);
+      h.fill();
+      // Colour: dark charcoal stone, a little lighter on top, worn speckles.
+      const t = Math.round(tone);
+      const cg = c.createLinearGradient(X, y, X, y + hh);
+      cg.addColorStop(0, `rgb(${t + 26},${t + 28},${t + 34})`);
+      cg.addColorStop(0.5, `rgb(${t + 8},${t + 9},${t + 14})`);
+      cg.addColorStop(1, `rgb(${t - 10},${t - 10},${t - 6})`);
+      c.fillStyle = cg;
+      c.beginPath();
+      c.roundRect(X, y, w, hh, r);
+      c.fill();
+      for (let k = 0; k < 6; k++) {
+        c.fillStyle = `rgba(${200 + rnd() * 40},${200 + rnd() * 40},${210 + rnd() * 40},${0.05 + rnd() * 0.06})`;
+        c.beginPath();
+        c.ellipse(X + w * (0.2 + rnd() * 0.6), y + hh * (0.2 + rnd() * 0.5), 2 + rnd() * 6, 1 + rnd() * 3, rnd() * 3, 0, Math.PI * 2);
+        c.fill();
       }
     }
-    while (nextKerb < along + L) {
-      const d = nextKerb - along;
-      const cx = a[0] + ux * d, cz = a[1] + uz * d;
-      for (const side of [-1, 1]) {
-        const x = cx + uz * side * (w / 2 + 0.12), z = cz - ux * side * (w / 2 + 0.12);
-        kerbs.push({ p: new THREE.Vector3(x, heightAt(T, x, z) + 0.05, z), yaw });
-      }
-      nextKerb += 0.64;
+  };
+  for (let r = 0; r < rows; r++) {
+    let x = rnd() * 40;
+    const start = x;
+    while (x < start + S - 30) {
+      const w = 62 + rnd() * 46;
+      const ww = Math.min(w, start + S - x - gap);
+      if (ww < 30) break;
+      stone(x + gap / 2, r * rh + gap / 2 + (rnd() - 0.5) * 4, ww - gap, rh - gap - rnd() * 6, 34 + rnd() * 30);
+      x += w;
     }
-    along += L;
   }
-  if (chunk.length) root.add(stoneChunk(chunk, stoneColor));
-  if (!kerbs.length) return;
-  const km = new THREE.InstancedMesh(KERB, new THREE.MeshLambertMaterial({ color: 0xffffff }), kerbs.length);
-  const cm = new THREE.InstancedMesh(SNOW_CAP, new THREE.MeshLambertMaterial({ color: 0xf2f6ff }), kerbs.length);
-  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler();
-  kerbs.forEach((k, i) => {
-    q.setFromEuler(e.set(0, k.yaw + (rndC() - 0.5) * 0.06, 0));
-    km.setMatrixAt(i, m4.compose(k.p, q, new THREE.Vector3(1, 1, 1)));
-    const g = 0.34 + rndC() * 0.1;
-    km.setColorAt(i, new THREE.Color().setRGB(g, g, g * 1.05));
-    cm.setMatrixAt(i, m4.compose(new THREE.Vector3(k.p.x, k.p.y + 0.09, k.p.z), q, new THREE.Vector3(1, 1, 1)));
-  });
-  km.computeBoundingSphere();
-  cm.computeBoundingSphere();
-  root.add(km, cm);
+  // Normals from the height map; grout and stone edges darkened (shade in the cracks).
+  const hd = h.getImageData(0, 0, S, S).data;
+  const cd = c.getImageData(0, 0, S, S);
+  const nd = new ImageData(S, S);
+  const H = (x: number, y: number) => hd[(((y + S) % S) * S + ((x + S) % S)) * 4] / 255;
+  for (let y = 0; y < S; y++)
+    for (let x = 0; x < S; x++) {
+      const dx = (H(x + 1, y) - H(x - 1, y)) * 3.2;
+      const dy = (H(x, y + 1) - H(x, y - 1)) * 3.2;
+      const l = Math.hypot(dx, dy, 1);
+      const i = (y * S + x) * 4;
+      nd.data[i] = ((-dx / l) * 0.5 + 0.5) * 255;
+      nd.data[i + 1] = ((dy / l) * 0.5 + 0.5) * 255;
+      nd.data[i + 2] = ((1 / l) * 0.5 + 0.5) * 255;
+      nd.data[i + 3] = 255;
+      const ao = 0.45 + 0.55 * Math.min(1, H(x, y) * 1.4);
+      cd.data[i] *= ao;
+      cd.data[i + 1] *= ao;
+      cd.data[i + 2] *= ao;
+    }
+  c.putImageData(cd, 0, 0);
+  const nc = document.createElement("canvas");
+  nc.width = nc.height = S;
+  nc.getContext("2d")!.putImageData(nd, 0, 0);
+  const map = new THREE.CanvasTexture(cc);
+  map.colorSpace = THREE.SRGBColorSpace;
+  const normal = new THREE.CanvasTexture(nc);
+  for (const t of [map, normal]) {
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.anisotropy = 8;
+  }
+  cobbleTex = { map, normal };
+  return cobbleTex;
 }
 
-/** Fills a rectangle (the square) with rows of cobbles, in chunks. */
-function layCobbleArea(root: THREE.Object3D, T: NonNullable<Zone["terrain"]>, c: number[], size: number[]) {
-  const [w, d] = size;
-  const CH = 8;
-  for (let cz = -d / 2; cz < d / 2; cz += CH)
-    for (let cx = -w / 2; cx < w / 2; cx += CH) {
-      const list: { p: THREE.Vector3; yaw: number; s: THREE.Vector3 }[] = [];
-      let row = Math.round((cz + d / 2) / 0.2);
-      for (let z = cz; z < Math.min(cz + CH, d / 2); z += 0.2, row++) {
-        let x = cx + (row % 2 ? 0.12 : 0);
-        while (x < Math.min(cx + CH, w / 2)) {
-          const len = 0.2 + rndC() * 0.12;
-          const px = c[0] + x + len / 2, pz = c[1] + z + 0.1;
-          list.push({ p: new THREE.Vector3(px, heightAt(T, px, pz) + 0.035, pz), yaw: 0, s: new THREE.Vector3(len * 0.92, 0.13 + rndC() * 0.04, 0.18) });
-          x += len;
-        }
-      }
-      if (list.length) root.add(stoneChunk(list, stoneColor));
-    }
+function cobbleMaterial(repeat?: [number, number]) {
+  const { map, normal } = cobbleTextures();
+  const m = repeat ? map.clone() : map, n = repeat ? normal.clone() : normal;
+  if (repeat) {
+    m.repeat.set(...repeat);
+    n.repeat.set(...repeat);
+    m.needsUpdate = n.needsUpdate = true;
+  }
+  return new THREE.MeshStandardMaterial({ map: m, normalMap: n, normalScale: new THREE.Vector2(1.4, 1.4), roughness: 0.62, metalness: 0.05, polygonOffset: true, polygonOffsetFactor: -2 });
 }
+
+/** Smooth stone kerbs down both sides of a path, with snow along the top. */
+function layKerbs(root: THREE.Object3D, T: NonNullable<Zone["terrain"]>, pts: number[][], w: number) {
+  const KW = 0.2, KH = 0.13;
+  for (const side of [-1, 1]) {
+    const pos: number[] = [], uv: number[] = [], idx: number[] = [];
+    const snow: number[] = [], sidx: number[] = [];
+    let along = 0;
+    pts.forEach((q, i) => {
+      const prev = pts[Math.max(0, i - 1)], next = pts[Math.min(pts.length - 1, i + 1)];
+      let dx = next[0] - prev[0], dz = next[1] - prev[1];
+      const len = Math.hypot(dx, dz) || 1;
+      dx /= len;
+      dz /= len;
+      if (i > 0) along += Math.hypot(q[0] - pts[i - 1][0], q[1] - pts[i - 1][1]);
+      const nx = -dz * side, nz = dx * side;
+      const o0 = w / 2, o1 = w / 2 + KW;
+      const x0 = q[0] + nx * o0, z0 = q[1] + nz * o0, x1 = q[0] + nx * o1, z1 = q[1] + nz * o1;
+      const g0 = heightAt(T, x0, z0), g1 = heightAt(T, x1, z1);
+      const top = Math.max(g0, g1) + KH;
+      // inner bottom, inner top, outer top, outer bottom
+      pos.push(x0, g0 - 0.05, z0, x0, top, z0, x1, top, z1, x1, g1 - 0.05, z1);
+      uv.push(along, 0, along, 0.4, along, 0.6, along, 1);
+      const sm = 0.02;
+      snow.push(x0 + nx * sm, top + 0.035, z0 + nz * sm, x1 - nx * sm, top + 0.035, z1 - nz * sm);
+      if (i > 0) {
+        const o = i * 4, p = o - 4;
+        for (const [a, b] of [[0, 1], [1, 2], [2, 3]]) idx.push(p + a, p + b, o + a, p + b, o + b, o + a);
+        const so = i * 2, sp = so - 2;
+        sidx.push(sp, sp + 1, so, sp + 1, so + 1, so);
+      }
+    });
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
+    g.setIndex(idx);
+    g.computeVertexNormals();
+    root.add(new THREE.Mesh(g, KERB_MAT));
+    const sg = new THREE.BufferGeometry();
+    sg.setAttribute("position", new THREE.Float32BufferAttribute(snow, 3));
+    sg.setIndex(sidx);
+    sg.computeVertexNormals();
+    root.add(new THREE.Mesh(sg, SNOW_MAT));
+  }
+}
+const KERB_MAT = (() => {
+  if (typeof document === "undefined") return new THREE.MeshStandardMaterial({ color: 0x6a6d74 });
+  const c = document.createElement("canvas");
+  c.width = 256;
+  c.height = 32;
+  const g = c.getContext("2d")!;
+  g.fillStyle = "#7a7d84";
+  g.fillRect(0, 0, 256, 32);
+  for (let x = 0; x < 256; x += 64) {
+    g.fillStyle = `rgb(${110 + (x % 3) * 8},${112 + (x % 3) * 8},${120 + (x % 3) * 8})`;
+    g.fillRect(x + 2, 0, 60, 32);
+    g.fillStyle = "#3b3d42";
+    g.fillRect(x, 0, 2, 32);
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(1 / 2.4, 1);
+  return new THREE.MeshStandardMaterial({ map: t, roughness: 0.85, side: THREE.DoubleSide });
+})();
+const SNOW_MAT = new THREE.MeshStandardMaterial({ color: 0xf3f6ff, roughness: 0.9, side: THREE.DoubleSide });
 
 /** A label floating over something not made yet. */
 function labelSprite(text: string) {
@@ -558,7 +625,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         g.computeVertexNormals();
         root.add(new THREE.Mesh(g, ft ? new THREE.MeshLambertMaterial({ map: ft }) : plain(0xe8eef8)));
         // Cobbled paths laid over it.
-        const pmat = new THREE.MeshLambertMaterial({ color: 0x23252b, polygonOffset: true, polygonOffsetFactor: -2 });
+        const pmat = cobbleMaterial();
         for (const path of T.paths) {
           const pts: number[][] = [];
           for (let i = 1; i < path.pts.length; i++) {
@@ -579,7 +646,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
             for (const side of [-1, 1]) {
               const x = q[0] - dz * side * (path.w / 2), zz = q[1] + dx * side * (path.w / 2);
               pos2.push(x, heightAt(T, x, zz) + 0.04, zz);
-              uvs.push(((side + 1) / 2) * (path.w / 1.8), along / 1.8);
+              uvs.push(((side + 1) / 2) * (path.w / COBBLE_M), along / COBBLE_M);
             }
             if (i > 0) {
               const o = i * 2;
@@ -594,7 +661,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           const mesh = new THREE.Mesh(pg, pmat);
           mesh.material.side = THREE.DoubleSide;
           root.add(mesh);
-          layCobbles(root, T, pts, path.w);
+          layKerbs(root, T, pts, path.w);
         }
       } else {
         const floor = new THREE.Mesh(tiledPlane(floorW, floorD, 0, 0, z.floor.tile), ft ? new THREE.MeshLambertMaterial({ map: ft }) : plain(z.outdoor ? 0xe8eef8 : 0x8a6a4a));
@@ -610,12 +677,11 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       }
       for (const dc of z.decals) {
         if (T && dc.tex && dc.tex === T.path) {
-          // A cobbled area (the square): grout under rows of stones.
-          const g = new THREE.Mesh(new THREE.PlaneGeometry(dc.size[0], dc.size[1]), new THREE.MeshLambertMaterial({ color: 0x23252b, polygonOffset: true, polygonOffsetFactor: -2 }));
+          // A cobbled area (the square).
+          const g = new THREE.Mesh(new THREE.PlaneGeometry(dc.size[0], dc.size[1]), cobbleMaterial([dc.size[0] / COBBLE_M, dc.size[1] / COBBLE_M]));
           g.rotation.x = -Math.PI / 2;
           g.position.set(dc.pos[0], heightAt(T, dc.pos[0], dc.pos[1]) + 0.03, dc.pos[1]);
           root.add(g);
-          layCobbleArea(root, T, dc.pos, dc.size);
           continue;
         }
         const t = dc.tile ? tiled(dc.tex) : tex(dc.tex);
