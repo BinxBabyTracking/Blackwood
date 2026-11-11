@@ -11,7 +11,7 @@ import { intro, objectives, reportAvailable, timeline } from "./story";
 /*
  * CHR001, The Christmas That Never Happened. Santa's North Pole, Christmas
  * Eve. December only (cases.available_month 12). Aiming for Christmas 2027 in
- * the Godot client: one walkable North Pole with no map, 4 to 10 elf
+ * the Godot client: one walkable North Pole with no map, 1 to 6 elf
  * investigators of the Silver Bell Bureau's Jingle Division, a four-hour time
  * loop and a killer who acts on his own.
  *
