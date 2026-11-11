@@ -656,7 +656,13 @@ async function ModelPrompts() {
             <p className="mt-2 text-sm text-smoke">
               Paints each person&apos;s front, side and back views (Artwork tab) onto a base character and saves the result as a rigged GLB. The base is picked from the
               person (elves are the elf boy or girl; Santa, Mrs. Claus and everyone in other cases the man or woman); change it before making if it&apos;s wrong. Beards,
-              hats and coats are painted on, not shaped yet.
+              hats and coats are painted on, not shaped yet. Or upload a finished, rigged GLB (made in Tripo or elsewhere) with Upload GLB.
+            </p>
+            <p className="mt-2 text-sm">
+              <a href={`/agency/testing/world?case=${g.toUpperCase()}`} className="text-brass underline-offset-4 hover:underline">
+                Walk the {g.toUpperCase()} world
+              </a>{" "}
+              <span className="text-smoke">(every room and outdoor place from the room records, with the people in them)</span>
             </p>
             <CharacterSkins
               bases={BASES}
