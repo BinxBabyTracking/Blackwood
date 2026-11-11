@@ -46,6 +46,54 @@ function labelSprite(text: string) {
   return s;
 }
 
+/** A round, layered Christmas tree with ornaments, little lights and a star. */
+function christmasTree(h: number, w: number, pos: number[], elev: number) {
+  const g = new THREE.Group();
+  const trunkH = h * 0.08;
+  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(w * 0.05, w * 0.06, trunkH, 12), new THREE.MeshLambertMaterial({ color: 0x5a3a22 }));
+  trunk.position.y = trunkH / 2;
+  g.add(trunk);
+  const green = new THREE.MeshLambertMaterial({ color: 0x1f6b3a, flatShading: true });
+  const snow = new THREE.MeshLambertMaterial({ color: 0xf2f6ff, flatShading: true });
+  const tiers = 6;
+  const colors = [0xd8282f, 0xf2c230, 0x2f6fd8, 0xe8e8f0, 0xb03ad0, 0x2fb04a];
+  let seed = 7;
+  const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
+  for (let i = 0; i < tiers; i++) {
+    const t = i / tiers;
+    const r = (w / 2) * (1 - t * 0.78);
+    const th = (h - trunkH) * 0.3;
+    const y = trunkH + (h - trunkH) * t * 0.82;
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(r, th, 14, 1), green);
+    cone.position.y = y + th / 2;
+    g.add(cone);
+    // A dusting of snow on each layer's tips.
+    const cap = new THREE.Mesh(new THREE.ConeGeometry(r * 0.55, th * 0.3, 14, 1), snow);
+    cap.position.y = y + th * 0.82;
+    g.add(cap);
+    const n = Math.round(10 * (1 - t) + 4);
+    for (let k = 0; k < n; k++) {
+      const a = (k / n) * Math.PI * 2 + rnd();
+      const rr = r * (0.55 + rnd() * 0.3);
+      const yy = y + th * (0.15 + rnd() * 0.35);
+      const ball = new THREE.Mesh(
+        new THREE.SphereGeometry(w * 0.02, 10, 8),
+        new THREE.MeshLambertMaterial({ color: colors[k % colors.length], emissive: colors[k % colors.length], emissiveIntensity: k % 3 === 0 ? 0.6 : 0.1 }),
+      );
+      ball.position.set(Math.cos(a) * rr, yy, Math.sin(a) * rr);
+      g.add(ball);
+    }
+  }
+  const star = new THREE.Mesh(new THREE.OctahedronGeometry(w * 0.05), new THREE.MeshLambertMaterial({ color: 0xfff2b0, emissive: 0xffe08a, emissiveIntensity: 1 }));
+  star.position.y = h + w * 0.02;
+  g.add(star);
+  const glow = new THREE.PointLight(0xffd59a, 12, h * 0.9, 1.4);
+  glow.position.y = h * 0.5;
+  g.add(glow);
+  g.position.set(pos[0], elev, pos[1]);
+  return g;
+}
+
 type Person = { grp: THREE.Object3D; head: THREE.Bone | null; headRest: THREE.Quaternion; faces: { mesh: THREE.Mesh; i: number }[]; next: number; at: number; phase: number };
 
 export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: string; eye?: number }) {
@@ -135,15 +183,22 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
                   if (y < y0) y0 = y;
                   if (y > y1) y1 = y;
                 }
-            return x1 < 0 ? null : [x0 / S, (x1 + 1) / S, y0 / S, (y1 + 1) / S];
+            if (x1 < 0) return null;
+            // Is the middle solid (a clock face, a picture) rather than glass you see through?
+            let solid = 0, n = 0;
+            for (let y = Math.round(y0 + (y1 - y0) * 0.35); y < y0 + (y1 - y0) * 0.65; y++)
+              for (let x = Math.round(x0 + (x1 - x0) * 0.35); x < x0 + (x1 - x0) * 0.65; x++, n++) if (a[(y * S + x) * 4 + 3] > 128) solid++;
+            return [x0 / S, (x1 + 1) / S, y0 / S, (y1 + 1) / S, n ? solid / n : 0];
           }),
         );
       return bounds.get(url)!;
     };
-    const cropToFrame = (url: string, t: THREE.Texture, mat: THREE.MeshLambertMaterial) => {
+    const cropToFrame = (url: string, t: THREE.Texture, mat: THREE.MeshLambertMaterial, onSolid?: () => void) => {
       const apply = (img: HTMLImageElement) =>
         opaqueBounds(url, img).then((b) => {
-          if (!b || (b[0] < 0.01 && b[1] > 0.99 && b[2] < 0.01 && b[3] > 0.99)) return;
+          if (!b) return;
+          if (b[4] > 0.8) onSolid?.();
+          if (b[0] < 0.01 && b[1] > 0.99 && b[2] < 0.01 && b[3] > 0.99) return;
           const c = t.clone();
           c.repeat.set(b[1] - b[0], b[3] - b[2]);
           c.offset.set(b[0], 1 - b[3]);
@@ -215,7 +270,17 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       for (const p of def.pieces) {
         const t = tex(p.tex);
         const mat = t ? new THREE.MeshLambertMaterial({ map: t, alphaTest: 0.5, side: THREE.DoubleSide }) : new THREE.MeshLambertMaterial({ color: 0x8a5a3a, transparent: true, opacity: 0.6 });
-        if (t && p.opening) cropToFrame(p.tex!, t, mat);
+        if (t && p.opening)
+          cropToFrame(p.tex!, t, mat, () => {
+            // A solid round thing (a clock face) in a square hole: close the hole behind it with wall.
+            const wt = tiled(def.tex);
+            const patch = new THREE.Mesh(
+              tiledPlane(p.w, p.h, p.x, p.y, Math.max(0.3, H)),
+              wt ? new THREE.MeshLambertMaterial({ map: wt }) : plain(0xb8a890),
+            );
+            patch.position.set(p.x + p.w / 2 - W / 2, p.y + p.h / 2, -0.004);
+            wg.add(patch);
+          });
         const m = new THREE.Mesh(new THREE.PlaneGeometry(p.w, p.h), mat);
         m.position.set(p.x + p.w / 2 - W / 2, p.y + p.h / 2, 0.01);
         wg.add(m);
@@ -436,6 +501,11 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
             off.add(inner);
             off.position.set(-c.x, -box.min.y, -c.z);
             // An even scale: the middle of the three fits (width, height, depth), so one odd proportion can't blow it up.
+            // A Christmas tree that came out flat (a cutout) is drawn as a round one instead.
+            if (/tree/.test(M.id) && Math.min(s.x, s.z) < Math.max(s.x, s.z) * 0.35) {
+              parent.add(christmasTree(M.size[2], Math.max(M.size[0], M.size[1]), M.pos, M.elev));
+              return;
+            }
             const ks = [M.size[0] / s.x, M.size[2] / s.y, M.size[1] / s.z].filter((k) => Number.isFinite(k) && k > 0).sort((a, b) => a - b);
             const k = ks[Math.floor(ks.length / 2)] ?? 1;
             const grp = new THREE.Group();

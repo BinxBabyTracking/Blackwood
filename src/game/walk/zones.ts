@@ -190,7 +190,8 @@ export function buildWorld(opts: {
 
   // Smaller floor plans indoors (the records were drawn half as big again for multiplayer), then the doors.
   for (const z of zones) {
-    if (!z.outdoor && (opts.shrink ?? 1) < 1) shrinkZone(z, fitShrink(z, opts.shrink!));
+    const small = z.size[0] * z.size[1] < 250 * FT * FT;
+    if (!z.outdoor && !small && (opts.shrink ?? 1) < 1) shrinkZone(z, fitShrink(z, opts.shrink!));
     if (!z.outdoor && (opts.shrink ?? 1) < 1) fillRoom(z);
     if (!z.outdoor) clearWalls(z);
     if (!z.outdoor) lowerCeiling(z);
@@ -434,7 +435,7 @@ function fitShrink(z: Zone, max: number) {
 }
 
 /** Plain furniture that can stand in a room more than once. */
-const COPYABLE = /bench|shel(f|ves)|stool|crate|sack|table|chair|cabinet|rack|barrel|files|bookcase|apparatus|haybale|dresser|lectern|counter|stall|coalbin|tack|cart|toyshelf|workbench|marver|pipes/;
+const COPYABLE = /gears|weights|bench|shel(f|ves)|stool|crate|sack|table|chair|cabinet|rack|barrel|files|bookcase|apparatus|haybale|dresser|lectern|counter|stall|coalbin|tack|cart|toyshelf|workbench|marver|pipes/;
 
 /**
  * Fills a sparse room with second copies of its plain furniture, standing against the walls clear of doors,
@@ -452,11 +453,11 @@ function fillRoom(z: Zone) {
     const f = footprint(m);
     if (f.x0 < -W / 2 + 0.03 || f.x1 > W / 2 - 0.03 || f.z0 < -D / 2 + 0.03 || f.z1 > D / 2 - 0.03) return false;
     for (const o of z.models) {
-      if (o.elev > 0.05 && o.size[2] < 0.3) continue;
+      if (o.elev >= m.elev + m.size[2] || m.elev >= o.elev + o.size[2]) continue;
       const g = footprint(o);
       if (f.x0 < g.x1 + 0.5 && g.x0 < f.x1 + 0.5 && f.z0 < g.z1 + 0.5 && g.z0 < f.z1 + 0.5) return false;
     }
-    for (const [x, y] of doorPts) if (x > f.x0 - 1.6 && x < f.x1 + 1.6 && y > f.z0 - 1.6 && y < f.z1 + 1.6) return false;
+    if (m.elev < 2.6) for (const [x, y] of doorPts) if (x > f.x0 - 1.6 && x < f.x1 + 1.6 && y > f.z0 - 1.6 && y < f.z1 + 1.6) return false;
     // Not in front of anything on the walls it stands against.
     const top = m.elev + m.size[2];
     const against: [Side, number, number][] = [];
@@ -464,14 +465,14 @@ function fillRoom(z: Zone) {
     if (D / 2 - f.z1 < 0.4) against.push(["back", W / 2 - f.x1, W / 2 - f.x0]);
     if (f.x0 + W / 2 < 0.4) against.push(["left", D / 2 - f.z1, D / 2 - f.z0]);
     if (W / 2 - f.x1 < 0.4) against.push(["right", f.z0 + D / 2, f.z1 + D / 2]);
-    for (const [side, u0, u1] of against) for (const p of z.walls[side].pieces) if (p.y < top && u0 < p.x + p.w + 0.1 && p.x - 0.1 < u1) return false;
+    for (const [side, u0, u1] of against) for (const p of z.walls[side].pieces) if (p.y < top && p.y + p.h > m.elev && u0 < p.x + p.w + 0.1 && p.x - 0.1 < u1) return false;
     return true;
   };
   let area = floorArea(z);
   let added = 0;
-  for (let round = 0; round < 3 && area < target && added < 8; round++)
+  for (let round = 0; round < 3 && area < target && added < 10; round++)
     for (const src of kinds) {
-      if (area >= target || added >= 8) break;
+      if (area >= target || added >= 10) break;
       const [sw, sd] = src.size;
       // Back against a wall, facing into the room.
       const spots: { pos: number[]; rotY: number }[] = [];
@@ -486,13 +487,16 @@ function fillRoom(z: Zone) {
       // Furthest from what's already there first, so copies spread out.
       const dist = (p: number[]) => Math.min(...z.models.map((o) => Math.hypot(o.pos[0] - p[0], o.pos[1] - p[1])));
       spots.sort((a, b) => dist(b.pos) - dist(a.pos));
-      for (const sp of spots) {
-        const copy: ZoneModel = { ...src, pos: sp.pos, rotY: sp.rotY, rotX: 0 };
+      // In a tall room (a clock tower), machinery also goes up the walls.
+      const levels = [0];
+      if (/gear/.test(src.id)) for (let e = src.size[2] * 0.9; e + src.size[2] < z.size[2] - 0.3; e += src.size[2] * 0.9) levels.push(e);
+      for (const lv of levels) for (const sp of spots) {
+        const copy: ZoneModel = { ...src, pos: sp.pos, rotY: sp.rotY, rotX: 0, elev: lv };
         if (!fits(copy)) continue;
         z.models.push(copy);
-        area += sw * sd;
+        if (!lv) area += sw * sd;
         added++;
-        break;
+        if (!lv || levels.length < 2) break;
       }
     }
 }
