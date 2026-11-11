@@ -3,9 +3,8 @@ import type { CaseDefinition, DeductionDef } from "@/game/engine/types";
 
 /*
  * RESTRICTED STORY LOGIC for CHR001. Server-only. Deductions CD01 to CD10
- * follow the case design (v0.1, a draft for approval). The report, its
- * standard and the endings are placeholders until the timeline and build
- * contract are written.
+ * follow docs/CHR001-timeline.md (the timeline and build contract). The
+ * report standard is the contract's; the endings come with the 3D build.
  */
 
 export const deductions: DeductionDef[] = [
@@ -42,13 +41,13 @@ export const solution: CaseDefinition["solution"] = {
     minItems: 4,
     maxItems: 7,
     lines: [
-      { id: "scene", label: "The scene", anyOf: ["CE003", "CE004", "CE005", "CE006"] },
-      { id: "access", label: "The way in", anyOf: ["CE010", "CE011", "CE012", "CE015"] },
-      { id: "motive", label: "The reason", anyOf: ["CE016", "CE017", "CE018", "CE027", "CE028"] },
+      { id: "access", label: "How he got in unseen", anyOf: ["CE010", "CE011", "CE012", "CE015"] },
+      { id: "act", label: "What he did or tried to do", anyOf: ["CE003", "CE005", "CE006", "CE008", "CE032"] },
+      { id: "motive", label: "Why", anyOf: ["CE016", "CE017", "CE018", "CE027", "CE028"] },
     ],
     minLines: 3,
-    linkToSuspect: ["CE006", "CE012", "CE015", "CE027"],
-    supporting: ["CE001", "CE002", "CE009", "CE019", "CE020", "CE021", "CE022"],
+    linkToSuspect: ["CE006", "CE012", "CE015", "CE027", "CE032"],
+    supporting: ["CE001", "CE002", "CE009", "CE019", "CE020", "CE021", "CE022", "CE030"],
     maxUnrelated: 1,
     undecided: [],
   },

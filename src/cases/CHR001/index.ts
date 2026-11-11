@@ -16,7 +16,8 @@ import { intro, objectives, reportAvailable, timeline } from "./story";
  * loop and a killer who acts on his own.
  *
  * Design: the project docs "CHR001 Design Handoff" (v1.0, the brief) and
- * "CHR001 Case Design" (v0.1, a draft for approval).
+ * "CHR001 Case Design", and the canonical timeline and build contract,
+ * docs/CHR001-timeline.md, which everything here must agree with.
  *
  * This is the PRODUCTION SCAFFOLD: people (with voices), places (with their
  * walkable rooms in art/manifest.json), evidence, music, room sound and sound

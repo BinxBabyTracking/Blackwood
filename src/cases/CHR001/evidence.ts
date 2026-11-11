@@ -1,7 +1,7 @@
 import type { EvidenceDef } from "@/game/engine/types";
 
 /*
- * CHR001 evidence, CE001 to CE031, from the case design's evidence table.
+ * CHR001 evidence, CE001 to CE032 (CE032 exists only once a sting catches Garrick), from the case design's evidence table.
  * "Bag" items can be kept in Santa's Time Bag across resets; the Chronometer
  * (CE029) never can. Pictures: art/manifest.json chr001_ev_ce001 and on.
  */
@@ -39,6 +39,7 @@ const ROWS: Row[] = [
   ["CE028", "Garrick's sketches", "garrick_workshop", ["garrick"], "Sketches of the Chronometer with its twelve bloodline gears, and one word beside them: return?", "Pinned on the wall of Garrick's workshop."],
   ["CE029", "The Christmas Chronometer", "clock_base", ["aldric", "garrick"], "The great golden watch that makes Christmas Eve long enough. Once in hand, its face shows exactly how long remains.", "Hidden inside the great clock after 12:12 in a loop where it was stolen; otherwise in its case in the chamber. Never fits in the Time Bag."],
   ["CE030", "Corwin's letter of complaint", "corwin_shop", ["corwin", "aldric"], "\"To the Keeper of Time: for the third time this year you have retuned my clocks to run fast.\"", "On Corwin's counter."],
+  ["CE032", "Caught in the act", "tower_workshop", ["garrick", "aldric"], "The Bureau's own report of the moment Garrick Thorne was stopped: where, when, what he held and who saw it.", "Made when a sting catches Garrick in the act."],
   ["CE031", "The gear puller", "tower_workshop", ["glint", "aldric"], "Dr. Glint's missing gear puller, borrowed by Aldric. PROPERTY OF THE LAB. RETURN TO H. GLINT.", "On the shelves in Aldric's workshop."],
 ];
 
