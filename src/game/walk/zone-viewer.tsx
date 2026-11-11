@@ -6,9 +6,9 @@ import * as THREE from "three";
 import { GLTFLoader, type GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
 import { trimRuns, wallRects } from "./walk-viewer";
-import { heightAt } from "./zones";
-import { turnModel } from "@/app/actions/art";
-import type { Side, World, Zone, ZoneWall } from "./zones";
+import { doorsOf, floorSize, heightAt, layoutOf } from "./zones";
+import { clearRoomLayout, saveRoomLayout } from "@/app/actions/art";
+import type { Side, World, Zone, ZoneModel, ZoneWall } from "./zones";
 
 /*
  * A case's walkable world from its room records: one place at a time, and walking into a door, a building's front
@@ -312,9 +312,12 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
   const [menu, setMenu] = useState(false);
   const [edit, setEdit] = useState(false);
   const editRef = useRef(false);
-  const [picked, setPicked] = useState<{ id: string; label: string } | null>(null);
+  const [picked, setPicked] = useState<{ label: string; size: string } | null>(null);
   const [saving, setSaving] = useState("");
-  const turnRef = useRef<(id: string, delta: number) => void>(() => {});
+  const [fine, setFine] = useState(false);
+  const [roomSize, setRoomSize] = useState("");
+  const api = useRef<Record<string, (...a: number[]) => void>>({});
+  const fineRef = useRef(false);
   const [showMissing, setShowMissing] = useState(false);
   const [near, setNear] = useState<string | null>(null);
   const [touch, setTouch] = useState(false);
@@ -354,6 +357,27 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     let root: THREE.Group | null = null;
     let current: Zone | null = null;
     let blockers: { x0: number; x1: number; z0: number; z1: number }[] = [];
+    let personBlocks: { x0: number; x1: number; z0: number; z1: number }[] = [];
+    const placed = new Map<ZoneModel, { shadow: THREE.Mesh; grp?: THREE.Object3D }>();
+    let sel: ZoneModel | null = null;
+    let pickBox: THREE.Box3Helper | null = null;
+    const showBox = (o: THREE.Object3D) => {
+      pickBox?.removeFromParent();
+      o.updateMatrixWorld(true);
+      pickBox = new THREE.Box3Helper(new THREE.Box3().setFromObject(o), 0xffd23b);
+      root?.add(pickBox);
+    };
+    const reblock = () => {
+      const z = current;
+      if (!z) return;
+      blockers = [...personBlocks];
+      for (const M of z.models) {
+        const [fw, fd] = floorSize(M);
+        const onGround = M.elev - heightAt(z.terrain, M.pos[0], M.pos[1]) < 0.05;
+        if (M.block != null) blockers.push({ x0: M.pos[0] - M.block, x1: M.pos[0] + M.block, z0: M.pos[1] - M.block, z1: M.pos[1] + M.block });
+        else if (M.solid && onGround && M.size[2] > 0.25) blockers.push({ x0: M.pos[0] - fw / 2, x1: M.pos[0] + fw / 2, z0: M.pos[1] - fd / 2, z1: M.pos[1] + fd / 2 });
+      }
+    };
     let people: Person[] = [];
     let snow: THREE.Points | null = null;
     let token = 0;
@@ -572,6 +596,9 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       scene.add(root);
       current = z;
       blockers = [];
+      personBlocks = [];
+      placed.clear();
+      pickBox = null;
       people = [];
       snow = null;
       const [w, d, H] = z.size;
@@ -741,16 +768,15 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         return new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true });
       })();
       for (const M of z.models) {
-        const turned = Math.abs(M.rotY) === 90;
-        const fw = turned ? M.size[1] : M.size[0], fd = turned ? M.size[0] : M.size[1];
+        const [fw, fd] = floorSize(M);
         const ground = heightAt(z.terrain, M.pos[0], M.pos[1]);
         const onGround = M.elev - ground < 0.05;
-        if (M.block != null) blockers.push({ x0: M.pos[0] - M.block, x1: M.pos[0] + M.block, z0: M.pos[1] - M.block, z1: M.pos[1] + M.block });
-        else if (M.solid && onGround && M.size[2] > 0.25) blockers.push({ x0: M.pos[0] - fw / 2, x1: M.pos[0] + fw / 2, z0: M.pos[1] - fd / 2, z1: M.pos[1] + fd / 2 });
-        const sh = new THREE.Mesh(new THREE.PlaneGeometry(fw * 1.2, fd * 1.2), contact);
+        const sh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), contact);
         sh.rotation.x = -Math.PI / 2;
+        sh.scale.set(fw * 1.2, fd * 1.2, 1);
         sh.position.set(M.pos[0], M.elev + 0.006, M.pos[1]);
         if (onGround && !M.scatter) root.add(sh);
+        placed.set(M, { shadow: sh });
         if (M.light && z.outdoor) {
           // A soft glow round every outdoor lamp.
           const halo = new THREE.Sprite(haloMat);
@@ -777,6 +803,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           const box = new THREE.Mesh(new THREE.BoxGeometry(M.size[0], M.size[2], M.size[1]), new THREE.MeshLambertMaterial({ color: 0x9a7ad0, transparent: true, opacity: 0.35 }));
           box.position.set(M.pos[0], M.elev + M.size[2] / 2, M.pos[1]);
           box.rotation.y = (M.rotY * Math.PI) / 180;
+          box.userData.zm = M;
+          box.userData.label = M.label;
           root.add(box);
           const s = labelSprite(M.label);
           s.position.set(M.pos[0], M.elev + M.size[2] + 0.3, M.pos[1]);
@@ -818,9 +846,13 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
             grp.scale.setScalar(k);
             grp.rotation.y = (M.rotY * Math.PI) / 180;
             grp.position.set(M.pos[0], M.elev, M.pos[1]);
-            grp.userData.modelId = M.id;
+            grp.userData.zm = M;
             grp.userData.label = M.label;
+            grp.userData.k0 = k / (M.size[0] / (grp.userData.w0 = M.size[0]));
             parent.add(grp);
+            const pl2 = placed.get(M);
+            if (pl2) pl2.grp = grp;
+            if (M === sel) showBox(grp);
             if (M.lights) {
               grp.updateMatrixWorld(true);
               parent.add(stringLights(new THREE.Box3().setFromObject(grp)));
@@ -862,7 +894,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
 
       // People.
       for (const P of z.people) {
-        blockers.push({ x0: P.pos[0] - 0.3, x1: P.pos[0] + 0.3, z0: P.pos[1] - 0.3, z1: P.pos[1] + 0.3 });
+        personBlocks.push({ x0: P.pos[0] - 0.3, x1: P.pos[0] + 0.3, z0: P.pos[1] - 0.3, z1: P.pos[1] + 0.3 });
         if (!P.file) {
           const s = labelSprite(P.name + " (no 3D yet)");
           s.position.set(P.pos[0], 1.3, P.pos[1]);
@@ -906,6 +938,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       }
       if (!want) setReady(true);
 
+      reblock();
       // Where you arrive: at the door back to where you came from, a step inside, facing in.
       const back = arriveFrom ? z.doors.find((dr) => dr.to === arriveFrom) : null;
       if (back) {
@@ -955,33 +988,142 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       }, 220);
     };
     build(zone);
-    // Edit mode: turn a model Meshy built facing the wrong way (every copy, everywhere), and rebuild in place.
-    turnRef.current = (id: string, delta: number) => {
-      for (const zz of world.zones)
-        for (const m of zz.models)
-          if (m.id === id) {
-            m.turn = (m.turn ?? 0) + delta;
-            m.rotY = ((((m.rotY + delta + 180) % 360) + 360) % 360) - 180;
-          }
+    // Edit mode: arrange one piece at a time (move, raise, turn, scale, copy, remove) and the room's size; saved per room.
+    const ray = new THREE.Raycaster();
+    const ft = (v: number) => `${(v / 0.3048).toFixed(1)} ft`;
+    const describe = () => {
+      if (current) setRoomSize(`${ft(current.size[0])} wide, ${ft(current.size[1])} deep, ${ft(current.size[2])} high`);
+      setPicked(sel ? { label: sel.label, size: `${ft(sel.size[0])} x ${ft(sel.size[1])} x ${ft(sel.size[2])}` } : null);
+    };
+    let saveTimer: ReturnType<typeof setTimeout> | null = null;
+    const save = () => {
+      if (saveTimer) clearTimeout(saveTimer);
+      setSaving("Saving…");
+      saveTimer = setTimeout(async () => {
+        const z = current;
+        if (!z) return;
+        const res = await saveRoomLayout(z.room, JSON.parse(JSON.stringify(layoutOf(z)))).catch(() => ({ error: "The connection dropped." }));
+        setSaving("error" in res ? res.error : "Saved");
+      }, 700);
+    };
+    const settle = () => {
+      const z = current!;
+      z.doors = doorsOf(z);
+      reblock();
+      describe();
+      save();
+    };
+    const refresh = (M: ZoneModel) => {
+      const pl = placed.get(M);
+      const z = current!;
+      if (pl?.grp) {
+        const g = pl.grp;
+        g.position.set(M.pos[0], M.elev, M.pos[1]);
+        g.rotation.y = (M.rotY * Math.PI) / 180;
+        if (g.userData.k0) g.scale.setScalar(g.userData.k0 * (M.size[0] / g.userData.w0));
+        else g.scale.set(M.size[0] / (g.userData.w0 ?? M.size[0]), 1, 1);
+        showBox(g);
+      }
+      if (pl?.shadow) {
+        const [fw, fd] = floorSize(M);
+        pl.shadow.position.set(M.pos[0], M.elev + 0.006, M.pos[1]);
+        pl.shadow.scale.set(fw * 1.2, fd * 1.2, 1);
+        pl.shadow.visible = M.elev - heightAt(z.terrain, M.pos[0], M.pos[1]) < 0.05;
+      }
+    };
+    const rebuild = () => {
       if (current) build(current, undefined, { x: pos.x, z: pos.z, yaw: look.yaw, pitch: look.pitch });
     };
-    const ray = new THREE.Raycaster();
-    let pickBox: THREE.Box3Helper | null = null;
+    api.current = {
+      move: (f: number, r: number) => {
+        if (!sel || !current) return;
+        const step = fineRef.current ? 0.05 : 0.25;
+        const fx = -Math.sin(look.yaw), fz = -Math.cos(look.yaw), rx = Math.cos(look.yaw), rz = -Math.sin(look.yaw);
+        // Snap the push to the room's axes, whichever is nearest the way you're looking.
+        let dx = (fx * f + rx * r) * step, dz = (fz * f + rz * r) * step;
+        if (Math.abs(dx) > Math.abs(dz)) dz = 0;
+        else dx = 0;
+        const before = heightAt(current.terrain, sel.pos[0], sel.pos[1]);
+        sel.pos = [sel.pos[0] + Math.sign(dx) * step * (dx ? 1 : 0), sel.pos[1] + Math.sign(dz) * step * (dz ? 1 : 0)];
+        sel.elev += heightAt(current.terrain, sel.pos[0], sel.pos[1]) - before;
+        refresh(sel);
+        settle();
+      },
+      lift: (d: number) => {
+        if (!sel) return;
+        sel.elev = Math.max(heightAt(current?.terrain, sel.pos[0], sel.pos[1]), sel.elev + d * (fineRef.current ? 0.02 : 0.1));
+        refresh(sel);
+        settle();
+      },
+      turn: (deg: number) => {
+        if (!sel) return;
+        sel.rotY = ((((sel.rotY + deg + 180) % 360) + 360) % 360) - 180;
+        refresh(sel);
+        settle();
+      },
+      scale: (k: number) => {
+        if (!sel) return;
+        sel.size = sel.size.map((v) => v * k);
+        refresh(sel);
+        settle();
+      },
+      copy: () => {
+        if (!sel || !current) return;
+        const [fw] = floorSize(sel);
+        const rx = Math.cos(look.yaw), rz = -Math.sin(look.yaw);
+        const c: ZoneModel = { ...sel, pos: [sel.pos[0] + rx * (fw + 0.15), sel.pos[1] + rz * (fw + 0.15)], size: [...sel.size], door: undefined };
+        current.models.push(c);
+        sel = c;
+        rebuild();
+        settle();
+      },
+      remove: () => {
+        if (!sel || !current) return;
+        current.models = current.models.filter((m) => m !== sel);
+        sel = null;
+        rebuild();
+        settle();
+      },
+      room: (dw: number, dd: number, dh: number) => {
+        const z = current;
+        if (!z) return;
+        const step = fineRef.current ? 0.1 : 0.3;
+        z.size = [Math.max(2, z.size[0] + dw * step), Math.max(2, z.size[1] + dd * step), Math.max(2, z.size[2] + dh * step)];
+        for (const side of ["front", "back", "left", "right"] as Side[]) {
+          const L = side === "front" || side === "back" ? z.size[0] : z.size[1];
+          for (const p of z.walls[side].pieces) p.x = Math.max(0.05, Math.min(p.x, L - p.w - 0.05));
+        }
+        rebuild();
+        settle();
+      },
+      deselect: () => {
+        sel = null;
+        pickBox?.removeFromParent();
+        describe();
+      },
+      reset: async () => {
+        const z = current;
+        if (!z) return;
+        setSaving("Resetting…");
+        const res = await clearRoomLayout(z.room).catch(() => ({ error: "The connection dropped." }));
+        if ("error" in res) setSaving(res.error);
+        else window.location.reload();
+      },
+    } as unknown as Record<string, (...a: number[]) => void>;
     const pick = (cx: number, cy: number) => {
       const r = canvas.getBoundingClientRect();
       ray.setFromCamera(new THREE.Vector2(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1), camera);
       const hits = root ? ray.intersectObject(root, true) : [];
       for (const h of hits) {
         let o: THREE.Object3D | null = h.object;
-        while (o && !o.userData.modelId) o = o.parent;
+        while (o && !o.userData.zm) o = o.parent;
         if (!o) continue;
-        if (pickBox) pickBox.removeFromParent();
-        pickBox = new THREE.Box3Helper(new THREE.Box3().setFromObject(o), 0xffd23b);
-        root!.add(pickBox);
-        setPicked({ id: o.userData.modelId, label: o.userData.label });
+        sel = o.userData.zm as ZoneModel;
+        showBox(o);
+        describe();
         return;
       }
-      setPicked(null);
+      api.current.deselect();
     };
 
     // Moving and bumping.
@@ -1218,7 +1360,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
               const v = !edit;
               setEdit(v);
               editRef.current = v;
-              setPicked(null);
+              api.current.deselect?.();
               if (v) document.exitPointerLock?.();
             }}
           >
@@ -1258,39 +1400,82 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       ) : null}
       {edit ? (
         <div className="absolute inset-x-2 bottom-40 mx-auto max-w-md rounded-[2px] border border-rule bg-black/85 p-3 text-sm">
+          <div className="flex items-baseline justify-between gap-2">
+            <p className="font-semibold">{picked ? picked.label : zone.name}</p>
+            <label className="flex items-center gap-1 text-xs text-smoke">
+              <input
+                type="checkbox"
+                checked={fine}
+                onChange={(e) => {
+                  setFine(e.target.checked);
+                  fineRef.current = e.target.checked;
+                }}
+              />
+              Small steps
+            </label>
+          </div>
           {picked ? (
             <>
-              <p className="font-semibold">{picked.label}</p>
-              <p className="text-xs text-smoke">Turns every copy of this model, in every room.</p>
-              <div className="mt-2 flex gap-2">
-                {[
-                  ["↺ 90°", -90],
-                  ["180°", 180],
-                  ["↻ 90°", 90],
-                ].map(([label, delta]) => (
-                  <button
-                    key={label}
-                    type="button"
-                    disabled={!!saving}
-                    className="flex-1 rounded-[2px] bg-brass px-2 py-1.5 font-semibold text-ink disabled:opacity-50"
-                    onClick={async () => {
-                      const id = picked.id;
-                      const before = world.zones.flatMap((z) => z.models).find((m) => m.id === id)?.turn ?? 0;
-                      setSaving("Saving…");
-                      const res = await turnModel(id, before + (delta as number)).catch(() => ({ error: "The connection dropped." }));
-                      setSaving("error" in res ? res.error : "");
-                      if (!("error" in res)) turnRef.current(id, delta as number);
-                    }}
-                  >
+              <p className="text-xs text-smoke">{picked.size}. Arrows move it the way you are looking.</p>
+              <div className="mt-2 grid grid-cols-4 gap-1.5">
+                {(
+                  [
+                    ["◀", () => api.current.move(0, -1)],
+                    ["▲", () => api.current.move(1, 0)],
+                    ["▼", () => api.current.move(-1, 0)],
+                    ["▶", () => api.current.move(0, 1)],
+                    ["Up", () => api.current.lift(1)],
+                    ["Down", () => api.current.lift(-1)],
+                    ["↺ 15°", () => api.current.turn(15)],
+                    ["↻ 15°", () => api.current.turn(-15)],
+                    ["↺ 90°", () => api.current.turn(90)],
+                    ["↻ 90°", () => api.current.turn(-90)],
+                    ["Smaller", () => api.current.scale(fine ? 0.98 : 0.92)],
+                    ["Bigger", () => api.current.scale(fine ? 1.02 : 1.08)],
+                    ["Copy", () => api.current.copy()],
+                    ["Remove", () => api.current.remove()],
+                    ["Let go", () => api.current.deselect()],
+                  ] as [string, () => void][]
+                ).map(([label, fn]) => (
+                  <button key={label} type="button" className={`rounded-[2px] px-1 py-2 font-semibold ${label === "Remove" ? "bg-[#7a2f2a] text-paper" : "bg-brass text-ink"}`} onClick={fn}>
                     {label}
                   </button>
                 ))}
               </div>
-              {saving ? <p className="mt-1 text-xs text-smoke">{saving}</p> : null}
             </>
           ) : (
-            <p className="text-xs text-smoke">Tap a piece of furniture or a building that faces the wrong way. Walking still works.</p>
+            <>
+              <p className="text-xs text-smoke">Tap something to arrange it. {roomSize ? `The room: ${roomSize}.` : ""}</p>
+              {!zone.outdoor ? (
+                <div className="mt-2 grid grid-cols-3 gap-1.5">
+                  {(
+                    [
+                      ["Narrower", () => api.current.room(-1, 0, 0)],
+                      ["Shallower", () => api.current.room(0, -1, 0)],
+                      ["Lower", () => api.current.room(0, 0, -1)],
+                      ["Wider", () => api.current.room(1, 0, 0)],
+                      ["Deeper", () => api.current.room(0, 1, 0)],
+                      ["Higher", () => api.current.room(0, 0, 1)],
+                    ] as [string, () => void][]
+                  ).map(([label, fn]) => (
+                    <button key={label} type="button" className="rounded-[2px] bg-brass px-1 py-2 font-semibold text-ink" onClick={fn}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+              <button
+                type="button"
+                className="mt-2 text-xs text-[#e2a7a2] underline-offset-4 hover:underline"
+                onClick={() => {
+                  if (window.confirm("Put this room back to how it was generated? Your arrangement here is lost.")) api.current.reset();
+                }}
+              >
+                Reset this room
+              </button>
+            </>
           )}
+          {saving ? <p className="mt-1 text-xs text-smoke">{saving}</p> : null}
         </div>
       ) : null}
       <div ref={stickRef} className={`absolute bottom-8 left-8 h-28 w-28 rounded-full border border-white/30 bg-white/10 ${touch ? "" : "hidden"}`}>

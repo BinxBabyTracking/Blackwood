@@ -190,3 +190,35 @@ export async function turnModel(imageId: string, turn: number): Promise<Result<{
     return fail(e, "Couldn't save the turn.");
   }
 }
+
+/** Admin: saves a walkable room as arranged in Edit mode. */
+export async function saveRoomLayout(roomId: string, layout: unknown): Promise<Result<object>> {
+  if (!(await admin())) return { error: "Not allowed." };
+  if (!/^[a-z0-9_]+$/.test(roomId)) return { error: "Unknown room." };
+  const text = JSON.stringify(layout);
+  if (text.length > 2_000_000) return { error: "That layout is too big to save." };
+  try {
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const db = createAdminClient();
+    if (!db) return { error: "The database isn't configured." };
+    const { error } = await db.from("world_layouts").upsert({ room_id: roomId, layout, updated_at: new Date().toISOString() }, { onConflict: "room_id" });
+    return error ? { error: error.message } : { ok: true };
+  } catch (e) {
+    return fail(e, "Couldn't save the room.");
+  }
+}
+
+/** Admin: puts a walkable room back to its generated layout. */
+export async function clearRoomLayout(roomId: string): Promise<Result<object>> {
+  if (!(await admin())) return { error: "Not allowed." };
+  if (!/^[a-z0-9_]+$/.test(roomId)) return { error: "Unknown room." };
+  try {
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const db = createAdminClient();
+    if (!db) return { error: "The database isn't configured." };
+    const { error } = await db.from("world_layouts").delete().eq("room_id", roomId);
+    return error ? { error: error.message } : { ok: true };
+  } catch (e) {
+    return fail(e, "Couldn't reset the room.");
+  }
+}

@@ -7,7 +7,7 @@ import { loadCase } from "@/game/registry";
 import { roomSpecs } from "@/lib/art-studio";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { liveArtUrl, liveModelUrl } from "@/art/painted";
-import { buildWorld } from "@/game/walk/zones";
+import { buildWorld, type SavedLayout } from "@/game/walk/zones";
 import { ZoneViewer } from "@/game/walk/zone-viewer";
 
 export const metadata: Metadata = { title: "Testing Zone" };
@@ -72,6 +72,12 @@ async function World({ searchParams }: { searchParams: Promise<Record<string, st
     const { data } = await db.from("art_turns").select("image_id, turn").like("image_id", `${prefix}\\_%`);
     for (const r of (data ?? []) as { image_id: string; turn: number }[]) turns.set(r.image_id, r.turn);
   }
+  // Rooms arranged in Edit mode.
+  const layouts = new Map<string, SavedLayout>();
+  if (db) {
+    const { data } = await db.from("world_layouts").select("room_id, layout").like("room_id", `${prefix}\\_%`);
+    for (const r of (data ?? []) as { room_id: string; layout: SavedLayout }[]) if (r.layout?.v === 1) layouts.set(r.room_id, r.layout);
+  }
   const heights = HEIGHTS[caseId] ?? {};
   const world = buildWorld({
     caseId,
@@ -88,6 +94,7 @@ async function World({ searchParams }: { searchParams: Promise<Record<string, st
     })),
     character: (id) => models.get(`${prefix}_char_${id}`) ?? null,
     turn: (id) => turns.get(id) ?? 0,
+    saved: (room) => layouts.get(room) ?? null,
     start: one(q.at) ?? def.startLocation,
     shrink: Number.isFinite(Number(one(q.shrink))) && Number(one(q.shrink)) > 0 ? Number(one(q.shrink)) : (DEFAULT_SHRINK[caseId] ?? 1),
   });

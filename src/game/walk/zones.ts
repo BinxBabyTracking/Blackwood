@@ -10,7 +10,17 @@
 
 export type ZonePiece = { tex: string | null; x: number; y: number; w: number; h: number; opening: boolean; outside: string | null; label: string; to: string | null; fixed: boolean };
 export type ZoneWall = { tex: string | null; tile: number; lower: { tex: string | null; tile: number; to: number } | null; pieces: ZonePiece[]; backdrop: string | null };
-export type ZoneModel = { id: string; file: string | null; label: string; pos: number[]; elev: number; rotY: number; rotX: number; size: number[]; solid: boolean; light: boolean; scatter?: boolean; block?: number; level?: number; lights?: boolean; face?: string; turn?: number };
+export type ZoneModel = { id: string; file: string | null; label: string; pos: number[]; elev: number; rotY: number; rotX: number; size: number[]; solid: boolean; light: boolean; scatter?: boolean; block?: number; level?: number; lights?: boolean; face?: string; turn?: number; door?: { to: string; through: boolean } };
+
+/** A room as Ian arranged it in Edit mode: replaces the generated layout. Model heights are above the ground. */
+export type SavedLayout = {
+  v: 1;
+  size: number[];
+  models: ZoneModel[];
+  pieces: Record<string, { x: number; y: number; w: number; h: number }[]>;
+  fixtures?: Zone["fixtures"];
+  decals?: Zone["decals"];
+};
 /** Rolling ground for an outdoor place (metres, zone-centred): flat pads blended into hills, and paths. */
 export type Terrain = {
   floor: string | null;
@@ -39,7 +49,6 @@ export type Zone = {
   people: ZonePerson[];
   terrain?: Terrain;
 };
-type Pending = { i: number; to: string; through: boolean };
 export type Side = "front" | "back" | "left" | "right";
 export type World = { caseId: string; name: string; start: string; zones: Zone[]; missing: string[] };
 
@@ -82,6 +91,8 @@ export function buildWorld(opts: {
   people: Person[];
   character: (id: string) => string | null;
   start?: string;
+  /** A room's layout as arranged in Edit mode, if it has one. */
+  saved?: (room: string) => SavedLayout | null;
   /** Extra turn (degrees) for a model Meshy built facing the wrong way. */
   turn?: (id: string) => number;
   /** Scale indoor floor plans (not heights) by this; 1 keeps the records' sizes. */
@@ -95,7 +106,6 @@ export function buildWorld(opts: {
     return u;
   };
   const zones: Zone[] = [];
-  const pendingDoors = new Map<Zone, Pending[]>();
 
   for (const r of opts.records) {
     if (r.reuse || r.mergedInto || !r.sizeFt) continue;
@@ -105,7 +115,6 @@ export function buildWorld(opts: {
     const wallRec = (r.wall ?? {}) as { image?: string; tileFt?: number; lower?: string; lowerTo?: number };
     const railAt = ((r.trim as Record<string, { atIn?: number }> | undefined)?.rail?.atIn ?? 34) / 12;
     const walls = {} as Record<Side, ZoneWall>;
-    const pending: Pending[] = [];
     for (const side of SIDES) {
       const list = ((r.walls as Record<string, Img[]> | undefined)?.[side] ?? []) as Img[];
       const backdrop = list.find((p) => p.outside && !p.image);
@@ -161,7 +170,7 @@ export function buildWorld(opts: {
       const m = at ? cands.sort((a, b) => Math.hypot(a.pos[0] - (at[0] * FT - w / 2), a.pos[1] - (at[1] * FT - d / 2)) - Math.hypot(b.pos[0] - (at[0] * FT - w / 2), b.pos[1] - (at[1] * FT - d / 2)))[0] : cands[0];
       if (!m) continue;
       const through = /arch|gate|ladder|hatch|trapdoor|well/.test(m.id);
-      pending.push({ i: models.indexOf(m), to: dd.to, through });
+      m.door = { to: dd.to, through };
       if (through) m.solid = false;
     }
 
@@ -202,7 +211,6 @@ export function buildWorld(opts: {
       doors: [],
       people: [],
     });
-    pendingDoors.set(zones[zones.length - 1], pending);
   }
 
   // Places folded into another (the outdoor areas of one village) lead there instead.
@@ -212,12 +220,19 @@ export function buildWorld(opts: {
     if (into && r.location) alias.set(r.location, into.location ?? into.id);
   }
   for (const z of zones) for (const side of SIDES) for (const p of z.walls[side].pieces) if (p.to && alias.has(p.to)) p.to = alias.get(p.to)!;
-  for (const [, list] of pendingDoors) for (const pd of list) if (alias.has(pd.to)) pd.to = alias.get(pd.to)!;
+  for (const z of zones) for (const m of z.models) if (m.door && alias.has(m.door.to)) m.door.to = alias.get(m.door.to)!;
   for (const p of opts.people) if (p.locationId && alias.has(p.locationId)) p.locationId = alias.get(p.locationId)!;
 
   // Smaller floor plans indoors (the records were drawn half as big again for multiplayer), then the doors.
   for (const z of zones) {
-    const pend = pendingDoors.get(z) ?? [];
+    const rec = opts.records.find((r) => r.id === z.room);
+    const saved = opts.saved?.(z.room);
+    if (saved) {
+      applySaved(z, saved, opts.model);
+      if (z.outdoor && rec?.terrain) dressLand(z, rec.terrain as LandRec, opts.model, pic, true);
+      z.doors = doorsOf(z);
+      continue;
+    }
     if (!z.outdoor) {
       // Shrink as far as the room allows while you can still walk between all its doors.
       const small = z.size[0] * z.size[1] < 250 * FT * FT;
@@ -229,15 +244,14 @@ export function buildWorld(opts: {
         if ((opts.shrink ?? 1) < 1) fillRoom(t);
         clearWalls(t);
         lowerCeiling(t);
-        t.doors = doorsOf(t, pend);
+        t.doors = doorsOf(t);
         if (k >= 1 || walkable(t)) {
           Object.assign(z, t);
           break;
         }
         k = Math.min(1, k + 0.05);
       }
-    } else z.doors = doorsOf(z, pend);
-    const rec = opts.records.find((r) => r.id === z.room);
+    } else z.doors = doorsOf(z);
     if (z.outdoor && rec?.terrain) dressLand(z, rec.terrain as LandRec, opts.model, pic);
   }
 
@@ -281,8 +295,8 @@ function spot(z: Zone, goalAt?: number[]) {
   const clear = (x: number, y: number) =>
     z.models.every((m) => {
       if (!m.solid || m.elev > 0.05) return true;
-      const turned = Math.abs(m.rotY) === 90;
-      const hw = (turned ? m.size[1] : m.size[0]) / 2 + 0.6, hd = (turned ? m.size[0] : m.size[1]) / 2 + 0.6;
+      const [fw, fd] = floorSize(m);
+      const hw = fw / 2 + 0.6, hd = fd / 2 + 0.6;
       return Math.abs(x - m.pos[0]) > hw || Math.abs(y - m.pos[1]) > hd;
     }) &&
     z.doors.every((dr) => Math.hypot(x - dr.at[0], y - dr.at[1]) > 2) &&
@@ -298,7 +312,7 @@ function spot(z: Zone, goalAt?: number[]) {
 }
 
 /** Every way out of a zone: wall pieces that lead somewhere, and buildings, arches, ladders and hatches. */
-function doorsOf(z: Zone, pending: Pending[]): ZoneDoor[] {
+export function doorsOf(z: Zone): ZoneDoor[] {
   const [w, d] = z.size;
   const out: ZoneDoor[] = [];
   for (const side of SIDES)
@@ -307,8 +321,9 @@ function doorsOf(z: Zone, pending: Pending[]): ZoneDoor[] {
         const wp = wallPoint(side, w, d, p.x + p.w / 2);
         out.push({ to: p.to, label: p.label, at: wp.at, span: p.w / 2, normal: wp.normal, kind: "wall" });
       }
-  for (const { i, to, through } of pending) {
-    const m = z.models[i];
+  for (const m of z.models) {
+    if (!m.door) continue;
+    const { to, through } = m.door;
     const facing = m.face ?? "back";
     const n = NORMAL[facing];
     const [mw, md] = m.size;
@@ -323,9 +338,13 @@ function doorsOf(z: Zone, pending: Pending[]): ZoneDoor[] {
   return out;
 }
 
+/** Width and depth a model takes on the floor, turned as it stands. */
+export function floorSize(m: ZoneModel) {
+  const a = (m.rotY * Math.PI) / 180, c = Math.abs(Math.cos(a)), s = Math.abs(Math.sin(a));
+  return [m.size[0] * c + m.size[1] * s, m.size[0] * s + m.size[1] * c];
+}
 const footprint = (m: ZoneModel) => {
-  const turned = Math.abs(m.rotY) === 90;
-  const fw = turned ? m.size[1] : m.size[0], fd = turned ? m.size[0] : m.size[1];
+  const [fw, fd] = floorSize(m);
   return { x0: m.pos[0] - fw / 2, x1: m.pos[0] + fw / 2, z0: m.pos[1] - fd / 2, z1: m.pos[1] + fd / 2 };
 };
 
@@ -538,7 +557,7 @@ function fillRoom(z: Zone) {
       const levels = [0];
       if (/gear/.test(src.id)) for (let e = src.size[2] * 0.9; e + src.size[2] < z.size[2] - 0.3; e += src.size[2] * 0.9) levels.push(e);
       for (const lv of levels) for (const sp of spots) {
-        const copy: ZoneModel = { ...src, pos: sp.pos, rotY: sp.rotY, rotX: 0, elev: lv };
+        const copy: ZoneModel = { ...src, pos: sp.pos, rotY: sp.rotY, rotX: 0, elev: lv, door: undefined };
         if (!fits(copy)) continue;
         z.models.push(copy);
         if (!lv) area += sw * sd;
@@ -586,7 +605,7 @@ const padWeight = (t: Terrain, x: number, z: number) =>
   Math.max(0, ...t.pads.map((p) => 1 - smooth(Math.hypot(Math.max(p.rect[0] - x, 0, x - p.rect[2]), Math.max(p.rect[1] - z, 0, z - p.rect[3])) / p.fall)));
 
 /** Lays an outdoor place on its hills: ground, paths, lamps along them, and woods (trees, bushes, rocks) between. */
-function dressLand(z: Zone, rec: LandRec, model: (id: string) => string | null, pic: (id?: unknown) => string | null) {
+function dressLand(z: Zone, rec: LandRec, model: (id: string) => string | null, pic: (id?: unknown) => string | null, arranged = false) {
   const [W, D] = z.size;
   const at = (v: number[]) => [v[0] * FT - W / 2, v[1] * FT - D / 2];
   const t: Terrain = {
@@ -610,12 +629,13 @@ function dressLand(z: Zone, rec: LandRec, model: (id: string) => string | null, 
   t.pads.push(...t.pads.splice(0, (rec.pads ?? []).length));
   z.terrain = t;
   for (const m of z.models) m.elev += heightAt(t, m.pos[0], m.pos[1]);
+  if (arranged) return;
   const nearPath = (x: number, y: number, pad: number) => t.paths.some((p) => p.pts.slice(1).some((b, i) => segDist(x, y, p.pts[i], b) < p.w / 2 + pad));
   const clear = (x: number, y: number, r: number) =>
     x > -W / 2 + r && x < W / 2 - r && y > -D / 2 + r && y < D / 2 - r &&
     z.models.every((m) => {
-      const turned = Math.abs(m.rotY) === 90;
-      const fw = (turned ? m.size[1] : m.size[0]) / 2, fd = (turned ? m.size[0] : m.size[1]) / 2;
+      const [fw2, fd2] = floorSize(m);
+      const fw = fw2 / 2, fd = fd2 / 2;
       const rr = m.scatter ? (m.block ?? 0.5) + r * 0.6 : r;
       return Math.abs(x - m.pos[0]) > fw + rr || Math.abs(y - m.pos[1]) > fd + rr;
     }) &&
@@ -731,4 +751,30 @@ function walkable(z: Zone) {
       }
   }
   return goals.every((g) => seen[g]);
+}
+
+/** Puts a room back the way it was arranged in Edit mode. */
+function applySaved(z: Zone, L: SavedLayout, model: (id: string) => string | null) {
+  z.size = [...L.size];
+  z.models = L.models.map((m) => ({ ...m, file: model(m.id), pos: [...m.pos], size: [...m.size] }));
+  for (const side of SIDES) {
+    const list = L.pieces[side] ?? [];
+    z.walls[side].pieces.forEach((p, i) => {
+      if (list[i]) Object.assign(p, list[i]);
+    });
+  }
+  if (L.fixtures) z.fixtures = L.fixtures.map((f, i) => ({ ...f, tex: z.fixtures[i]?.tex ?? f.tex }));
+  if (L.decals) z.decals = L.decals.map((d, i) => ({ ...d, tex: z.decals[i]?.tex ?? d.tex }));
+}
+
+/** A room's current arrangement, for saving (heights above the ground, no file addresses). */
+export function layoutOf(z: Zone): SavedLayout {
+  return {
+    v: 1,
+    size: [...z.size],
+    models: z.models.map((m) => ({ ...m, file: null, elev: m.elev - heightAt(z.terrain, m.pos[0], m.pos[1]) })),
+    pieces: Object.fromEntries(SIDES.map((s) => [s, z.walls[s].pieces.map((p) => ({ x: p.x, y: p.y, w: p.w, h: p.h }))])),
+    fixtures: z.fixtures,
+    decals: z.decals,
+  };
 }
