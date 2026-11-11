@@ -20,6 +20,8 @@ export type SavedLayout = {
   pieces: Record<string, { x: number; y: number; w: number; h: number }[]>;
   fixtures?: Zone["fixtures"];
   decals?: Zone["decals"];
+  /** Where each person stands (or sits), by id. */
+  people?: { id: string; pos: number[]; rotY: number; elev?: number; sit?: boolean }[];
 };
 /** Rolling ground for an outdoor place (metres, zone-centred): flat pads blended into hills, and paths. */
 export type Terrain = {
@@ -32,7 +34,7 @@ export type Terrain = {
 export type ZoneDoor = { to: string; label: string; at: number[]; span: number; normal: number[]; kind: "wall" | "model" | "pass"; mi?: number; y?: number };
 /** A flight of stairs (height running along an axis) or a landing (flat), in zone metres. */
 export type Stair = { rect: number[]; h0: number; h1: number; axis?: "x" | "z"; from?: number; to?: number };
-export type ZonePerson = { id: string; name: string; file: string | null; height: number; pos: number[]; rotY: number };
+export type ZonePerson = { id: string; name: string; file: string | null; height: number; pos: number[]; rotY: number; elev?: number; sit?: boolean };
 export type Zone = {
   id: string;
   room: string;
@@ -298,8 +300,17 @@ export function buildWorld(opts: {
       if (!p) continue;
       const file = opts.character(id);
       if (!file) missing.add(`${id} (3D character)`);
-      const want = ((opts.records.find((r) => r.id === z.room)?.spotsFt as Record<string, number[]> | undefined) ?? {})[id];
-      z.people.push({ id, name: p.name, file, height: p.height ?? 1.05, pos: spot(z, want ? [want[0] * FT - z.size[0] / 2, want[1] * FT - z.size[1] / 2] : undefined), rotY: 0 });
+      const rec = opts.records.find((r) => r.id === z.room);
+      const put = opts.saved?.(z.room)?.people?.find((q) => q.id === id);
+      if (put) {
+        z.people.push({ id, name: p.name, file, height: p.height ?? 1.05, pos: [...put.pos], rotY: put.rotY, elev: put.elev, sit: put.sit });
+        continue;
+      }
+      // A usual spot, in feet from the left and front walls of the room as planned (scaled to the room as built).
+      const want = ((rec?.spotsFt as Record<string, number[]> | undefined) ?? {})[id];
+      const plan = (rec?.sizeFt as number[] | undefined) ?? [z.size[0] / FT, z.size[1] / FT];
+      const goal = want ? [(want[0] / plan[0] - 0.5) * z.size[0], (want[1] / plan[1] - 0.5) * z.size[1]] : undefined;
+      z.people.push({ id, name: p.name, file, height: p.height ?? 1.05, pos: spot(z, goal), rotY: 0 });
     }
   }
   const start = opts.start && zones.some((z) => z.id === opts.start) ? opts.start : zones[0]?.id ?? "";
@@ -316,7 +327,7 @@ function spot(z: Zone, goalAt?: number[]) {
       const hw = fw / 2 + 0.6, hd = fd / 2 + 0.6;
       return Math.abs(x - m.pos[0]) > hw || Math.abs(y - m.pos[1]) > hd;
     }) &&
-    z.doors.every((dr) => Math.hypot(x - dr.at[0], y - dr.at[1]) > 2) &&
+    z.doors.every((dr) => Math.hypot(x - dr.at[0], y - dr.at[1]) > 2.8) &&
     z.people.every((p) => Math.hypot(x - p.pos[0], y - p.pos[1]) > 1.3);
   const goal = goalAt ?? [0, -d * 0.1];
   let best: number[] | null = null;
@@ -794,6 +805,7 @@ export function layoutOf(z: Zone): SavedLayout {
     pieces: Object.fromEntries(SIDES.map((s) => [s, z.walls[s].pieces.map((p) => ({ x: p.x, y: p.y, w: p.w, h: p.h }))])),
     fixtures: z.fixtures,
     decals: z.decals,
+    people: z.people.map((p) => ({ id: p.id, pos: [...p.pos], rotY: p.rotY, elev: p.elev, sit: p.sit })),
   };
 }
 

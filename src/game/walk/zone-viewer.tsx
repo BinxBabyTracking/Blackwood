@@ -8,7 +8,7 @@ import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js
 import { trimRuns, wallRects } from "./walk-viewer";
 import { doorsOf, floorSize, groundAt, heightAt, layoutOf } from "./zones";
 import { clearRoomLayout, saveRoomLayout } from "@/app/actions/art";
-import type { Side, World, Zone, ZoneModel, ZoneWall } from "./zones";
+import type { Side, World, Zone, ZoneModel, ZonePerson, ZoneWall } from "./zones";
 
 /*
  * A case's walkable world from its room records: one place at a time, and walking into a door, a building's front
@@ -395,7 +395,18 @@ function stringLights(b: THREE.Box3) {
   return mesh;
 }
 
-type Person = { grp: THREE.Object3D; head: THREE.Bone | null; headRest: THREE.Quaternion; faces: { mesh: THREE.Mesh; i: number }[]; next: number; at: number; phase: number };
+type Person = {
+  grp: THREE.Object3D;
+  head: THREE.Bone | null;
+  headRest: THREE.Quaternion;
+  faces: { mesh: THREE.Mesh; i: number }[];
+  next: number;
+  at: number;
+  phase: number;
+  P: ZonePerson;
+  /** Leg bones and their standing pose, for sitting down. */
+  legs: { bone: THREE.Bone; rest: THREE.Quaternion; bend: number }[][];
+};
 
 export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: string; eye?: number }) {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -408,7 +419,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
   const [menu, setMenu] = useState(false);
   const [edit, setEdit] = useState(false);
   const editRef = useRef(false);
-  const [picked, setPicked] = useState<{ label: string; size: string; door?: boolean } | null>(null);
+  const [picked, setPicked] = useState<{ label: string; size: string; door?: boolean; person?: boolean; sit?: boolean } | null>(null);
   const [saving, setSaving] = useState("");
   const [fine, setFine] = useState(false);
   const [roomSize, setRoomSize] = useState("");
@@ -467,9 +478,9 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     })();
     let standY = 0;
     let arrival: import("./zones").ZoneDoor | null = null;
-    let personBlocks: { x0: number; x1: number; z0: number; z1: number }[] = [];
     const placed = new Map<ZoneModel, { shadow: THREE.Mesh; grp?: THREE.Object3D; box?: THREE.Box3; extra?: THREE.Object3D[] }>();
     let sel: ZoneModel | null = null;
+    let selP: ZonePerson | null = null;
     let pickBox: THREE.Box3Helper | null = null;
     const showBox = (o: THREE.Object3D) => {
       pickBox?.removeFromParent();
@@ -525,7 +536,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     const reblock = () => {
       const z = current;
       if (!z) return;
-      blockers = [...personBlocks];
+      blockers = z.people.map((P) => ({ x0: P.pos[0] - 0.3, x1: P.pos[0] + 0.3, z0: P.pos[1] - 0.3, z1: P.pos[1] + 0.3 }));
       for (const M of z.models) {
         const [fw, fd] = floorSize(M);
         const onGround = M.elev - heightAt(z.terrain, M.pos[0], M.pos[1]) < 0.05;
@@ -552,6 +563,47 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       });
     };
     let people: Person[] = [];
+    /** Stands (or seats) a person where their record says: legs posed, feet or seat at the right height. */
+    const placePerson = (pp: Person) => {
+      const P = pp.P;
+      const g = pp.grp;
+      const ground = heightAt(current?.terrain, P.pos[0], P.pos[1]);
+      g.position.set(P.pos[0], ground + (P.elev ?? 0), P.pos[1]);
+      g.rotation.y = P.rotY;
+      for (const leg of pp.legs) for (const j of leg) j.bone.quaternion.copy(j.rest);
+      g.updateMatrixWorld(true);
+      if (!P.sit) return;
+      // Bend about the person's own side-to-side axis, in the world, whatever way the rig's bones point.
+      const side = new THREE.Vector3(1, 0, 0).applyQuaternion(g.getWorldQuaternion(new THREE.Quaternion())).normalize();
+      for (const leg of pp.legs)
+        for (const j of leg) {
+          const pq = j.bone.parent!.getWorldQuaternion(new THREE.Quaternion());
+          const wq = new THREE.Quaternion().setFromAxisAngle(side, (j.bend * Math.PI) / 180);
+          j.bone.quaternion.copy(j.rest).premultiply(pq.clone().invert().multiply(wq).multiply(pq));
+          j.bone.updateMatrixWorld(true);
+        }
+    };
+    /** The seat height of a chair and the way to face when sitting in it (toward the nearest desk or table). */
+    const seatFor = (P: ZonePerson) => {
+      const z = current;
+      if (!z) return null;
+      const near = (re: RegExp, max: number, from: number[]) =>
+        z.models
+          .filter((m) => re.test(m.id) && Math.hypot(m.pos[0] - from[0], m.pos[1] - from[1]) < max)
+          .sort((a, b) => Math.hypot(a.pos[0] - from[0], a.pos[1] - from[1]) - Math.hypot(b.pos[0] - from[0], b.pos[1] - from[1]))[0];
+      const chair = near(/chair|stool|(?<!work)bench|seat|sofa|settee|couch/, 3, P.pos);
+      if (!chair) return null;
+      const box = placed.get(chair)?.box;
+      const ground = heightAt(z.terrain, chair.pos[0], chair.pos[1]);
+      const bottom = box ? box.min.y : chair.elev;
+      const tall = box ? box.max.y - box.min.y : chair.size[2];
+      // A high-backed chair's seat is about a third of the way up; a stool's or bench's is at the top.
+      const seat = /stool|bench/.test(chair.id) ? bottom + tall : bottom + Math.min(tall * 0.38, 0.5);
+      const c = box ? [(box.min.x + box.max.x) / 2, (box.min.z + box.max.z) / 2] : chair.pos;
+      const desk = near(/desk|table|counter|workbench/, 3.5, c);
+      const rotY = desk ? Math.atan2(desk.pos[0] - c[0], desk.pos[1] - c[1]) : ((chair.rotY + 180) * Math.PI) / 180;
+      return { pos: c, seat: seat - ground, rotY };
+    };
     let snow: THREE.Points | null = null;
     let token = 0;
     let cooldown = 0;
@@ -769,7 +821,6 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       scene.add(root);
       current = z;
       blockers = [];
-      personBlocks = [];
       placed.clear();
       pickBox = null;
       people = [];
@@ -1050,7 +1101,6 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
 
       // People.
       for (const P of z.people) {
-        personBlocks.push({ x0: P.pos[0] - 0.3, x1: P.pos[0] + 0.3, z0: P.pos[1] - 0.3, z1: P.pos[1] + 0.3 });
         if (!P.file) {
           const s = labelSprite(P.name + " (no 3D yet)");
           s.position.set(P.pos[0], 1.3, P.pos[1]);
@@ -1065,6 +1115,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
             const obj = cloneSkinned(g.scene);
             const faces: Person["faces"] = [];
             let head: THREE.Bone | null = null;
+            const bones = new Map<string, THREE.Bone>();
             obj.traverse((o) => {
               const mesh = o as THREE.Mesh;
               if (mesh.isMesh) {
@@ -1076,18 +1127,27 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
               }
               const b = o as THREE.Bone;
               if (b.isBone && b.name === "head") head = b;
+              if (b.isBone) bones.set(b.name.toLowerCase(), b);
             });
+            // Thighs swing forward, then the shins drop back down: a seated pose.
+            const legs: Person["legs"] = [];
+            for (const [a, c] of [["thigh_l", "calf_l"], ["thigh_r", "calf_r"]]) {
+              const t = bones.get(a), cb = bones.get(c);
+              if (t && cb) legs.push([{ bone: t, rest: t.quaternion.clone(), bend: -88 }, { bone: cb, rest: cb.quaternion.clone(), bend: 88 }]);
+            }
             const box = new THREE.Box3().setFromObject(obj);
             const k = P.height / Math.max(0.01, box.max.y - box.min.y);
             const grp = new THREE.Group();
             obj.position.y = -box.min.y;
             grp.add(obj);
             grp.scale.setScalar(k);
-            grp.position.set(P.pos[0], heightAt(z.terrain, P.pos[0], P.pos[1]), P.pos[1]);
-            grp.rotation.y = P.rotY;
+            grp.userData.zp = P;
             parent.add(grp);
             const hb = head as THREE.Bone | null;
-            people.push({ grp, head: hb, headRest: hb ? hb.quaternion.clone() : new THREE.Quaternion(), faces, next: 1 + Math.random() * 3, at: -1, phase: Math.random() * 10 });
+            const pp: Person = { grp, head: hb, headRest: hb ? hb.quaternion.clone() : new THREE.Quaternion(), faces, next: 1 + Math.random() * 3, at: -1, phase: Math.random() * 10, P, legs };
+            placePerson(pp);
+            people.push(pp);
+            if (P === selP) showBox(grp);
           })
           .catch(() => {})
           .finally(tick);
@@ -1153,7 +1213,13 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     const ft = (v: number) => `${(v / 0.3048).toFixed(1)} ft`;
     const describe = () => {
       if (current) setRoomSize(`${ft(current.size[0])} wide, ${ft(current.size[1])} deep, ${ft(current.size[2])} high`);
-      setPicked(sel ? { label: sel.label, size: `${ft(sel.size[0])} x ${ft(sel.size[1])} x ${ft(sel.size[2])}`, door: !!sel.door } : null);
+      setPicked(
+        selP
+          ? { label: selP.name, size: selP.sit ? "sitting" : "standing", person: true, sit: !!selP.sit }
+          : sel
+            ? { label: sel.label, size: `${ft(sel.size[0])} x ${ft(sel.size[1])} x ${ft(sel.size[2])}`, door: !!sel.door }
+            : null,
+      );
     };
     let saveTimer: ReturnType<typeof setTimeout> | null = null;
     const save = () => {
@@ -1198,8 +1264,56 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     const rebuild = () => {
       if (current) build(current, undefined, { x: pos.x, z: pos.z, yaw: look.yaw, pitch: look.pitch });
     };
+    const personOf = (P: ZonePerson) => people.find((p) => p.P === P);
+    /** After a person is moved, turned or seated: pose them, mark them, save. */
+    const settleP = () => {
+      const pp = selP && personOf(selP);
+      if (pp) {
+        placePerson(pp);
+        showBox(pp.grp);
+      }
+      reblock();
+      describe();
+      save();
+    };
     api.current = {
+      sit: () => {
+        const P = selP;
+        const pp = P && personOf(P);
+        if (!P || !pp) return;
+        if (P.sit) {
+          P.sit = false;
+          P.elev = 0;
+          // Step out in front of the chair.
+          P.pos = [P.pos[0] + Math.sin(P.rotY) * 0.6, P.pos[1] + Math.cos(P.rotY) * 0.6];
+        } else {
+          const st = seatFor(P);
+          if (!st) {
+            setSaving("No chair close enough. Move them next to one first.");
+            return;
+          }
+          P.sit = true;
+          P.pos = st.pos;
+          P.rotY = st.rotY;
+          P.elev = 0;
+          placePerson(pp);
+          // Hips (the top of the thighs) a little above the seat.
+          const hip = pp.legs[0]?.[0].bone.getWorldPosition(new THREE.Vector3()).y ?? pp.grp.position.y + P.height * 0.45;
+          P.elev = st.seat - (hip - pp.grp.position.y) + P.height * 0.07;
+        }
+        settleP();
+      },
       move: (f: number, r: number) => {
+        if (selP) {
+          const step = fineRef.current ? 0.05 : 0.25;
+          const fx = -Math.sin(look.yaw), fz = -Math.cos(look.yaw), rx = Math.cos(look.yaw), rz = -Math.sin(look.yaw);
+          let dx = fx * f + rx * r, dz = fz * f + rz * r;
+          if (Math.abs(dx) > Math.abs(dz)) dz = 0;
+          else dx = 0;
+          selP.pos = [selP.pos[0] + Math.sign(dx) * step, selP.pos[1] + Math.sign(dz) * step];
+          settleP();
+          return;
+        }
         if (!sel || !current) return;
         const step = fineRef.current ? 0.05 : 0.25;
         const fx = -Math.sin(look.yaw), fz = -Math.cos(look.yaw), rx = Math.cos(look.yaw), rz = -Math.sin(look.yaw);
@@ -1214,12 +1328,23 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         settle();
       },
       lift: (d: number) => {
+        if (selP) {
+          selP.elev = (selP.elev ?? 0) + d * (fineRef.current ? 0.02 : 0.1);
+          if (!selP.sit) selP.elev = Math.max(0, selP.elev);
+          settleP();
+          return;
+        }
         if (!sel) return;
         sel.elev = Math.max(heightAt(current?.terrain, sel.pos[0], sel.pos[1]), sel.elev + d * (fineRef.current ? 0.02 : 0.1));
         refresh(sel);
         settle();
       },
       turn: (deg: number) => {
+        if (selP) {
+          selP.rotY += (deg * Math.PI) / 180;
+          settleP();
+          return;
+        }
         if (!sel) return;
         sel.rotY = ((((sel.rotY + deg + 180) % 360) + 360) % 360) - 180;
         if (sel.door?.dir != null) sel.door.dir = (sel.door.dir + deg + 360) % 360;
@@ -1227,13 +1352,13 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         settle();
       },
       scale: (k: number) => {
-        if (!sel) return;
+        if (selP || !sel) return;
         sel.size = sel.size.map((v) => v * k);
         refresh(sel);
         settle();
       },
       copy: () => {
-        if (!sel || !current) return;
+        if (selP || !sel || !current) return;
         const [fw] = floorSize(sel);
         const rx = Math.cos(look.yaw), rz = -Math.sin(look.yaw);
         const c: ZoneModel = { ...sel, pos: [sel.pos[0] + rx * (fw + 0.15), sel.pos[1] + rz * (fw + 0.15)], size: [...sel.size], door: undefined };
@@ -1243,7 +1368,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         settle();
       },
       remove: () => {
-        if (!sel || !current) return;
+        if (selP || !sel || !current) return;
         current.models = current.models.filter((m) => m !== sel);
         sel = null;
         rebuild();
@@ -1271,6 +1396,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       },
       deselect: () => {
         sel = null;
+        selP = null;
         pickBox?.removeFromParent();
         describe();
       },
@@ -1289,9 +1415,10 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       const hits = root ? ray.intersectObject(root, true) : [];
       for (const h of hits) {
         let o: THREE.Object3D | null = h.object;
-        while (o && !o.userData.zm) o = o.parent;
+        while (o && !o.userData.zm && !o.userData.zp) o = o.parent;
         if (!o) continue;
-        sel = o.userData.zm as ZoneModel;
+        sel = (o.userData.zm as ZoneModel) ?? null;
+        selP = (o.userData.zp as ZonePerson) ?? null;
         showBox(o);
         describe();
         return;
@@ -1627,10 +1754,14 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
                     ["↻ 15°", () => api.current.turn(-15)],
                     ["↺ 90°", () => api.current.turn(90)],
                     ["↻ 90°", () => api.current.turn(-90)],
-                    ["Smaller", () => api.current.scale(fine ? 0.98 : 0.92)],
-                    ["Bigger", () => api.current.scale(fine ? 1.02 : 1.08)],
-                    ["Copy", () => api.current.copy()],
-                    ["Remove", () => api.current.remove()],
+                    ...((picked.person
+                      ? [[picked.sit ? "Stand up" : "Sit in chair", () => api.current.sit()]]
+                      : [
+                          ["Smaller", () => api.current.scale(fine ? 0.98 : 0.92)],
+                          ["Bigger", () => api.current.scale(fine ? 1.02 : 1.08)],
+                          ["Copy", () => api.current.copy()],
+                          ["Remove", () => api.current.remove()],
+                        ]) as [string, () => void][]),
                     ["Let go", () => api.current.deselect()],
                     ...(picked.door ? ([["Way in: this side", () => api.current.wayIn()]] as [string, () => void][]) : []),
                   ] as [string, () => void][]

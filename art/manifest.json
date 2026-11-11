@@ -89355,6 +89355,12 @@
     },
     {
       "id": "chr001_santa_office",
+      "spotsFt": {
+        "santa": [
+          3,
+          3
+        ]
+      },
       "case": "CHR001",
       "location": "santa_office",
       "name": "Santa's office",
