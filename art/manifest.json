@@ -87152,7 +87152,8 @@
             50,
             40,
             34
-          ]
+          ],
+          "levelFt": 6
         },
         {
           "image": "chr001_village_square_model_workshop",
@@ -87165,7 +87166,8 @@
             90,
             70,
             45
-          ]
+          ],
+          "levelFt": 11
         },
         {
           "image": "chr001_village_square_model_archives",
@@ -87178,7 +87180,8 @@
             40,
             50,
             45
-          ]
+          ],
+          "levelFt": 15
         },
         {
           "image": "chr001_village_square_model_lab",
@@ -87191,7 +87194,8 @@
             45,
             45,
             25
-          ]
+          ],
+          "levelFt": -5
         },
         {
           "image": "chr001_village_square_model_guardhouse",
@@ -87204,7 +87208,8 @@
             35,
             35,
             20
-          ]
+          ],
+          "levelFt": 4
         },
         {
           "image": "chr001_village_square_model_tree",
@@ -87335,7 +87340,8 @@
             24,
             70
           ],
-          "note": "on the hill at the north of the village"
+          "note": "on the hill at the north of the village",
+          "levelFt": 26
         },
         {
           "image": "chr001_village_square_model_well",
@@ -87361,7 +87367,8 @@
             20,
             26,
             26
-          ]
+          ],
+          "levelFt": 9
         },
         {
           "image": "chr001_clockmakers_row_model_corwinshop",
@@ -87374,7 +87381,8 @@
             18,
             24,
             24
-          ]
+          ],
+          "levelFt": 3
         },
         {
           "image": "chr001_clockmakers_row_model_glassworks",
@@ -87387,7 +87395,8 @@
             26,
             32,
             22
-          ]
+          ],
+          "levelFt": -3
         },
         {
           "image": "chr001_village_square_model_lamppost",
@@ -87452,7 +87461,8 @@
             24,
             22,
             20
-          ]
+          ],
+          "levelFt": -7
         },
         {
           "image": "chr001_holly_lane_model_cottage",
@@ -87465,7 +87475,8 @@
             22,
             20,
             19
-          ]
+          ],
+          "levelFt": -12
         },
         {
           "image": "chr001_holly_lane_model_cottage",
@@ -87478,7 +87489,8 @@
             22,
             20,
             19
-          ]
+          ],
+          "levelFt": -4
         },
         {
           "image": "chr001_holly_lane_model_cottage",
@@ -87491,7 +87503,8 @@
             22,
             20,
             19
-          ]
+          ],
+          "levelFt": -16
         },
         {
           "image": "chr001_holly_lane_model_fence",
@@ -87531,7 +87544,8 @@
             45,
             28
           ],
-          "note": "long side along the left edge"
+          "note": "long side along the left edge",
+          "levelFt": -15
         },
         {
           "image": "chr001_stable_yard_model_hangar",
@@ -87544,7 +87558,8 @@
             80,
             70,
             40
-          ]
+          ],
+          "levelFt": -21
         },
         {
           "image": "chr001_stable_yard_model_railfence",
@@ -87609,6 +87624,110 @@
             1.5,
             1.5,
             10
+          ]
+        },
+        {
+          "image": "chr001_village_square_model_stall",
+          "atFt": [
+            212,
+            168
+          ],
+          "facing": "left",
+          "sizeFt": [
+            8,
+            5,
+            9
+          ]
+        },
+        {
+          "image": "chr001_village_square_model_stall",
+          "atFt": [
+            150,
+            232
+          ],
+          "facing": "right",
+          "sizeFt": [
+            8,
+            5,
+            9
+          ]
+        },
+        {
+          "image": "chr001_village_square_model_stall",
+          "atFt": [
+            212,
+            232
+          ],
+          "facing": "left",
+          "sizeFt": [
+            8,
+            5,
+            9
+          ]
+        },
+        {
+          "image": "chr001_village_square_model_bench",
+          "atFt": [
+            165,
+            222
+          ],
+          "facing": "back",
+          "sizeFt": [
+            6,
+            2,
+            3
+          ]
+        },
+        {
+          "image": "chr001_village_square_model_bench",
+          "atFt": [
+            196,
+            178
+          ],
+          "facing": "front",
+          "sizeFt": [
+            6,
+            2,
+            3
+          ]
+        },
+        {
+          "image": "chr001_village_square_model_bench",
+          "atFt": [
+            205,
+            215
+          ],
+          "facing": "left",
+          "sizeFt": [
+            6,
+            2,
+            3
+          ]
+        },
+        {
+          "image": "chr001_village_square_model_sled",
+          "atFt": [
+            160,
+            245
+          ],
+          "facing": "front",
+          "sizeFt": [
+            2,
+            5,
+            2
+          ]
+        },
+        {
+          "image": "chr001_village_square_model_sled",
+          "atFt": [
+            230,
+            190
+          ],
+          "facing": "left",
+          "sizeFt": [
+            2,
+            5,
+            2
           ]
         }
       ],
@@ -87696,73 +87815,13 @@
         "pads": [
           {
             "rectFt": [
-              80,
-              110,
-              285,
-              340
+              135,
+              155,
+              225,
+              245
             ],
             "heightFt": 0,
-            "fallFt": 25
-          },
-          {
-            "rectFt": [
-              8,
-              150,
-              110,
-              235
-            ],
-            "heightFt": 0,
-            "fallFt": 20
-          },
-          {
-            "rectFt": [
-              0,
-              0,
-              110,
-              150
-            ],
-            "heightFt": 0,
-            "fallFt": 25
-          },
-          {
-            "rectFt": [
-              270,
-              140,
-              330,
-              265
-            ],
-            "heightFt": 0,
-            "fallFt": 20
-          },
-          {
-            "rectFt": [
-              270,
-              0,
-              390,
-              95
-            ],
-            "heightFt": -10,
-            "fallFt": 40
-          },
-          {
-            "rectFt": [
-              205,
-              350,
-              390,
-              500
-            ],
-            "heightFt": -14,
-            "fallFt": 45
-          },
-          {
-            "rectFt": [
-              165,
-              15,
-              215,
-              65
-            ],
-            "heightFt": 26,
-            "fallFt": 55
+            "fallFt": 30
           }
         ],
         "hills": [
@@ -87940,24 +87999,43 @@
               "chr001_village_model_pine_b",
               "chr001_village_model_pine_c"
             ],
-            "count": 140,
-            "clearFt": 12
+            "count": 230,
+            "clearFt": 9
           },
           {
             "images": [
               "chr001_village_model_bush"
             ],
-            "count": 40,
-            "clearFt": 6
+            "count": 70,
+            "clearFt": 5
           },
           {
             "images": [
               "chr001_village_model_rock"
             ],
-            "count": 18,
-            "clearFt": 8
+            "count": 28,
+            "clearFt": 7
           }
-        ]
+        ],
+        "buildingFallFt": 26,
+        "buildingMarginFt": 8,
+        "ring": {
+          "centerFt": [
+            180,
+            200
+          ],
+          "radiusFt": [
+            52,
+            78
+          ],
+          "count": 26,
+          "images": [
+            "chr001_village_model_pine_b",
+            "chr001_village_model_pine_c",
+            "chr001_village_model_pine_a"
+          ],
+          "lights": true
+        }
       },
       "spotsFt": {
         "dasha": [

@@ -10,7 +10,7 @@
 
 export type ZonePiece = { tex: string | null; x: number; y: number; w: number; h: number; opening: boolean; outside: string | null; label: string; to: string | null; fixed: boolean };
 export type ZoneWall = { tex: string | null; tile: number; lower: { tex: string | null; tile: number; to: number } | null; pieces: ZonePiece[]; backdrop: string | null };
-export type ZoneModel = { id: string; file: string | null; label: string; pos: number[]; elev: number; rotY: number; rotX: number; size: number[]; solid: boolean; light: boolean; scatter?: boolean; block?: number };
+export type ZoneModel = { id: string; file: string | null; label: string; pos: number[]; elev: number; rotY: number; rotX: number; size: number[]; solid: boolean; light: boolean; scatter?: boolean; block?: number; level?: number; lights?: boolean };
 /** Rolling ground for an outdoor place (metres, zone-centred): flat pads blended into hills, and paths. */
 export type Terrain = {
   floor: string | null;
@@ -142,6 +142,7 @@ export function buildWorld(opts: {
           size: s,
           solid: m.solid !== false,
           light: /lamp|lantern|candle|fireplace|stove|kiln|forge/.test(id),
+          level: m.levelFt != null ? Number(m.levelFt) * FT : undefined,
         };
       });
 
@@ -458,8 +459,8 @@ function fitShrink(z: Zone, max: number) {
   return Math.min(1, Math.max(k, kmin));
 }
 
-/** Plain furniture that can stand in a room more than once. */
-const COPYABLE = /gears|weights|bench|shel(f|ves)|stool|crate|sack|table|chair|cabinet|rack|barrel|files|bookcase|apparatus|haybale|dresser|lectern|counter|stall|coalbin|tack|cart|toyshelf|workbench|marver|pipes/;
+/** Plain furniture that can stand in a room more than once (never chairs, stools or tables: those belong together). */
+const COPYABLE = /gears|weights|workbench|shel(f|ves)|crate|sack|cabinet|rack|barrel|files|bookcase|apparatus|haybale|dresser|lectern|counter|stall|coalbin|tack|cart|toyshelf|workbench|marver|pipes/;
 
 /**
  * Fills a sparse room with second copies of its plain furniture, standing against the walls clear of doors,
@@ -532,6 +533,9 @@ type LandRec = {
   hills?: number[][];
   paths?: { pointsFt: number[][]; widthFt: number }[];
   lampEveryFt?: number;
+  buildingFallFt?: number;
+  buildingMarginFt?: number;
+  ring?: { centerFt: number[]; radiusFt: number[]; count: number; images: string[]; lights?: boolean };
   scatter?: { images: string[]; count: number; clearFt: number }[];
 };
 
@@ -573,6 +577,15 @@ function dressLand(z: Zone, rec: LandRec, model: (id: string) => string | null, 
     hills: (rec.hills ?? []).map(([x, y, h, r]) => [...at([x, y]), h * FT, r * FT]),
     paths: (rec.paths ?? []).map((p) => ({ pts: p.pointsFt.map(at), w: p.widthFt * FT })),
   };
+  // Each building stands on its own level, the ground easing between them.
+  const margin = (rec.buildingMarginFt ?? 6) * FT, fall = (rec.buildingFallFt ?? 25) * FT;
+  for (const m of z.models) {
+    if (m.level == null) continue;
+    const f = footprint(m);
+    t.pads.push({ rect: [f.x0 - margin, f.z0 - margin, f.x1 + margin, f.z1 + margin], h: m.level, fall });
+  }
+  // The square's own pad last, so it stays level.
+  t.pads.push(...t.pads.splice(0, (rec.pads ?? []).length));
   z.terrain = t;
   for (const m of z.models) m.elev += heightAt(t, m.pos[0], m.pos[1]);
   const nearPath = (x: number, y: number, pad: number) => t.paths.some((p) => p.pts.slice(1).some((b, i) => segDist(x, y, p.pts[i], b) < p.w / 2 + pad));
@@ -606,6 +619,22 @@ function dressLand(z: Zone, rec: LandRec, model: (id: string) => string | null, 
         if (carry < 0) carry += every;
       }
     }
+  // A ring of trees round the square, strung with lights.
+  if (rec.ring) {
+    const [cx, cz] = at(rec.ring.centerFt);
+    const [r0, r1] = rec.ring.radiusFt.map((v) => v * FT);
+    let k = 0;
+    for (let i = 0; i < rec.ring.count * 3 && k < rec.ring.count; i++) {
+      const a = (i / (rec.ring.count * 3)) * Math.PI * 2 * 3 + (i % 3) * 0.7;
+      const r = r0 + ((i * 0.37) % 1) * (r1 - r0);
+      const x = cx + Math.cos(a) * r, y = cz + Math.sin(a) * r;
+      const id = rec.ring.images[i % rec.ring.images.length];
+      const size = sizeOf(id).map((v) => v * (0.8 + ((i * 0.53) % 1) * 0.3));
+      if (nearPath(x, y, 1) || !clear(x, y, size[0] * 0.45)) continue;
+      z.models.push({ id, file: model(id), label: nice(id), pos: [x, y], elev: heightAt(t, x, y) - 0.05, rotY: [0, 90, 180, -90][i % 4], rotX: 0, size, solid: true, light: false, scatter: true, block: 0.4, lights: !!rec.ring.lights });
+      k++;
+    }
+  }
   // Woods: away from the village's flat ground, the paths and everything placed.
   let seed = 1234;
   const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
@@ -615,7 +644,7 @@ function dressLand(z: Zone, rec: LandRec, model: (id: string) => string | null, 
       const x = (rnd() - 0.5) * W, y = (rnd() - 0.5) * D;
       const r = sc.clearFt * FT * 0.5;
       const pw = padWeight(t, x, y);
-      if (pw > (sc.images.some((i) => /bush|rock/.test(i)) ? 0.85 : 0.5)) continue;
+      if (pw > (sc.images.some((i) => /bush|rock/.test(i)) ? 0.9 : 0.75)) continue;
       if (nearPath(x, y, r + 0.5) || !clear(x, y, r)) continue;
       const id = sc.images[Math.floor(rnd() * sc.images.length)];
       const k = 0.75 + rnd() * 0.5;

@@ -96,6 +96,27 @@ function christmasTree(h: number, w: number, pos: number[], elev: number, decora
   return g;
 }
 
+/** Strings of little coloured lights wound round a tree standing in the box b. */
+function stringLights(b: THREE.Box3) {
+  const h = b.max.y - b.min.y, r = Math.max(b.max.x - b.min.x, b.max.z - b.min.z) / 2;
+  const cx = (b.min.x + b.max.x) / 2, cz = (b.min.z + b.max.z) / 2;
+  const n = Math.round(60 + h * 12);
+  const geo = new THREE.SphereGeometry(Math.max(0.035, r * 0.025), 6, 4);
+  const mesh = new THREE.InstancedMesh(geo, new THREE.MeshBasicMaterial({ toneMapped: false }), n);
+  const cols = [0xff3b3b, 0xffd23b, 0x3bff6a, 0x3b9bff, 0xff7be0, 0xfff4d0].map((c) => new THREE.Color(c));
+  const m4 = new THREE.Matrix4();
+  for (let i = 0; i < n; i++) {
+    const t = i / n;
+    const y = b.min.y + h * (0.12 + t * 0.8);
+    const rr = r * (1 - (y - b.min.y) / h) * 0.95 + 0.05;
+    const a = t * Math.PI * 2 * 6;
+    m4.makeTranslation(cx + Math.cos(a) * rr, y, cz + Math.sin(a) * rr);
+    mesh.setMatrixAt(i, m4);
+    mesh.setColorAt(i, cols[i % cols.length]);
+  }
+  return mesh;
+}
+
 type Person = { grp: THREE.Object3D; head: THREE.Bone | null; headRest: THREE.Quaternion; faces: { mesh: THREE.Mesh; i: number }[]; next: number; at: number; phase: number };
 
 export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: string; eye?: number }) {
@@ -550,7 +571,11 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           root.add(pl);
         }
         if (!M.file && M.scatter) {
-          if (/pine/.test(M.id)) root.add(christmasTree(M.size[2], M.size[0], M.pos, M.elev, false));
+          if (/pine/.test(M.id)) {
+            const tr = christmasTree(M.size[2], M.size[0], M.pos, M.elev, false);
+            root.add(tr);
+            if (M.lights) root.add(stringLights(new THREE.Box3().setFromObject(tr)));
+          }
           continue;
         }
         if (!M.file) {
@@ -599,6 +624,10 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
             grp.rotation.y = (M.rotY * Math.PI) / 180;
             grp.position.set(M.pos[0], M.elev, M.pos[1]);
             parent.add(grp);
+            if (M.lights) {
+              grp.updateMatrixWorld(true);
+              parent.add(stringLights(new THREE.Box3().setFromObject(grp)));
+            }
             // A stove gets its pipe run up to the ceiling, from wherever its own stub of pipe ends.
             if (!z.outdoor && /stove/.test(M.id)) {
               grp.updateMatrixWorld(true);
