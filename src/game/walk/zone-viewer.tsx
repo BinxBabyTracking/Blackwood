@@ -2443,6 +2443,16 @@ export function ZoneViewer({ world, title, eye: eyeIn, story, storyKey }: { worl
         best = id;
       }
       if (best !== run.ui.near) run.setUi({ near: best });
+      // Or someone in front of you to talk to.
+      let who: { id: string; name: string } | null = null, pd = 1.9;
+      for (const p of people) {
+        if (!p.grp.visible || p.held) continue;
+        const dx = p.npc.x - pos.x, dz = p.npc.z - pos.z, d = Math.hypot(dx, dz);
+        if (d > pd || (d > 0.8 && (dx * fx + dz * fz) / d < 0.5)) continue;
+        pd = d;
+        who = { id: p.P.id, name: p.P.name };
+      }
+      if (who?.id !== run.ui.person?.id) run.setUi({ person: who });
     };
     const spotTapped = (cx: number, cy: number) => {
       if (!markers.size) return null;
@@ -2485,8 +2495,9 @@ export function ZoneViewer({ world, title, eye: eyeIn, story, storyKey }: { worl
       const k = e.key.toLowerCase();
       if (k === "e") {
         if (down && !e.repeat) {
-          if (run?.ui.open || run?.ui.panel) return;
+          if (run?.ui.open || run?.ui.panel || run?.ui.talk) return;
           if (run?.ui.near) return run.setUi({ open: run.ui.near });
+          if (run?.ui.person) return run.setUi({ talk: run.ui.person });
           const kd = doorAhead();
           if (kd) kd.open = !kd.open;
         }
@@ -2833,7 +2844,7 @@ export function ZoneViewer({ world, title, eye: eyeIn, story, storyKey }: { worl
     <main className="fixed inset-0 select-none overflow-hidden bg-black text-paper">
       <div ref={mountRef} className="absolute inset-0 touch-none" />
       <div className={`pointer-events-none absolute inset-0 bg-black transition-opacity duration-200 ${fade ? "opacity-100" : "opacity-0"}`} />
-      {run && ready && !edit ? <StoryOverlay run={run} touch={touch} onLook={() => run.setUi({ open: run.ui.near })} /> : null}
+      {run && ready && !edit ? <StoryOverlay run={run} touch={touch} onLook={() => run.setUi({ open: run.ui.near })} onTalk={() => run.setUi({ talk: run.ui.person })} /> : null}
       <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 bg-gradient-to-b from-black/70 to-transparent p-3 text-sm">
         <div>
           <p className="font-semibold">{placeName ?? zone.name}</p>

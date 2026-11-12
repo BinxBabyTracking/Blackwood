@@ -118,10 +118,24 @@ export type StoryState = {
   pending: { act: Act; spot: string; done: number }[];
   /** Where you last were (so a reload puts you back there). */
   where?: string;
+  /** Everything said, person by person, across every loop (the Bureau keeps transcripts). */
+  talks?: Record<string, Line[]>;
 };
 
+export type Line = { loop: number; t: number; you: boolean; text: string };
+
 /** What the overlay is showing: a spot's card, or a panel. Not saved. */
-export type StoryUi = { open: string | null; panel: "notebook" | "bag" | "bell" | null; toast: { text: string; until: number } | null; near: string | null; flash: number; talk: string | null };
+export type StoryUi = {
+  open: string | null;
+  panel: "notebook" | "bag" | "bell" | null;
+  toast: { text: string; until: number } | null;
+  near: string | null;
+  flash: number;
+  /** Who you're talking to, and who's in front of you. */
+  talk: { id: string; name: string } | null;
+  person: { id: string; name: string } | null;
+  waiting: boolean;
+};
 
 const fresh = (d: StoryData): StoryState => ({
   v: 1,
@@ -150,7 +164,7 @@ export class StoryRun {
   private lastMinute = -1;
   /** Where you are, as the viewer last said. */
   zone = "";
-  ui: StoryUi = { open: null, panel: null, toast: null, near: null, flash: 0, talk: null };
+  ui: StoryUi = { open: null, panel: null, toast: null, near: null, flash: 0, talk: null, person: null, waiting: false };
   setUi(p: Partial<StoryUi>) {
     this.ui = { ...this.ui, ...p };
     this.changed();
@@ -256,8 +270,9 @@ export class StoryRun {
     this.note(`${spot.title}: ${a.label.toLowerCase()}.`);
     return said;
   }
-  /** Is this evidence in your hands this loop (taken, not just recorded)? */
+  /** Is this evidence in your hands this loop (taken, or handed to you, not just recorded)? */
   holding(id: string) {
+    if (this.s.taken.includes(`given:${id}`)) return true;
     return this.d.spots.some((sp) => this.s.taken.includes(`spot:${sp.id}`) && sp.acts?.some((a) => a.take && a.evidence === id));
   }
   /** Put something you're holding in the Time Bag: it keeps from now on, through every reset. */
@@ -273,6 +288,58 @@ export class StoryRun {
     this.save();
     this.changed();
     return `${ev.title} is in the Time Bag. Collected: loop ${this.s.loop}.`;
+  }
+  lines(person: string) {
+    return this.s.talks?.[person] ?? [];
+  }
+  /** Say something to someone (and show them things): they answer from what they know by now. */
+  async talk(person: { id: string; name: string }, text: string, show: string[], speak: (who: string, text: string) => void) {
+    const s = this.s;
+    const talks = (s.talks ??= {});
+    const lines = (talks[person.id] ??= []);
+    const shown = show.map((id) => this.evidence(id)).filter((e): e is EvidenceInfo => !!e);
+    const said = [shown.length ? `[Shows ${shown.map((e) => e.title).join(", ")}]` : "", text].filter(Boolean).join(" ");
+    lines.push({ loop: s.loop, t: s.t, you: true, text: said });
+    this.setUi({ waiting: true });
+    this.save();
+    try {
+      const res = await fetch("/api/walk-talk", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          caseId: this.d.caseId,
+          person: person.id,
+          text,
+          // Only this loop's conversation: nobody remembers another.
+          history: lines.filter((l) => l.loop === s.loop).slice(0, -1).map((l) => ({ you: l.you, text: l.text })),
+          day: { t: s.t, loop: s.loop, dead: s.dead, stolen: s.stolen, saved: s.saved },
+          show: shown.map((e) => ({ title: e.title, text: e.text, kept: s.bag[e.id] && !this.holding(e.id) ? s.bag[e.id].loop : null })),
+          given: Object.keys(s.found),
+        }),
+      });
+      const out = (await res.json().catch(() => ({}))) as { reply?: string; gives?: string[]; error?: string };
+      if (!res.ok || !out.reply) {
+        this.say(out.error ?? "They don't seem to hear you.");
+        return;
+      }
+      lines.push({ loop: s.loop, t: s.t, you: false, text: out.reply });
+      speak(person.id, out.reply);
+      for (const id of out.gives ?? []) {
+        const ev = this.evidence(id);
+        if (!ev || s.found[id]) continue;
+        const statement = /statement/i.test(ev.title);
+        s.found[id] = { loop: s.loop, how: statement ? "statement" : "item", at: s.t, zone: this.zone };
+        if (!statement) s.taken.push(`given:${id}`);
+        this.note(`${person.name}: ${ev.title}.`);
+        this.say(`${ev.title}: added to the notebook.`);
+      }
+    } catch {
+      this.say("They don't seem to hear you.");
+    } finally {
+      this.ui = { ...this.ui, waiting: false };
+      this.save();
+      this.changed();
+    }
   }
   /** Ring the great bell: skip ahead to a time (stops early at anything that matters). */
   ringTo(t: number) {

@@ -4,7 +4,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { at, clockText, type StoryRun } from "./story";
 
 /** The story on screen: the clock, what's near you, a spot's card, the notebook, the Time Bag and the great bell. */
-export function StoryOverlay({ run, touch, onLook }: { run: StoryRun; touch: boolean; onLook: () => void }) {
+export function StoryOverlay({ run, touch, onLook, onTalk }: { run: StoryRun; touch: boolean; onLook: () => void; onTalk: () => void }) {
   useSyncExternalStore(run.subscribe, run.version, run.version);
   const [now, setNow] = useState(0);
   const { s, ui } = run;
@@ -20,11 +20,11 @@ export function StoryOverlay({ run, touch, onLook }: { run: StoryRun; touch: boo
   const pic = (key?: string | null) => (key ? (run.d.pictures?.[key] ?? null) : null);
   const holdingChronometer = run.holding("CE029");
   const left = s.dead && s.deathAt != null ? Math.max(0, s.deathAt + run.d.countdown - s.t) : null;
-  const modal = !!open || !!ui.panel;
+  const modal = !!open || !!ui.panel || !!ui.talk;
   useEffect(() => {
     if (modal && document.pointerLockElement) document.exitPointerLock();
   }, [modal]);
-  const close = () => run.setUi({ open: null, panel: null });
+  const close = () => run.setUi({ open: null, panel: null, talk: null });
   const found = Object.entries(s.found).sort((a, b) => a[0].localeCompare(b[0]));
 
   return (
@@ -41,6 +41,20 @@ export function StoryOverlay({ run, touch, onLook }: { run: StoryRun; touch: boo
       </div>
 
       {/* What's in front of you. */}
+      {!near && ui.person && !modal ? (
+        <div className="absolute bottom-28 left-1/2 z-20 -translate-x-1/2">
+          {touch ? (
+            <button className="rounded-[3px] bg-brass px-4 py-2 text-sm font-semibold text-ink shadow" onClick={onTalk}>
+              Talk to {ui.person.name}
+            </button>
+          ) : (
+            <div className="pointer-events-none rounded-[3px] bg-black/60 px-3 py-1.5 text-sm text-paper">
+              <span className="text-brass">E</span> Talk to {ui.person.name}
+            </div>
+          )}
+        </div>
+      ) : null}
+
       {near && !modal ? (
         <div className="absolute bottom-28 left-1/2 z-20 -translate-x-1/2">
           {touch ? (
@@ -140,6 +154,7 @@ export function StoryOverlay({ run, touch, onLook }: { run: StoryRun; touch: boo
               </div>
             ) : null}
             {ui.panel === "bell" ? <Bell run={run} /> : null}
+            {ui.talk ? <Talk run={run} who={ui.talk} pic={pic} /> : null}
             <button className="mt-4 w-full rounded-[3px] border border-paper/20 py-1.5 text-sm" onClick={close}>
               Close
             </button>
@@ -221,6 +236,106 @@ function Bell({ run }: { run: StoryRun }) {
       >
         Ring
       </button>
+    </div>
+  );
+}
+
+/** Speaks a reply in the person's own voice (the Admin page's voices). */
+function speak(caseId: string, who: string, text: string) {
+  try {
+    const a = new Audio(`/api/walk-voice?caseId=${encodeURIComponent(caseId)}&id=${encodeURIComponent(who)}&text=${encodeURIComponent(text)}`);
+    void a.play().catch(() => undefined);
+  } catch {
+    /* no sound: the words are on screen */
+  }
+}
+
+type Recognition = { lang: string; interimResults: boolean; onresult: (e: { results: { 0: { transcript: string } }[] }) => void; onend: () => void; start: () => void; stop: () => void };
+
+function Talk({ run, who, pic }: { run: StoryRun; who: { id: string; name: string }; pic: (k?: string | null) => string | null }) {
+  const [text, setText] = useState("");
+  const [show, setShow] = useState<string[]>([]);
+  const [listening, setListening] = useState(false);
+  const lines = run.lines(who.id);
+  const s = run.s;
+  const send = () => {
+    if (run.ui.waiting || (!text.trim() && !show.length)) return;
+    void run.talk(who, text.trim(), show, (id, t) => speak(run.d.caseId, id, t));
+    setText("");
+    setShow([]);
+  };
+  const listen = () => {
+    const W = window as unknown as { SpeechRecognition?: new () => Recognition; webkitSpeechRecognition?: new () => Recognition };
+    const R = W.SpeechRecognition ?? W.webkitSpeechRecognition;
+    if (!R) return run.say("Speaking isn't available in this browser. Type instead.");
+    const r = new R();
+    r.lang = "en-US";
+    r.interimResults = false;
+    r.onresult = (e) => setText((t) => `${t} ${e.results[0][0].transcript}`.trim());
+    r.onend = () => setListening(false);
+    setListening(true);
+    r.start();
+  };
+  const items = Object.keys(s.found).sort();
+  return (
+    <div>
+      <h2 className="font-display text-lg text-brass">{who.name}</h2>
+      <div className="mt-2 max-h-72 space-y-1.5 overflow-y-auto text-sm">
+        {lines.length ? null : <p className="text-smoke">Say hello, ask a question, or show them something from your notebook.</p>}
+        {lines.map((l, i) => (
+          <div key={i} className={l.you ? "text-right" : ""}>
+            {i === 0 || lines[i - 1].loop !== l.loop ? <div className="my-1 text-center text-[0.65rem] uppercase tracking-wide text-smoke">Loop {l.loop}</div> : null}
+            <span className={`inline-block max-w-[85%] rounded-[3px] px-2 py-1 text-left ${l.you ? "bg-brass/20" : "bg-black/40"} ${l.loop !== s.loop ? "opacity-60" : ""}`}>{l.text}</span>
+          </div>
+        ))}
+        {run.ui.waiting ? <p className="text-smoke">…</p> : null}
+      </div>
+      {show.length ? (
+        <div className="mt-2 flex flex-wrap gap-1">
+          {show.map((id) => (
+            <button key={id} className="flex items-center gap-1 rounded-[2px] bg-black/40 px-1.5 py-0.5 text-xs" onClick={() => setShow(show.filter((x) => x !== id))}>
+              {pic(run.evidence(id)?.image) ? <img src={pic(run.evidence(id)?.image)!} alt="" className="h-5 w-5 object-cover" /> : null}
+              {run.evidence(id)?.title} ✕
+            </button>
+          ))}
+        </div>
+      ) : null}
+      <div className="mt-2 flex gap-1.5">
+        <input
+          className="field min-w-0 flex-1 py-1.5 text-sm"
+          value={text}
+          placeholder={`Say something to ${who.name.split(" ")[0]}…`}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") send();
+          }}
+          autoFocus
+        />
+        <button className={`rounded-[3px] px-2 text-sm ${listening ? "bg-red-700 text-paper" : "bg-black/40 text-brass"}`} onClick={listen} title="Speak">
+          🎙
+        </button>
+        <button className="rounded-[3px] bg-brass px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={run.ui.waiting} onClick={send}>
+          Say
+        </button>
+      </div>
+      {items.length ? (
+        <select
+          className="field mt-2 w-full py-1 text-xs"
+          value=""
+          onChange={(e) => {
+            const v = e.target.value;
+            if (v && !show.includes(v)) setShow([...show, v]);
+          }}
+        >
+          <option value="">Show them something from your notebook…</option>
+          {items.map((id) => (
+            <option key={id} value={id}>
+              {run.evidence(id)?.title}
+              {s.bag[id] && !run.holding(id) ? ` (kept, loop ${s.bag[id].loop})` : ""}
+            </option>
+          ))}
+        </select>
+      ) : null}
     </div>
   );
 }
