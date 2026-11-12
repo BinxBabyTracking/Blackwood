@@ -36,7 +36,7 @@ export type Terrain = {
 export type ZoneDoor = { to: string; label: string; at: number[]; span: number; normal: number[]; kind: "wall" | "model" | "pass"; mi?: number; y?: number };
 /** A flight of stairs (height running along an axis) or a landing (flat), in zone metres. */
 export type Stair = { rect: number[]; h0: number; h1: number; axis?: "x" | "z"; from?: number; to?: number };
-export type ZonePerson = { id: string; name: string; file: string | null; height: number; pos: number[]; rotY: number; elev?: number; sit?: boolean; /** Inside a building: their room, and its floor (x0, z0, x1, z1) to keep to. */ room?: string; area?: number[] };
+export type ZonePerson = { id: string; name: string; file: string | null; height: number; pos: number[]; rotY: number; elev?: number; sit?: boolean; /** Inside a building: their room, and its floor (x0, z0, x1, z1) to keep to. */ room?: string; area?: number[]; /** Inside a building: how far its floor stands above the ground. */ floor?: number };
 /** A room standing in a building: its zone, where its centre is, its turn (degrees, a quarter turn at a time) and floor height. */
 export type KitRoom = { zone: string; pos: number[]; rot: number; y: number };
 /**
@@ -423,7 +423,7 @@ function raise(land: Zone, def: { model: string; rooms: string[]; style?: string
     }
     const c0 = roomToWorld(kr, [-w / 2, -d / 2]), c1 = roomToWorld(kr, [w / 2, d / 2]);
     const area = [Math.min(c0[0], c1[0]), Math.min(c0[1], c1[1]), Math.max(c0[0], c1[0]), Math.max(c0[1], c1[1])];
-    for (const p of r.people) land.people.push({ ...p, pos: roomToWorld(kr, p.pos), rotY: p.rotY + (kr.rot * Math.PI) / 180, elev: (p.elev ?? 0) + FOUND, room: r.id, area });
+    for (const p of r.people) land.people.push({ ...p, pos: roomToWorld(kr, p.pos), rotY: p.rotY + (kr.rot * Math.PI) / 180, elev: p.elev, floor: FOUND, room: r.id, area });
     r.people = [];
     r.host = { zone: land.id, at: roomToWorld(kr, [0, 0]), yaw: (kr.rot * Math.PI) / 180 };
     for (const side of SIDES) {
@@ -1185,7 +1185,7 @@ export function roomLayoutOf(land: Zone, room: Zone, kr: KitRoom): SavedLayout {
       .map((m) => ({ ...m, room: undefined, file: null, pos: worldToRoom(kr, m.pos), rotY: norm(m.rotY - kr.rot), elev: m.elev - kr.y })),
     people: land.people
       .filter((p) => p.room === room.id)
-      .map((p) => ({ id: p.id, pos: worldToRoom(kr, p.pos), rotY: p.rotY - (kr.rot * Math.PI) / 180, elev: (p.elev ?? 0) - FOUND, sit: p.sit })),
+      .map((p) => ({ id: p.id, pos: worldToRoom(kr, p.pos), rotY: p.rotY - (kr.rot * Math.PI) / 180, elev: p.elev, sit: p.sit })),
   };
 }
 

@@ -146,7 +146,7 @@ function seatSpot(w: World, n: Npc, m: ZoneModel): Act | null {
   const z = w.zone;
   const c = [(b.min.x + b.max.x) / 2, (b.min.z + b.max.z) / 2];
   const tall = b.max.y - b.min.y;
-  const ground = heightAt(z.terrain, c[0], c[1]);
+  const ground = heightAt(z.terrain, c[0], c[1]) + (n.P.floor ?? 0);
   const seatY = /stool|bench/.test(m.id) ? b.max.y : b.min.y + Math.min(tall * 0.38, 0.5);
   const desk = z.models
     .filter((d) => /desk|table|counter|workbench/.test(d.id) && Math.hypot(d.pos[0] - c[0], d.pos[1] - c[1]) < 2.5)
@@ -326,7 +326,7 @@ export function stepNpc(n: Npc, w: World, t: number, dt: number) {
   pose.lowerarm_r = -10 * wa - 40 * s - 50 * wk + wk * 14 * Math.sin(T * 5 + 2.2) + write * 7 * Math.sin(T * 3.1 + 1);
   pose.spine_03 = 9 * wk + 6 * write + (n.talking ? 0 : 0);
 
-  const ground = heightAt(w.zone.terrain, n.x, n.z);
+  const ground = heightAt(w.zone.terrain, n.x, n.z) + (n.P.floor ?? 0);
   const bob = moving ? Math.abs(Math.sin(ph)) * n.P.height * 0.012 : 0;
   n.grp.position.set(n.x, ground + n.elev + bob, n.z);
   n.grp.rotation.y = n.rot;
@@ -335,7 +335,7 @@ export function stepNpc(n: Npc, w: World, t: number, dt: number) {
 
 /** Holds someone still where the layout puts them, seated or standing (Edit mode). */
 export function holdNpc(n: Npc, zone: Zone) {
-  n.grp.position.set(n.P.pos[0], heightAt(zone.terrain, n.P.pos[0], n.P.pos[1]) + (n.P.elev ?? 0), n.P.pos[1]);
+  n.grp.position.set(n.P.pos[0], heightAt(zone.terrain, n.P.pos[0], n.P.pos[1]) + (n.P.floor ?? 0) + (n.P.elev ?? 0), n.P.pos[1]);
   n.grp.rotation.y = n.P.rotY;
   const s = n.P.sit ? 1 : 0;
   applyPose(n.rig, n.grp, { thigh_l: -88 * s, thigh_r: -88 * s, calf_l: 88 * s, calf_r: 88 * s, upperarm_l: -22 * s, upperarm_r: -22 * s, lowerarm_l: -40 * s, lowerarm_r: -40 * s });

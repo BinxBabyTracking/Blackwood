@@ -779,7 +779,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       const c = box ? [(box.min.x + box.max.x) / 2, (box.min.z + box.max.z) / 2] : chair.pos;
       const desk = near(/desk|table|counter|workbench/, 3.5, c);
       const rotY = desk ? Math.atan2(desk.pos[0] - c[0], desk.pos[1] - c[1]) : ((chair.rotY + 180) * Math.PI) / 180;
-      return { pos: c, seat: seat - ground, rotY };
+      return { pos: c, seat: seat - ground - (P.floor ?? 0), rotY };
     };
     let snow: THREE.Points | null = null;
     let aurora: ReturnType<typeof makeAurora> | null = null;
