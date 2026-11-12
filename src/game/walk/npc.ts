@@ -72,6 +72,11 @@ type Anim = {
   sit: THREE.AnimationAction;
   walk: THREE.AnimationAction;
   agree: THREE.AnimationAction | null;
+  /** Things to do now and then while standing about (wait, fold_arms...). */
+  extras: THREE.AnimationAction[];
+  extra: THREE.AnimationAction | null;
+  ex: number;
+  nextExtra: number;
   /** World meters per second the walk clip covers at normal speed. */
   stride: number;
   /** How far the hips drop between standing and the sit clip (world meters). */
@@ -81,10 +86,11 @@ type Anim = {
   wasTalking: boolean;
 };
 
-/** Wires up the walk, sit and agree clips when a character file has them. The sit clip is a seated loop; standing still is the first frame of agree (or walk). */
+/** Wires up the walk, sit and agree clips when a character file has them. The sit clip is a seated loop; standing still is the idle loop, or else the first frame of agree (or walk). */
 function makeAnim(root: THREE.Object3D, grp: THREE.Object3D, rig: Rig, clips: THREE.AnimationClip[]): Anim | null {
   const find = (re: RegExp) => clips.find((c) => re.test(c.name.toLowerCase()));
-  const walkC = find(/walk/), sitC = find(/sit/), agreeC = find(/agree|nod|talk/);
+  const walkC = find(/walk/), sitC = find(/sit/), agreeC = find(/agree|nod|talk/), idleC = find(/^idle/);
+  const extraC = clips.filter((c) => /wait|fold|stretch|look|yawn|scratch/.test(c.name.toLowerCase()) && !/sit|walk/.test(c.name.toLowerCase()));
   if (!walkC || !sitC) return null;
   // The walk clip moves the hips forward as it goes; take that out so the game does the moving.
   const walk = walkC.clone();
@@ -100,12 +106,18 @@ function makeAnim(root: THREE.Object3D, grp: THREE.Object3D, rig: Rig, clips: TH
     }
   }
   const mixer = new THREE.AnimationMixer(root);
-  const standC = (agreeC ?? walkC).clone();
+  const standC = (idleC ?? agreeC ?? walkC).clone();
   standC.name = "stand";
   const stand = mixer.clipAction(standC);
   stand.play();
-  stand.paused = true;
-  stand.time = 0;
+  if (!idleC) stand.paused = true;
+  stand.time = idleC ? Math.random() * idleC.duration : 0;
+  const extras = extraC.map((c) => {
+    const a = mixer.clipAction(c);
+    a.setLoop(THREE.LoopOnce, 1);
+    a.weight = 0;
+    return a;
+  });
   const sit = mixer.clipAction(sitC);
   sit.play();
   sit.weight = 0;
@@ -133,7 +145,7 @@ function makeAnim(root: THREE.Object3D, grp: THREE.Object3D, rig: Rig, clips: TH
   const scale = grp.getWorldScale(new THREE.Vector3()).x;
   // The pelvis track is in the model's own units, before scaling.
   const stride = drift > 0 ? (drift * scale) / walk.duration : 0.5;
-  return { mixer, stand, sit, walk: wa, agree, stride, drop: Math.max(0, up - down), ew: 0, ea: 0, wasTalking: false };
+  return { mixer, stand, sit, walk: wa, agree, extras, extra: null, ex: 0, nextExtra: 6 + Math.random() * 14, stride, drop: Math.max(0, up - down), ew: 0, ea: 0, wasTalking: false };
 }
 
 const SEAT = /chair|stool|(?<!work)bench|sofa|settee|couch|armchair|seat/;
@@ -428,11 +440,33 @@ function animate(n: Npc, w: World, t: number, dt: number, moving: boolean) {
     A.agree.weight = ag;
   }
   A.wasTalking = n.talking;
+  // Now and then, standing about: wait, fold the arms...
+  const still = n.mode === "idle" && !moving && !n.talking && s < 0.01;
+  A.nextExtra -= still ? dt : 0;
+  if (still && A.nextExtra <= 0 && A.extras.length && !A.extra) {
+    A.extra = A.extras[Math.floor(Math.random() * A.extras.length)];
+    A.extra.reset().play();
+    // Long enough to finish it.
+    n.until = Math.max(n.until, t + A.extra.getClip().duration);
+  }
+  let xw = 0;
+  if (A.extra) {
+    const left = A.extra.getClip().duration - A.extra.time;
+    const on = A.extra.isRunning() && still;
+    A.ex = near(A.ex, on ? Math.min(1, left / 0.5) : 0, dt * 3);
+    xw = A.ex * (1 - ag);
+    A.extra.weight = xw;
+    if (!on && A.ex <= 0) {
+      A.extra.stop();
+      A.extra = null;
+      A.nextExtra = 10 + Math.random() * 20;
+    }
+  }
   // Ease in and out of the chair.
   const sk = s * s * (3 - 2 * s);
   A.walk.weight = A.ew;
   A.sit.weight = sk * (1 - A.ew);
-  A.stand.weight = Math.max(0, 1 - A.ew - A.sit.weight - ag);
+  A.stand.weight = Math.max(0, 1 - A.ew - A.sit.weight - ag - xw);
   const ground = heightAt(w.zone.terrain, n.x, n.z) + (n.P.floor ?? 0);
   n.grp.position.set(n.x, ground + n.elev + A.drop * sk, n.z);
   n.grp.rotation.y = n.rot;

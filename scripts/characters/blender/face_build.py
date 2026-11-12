@@ -9,19 +9,27 @@ Run: python3 build.py   (Blender as a Python module)
 """
 import bpy, bmesh, numpy as np, mathutils, math, sys
 
-SRC = "/tmp/chars/juniper/out.glb"
-OUT = "/tmp/juniper/Juniper_face.glb"
-Y0, HW, K = 0.645, 0.036, 1.5            # lip line height, half width, smile curve (from the face pass)
-EYES = [(-0.054, 0.704), (0.05, 0.704)]   # (x, height)
+import json, os
+# Which character: python3 face_build.py -- juniper   (face-pass file at /tmp/chars/<name>/out.glb, settings in tripo/params.json)
+NAME = sys.argv[sys.argv.index("--") + 1] if "--" in sys.argv else "juniper"
+PRM = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "tripo", "params.json")))[NAME]
+SRC = f"/tmp/chars/{NAME}/out.glb"
+OUT_DIR = f"/tmp/faces/{NAME}"
+os.makedirs(OUT_DIR, exist_ok=True)
+OUT = f"{OUT_DIR}/{NAME}_face.glb"
+Y0, HW, K = PRM["Y0"], PRM["hw"], PRM["k"]      # lip line height, half width, smile curve (from the face pass)
+EYES = [tuple(e) for e in PRM["eyes"]]          # (x, height)
+ER_P = PRM.get("r", 0.03)                       # eye radius
+MESH = NAME.capitalize()
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=SRC)
 for o in list(bpy.data.objects):
     if o.name.startswith("Icosphere"):
         bpy.data.objects.remove(o)
-face = bpy.data.objects["Juniper"]
+face = bpy.data.objects[MESH]
 cup = bpy.data.objects["MouthInside"]
-arm = bpy.data.objects["root"]
+arm = next(o for o in bpy.data.objects if o.type == "ARMATURE")
 
 def ss(a, b, x):
     t = np.clip((x - a) / (b - a), 0, 1)
@@ -228,7 +236,7 @@ def skin_at(i):
     u, v = vert_uv[i]
     c = px[int(np.clip(v, 0, 0.999) * img.size[1]), int(np.clip(u % 1, 0, 0.999) * img.size[0])]
     return tuple(c[:3])
-ER = 0.03
+ER = ER_P
 lid_objs = []
 for n_eye, (ex, ez) in enumerate(EYES):
     # Lid skin colour: just above the eye.
@@ -405,7 +413,7 @@ def set_key(o, name, delta_local):
 for name, (deg, gain, extra) in plan.items():
     jd = jaws[deg]
     lipw = lip.get(name, np.zeros_like(FW)) * gain
-    set_key(face, name, jd["Juniper"] + toLocal(lipw + (extra if not isinstance(extra, int) else 0)))
+    set_key(face, name, jd[MESH] + toLocal(lipw + (extra if not isinstance(extra, int) else 0)))
     set_key(cup, name, jd["MouthInside"])
     set_key(lo_t, name, jd["TeethLower"])
     set_key(tongue, name, jd["Tongue"])
@@ -421,5 +429,5 @@ for o in [cup, lo_t, tongue, up_t] + lid_objs:
 # ---- 5. write
 bpy.ops.object.select_all(action="SELECT")
 bpy.ops.export_scene.gltf(filepath=OUT, export_format="GLB", export_morph=True, export_morph_normal=False, export_skins=True, export_animations=False, export_yup=True)
-bpy.ops.wm.save_as_mainfile(filepath="/tmp/juniper/Juniper_face.blend")
+bpy.ops.wm.save_as_mainfile(filepath=f"{OUT_DIR}/{NAME}_face.blend")
 print("WROTE", OUT)

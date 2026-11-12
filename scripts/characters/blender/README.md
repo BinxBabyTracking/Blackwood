@@ -12,4 +12,12 @@ Blender runs here as a Python module (`pip install --break-system-packages bpy`)
 - `face_shots.py`: close-up renders of each shape (`python3 face_shots.py front -- Basis,mouth_ah,blink`, or `three`
   for a three-quarter view). EEVEE without a GPU, about a minute a shot.
 
-First done for Juniper (Nov 11, 2026). Don't name a script `inspect.py`: it shadows a module Blender imports.
+- `add_clips.py`: copies Tripo's animation clips (walk, sit, idle, wait, agree, fold_arms...) onto a face-rigged or
+  face-pass character (`python3 add_clips.py -- face.glb tripo_with_clips.glb out.glb`). In Tripo the animations must
+  be selected in the export dialog, or the GLB comes out with none. The game uses `walk`, `sit` (a seated loop),
+  `idle` (standing loop), `agree` (a nod when you walk up) and anything like `wait` or `fold_arms` now and then.
+
+`face_build.py -- <name>` runs for any character in `tripo/params.json` (first done for Juniper, Nov 11, 2026).
+Run them one or two at a time; four at once runs out of memory. As of Nov 12 the build is only tuned for Juniper: on
+the others the teeth peek out at rest, and on beards and moustaches (Santa, Quill, Corwin, Bertram) opening the jaw
+tears the hair. Those need per-character settings before they ship. Don't name a script `inspect.py`: it shadows a module Blender imports.
