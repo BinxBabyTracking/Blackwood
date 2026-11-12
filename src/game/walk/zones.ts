@@ -640,7 +640,8 @@ const padWeight = (t: Terrain, x: number, z: number) =>
  */
 export function linkBuildings(z: Zone, t: Terrain) {
   const [W, D] = z.size;
-  const square = t.pads[t.pads.length - 1]?.rect;
+  const cob = z.decals.filter((dc) => dc.tex === t.path).sort((a, b) => b.size[0] * b.size[1] - a.size[0] * a.size[1])[0];
+  const square = cob ? [cob.pos[0] - cob.size[0] / 2, cob.pos[1] - cob.size[1] / 2, cob.pos[0] + cob.size[0] / 2, cob.pos[1] + cob.size[1] / 2] : t.pads[t.pads.length - 1]?.rect;
   if (!square) return;
   const sq = { x0: Math.min(square[0], square[2]), x1: Math.max(square[0], square[2]), z0: Math.min(square[1], square[3]), z1: Math.max(square[1], square[3]) };
   const inSquare = (x: number, y: number, pad = 0) => x > sq.x0 + pad && x < sq.x1 - pad && y > sq.z0 + pad && y < sq.z1 - pad;
@@ -681,7 +682,7 @@ export function linkBuildings(z: Zone, t: Terrain) {
     const f = footprint(m);
     const big = buildings.includes(m);
     // Under it: no way through. Close beside a building: possible, but only where there's no better way.
-    for (const [pad, v] of (big ? [[1.8, 1], [0.2, 2]] : [[0.6, 2]]) as [number, number][])
+    for (const [pad, v] of (big ? [[3, 1], [1, 2]] : [[0.6, 2]]) as [number, number][])
       for (let i = Math.max(0, Math.floor((f.x0 - pad + W / 2) / C)); i <= Math.min(nx - 1, Math.floor((f.x1 + pad + W / 2) / C)); i++)
         for (let j = Math.max(0, Math.floor((f.z0 - pad + D / 2) / C)); j <= Math.min(nz - 1, Math.floor((f.z1 + pad + D / 2) / C)); j++) blocked[j * nx + i] = Math.max(blocked[j * nx + i], v);
   }
@@ -705,7 +706,7 @@ export function linkBuildings(z: Zone, t: Terrain) {
     const n = m.door?.dir != null ? [Math.round(Math.sin((m.door.dir * Math.PI) / 180)), Math.round(Math.cos((m.door.dir * Math.PI) / 180))] : NORMAL[m.face ?? "back"];
     const half = n[0] ? (f.x1 - f.x0) / 2 : (f.z1 - f.z0) / 2;
     const c = [(f.x0 + f.x1) / 2, (f.z0 + f.z1) / 2];
-    return { edge: [c[0] + n[0] * (half - 0.3), c[1] + n[1] * (half - 0.3)], out: [c[0] + n[0] * (half + 3), c[1] + n[1] * (half + 3)], w: m.door ? 2.6 : 1.9 };
+    return { edge: [c[0] + n[0] * (half - 0.3), c[1] + n[1] * (half - 0.3)], out: [c[0] + n[0] * (half + 4), c[1] + n[1] * (half + 4)], w: m.door ? 2.6 : 1.9 };
   });
   for (const { edge, out, w } of [...starts, ...gates]) {
     if (onNet(out[0], out[1])) {
@@ -794,8 +795,8 @@ export function linkBuildings(z: Zone, t: Terrain) {
     const L = Math.hypot(end[0] - prev[0], end[1] - prev[1]) || 1;
     pts[pts.length - 1] = [end[0] + ((end[0] - prev[0]) / L) * 1.2, end[1] + ((end[1] - prev[1]) / L) * 1.2];
     // Round the corners.
-    let line = pts;
-    for (let r = 0; r < 2; r++) {
+    let line = [edge, ...pts];
+    for (let r = 0; r < 3; r++) {
       const nxt = [line[0]];
       for (let q = 0; q < line.length - 1; q++) {
         const a = line[q], b = line[q + 1];
@@ -805,7 +806,7 @@ export function linkBuildings(z: Zone, t: Terrain) {
       nxt.push(line[line.length - 1]);
       line = nxt;
     }
-    t.paths.push({ pts: [edge, ...line], w });
+    t.paths.push({ pts: line, w });
   }
 }
 

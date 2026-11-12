@@ -148,11 +148,12 @@ function cobbleMaterial(repeat?: [number, number]) {
 }
 
 /** Smooth stone kerbs down both sides of a path, with snow along the top. */
-function layKerbs(root: THREE.Object3D, T: NonNullable<Zone["terrain"]>, pts: number[][], w: number) {
+function layKerbs(root: THREE.Object3D, T: NonNullable<Zone["terrain"]>, pts: number[][], w: number, paved: (x: number, z: number) => boolean = () => false) {
   const KW = 0.2, KH = 0.13;
   for (const side of [-1, 1]) {
     const pos: number[] = [], uv: number[] = [], idx: number[] = [];
     const snow: number[] = [], sidx: number[] = [];
+    const open: boolean[] = [];
     let along = 0;
     pts.forEach((q, i) => {
       const prev = pts[Math.max(0, i - 1)], next = pts[Math.min(pts.length - 1, i + 1)];
@@ -171,7 +172,9 @@ function layKerbs(root: THREE.Object3D, T: NonNullable<Zone["terrain"]>, pts: nu
       uv.push(along, 0, along, 0.4, along, 0.6, along, 1);
       const sm = 0.02;
       snow.push(x0 + nx * sm, top + 0.035, z0 + nz * sm, x1 - nx * sm, top + 0.035, z1 - nz * sm);
-      if (i > 0) {
+      // No kerb across another path or the square: the cobbles run straight on where paths meet.
+      open.push(!paved((x0 + x1) / 2, (z0 + z1) / 2));
+      if (i > 0 && open[i] && open[i - 1]) {
         const o = i * 4, p = o - 4;
         for (const [a, b] of [[0, 1], [1, 2], [2, 3]]) idx.push(p + a, p + b, o + a, p + b, o + b, o + a);
         const so = i * 2, sp = so - 2;
@@ -866,6 +869,15 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         root.add(new THREE.Mesh(g, ft ? new THREE.MeshLambertMaterial({ map: ft }) : plain(0xe8eef8)));
         // Cobbled paths laid over it.
         const pmat = cobbleMaterial();
+        const segD = (x: number, y: number, a: number[], b: number[]) => {
+          const dx = b[0] - a[0], dy = b[1] - a[1];
+          const k = Math.max(0, Math.min(1, ((x - a[0]) * dx + (y - a[1]) * dy) / (dx * dx + dy * dy || 1)));
+          return Math.hypot(x - a[0] - dx * k, y - a[1] - dy * k);
+        };
+        const squares = z.decals.filter((dc) => dc.tex === T.path);
+        const pavedBy = (self: unknown) => (x: number, y: number) =>
+          squares.some((dc) => Math.abs(x - dc.pos[0]) < dc.size[0] / 2 && Math.abs(y - dc.pos[1]) < dc.size[1] / 2) ||
+          T.paths.some((p) => p !== self && p.pts.slice(1).some((b, i) => segD(x, y, p.pts[i], b) < p.w / 2));
         for (const path of T.paths) {
           const pts: number[][] = [];
           for (let i = 1; i < path.pts.length; i++) {
@@ -901,7 +913,22 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           const mesh = new THREE.Mesh(pg, pmat);
           mesh.material.side = THREE.DoubleSide;
           root.add(mesh);
-          layKerbs(root, T, pts, path.w);
+          layKerbs(root, T, pts, path.w, pavedBy(path));
+          // Round ends, so a path meeting another at an angle leaves no gap of snow.
+          for (const e of [path.pts[0], path.pts[path.pts.length - 1]]) {
+            const cg = new THREE.CircleGeometry(path.w / 2, 20);
+            cg.rotateX(-Math.PI / 2);
+            const ca = cg.attributes.position as THREE.BufferAttribute;
+            const cu = cg.attributes.uv as THREE.BufferAttribute;
+            for (let i = 0; i < ca.count; i++) {
+              const x = ca.getX(i) + e[0], zz = ca.getZ(i) + e[1];
+              ca.setXYZ(i, x, heightAt(T, x, zz) + 0.038, zz);
+              cu.setXY(i, x / COBBLE_M, zz / COBBLE_M);
+            }
+            cg.computeVertexNormals();
+            const cm = new THREE.Mesh(cg, pmat);
+            root.add(cm);
+          }
         }
       } else {
         const floor = new THREE.Mesh(tiledPlane(floorW, floorD, 0, 0, z.floor.tile), ft ? new THREE.MeshLambertMaterial({ map: ft }) : plain(z.outdoor ? 0xe8eef8 : 0x8a6a4a));
