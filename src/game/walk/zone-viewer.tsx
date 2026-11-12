@@ -930,6 +930,61 @@ export function ZoneViewer({ world, title, eye: eyeIn, story, storyKey }: { worl
       c.needsUpdate = true;
       return c;
     };
+    /**
+     * Depth for a flat painted surface: a normal map worked out from the picture itself (darker is deeper: mortar,
+     * the gaps between boards and shingles, carving), so lamps and moonlight pick out its relief. Made once per
+     * picture when it has loaded; flat until then.
+     */
+    const reliefs = new Map<string, THREE.CanvasTexture>();
+    const relief = (url: string | null) => {
+      if (!url) return null;
+      const got = reliefs.get(url);
+      if (got) return got;
+      const flat = document.createElement("canvas");
+      flat.width = flat.height = 1;
+      const fg = flat.getContext("2d")!;
+      fg.fillStyle = "rgb(128,128,255)";
+      fg.fillRect(0, 0, 1, 1);
+      const nt = new THREE.CanvasTexture(flat);
+      nt.wrapS = nt.wrapT = THREE.RepeatWrapping;
+      reliefs.set(url, nt);
+      tex(url, (t) => {
+        const img = t.image as HTMLImageElement | ImageBitmap | undefined;
+        if (!img || !("width" in img) || !img.width) return;
+        const N = "ontouchstart" in window ? 256 : 512;
+        const sw = Math.min(N, img.width), sh = Math.max(1, Math.round((sw * img.height) / img.width));
+        const c = document.createElement("canvas");
+        c.width = sw;
+        c.height = sh;
+        const g = c.getContext("2d", { willReadFrequently: true })!;
+        g.drawImage(img as CanvasImageSource, 0, 0, sw, sh);
+        const px = g.getImageData(0, 0, sw, sh);
+        const d = px.data;
+        // Height from brightness, softened a touch so paint grain doesn't read as gravel.
+        const h0 = new Float32Array(sw * sh);
+        for (let i = 0; i < sw * sh; i++) h0[i] = (0.3 * d[i * 4] + 0.59 * d[i * 4 + 1] + 0.11 * d[i * 4 + 2]) / 255;
+        const h = new Float32Array(sw * sh);
+        const at = (x: number, y: number) => h0[((y + sh) % sh) * sw + ((x + sw) % sw)];
+        for (let y = 0; y < sh; y++) for (let x = 0; x < sw; x++) h[y * sw + x] = (4 * at(x, y) + at(x - 1, y) + at(x + 1, y) + at(x, y - 1) + at(x, y + 1)) / 8;
+        const H = (x: number, y: number) => h[((y + sh) % sh) * sw + ((x + sw) % sw)];
+        const k = 3.2 * (sw / 512);
+        for (let y = 0; y < sh; y++)
+          for (let x = 0; x < sw; x++) {
+            const nx = -(H(x + 1, y) - H(x - 1, y)) * k, ny = (H(x, y + 1) - H(x, y - 1)) * k;
+            const l = Math.hypot(nx, ny, 1);
+            const i = (y * sw + x) * 4;
+            d[i] = Math.round((nx / l) * 127 + 128);
+            d[i + 1] = Math.round((ny / l) * 127 + 128);
+            d[i + 2] = Math.round((1 / l) * 127 + 128);
+            d[i + 3] = 255;
+          }
+        g.putImageData(px, 0, 0);
+        nt.image = c;
+        nt.dispose();
+        nt.needsUpdate = true;
+      });
+      return nt;
+    };
     const tiledPlane = (w: number, h: number, u0: number, v0: number, tile: number) => {
       const g = new THREE.PlaneGeometry(w, h);
       const uv = g.attributes.uv as THREE.BufferAttribute;
@@ -1075,13 +1130,15 @@ export function ZoneViewer({ world, title, eye: eyeIn, story, storyKey }: { worl
       const timber = new THREE.MeshLambertMaterial({ color: 0x4a2e1d });
       // The building's own painted outside (Admin, Artwork tab), or the plain kit look until it's made.
       const L = b.look;
-      const stoneM = new THREE.MeshLambertMaterial({ map: tiled(L?.base ?? null) ?? K.stone });
-      const shingleM = new THREE.MeshLambertMaterial({ map: tiled(L?.roof ?? null) ?? K.shingle });
+      const bumpy = (url: string | null | undefined, fallback: THREE.Texture, depth: number, extra: THREE.MeshLambertMaterialParameters = {}) =>
+        new THREE.MeshLambertMaterial({ map: tiled(url ?? null) ?? fallback, ...(url ? { normalMap: relief(url) ?? undefined, normalScale: new THREE.Vector2(depth, depth) } : {}), ...extra });
+      const stoneM = bumpy(L?.base, K.stone, 1.6);
+      const shingleM = bumpy(L?.roof, K.shingle, 1.4);
       const roofTile = L?.roof ? 1.2 : 1;
-      const doorOut = L?.door ? new THREE.MeshLambertMaterial({ map: tex(L.door) }) : null;
-      const winOut = L?.window ? new THREE.MeshLambertMaterial({ map: tex(L.window), alphaTest: 0.5, side: THREE.DoubleSide }) : null;
+      const doorOut = L?.door ? new THREE.MeshLambertMaterial({ map: tex(L.door), normalMap: relief(L.door) ?? undefined, normalScale: new THREE.Vector2(1.2, 1.2) }) : null;
+      const winOut = L?.window ? new THREE.MeshLambertMaterial({ map: tex(L.window), normalMap: relief(L.window) ?? undefined, normalScale: new THREE.Vector2(1, 1), alphaTest: 0.5, side: THREE.DoubleSide }) : null;
       const snowM = new THREE.MeshLambertMaterial({ color: 0xf2f6ff });
-      const plasterM = new THREE.MeshLambertMaterial({ map: tiled(L?.wall ?? null) ?? K.plaster, side: THREE.DoubleSide });
+      const plasterM = bumpy(L?.wall, K.plaster, 1.3, { side: THREE.DoubleSide });
       const beamM = new THREE.MeshLambertMaterial({ color: 0x7a4a2a });
       const brassM = new THREE.MeshStandardMaterial({ color: 0xb8893a, metalness: 0.6, roughness: 0.35, side: THREE.DoubleSide });
       const ironM = new THREE.MeshLambertMaterial({ color: 0x2a2420 });
@@ -1439,7 +1496,7 @@ export function ZoneViewer({ world, title, eye: eyeIn, story, storyKey }: { worl
           // the right way round from either side).
           signed = true;
           const st = tex(L.sign);
-          const sm = new THREE.MeshLambertMaterial({ map: st, alphaTest: 0.5 });
+          const sm = new THREE.MeshLambertMaterial({ map: st, normalMap: relief(L.sign) ?? undefined, normalScale: new THREE.Vector2(1, 1), alphaTest: 0.5 });
           const S = 0.95;
           const out = [-dr.into[0], -dr.into[1]];
           const cx = dr.at[0] + dr.across[0] * (dr.w / 2 + 0.55) + out[0] * (dr.depth / 2 + S / 2);
