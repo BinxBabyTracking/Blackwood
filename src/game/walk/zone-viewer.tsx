@@ -1945,7 +1945,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
             parent.add(grp);
             const hb = head as THREE.Bone | null;
             grp.position.set(P.pos[0], heightAt(z.terrain, P.pos[0], P.pos[1]), P.pos[1]);
-            const npc = makeNpc(P, grp, rig, tNow);
+            const npc = makeNpc(P, grp, rig, tNow, g.animations ?? [], obj);
             const pp: Person = { grp, head: hb, headRest: hb ? hb.quaternion.clone() : new THREE.Quaternion(), faces, next: 1 + Math.random() * 3, at: -1, phase: Math.random() * 10, P, npc, held: false };
             if (P.sit) {
               // Seated where Edit mode put them: the seat height is already in the layout.
@@ -2549,7 +2549,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         const blink = b > 0 && b < 1 ? Math.sin(b * Math.PI) : 0;
         for (const fc of p.faces) if (fc.mesh.morphTargetInfluences) fc.mesh.morphTargetInfluences[fc.i] = blink;
         if (p.head) {
-          p.head.quaternion.copy(p.headRest);
+          // With real clips the mixer has just set the head; otherwise start from rest.
+          if (!p.npc.anim || p.held) p.head.quaternion.copy(p.headRest);
           p.head.parent?.updateWorldMatrix(true, false);
           const hp = p.head.getWorldPosition(new THREE.Vector3());
           tmp.copy(camera.position).sub(hp);

@@ -26,8 +26,8 @@ const SIDE = new THREE.Vector3();
 const PQ = new THREE.Quaternion();
 const WQ = new THREE.Quaternion();
 const GQ = new THREE.Quaternion();
-function applyPose(rig: Rig, grp: THREE.Object3D, pose: Pose) {
-  for (const n of JOINTS) rig[n]?.bone.quaternion.copy(rig[n]!.rest);
+function applyPose(rig: Rig, grp: THREE.Object3D, pose: Pose, onTop = false) {
+  if (!onTop) for (const n of JOINTS) rig[n]?.bone.quaternion.copy(rig[n]!.rest);
   grp.updateMatrixWorld(true);
   SIDE.set(1, 0, 0).applyQuaternion(grp.getWorldQuaternion(GQ)).normalize();
   for (const n of JOINTS) {
@@ -62,13 +62,85 @@ export type Npc = {
   phase: number;
   talking: boolean;
   t0: number;
+  /** Real animation clips from the character file (walk and sit, and agree if there is one), used instead of the made-up poses. */
+  anim: Anim | null;
 };
+
+type Anim = {
+  mixer: THREE.AnimationMixer;
+  stand: THREE.AnimationAction;
+  sit: THREE.AnimationAction;
+  walk: THREE.AnimationAction;
+  agree: THREE.AnimationAction | null;
+  /** World meters per second the walk clip covers at normal speed. */
+  stride: number;
+  /** How far the hips drop between standing and the sit clip (world meters). */
+  drop: number;
+  ew: number;
+  ea: number;
+  wasTalking: boolean;
+};
+
+/** Wires up the walk, sit and agree clips when a character file has them. The sit clip is a seated loop; standing still is the first frame of agree (or walk). */
+function makeAnim(root: THREE.Object3D, grp: THREE.Object3D, rig: Rig, clips: THREE.AnimationClip[]): Anim | null {
+  const find = (re: RegExp) => clips.find((c) => re.test(c.name.toLowerCase()));
+  const walkC = find(/walk/), sitC = find(/sit/), agreeC = find(/agree|nod|talk/);
+  if (!walkC || !sitC) return null;
+  // The walk clip moves the hips forward as it goes; take that out so the game does the moving.
+  const walk = walkC.clone();
+  let drift = 0;
+  for (const tr of walk.tracks) {
+    if (!/(^|\/|\b)pelvis\.position$/i.test(tr.name)) continue;
+    const v = tr.values, T = tr.times, n = T.length, dur = T[n - 1] - T[0] || 1;
+    const d = [v[(n - 1) * 3] - v[0], v[(n - 1) * 3 + 1] - v[1], v[(n - 1) * 3 + 2] - v[2]];
+    drift = Math.hypot(...d);
+    for (let i = 0; i < n; i++) {
+      const f = (T[i] - T[0]) / dur;
+      for (let a = 0; a < 3; a++) v[i * 3 + a] -= d[a] * f;
+    }
+  }
+  const mixer = new THREE.AnimationMixer(root);
+  const standC = (agreeC ?? walkC).clone();
+  standC.name = "stand";
+  const stand = mixer.clipAction(standC);
+  stand.play();
+  stand.paused = true;
+  stand.time = 0;
+  const sit = mixer.clipAction(sitC);
+  sit.play();
+  sit.weight = 0;
+  const wa = mixer.clipAction(walk);
+  wa.play();
+  wa.weight = 0;
+  const agree = agreeC ? mixer.clipAction(agreeC) : null;
+  if (agree) {
+    agree.setLoop(THREE.LoopOnce, 1);
+    agree.weight = 0;
+  }
+  // Measure the drop of the hips in world meters (the character is already scaled).
+  const hipY = () => {
+    mixer.update(0);
+    grp.updateMatrixWorld(true);
+    return rig.thigh_l?.bone.getWorldPosition(new THREE.Vector3()).y ?? 0;
+  };
+  const up = hipY();
+  stand.weight = 0;
+  sit.weight = 1;
+  const down = hipY();
+  sit.weight = 0;
+  stand.weight = 1;
+  hipY();
+  const scale = grp.getWorldScale(new THREE.Vector3()).x;
+  // The pelvis track is in the model's own units, before scaling.
+  const stride = drift > 0 ? (drift * scale) / walk.duration : 0.5;
+  return { mixer, stand, sit, walk: wa, agree, stride, drop: Math.max(0, up - down), ew: 0, ea: 0, wasTalking: false };
+}
 
 const SEAT = /chair|stool|(?<!work)bench|sofa|settee|couch|armchair|seat/;
 const WORK = /table|counter|workbench|anvil|stall|cart|loom|lathe|kiln|furnace|forge|easel|press|shelf|shelves|bookcase|cabinet|crate|barrel|cauldron|stove|oven|sink|vise|bench_work|machine|gears|clock/;
 const NOT_WORK = /door|window|arch|house|hall|tower|building|hangar|stable|shop|tree|lamp|fence|well|wall|rug|carpet|light|sign/;
 
-export function makeNpc(P: ZonePerson, grp: THREE.Object3D, rig: Rig, t: number): Npc {
+export function makeNpc(P: ZonePerson, grp: THREE.Object3D, rig: Rig, t: number, clips: THREE.AnimationClip[] = [], root?: THREE.Object3D): Npc {
   // How high the hips sit above the feet, standing.
   grp.updateMatrixWorld(true);
   const th = rig.thigh_l?.bone.getWorldPosition(new THREE.Vector3());
@@ -92,6 +164,7 @@ export function makeNpc(P: ZonePerson, grp: THREE.Object3D, rig: Rig, t: number)
     phase: Math.random() * 6,
     talking: false,
     t0: Math.random() * 10,
+    anim: clips.length && root ? makeAnim(root, grp, rig, clips) : null,
   };
 }
 
@@ -231,7 +304,7 @@ export function stepNpc(n: Npc, w: World, t: number, dt: number) {
         if (d < 0.06) {
           if (n.act?.kind === "sit") {
             n.mode = "sitdown";
-            n.until = t + 0.9;
+            n.until = t + sitTime(n);
           } else if (n.act?.kind === "work") {
             n.mode = "work";
             n.until = t + 10 + Math.random() * 15;
@@ -255,7 +328,7 @@ export function stepNpc(n: Npc, w: World, t: number, dt: number) {
       }
       case "sitdown": {
         const a = n.act!;
-        const k = Math.min(1, 1 - (n.until - t) / 0.9);
+        const k = Math.min(1, 1 - (n.until - t) / sitTime(n));
         turnTo(a.rot, 6);
         n.x = a.from[0] + (a.at[0] - a.from[0]) * k;
         n.z = a.from[1] + (a.at[1] - a.from[1]) * k;
@@ -277,12 +350,12 @@ export function stepNpc(n: Npc, w: World, t: number, dt: number) {
             n.act = { kind: "sit", at: [n.x, n.z], from: out, rot: n.rot, elev: n.elev, desk: true, model: null as unknown as ZoneModel };
           }
           n.mode = "standup";
-          n.until = t + 0.9;
+          n.until = t + sitTime(n);
         }
         break;
       case "standup": {
         const a = n.act!;
-        const k = Math.max(0, (n.until - t) / 0.9);
+        const k = Math.max(0, (n.until - t) / sitTime(n));
         n.x = a.from[0] + (a.at[0] - a.from[0]) * k;
         n.z = a.from[1] + (a.at[1] - a.from[1]) * k;
         n.sitK = k;
@@ -305,6 +378,8 @@ export function stepNpc(n: Npc, w: World, t: number, dt: number) {
         break;
     }
   if (n.mode !== "work") n.workK = Math.max(0, n.workK - dt * 2);
+
+  if (n.anim) return animate(n, w, t, dt, moving);
 
   // Pose.
   const T = t + n.t0;
@@ -333,10 +408,63 @@ export function stepNpc(n: Npc, w: World, t: number, dt: number) {
   applyPose(n.rig, n.grp, pose);
 }
 
+const sitTime = (n: Npc) => (n.anim ? 1.3 : 0.9);
+const near = (v: number, to: number, r: number) => v + Math.sign(to - v) * Math.min(Math.abs(to - v), r);
+
+/** One frame of someone's day with real clips: standing, the seated loop, the walk and the nod, blended by what they're doing. */
+function animate(n: Npc, w: World, t: number, dt: number, moving: boolean) {
+  const A = n.anim!;
+  const s = n.sitK;
+  A.ew = near(A.ew, moving ? 1 : 0, dt * 5);
+  A.walk.timeScale = Math.max(0.6, Math.min(1.6, n.speed / A.stride));
+  // Nods along when someone comes up to talk (standing only).
+  let ag = 0;
+  if (A.agree) {
+    if (n.talking && !A.wasTalking && s < 0.05) A.agree.reset().play();
+    const on = A.agree.isRunning();
+    const left = A.agree.getClip().duration - A.agree.time;
+    A.ea = near(A.ea, on ? Math.min(1, left / 0.4) : 0, dt * 4);
+    ag = A.ea * (1 - A.ew) * (1 - s);
+    A.agree.weight = ag;
+  }
+  A.wasTalking = n.talking;
+  // Ease in and out of the chair.
+  const sk = s * s * (3 - 2 * s);
+  A.walk.weight = A.ew;
+  A.sit.weight = sk * (1 - A.ew);
+  A.stand.weight = Math.max(0, 1 - A.ew - A.sit.weight - ag);
+  const ground = heightAt(w.zone.terrain, n.x, n.z) + (n.P.floor ?? 0);
+  n.grp.position.set(n.x, ground + n.elev + A.drop * sk, n.z);
+  n.grp.rotation.y = n.rot;
+  A.mixer.update(dt);
+  // At a bench or desk: hands busy, on top of the clip.
+  const wk = n.workK;
+  if (wk > 0.01) {
+    const T = t + n.t0;
+    applyPose(n.rig, n.grp, {
+      upperarm_l: -48 * wk,
+      upperarm_r: -48 * wk,
+      lowerarm_l: -50 * wk + wk * 14 * Math.sin(T * 5),
+      lowerarm_r: -50 * wk + wk * 14 * Math.sin(T * 5 + 2.2),
+      spine_03: 9 * wk,
+    }, true);
+  }
+}
+
 /** Holds someone still where the layout puts them, seated or standing (Edit mode). */
 export function holdNpc(n: Npc, zone: Zone) {
   n.grp.position.set(n.P.pos[0], heightAt(zone.terrain, n.P.pos[0], n.P.pos[1]) + (n.P.floor ?? 0) + (n.P.elev ?? 0), n.P.pos[1]);
   n.grp.rotation.y = n.P.rotY;
   const s = n.P.sit ? 1 : 0;
+  if (n.anim) {
+    const A = n.anim;
+    A.walk.weight = 0;
+    if (A.agree) A.agree.weight = 0;
+    A.sit.weight = s;
+    A.stand.weight = 1 - s;
+    n.grp.position.y += A.drop * s;
+    A.mixer.update(0);
+    return;
+  }
   applyPose(n.rig, n.grp, { thigh_l: -88 * s, thigh_r: -88 * s, calf_l: 88 * s, calf_r: 88 * s, upperarm_l: -22 * s, upperarm_r: -22 * s, lowerarm_l: -40 * s, lowerarm_r: -40 * s });
 }
