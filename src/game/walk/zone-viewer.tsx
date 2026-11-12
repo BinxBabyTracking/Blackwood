@@ -6,6 +6,10 @@ import * as THREE from "three";
 import { GLTFLoader, type GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
+import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { trimRuns, wallRects } from "./walk-viewer";
 import { doorsOf, floorSize, groundAt, heightAt, layoutOf, roomLayoutOf } from "./zones";
 import { makeAurora } from "./aurora";
@@ -628,9 +632,17 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(mount.clientWidth, mount.clientHeight);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
+    // Film-like colour, and a soft glow round anything bright (lamps, lanterns, fire).
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.25;
     mount.appendChild(renderer.domElement);
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(70, mount.clientWidth / mount.clientHeight, 0.05, 1200);
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const small = "ontouchstart" in window;
+    composer.addPass(new UnrealBloomPass(new THREE.Vector2(mount.clientWidth / (small ? 3 : 2), mount.clientHeight / (small ? 3 : 2)), 0.5, 0.55, 0.9));
+    composer.addPass(new OutputPass());
     const pos = new THREE.Vector3(0, EYE, 0);
     const look = { yaw: 0, pitch: 0 };
     const texLoader = new THREE.TextureLoader();
@@ -784,6 +796,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     let snow: THREE.Points | null = null;
     let aurora: ReturnType<typeof makeAurora> | null = null;
     /** Doors in buildings: closed or open, and how far round they've swung (0 shut, 1 open). */
+    /** Lights that flicker: fires, stoves and lanterns. */
+    let flames: { light: THREE.PointLight; base: number; phase: number; amount: number }[] = [];
     let kitDoors: { d: KitDoor; pivot: THREE.Group; slab: THREE.Mesh; base: number; swing: number; open: boolean; k: number }[] = [];
     /** Inside a building (0 out, 1 in), eased, and the room you're in. */
     let indoors = 0;
@@ -1009,6 +1023,11 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       const shingleM = new THREE.MeshLambertMaterial({ map: K.shingle });
       const snowM = new THREE.MeshLambertMaterial({ color: 0xf2f6ff });
       const plasterM = new THREE.MeshLambertMaterial({ map: K.plaster, side: THREE.DoubleSide });
+      const beamM = new THREE.MeshLambertMaterial({ color: 0x7a4a2a });
+      const brassM = new THREE.MeshStandardMaterial({ color: 0xb8893a, metalness: 0.6, roughness: 0.35, side: THREE.DoubleSide });
+      const ironM = new THREE.MeshLambertMaterial({ color: 0x2a2420 });
+      const bulbM = new THREE.MeshStandardMaterial({ color: 0xfff1d6, emissive: 0xffc070, emissiveIntensity: 4 });
+      const glassM = new THREE.MeshStandardMaterial({ color: 0xffe2a8, emissive: 0xffa94d, emissiveIntensity: 2.6, transparent: true, opacity: 0.92 });
       for (const kr of b.rooms) {
         const rz = world.zones.find((q) => q.id === kr.zone);
         if (!rz) continue;
@@ -1026,13 +1045,6 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         const floor = new THREE.Mesh(tiledPlane(w, d, 0, 0, rz.floor.tile), ftx ? new THREE.MeshLambertMaterial({ map: ftx }) : plain(0x8a6a4a));
         floor.rotation.x = -Math.PI / 2;
         g.add(floor);
-        if (rz.ceiling) {
-          const ct = tiled(rz.ceiling.tex);
-          const ceil = new THREE.Mesh(tiledPlane(w, d, 0, 0, rz.ceiling.tile), ct ? new THREE.MeshLambertMaterial({ map: ct }) : plain(0xd8cbb0));
-          ceil.rotation.x = Math.PI / 2;
-          ceil.position.y = H;
-          g.add(ceil);
-        }
         for (const dc of rz.decals) {
           const t = dc.tile ? tiled(dc.tex) : tex(dc.tex);
           if (!t) continue;
@@ -1042,29 +1054,80 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           m.position.set(dc.pos[0], 0.01, dc.pos[1]);
           g.add(m);
         }
+        // The roof over this room: ridge along the longer side, steep, deep eaves. The room is open up into it.
+        const along = w >= d;
+        const ih = (along ? d : w) / 2, il = (along ? w : d) / 2;
+        const sh = ih + WALL + 0.45;
+        const rise = sh * Math.tan((42 * Math.PI) / 180);
+        const pitch = Math.atan2(rise, sh);
+        const y0 = H + 0.05;
+        /** The ceiling's height above a point of the floor (room metres). */
+        const ceilAt = (x: number, z0: number) => y0 + rise * (1 - Math.abs(along ? z0 : x) / sh) - 0.14;
+        // Hanging lamps where the room's ceiling lights are.
         let lit = 0;
         for (const fx of rz.fixtures) {
-          const t = tex(fx.tex);
-          const m = new THREE.Mesh(new THREE.PlaneGeometry(fx.size[0], fx.size[1]), t ? new THREE.MeshLambertMaterial({ map: t, alphaTest: 0.5, emissive: 0xffd9a0, emissiveMap: fx.light ? t : null, emissiveIntensity: 0.9 }) : plain(0xffe0a0));
-          m.rotation.x = Math.PI / 2;
-          m.position.set(fx.pos[0], H - 0.02, fx.pos[1]);
-          g.add(m);
-          if (fx.light && lit < 3) {
+          const top0 = ceilAt(fx.pos[0], fx.pos[1]);
+          const bulbY = Math.min(H - 0.22, top0 - 0.5);
+          const chain = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, top0 - bulbY, 6), brassM);
+          chain.position.set(fx.pos[0], (top0 + bulbY) / 2, fx.pos[1]);
+          const shade = new THREE.Mesh(new THREE.ConeGeometry(0.26, 0.2, 20, 1, true), brassM);
+          shade.position.set(fx.pos[0], bulbY + 0.06, fx.pos[1]);
+          const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.075, 14, 10), bulbM);
+          bulb.position.set(fx.pos[0], bulbY - 0.02, fx.pos[1]);
+          g.add(chain, shade, bulb);
+          if (fx.light && lit < 2) {
             lit++;
-            const pl = new THREE.PointLight(0xffd29a, 6, 12, 1.6);
-            pl.position.set(fx.pos[0], H - 0.4, fx.pos[1]);
+            const pl = new THREE.PointLight(0xffc98a, 6, 12, 1.6);
+            pl.position.set(fx.pos[0], bulbY - 0.1, fx.pos[1]);
             g.add(pl);
           }
         }
         if (!lit) {
-          const pl = new THREE.PointLight(0xffd29a, 7, 12, 1.4);
+          const pl = new THREE.PointLight(0xffc98a, 7, 12, 1.4);
           pl.position.set(0, H - 0.4, 0);
           g.add(pl);
         }
         for (const side of ["front", "back", "left", "right"] as Side[]) buildWall(rz, side, rz.walls[side], g, true);
+        // Lanterns on the walls, where nothing hangs: one lit for real, the others glowing.
+        {
+          const ly = Math.min(1.75, H * 0.62);
+          let hung = 0;
+          for (const side of (along ? ["front", "back", "left", "right"] : ["left", "right", "front", "back"]) as Side[]) {
+            if (hung >= 2) break;
+            const f = wallFrame(rz, side);
+            const W = f.width;
+            const clear = (u: number) => rz.walls[side].pieces.every((p) => u < p.x - 0.35 || u > p.x + p.w + 0.35 || ly + 0.3 < p.y || ly - 0.3 > p.y + p.h);
+            const u = [W / 2, W / 3, (2 * W) / 3, W / 4, (3 * W) / 4].find(clear);
+            if (u == null) continue;
+            const wg = new THREE.Group();
+            wg.position.set(f.pos[0], 0, f.pos[1]);
+            wg.rotation.y = f.rot;
+            g.add(wg);
+            const x = u - W / 2;
+            const plate = kitBox(0.12, 0.26, 0.03, ironM);
+            plate.position.set(x, ly + 0.05, 0.015);
+            const arm = kitBox(0.03, 0.03, 0.2, ironM);
+            arm.position.set(x, ly + 0.14, 0.11);
+            const cap = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.09, 4), ironM);
+            cap.rotation.y = Math.PI / 4;
+            cap.position.set(x, ly + 0.17, 0.22);
+            const glass = kitBox(0.11, 0.17, 0.11, glassM);
+            glass.position.set(x, ly + 0.04, 0.22);
+            const base = kitBox(0.13, 0.025, 0.13, ironM);
+            base.position.set(x, ly - 0.055, 0.22);
+            wg.add(plate, arm, cap, glass, base);
+            if (hung === 0) {
+              const pl = new THREE.PointLight(0xffa860, 2.6, 6, 1.8);
+              pl.position.set(x, ly + 0.04, 0.32);
+              wg.add(pl);
+              flames.push({ light: pl, base: 2.6, phase: Math.random() * 10, amount: 0.08 });
+            }
+            hung++;
+          }
+        }
 
         // Outside: plastered walls with the openings cut through, framed.
-        const top = H + 0.3, foot = -0.7;
+        const top = y0, foot = -0.7;
         for (const side of ["front", "back", "left", "right"] as Side[]) {
           const f = wallFrame(rz, side);
           const W = f.width;
@@ -1126,16 +1189,13 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           post.position.set(sx * (w / 2 + WALL / 2), (top + foot) / 2, sz * (d / 2 + WALL / 2));
           g.add(post);
         }
-        // Ceiling slab, then the roof: ridge along the longer side, steep, with deep eaves and snow.
-        const slab = kitBox(w + 2 * WALL + 0.1, 0.32, d + 2 * WALL + 0.1, timber);
-        slab.position.y = H + 0.16;
-        g.add(slab);
-        const along = w >= d;
-        const span = (along ? d : w) + 2 * WALL + 0.9, len = (along ? w : d) + 2 * WALL + 0.16;
-        const rise = (span / 2) * Math.tan((42 * Math.PI) / 180);
-        const slope = Math.hypot(span / 2, rise), pitch = Math.atan2(rise, span / 2);
+        // The roof, the ceiling under it and the timbers holding it up, built in the roof's frame: ridge along x,
+        // slopes falling to either side in z.
+        const span = 2 * sh, len = 2 * (il + WALL) + 0.16;
+        const slope = Math.hypot(sh, rise);
+        const oh = ih + WALL;
         const roof = new THREE.Group();
-        roof.position.y = top;
+        roof.position.y = y0;
         if (!along) roof.rotation.y = Math.PI / 2;
         g.add(roof);
         for (const s2 of [-1, 1]) {
@@ -1148,17 +1208,72 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           sn.rotation.x = s2 * pitch;
           roof.add(sn);
         }
-        // Gable ends, plastered.
-        const gw = span - 0.9;
-        const tri = new THREE.Shape([new THREE.Vector2(-gw / 2, 0), new THREE.Vector2(gw / 2, 0), new THREE.Vector2(0, rise * (gw / span))]);
-        for (const e of [-1, 1]) {
-          const geo = new THREE.ShapeGeometry(tri);
+        const tilePlane = (shape: THREE.Shape, mat: THREE.Material, tile: number) => {
+          const geo = new THREE.ShapeGeometry(shape);
           const uv = geo.attributes.uv as THREE.BufferAttribute, pa = geo.attributes.position as THREE.BufferAttribute;
-          for (let i = 0; i < uv.count; i++) uv.setXY(i, pa.getX(i) / 2, pa.getY(i) / 2);
-          const m = new THREE.Mesh(geo, plasterM);
-          m.rotation.y = Math.PI / 2;
-          m.position.set((e * len) / 2 - e * 0.08, 0, 0);
-          roof.add(m);
+          for (let i = 0; i < uv.count; i++) uv.setXY(i, pa.getX(i) / tile, pa.getY(i) / tile);
+          return new THREE.Mesh(geo, mat);
+        };
+        const V = (a: number, b2: number) => new THREE.Vector2(a, b2);
+        // Outside: plaster up under the eaves, and the gable ends.
+        const hO = rise * (1 - oh / sh) - 0.08;
+        for (const s2 of [-1, 1]) {
+          const band = kitBox(2 * (il + WALL), hO, 0.04, plasterM, 2);
+          band.position.set(0, hO / 2, s2 * (oh - 0.02));
+          roof.add(band);
+          const gable = tilePlane(new THREE.Shape([V(-oh, 0), V(oh, 0), V(oh, hO), V(0, rise - 0.08), V(-oh, hO)]), plasterM, 2);
+          gable.rotation.y = Math.PI / 2;
+          gable.position.set(s2 * (il + WALL - 0.02), 0, 0);
+          roof.add(gable);
+        }
+        // Inside: the ceiling follows the roof up to the ridge; short walls rise to meet it.
+        const ct = rz.ceiling ? tiled(rz.ceiling.tex) : null;
+        const ceilM = ct ? new THREE.MeshLambertMaterial({ map: ct, side: THREE.DoubleSide }) : new THREE.MeshLambertMaterial({ color: 0x9a6a40, side: THREE.DoubleSide });
+        const wt = tiled(rz.walls.front.tex);
+        const kneeM = wt ? new THREE.MeshLambertMaterial({ map: wt, side: THREE.DoubleSide }) : plain(0xb8a890);
+        const hk = rise * (1 - ih / sh) - 0.14;
+        const peak = rise - 0.14;
+        const cl = Math.hypot(ih, peak - hk);
+        const cp = Math.atan2(peak - hk, ih);
+        for (const s2 of [-1, 1]) {
+          const c = kitBox(2 * il, 0.02, cl, ceilM, rz.ceiling?.tile ?? 1.2);
+          c.position.set(0, (hk + peak) / 2, (s2 * ih) / 2);
+          c.rotation.x = s2 * cp;
+          roof.add(c);
+          const knee = kitBox(2 * il, hk + 0.06, 0.02, kneeM, Math.max(0.3, H));
+          knee.position.set(0, (hk - 0.06) / 2, s2 * (ih - 0.012));
+          roof.add(knee);
+          const end = tilePlane(new THREE.Shape([V(-ih, -0.06), V(ih, -0.06), V(ih, hk), V(0, peak), V(-ih, hk)]), kneeM, Math.max(0.3, H));
+          end.rotation.y = Math.PI / 2;
+          end.position.set(s2 * (il - 0.012), 0, 0);
+          roof.add(end);
+        }
+        // Timbers: a ridge beam, and trusses across the room (tie beam, king post, rafters and curved braces).
+        const ridge = kitBox(2 * il, 0.16, 0.16, beamM);
+        ridge.position.set(0, peak - 0.1, 0);
+        roof.add(ridge);
+        const n = Math.max(1, Math.round((2 * il) / 1.8));
+        for (let i = 0; i < n; i++) {
+          const x = -il + ((i + 0.5) * 2 * il) / n;
+          const tie = kitBox(0.14, 0.18, 2 * ih, beamM);
+          tie.position.set(x, -0.2, 0);
+          roof.add(tie);
+          const king = kitBox(0.13, peak + 0.1, 0.13, beamM);
+          king.position.set(x, (peak - 0.2) / 2, 0);
+          roof.add(king);
+          for (const s2 of [-1, 1]) {
+            const raf = kitBox(0.12, 0.14, cl, beamM);
+            raf.position.set(x, (hk + peak) / 2 - 0.09, (s2 * ih) / 2);
+            raf.rotation.x = s2 * cp;
+            roof.add(raf);
+            // A post down the wall, and an arched brace sweeping up from it to the king post.
+            const post = kitBox(0.13, 0.85, 0.13, beamM);
+            post.position.set(x, -0.62, s2 * (ih - 0.07));
+            roof.add(post);
+            const curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(x, -0.95, s2 * (ih - 0.07)), new THREE.Vector3(x, -0.2, s2 * ih * 0.25), new THREE.Vector3(x, peak * 0.55, s2 * 0.06));
+            const brace = new THREE.Mesh(new THREE.TubeGeometry(curve, 16, 0.055, 6), beamM);
+            roof.add(brace);
+          }
         }
       }
       // Doors.
@@ -1295,6 +1410,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       aurora = null;
       kitDoors = [];
       kitRooms = [];
+      flames = [];
       outerLights = null;
       roomHere = null;
       const [w, d, H] = z.size;
@@ -1525,9 +1641,11 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         placed.set(M, { shadow: sh });
         if (M.light && lamps < 10 && !M.scatter) {
           lamps++;
-          const pl = new THREE.PointLight(0xffc77a, z.outdoor && !M.room ? 10 : 4, z.outdoor && !M.room ? 14 : 8, 1.6);
-          pl.position.set(M.pos[0], M.elev + M.size[2] * 0.9, M.pos[1]);
+          const fire = /stove|fire|hearth|furnace|forge|oven|kiln/.test(M.id);
+          const pl = new THREE.PointLight(fire ? 0xff8a3a : 0xffc77a, z.outdoor && !M.room ? 10 : 4, z.outdoor && !M.room ? 14 : 8, 1.6);
+          pl.position.set(M.pos[0], M.elev + M.size[2] * (fire ? 0.35 : 0.9), M.pos[1]);
           root.add(pl);
+          if (fire) flames.push({ light: pl, base: pl.intensity * 1.3, phase: Math.random() * 10, amount: 0.3 });
         }
         if (!M.file && M.scatter) {
           if (/pine/.test(M.id)) {
@@ -2148,6 +2266,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     st?.addEventListener("touchend", onTouchEnd);
     const onResize = () => {
       renderer.setSize(mount.clientWidth, mount.clientHeight);
+      composer.setSize(mount.clientWidth, mount.clientHeight);
       camera.aspect = mount.clientWidth / mount.clientHeight;
       camera.updateProjectionMatrix();
     };
@@ -2264,6 +2383,10 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         }
       }
       aurora?.update(t, pos);
+      for (const f of flames) {
+        const q = t * 9 + f.phase;
+        f.light.intensity = f.base * (1 - f.amount * (0.5 + 0.25 * Math.sin(q) + 0.15 * Math.sin(q * 2.7 + 1.3) + 0.1 * Math.sin(q * 6.1)));
+      }
       // Doors swing.
       for (const kd of kitDoors) {
         const want = kd.open ? 1 : 0;
@@ -2307,7 +2430,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         snow.position.set(pos.x, pos.y - EYE, pos.z);
       }
       stars.position.set(pos.x, 0, pos.z);
-      renderer.render(scene, camera);
+      composer.render();
     };
     loop();
 
@@ -2318,6 +2441,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       window.removeEventListener("resize", onResize);
       document.removeEventListener("mousemove", onMouse);
       canvas.removeEventListener("click", onClick);
+      composer.dispose();
       renderer.dispose();
       mount.removeChild(canvas);
     };
