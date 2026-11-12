@@ -196,6 +196,41 @@ function layKerbs(root: THREE.Object3D, T: NonNullable<Zone["terrain"]>, pts: nu
     root.add(new THREE.Mesh(sg, SNOW_MAT));
   }
 }
+/**
+ * Fades whatever stands past the edge of open land into the haze by how far past the edge it is (not how far from
+ * you), so the hills and woods melt into the sky instead of showing as a lit slope.
+ */
+function edgeFog<M extends THREE.Material>(mat: M, rim: number[]): M {
+  // Materials shared between visits get it once.
+  if (mat.userData.edgeFog) return mat;
+  mat.userData.edgeFog = true;
+  const prev = mat.onBeforeCompile;
+  mat.onBeforeCompile = (sh, r) => {
+    prev?.call(mat, sh, r);
+    sh.uniforms.uRim = { value: new THREE.Vector2(rim[0] / 2, rim[1] / 2) };
+    sh.vertexShader = "varying vec2 vEdgeW;\n" + sh.vertexShader.replace(
+      "#include <fog_vertex>",
+      `#include <fog_vertex>
+      vec4 edgeW = vec4(transformed, 1.0);
+      #ifdef USE_INSTANCING
+        edgeW = instanceMatrix * edgeW;
+      #endif
+      vEdgeW = (modelMatrix * edgeW).xz;`,
+    );
+    sh.fragmentShader = "varying vec2 vEdgeW;\nuniform vec2 uRim;\n" + sh.fragmentShader.replace(
+      "#include <fog_fragment>",
+      `#include <fog_fragment>
+      #ifdef USE_FOG
+        float edgeO = max(abs(vEdgeW.x) - uRim.x, abs(vEdgeW.y) - uRim.y);
+        gl_FragColor.rgb = mix(gl_FragColor.rgb, fogColor, smoothstep(8.0, 110.0, edgeO));
+      #endif`,
+    );
+  };
+  mat.customProgramCacheKey = () => "edgefog";
+  mat.needsUpdate = true;
+  return mat;
+}
+
 /** Snowy night haze: what the distance fades into. */
 const HAZE = 0x1a2648;
 /** The night sky: deep blue overhead, easing into the haze at the horizon so far hills melt away. */
@@ -207,7 +242,7 @@ function skyDome() {
   const pa = g.attributes.position as THREE.BufferAttribute;
   for (let i = 0; i < pa.count; i++) {
     // Haze right up past the far hills, then night sky.
-    const t = Math.max(0, Math.min(1, (pa.getY(i) / R - 0.07) / 0.45));
+    const t = Math.max(0, Math.min(1, (pa.getY(i) / R - 0.11) / 0.5));
     c.copy(low).lerp(top, Math.pow(t, 0.6));
     col.push(c.r, c.g, c.b);
   }
@@ -878,7 +913,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         }
       }
       const put = (list: number[][], geo: THREE.BufferGeometry, mat: THREE.Material | THREE.Material[], base: THREE.Matrix4, tall: [number, number], from: number, count: number) => {
-        const im = new THREE.InstancedMesh(geo, mat, count);
+        const fade = (mm: THREE.Material) => edgeFog(mm, T.rim!);
+        const im = new THREE.InstancedMesh(geo, Array.isArray(mat) ? mat.map(fade) : fade(mat), count);
         const m = new THREE.Matrix4(), q = new THREE.Quaternion(), up = new THREE.Vector3(0, 1, 0);
         for (let i = 0; i < count; i++) {
           const [x, y] = list[from + i];
@@ -1027,7 +1063,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         g.setAttribute("uv", new THREE.Float32BufferAttribute(guv, 2));
         g.setIndex(gi);
         g.computeVertexNormals();
-        root.add(new THREE.Mesh(g, ft ? new THREE.MeshLambertMaterial({ map: ft }) : plain(0xe8eef8)));
+        const groundMat = ft ? new THREE.MeshLambertMaterial({ map: ft }) : plain(0xe8eef8);
+        root.add(new THREE.Mesh(g, T.rim ? edgeFog(groundMat, T.rim) : groundMat));
         // Cobbled paths laid over it.
         const pmat = cobbleMaterial();
         const segD = (x: number, y: number, a: number[], b: number[]) => {
