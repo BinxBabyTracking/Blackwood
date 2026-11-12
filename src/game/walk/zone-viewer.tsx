@@ -7,6 +7,8 @@ import { GLTFLoader, type GLTF } from "three/examples/jsm/loaders/GLTFLoader.js"
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
 import { trimRuns, wallRects } from "./walk-viewer";
 import { doorsOf, floorSize, groundAt, heightAt, layoutOf } from "./zones";
+import { holdNpc, makeNpc, resetNpc, rigOf, stepNpc } from "./npc";
+import type { Npc } from "./npc";
 import { clearRoomLayout, saveRoomLayout } from "@/app/actions/art";
 import type { Side, World, Zone, ZoneModel, ZonePerson, ZoneWall } from "./zones";
 
@@ -404,8 +406,9 @@ type Person = {
   at: number;
   phase: number;
   P: ZonePerson;
-  /** Leg bones and their standing pose, for sitting down. */
-  legs: { bone: THREE.Bone; rest: THREE.Quaternion; bend: number }[][];
+  /** Their day: walking, sitting, working. */
+  npc: Npc;
+  held: boolean;
 };
 
 export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: string; eye?: number }) {
@@ -536,7 +539,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     const reblock = () => {
       const z = current;
       if (!z) return;
-      blockers = z.people.map((P) => ({ x0: P.pos[0] - 0.3, x1: P.pos[0] + 0.3, z0: P.pos[1] - 0.3, z1: P.pos[1] + 0.3 }));
+      blockers = [];
       for (const M of z.models) {
         const [fw, fd] = floorSize(M);
         const onGround = M.elev - heightAt(z.terrain, M.pos[0], M.pos[1]) < 0.05;
@@ -563,25 +566,11 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       });
     };
     let people: Person[] = [];
-    /** Stands (or seats) a person where their record says: legs posed, feet or seat at the right height. */
+    let tNow = 0;
+    /** Holds a person where the layout puts them (Edit mode). */
     const placePerson = (pp: Person) => {
-      const P = pp.P;
-      const g = pp.grp;
-      const ground = heightAt(current?.terrain, P.pos[0], P.pos[1]);
-      g.position.set(P.pos[0], ground + (P.elev ?? 0), P.pos[1]);
-      g.rotation.y = P.rotY;
-      for (const leg of pp.legs) for (const j of leg) j.bone.quaternion.copy(j.rest);
-      g.updateMatrixWorld(true);
-      if (!P.sit) return;
-      // Bend about the person's own side-to-side axis, in the world, whatever way the rig's bones point.
-      const side = new THREE.Vector3(1, 0, 0).applyQuaternion(g.getWorldQuaternion(new THREE.Quaternion())).normalize();
-      for (const leg of pp.legs)
-        for (const j of leg) {
-          const pq = j.bone.parent!.getWorldQuaternion(new THREE.Quaternion());
-          const wq = new THREE.Quaternion().setFromAxisAngle(side, (j.bend * Math.PI) / 180);
-          j.bone.quaternion.copy(j.rest).premultiply(pq.clone().invert().multiply(wq).multiply(pq));
-          j.bone.updateMatrixWorld(true);
-        }
+      if (current) holdNpc(pp.npc, current);
+      pp.held = true;
     };
     /** The seat height of a chair and the way to face when sitting in it (toward the nearest desk or table). */
     const seatFor = (P: ZonePerson) => {
@@ -1129,12 +1118,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
               if (b.isBone && b.name === "head") head = b;
               if (b.isBone) bones.set(b.name.toLowerCase(), b);
             });
-            // Thighs swing forward, then the shins drop back down: a seated pose.
-            const legs: Person["legs"] = [];
-            for (const [a, c] of [["thigh_l", "calf_l"], ["thigh_r", "calf_r"]]) {
-              const t = bones.get(a), cb = bones.get(c);
-              if (t && cb) legs.push([{ bone: t, rest: t.quaternion.clone(), bend: -88 }, { bone: cb, rest: cb.quaternion.clone(), bend: 88 }]);
-            }
+            const rig = rigOf(bones);
             const box = new THREE.Box3().setFromObject(obj);
             const k = P.height / Math.max(0.01, box.max.y - box.min.y);
             const grp = new THREE.Group();
@@ -1144,8 +1128,14 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
             grp.userData.zp = P;
             parent.add(grp);
             const hb = head as THREE.Bone | null;
-            const pp: Person = { grp, head: hb, headRest: hb ? hb.quaternion.clone() : new THREE.Quaternion(), faces, next: 1 + Math.random() * 3, at: -1, phase: Math.random() * 10, P, legs };
-            placePerson(pp);
+            grp.position.set(P.pos[0], heightAt(z.terrain, P.pos[0], P.pos[1]), P.pos[1]);
+            const npc = makeNpc(P, grp, rig, tNow);
+            const pp: Person = { grp, head: hb, headRest: hb ? hb.quaternion.clone() : new THREE.Quaternion(), faces, next: 1 + Math.random() * 3, at: -1, phase: Math.random() * 10, P, npc, held: false };
+            if (P.sit) {
+              // Seated where Edit mode put them: the seat height is already in the layout.
+              npc.elev = P.elev ?? 0;
+            }
+            if (editRef.current) placePerson(pp);
             people.push(pp);
             if (P === selP) showBox(grp);
           })
@@ -1295,11 +1285,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           P.sit = true;
           P.pos = st.pos;
           P.rotY = st.rotY;
-          P.elev = 0;
-          placePerson(pp);
           // Hips (the top of the thighs) a little above the seat.
-          const hip = pp.legs[0]?.[0].bone.getWorldPosition(new THREE.Vector3()).y ?? pp.grp.position.y + P.height * 0.45;
-          P.elev = st.seat - (hip - pp.grp.position.y) + P.height * 0.07;
+          P.elev = st.seat - pp.npc.hip + P.height * 0.07;
         }
         settleP();
       },
@@ -1431,7 +1418,12 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       const z = current!;
       const [w, d] = z.size;
       if (x < -w / 2 + RADIUS || x > w / 2 - RADIUS || zz < -d / 2 + RADIUS || zz > d / 2 - RADIUS) return false;
-      return !blockers.some((b) => x > b.x0 - RADIUS && x < b.x1 + RADIUS && zz > b.z0 - RADIUS && zz < b.z1 + RADIUS);
+      if (blockers.some((b) => x > b.x0 - RADIUS && x < b.x1 + RADIUS && zz > b.z0 - RADIUS && zz < b.z1 + RADIUS)) return false;
+      // People: you can't walk through them, but you can always step away.
+      return !people.some((p) => {
+        const d = Math.hypot(x - p.npc.x, zz - p.npc.z);
+        return d < RADIUS + 0.25 && d < Math.hypot(pos.x - p.npc.x, pos.z - p.npc.z);
+      });
     }
     /** Puts you on the nearest open ground if you're standing inside something. */
     function snapOut() {
@@ -1609,7 +1601,18 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       }
 
       // People breathe, blink and look at you when you're near.
+      tNow = t;
+      const life = { zone: z, blockers, boxOf: (m: ZoneModel) => placed.get(m)?.box, others: people.map((p) => p.npc), player: { x: pos.x, z: pos.z } };
       for (const p of people) {
+        if (editRef.current) {
+          if (!p.held) placePerson(p);
+        } else {
+          if (p.held) {
+            resetNpc(p.npc, t);
+            p.held = false;
+          }
+          stepNpc(p.npc, life, t, dt);
+        }
         const T = t + p.phase;
         p.grp.scale.y = p.grp.scale.x * (1 + Math.sin(T * 1.6) * 0.004);
         if (t > p.next) {
