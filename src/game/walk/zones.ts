@@ -45,7 +45,9 @@ export type KitRoom = { zone: string; pos: number[]; rot: number; y: number };
  */
 export type KitDoor = { id: string; at: number[]; y: number; w: number; h: number; across: number[]; into: number[]; depth: number; tex: string | null; outer: boolean; lock?: string };
 /** A building put together in code from its rooms: real walls, roof and doors you open. */
-export type Building = { id: string; model: string; style: string; rooms: KitRoom[]; doors: KitDoor[]; walls: { x0: number; x1: number; z0: number; z1: number }[]; /** Doorways that lead somewhere outside the building (the old way, walking through). */ travel?: ZoneDoor[] };
+/** Pictures for a building's outside (any may be missing: drawn plain then). */
+export type BuildingLook = { wall: string | null; roof: string | null; base: string | null; door: string | null; window: string | null; sign: string | null };
+export type Building = { id: string; model: string; style: string; look?: BuildingLook; rooms: KitRoom[]; doors: KitDoor[]; walls: { x0: number; x1: number; z0: number; z1: number }[]; /** Doorways that lead somewhere outside the building (the old way, walking through). */ travel?: ZoneDoor[] };
 export type Zone = {
   id: string;
   room: string;
@@ -331,8 +333,13 @@ export function buildWorld(opts: {
   // Buildings you walk into: their rooms stand in the open land, joined by real doors.
   for (const z of zones) {
     const rec = opts.records.find((r) => r.id === z.room);
-    const list = (rec?.buildings as { model: string; rooms: string[]; style?: string }[] | undefined) ?? [];
-    for (const b of list) raise(z, b, zones);
+    const list = (rec?.buildings as { model: string; rooms: string[]; style?: string; ext?: Record<string, string> }[] | undefined) ?? [];
+    for (const b of list) {
+      raise(z, b, zones);
+      const built = z.buildings?.find((q) => q.model === b.model);
+      const e = b.ext ?? {};
+      if (built) built.look = { wall: pic(e.wall), roof: pic(e.roof), base: pic(e.base), door: pic(e.door), window: pic(e.window), sign: pic(e.sign) };
+    }
   }
   const start = opts.start && zones.some((z) => z.id === opts.start) ? opts.start : zones[0]?.id ?? "";
   return { caseId: opts.caseId, name: opts.name, start, zones, missing: [...missing].sort() };

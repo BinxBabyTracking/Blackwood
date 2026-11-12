@@ -130,6 +130,41 @@
       "background": "opaque",
       "look": true,
       "suffix": "The same person as the reference portrait, shown full length for making a 3D character: standing upright and straight, feet slightly apart, arms hanging relaxed a little away from the sides, the whole figure in frame from the top of the head to the soles of the shoes. Plain light gray background. Soft, even, flat light from every direction: no cast shadows, no light patches, no lamps switched on, no glow, no sunlight."
+    },
+    "facade": {
+      "size": "1024x1024",
+      "quality": "high",
+      "background": "opaque",
+      "look": true,
+      "suffix": "A seamless, tileable texture of the outside wall of a building, seen perfectly straight on and level, filling the whole image edge to edge and showing about six feet by six feet of wall. It must tile: the left edge continues exactly into the right edge and the top into the bottom, with no seams, borders or vignetting, and an even pattern and color across the whole image. Only the wall surface itself: no doors, windows, signs, corners, roof edge, ground, snow drifts, plants, lanterns or decorations. Soft, even, flat light from every direction: no cast shadows, no light patches, no lamps switched on, no glow, no sunlight."
+    },
+    "roof": {
+      "size": "1024x1024",
+      "quality": "high",
+      "background": "opaque",
+      "look": true,
+      "suffix": "A seamless, tileable texture of a roof covering seen perfectly straight on, filling the whole image edge to edge and showing about four feet by four feet of roof, the rows running straight across from left to right and the roof sloping down toward the bottom of the image. It must tile: the left edge continues exactly into the right edge and the top into the bottom, with no seams, borders or vignetting. Only the roof covering: no ridge, eaves, chimneys, gutters, snow, icicles or decorations. Soft, even, flat light from every direction: no cast shadows, no light patches, no lamps switched on, no glow, no sunlight."
+    },
+    "doorleaf": {
+      "size": "1024x1536",
+      "quality": "high",
+      "background": "opaque",
+      "look": true,
+      "suffix": "The outside face of a closed door seen perfectly straight on and level, the door itself filling the whole image edge to edge: its top edge at the top of the image, its bottom edge at the bottom and its sides at the left and right edges. No door frame, wall, step, snow, ground or anything around it. Any glass in the door is dark, with only a faint warm glow from inside. Soft, even, flat light from every direction: no cast shadows, no light patches, no lamps switched on, no glow, no sunlight."
+    },
+    "exwindow": {
+      "size": "1024x1024",
+      "quality": "high",
+      "background": "transparent",
+      "look": true,
+      "suffix": "One window as seen from outside a building, with its frame and whatever dresses it (shutters, a window box, a carved surround), seen perfectly straight on and level, centered with a little empty space around it. Isolated cut-out on a fully transparent background: no wall around it, no shadow. The glass and the opening itself are completely transparent: empty, with no glass, reflection, curtains or view drawn in them. Soft, even, flat light from every direction: no cast shadows, no light patches, no lamps switched on, no glow, no sunlight."
+    },
+    "sign": {
+      "size": "1024x1024",
+      "quality": "high",
+      "background": "transparent",
+      "look": true,
+      "suffix": "A hanging sign for the front of a building, seen exactly side-on and level, the sign board hanging from a short black wrought-iron bracket whose wall end is at the left edge of the image. Centered, entirely in frame. Isolated cut-out on a fully transparent background: no wall, no shadow, nothing else in the image. Soft, even, flat light from every direction: no cast shadows, no light patches, no lamps switched on, no glow, no sunlight."
     }
   },
   "people": {
@@ -36975,6 +37010,402 @@
       "style": "chr001",
       "room": "chr001_village_square",
       "subject": "A short wooden post by a path with a glowing iron lantern hanging from a little hook at its top, a sprig of holly tied below, snow on the lantern's roof. 1 foot wide, 1 foot deep, 5 feet tall."
+    },
+    {
+      "id": "chr001_ext_plinth",
+      "kind": "facade",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "Rounded gray fieldstones of mixed sizes, about a foot across, set close in pale mortar, with a little frost in the cracks. This is the low stone foundation along the bottom of every building."
+    },
+    {
+      "id": "chr001_bureau_ext_wall",
+      "kind": "facade",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "The outside wall of Silver Bell Bureau: Smooth pale silver-gray dressed stone blocks in neat level courses, each block about two feet long and one foot high, with thin white mortar joints and a faint frosty sparkle."
+    },
+    {
+      "id": "chr001_bureau_ext_roof",
+      "kind": "roof",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "The roof of Silver Bell Bureau: Dark evergreen-green painted wooden shingles with rounded ends in neat overlapping rows, each shingle about six inches wide."
+    },
+    {
+      "id": "chr001_bureau_ext_door",
+      "kind": "doorleaf",
+      "style": "chr001",
+      "size": "1536x1024",
+      "room": "chr001_village_square",
+      "subject": "The front door of Silver Bell Bureau: A heavy evergreen-painted oak double door, the two leaves meeting in the middle, with black iron strap hinges, a brass knocker shaped like a small bell on each leaf and a narrow brass kick plate along the bottom. The top is square, not arched."
+    },
+    {
+      "id": "chr001_bureau_ext_window",
+      "kind": "exwindow",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "A window of Silver Bell Bureau: A tall sash window of small square panes in a white frame, two evergreen-green louvered shutters folded open flat on either side, and a window box of snowy holly with red berries under the sill. The glass is transparent."
+    },
+    {
+      "id": "chr001_bureau_ext_sign",
+      "kind": "sign",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "The hanging sign of Silver Bell Bureau: A round silver plaque painted with a single silver bell tied with a red ribbon, with no words or letters."
+    },
+    {
+      "id": "chr001_workshop_ext_wall",
+      "kind": "facade",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "The outside wall of Santa's Workshop: Barn-red painted vertical wooden boards about ten inches wide, with a narrow white-painted batten over every joint, the paint glossy and a little worn along the grain."
+    },
+    {
+      "id": "chr001_workshop_ext_roof",
+      "kind": "roof",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "The roof of Santa's Workshop: Scalloped fish-scale wooden shingles painted deep holly green, each with a thin gold edge, in neat overlapping rows."
+    },
+    {
+      "id": "chr001_workshop_ext_door",
+      "kind": "doorleaf",
+      "style": "chr001",
+      "size": "1536x1024",
+      "room": "chr001_village_square",
+      "subject": "The front door of Santa's Workshop: Tall red-painted barn doors of vertical planks, the two leaves meeting in the middle, each with white diagonal cross bracing, black iron hinges and handles, and a holly wreath with a red bow."
+    },
+    {
+      "id": "chr001_workshop_ext_window",
+      "kind": "exwindow",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "A window of Santa's Workshop: A wide window of small square panes in a white frame, red plank shutters with white Z bracing folded open on both sides, and a window box full of snow, holly and tiny wrapped presents. The glass is transparent."
+    },
+    {
+      "id": "chr001_workshop_ext_sign",
+      "kind": "sign",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "The hanging sign of Santa's Workshop: A carved wooden board shaped like a wrapped present with a big gold bow, painted cherry red and gold, with no words or letters."
+    },
+    {
+      "id": "chr001_archives_ext_wall",
+      "kind": "facade",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "The outside wall of The Magical Archives: Honey-gold sandstone blocks in level courses, each block about eighteen inches long and nine inches high, finely tooled, with pale cream mortar."
+    },
+    {
+      "id": "chr001_archives_ext_roof",
+      "kind": "roof",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "The roof of The Magical Archives: Gray-violet slate tiles with square ends in neat overlapping rows, each tile about ten inches wide."
+    },
+    {
+      "id": "chr001_archives_ext_door",
+      "kind": "doorleaf",
+      "style": "chr001",
+      "size": "1024x1536",
+      "room": "chr001_village_square",
+      "subject": "The front door of The Magical Archives: A heavy walnut door with carved panels: an owl with spread wings in the top panel and open books in the panels below, iron studs, and a brass handle shaped like a quill."
+    },
+    {
+      "id": "chr001_archives_ext_window",
+      "kind": "exwindow",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "A window of The Magical Archives: A tall narrow arched window of small diamond leaded panes set in a carved sandstone surround, with a little stone owl sitting on the sill. The glass is transparent."
+    },
+    {
+      "id": "chr001_archives_ext_sign",
+      "kind": "sign",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "The hanging sign of The Magical Archives: A dark wooden board carved and gilded with an open book and a quill pen, with no words or letters."
+    },
+    {
+      "id": "chr001_lab_ext_wall",
+      "kind": "facade",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "The outside wall of The Engineering Lab: Deep teal-green painted wooden boards laid horizontally, each about eight inches tall, with small round brass studs spaced evenly along every board."
+    },
+    {
+      "id": "chr001_lab_ext_roof",
+      "kind": "roof",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "The roof of The Engineering Lab: Overlapping aged copper roof sheets with raised standing seams running from the top of the image to the bottom, partly turned a soft turquoise verdigris."
+    },
+    {
+      "id": "chr001_lab_ext_door",
+      "kind": "doorleaf",
+      "style": "chr001",
+      "size": "1024x1536",
+      "room": "chr001_village_square",
+      "subject": "The front door of The Engineering Lab: A wide plank door painted deep green, edged with rows of brass studs, a round brass porthole of dark glass near the top, a big brass lever handle and a brass knocker shaped like a gear."
+    },
+    {
+      "id": "chr001_lab_ext_window",
+      "kind": "exwindow",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "A window of The Engineering Lab: A square window of four panes in a riveted brass frame, a little curved copper hood above it and a brass gear ornament on either side. The glass is transparent."
+    },
+    {
+      "id": "chr001_lab_ext_sign",
+      "kind": "sign",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "The hanging sign of The Engineering Lab: A board shaped like a big brass gear with a smaller copper gear set inside it, with no words or letters."
+    },
+    {
+      "id": "chr001_guardhouse_ext_wall",
+      "kind": "facade",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "The outside wall of The Guard house: Dark brown stained horizontal squared timbers about nine inches tall, with pale lime chinking between them."
+    },
+    {
+      "id": "chr001_guardhouse_ext_roof",
+      "kind": "roof",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "The roof of The Guard house: Navy-blue painted wooden shingles with square ends in neat overlapping rows, each shingle about six inches wide."
+    },
+    {
+      "id": "chr001_guardhouse_ext_door",
+      "kind": "doorleaf",
+      "style": "chr001",
+      "size": "1024x1536",
+      "room": "chr001_village_square",
+      "subject": "The front door of The Guard house: A heavy navy-blue painted plank door with black iron hinges and rows of iron studs, a brass snowflake emblem in the middle and a small barred peephole near the top."
+    },
+    {
+      "id": "chr001_guardhouse_ext_window",
+      "kind": "exwindow",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "A window of The Guard house: A small square window crossed by three upright black iron bars, a navy-blue frame and a narrow snowy sill, with no shutters. The glass is transparent."
+    },
+    {
+      "id": "chr001_guardhouse_ext_sign",
+      "kind": "sign",
+      "style": "chr001",
+      "room": "chr001_village_square",
+      "subject": "The hanging sign of The Guard house: A navy-blue shield with a brass snowflake on it, with no words or letters."
+    },
+    {
+      "id": "chr001_thorneshop_ext_wall",
+      "kind": "facade",
+      "style": "chr001",
+      "room": "chr001_clockmakers_row",
+      "subject": "The outside wall of Garrick Thorne's clock shop: Pale cream plaster between dark brown timber framing: upright posts about two feet apart with diagonal braces between them, the pattern repeating evenly."
+    },
+    {
+      "id": "chr001_thorneshop_ext_roof",
+      "kind": "roof",
+      "style": "chr001",
+      "room": "chr001_clockmakers_row",
+      "subject": "The roof of Garrick Thorne's clock shop: Brick-red clay roof tiles with rounded ends in neat overlapping rows, each tile about eight inches wide."
+    },
+    {
+      "id": "chr001_thorneshop_ext_door",
+      "kind": "doorleaf",
+      "style": "chr001",
+      "size": "1024x1536",
+      "room": "chr001_clockmakers_row",
+      "subject": "The front door of Garrick Thorne's clock shop: A narrow green shop door: the top half small panes of dark glass with a faint warm glow, the bottom half raised wooden panels, a brass knob and brass hinges."
+    },
+    {
+      "id": "chr001_thorneshop_ext_window",
+      "kind": "exwindow",
+      "style": "chr001",
+      "room": "chr001_clockmakers_row",
+      "subject": "A window of Garrick Thorne's clock shop: A wide shop window of small square panes in a dark green frame, with a green-and-cream striped awning above it and a narrow sill below. The glass is transparent."
+    },
+    {
+      "id": "chr001_thorneshop_ext_sign",
+      "kind": "sign",
+      "style": "chr001",
+      "room": "chr001_clockmakers_row",
+      "subject": "The hanging sign of Garrick Thorne's clock shop: A round board shaped like a clock face, cream with gold hands and twelve small gold dots for the hours, with a small gold letter in the middle reading exactly: T"
+    },
+    {
+      "id": "chr001_corwinshop_ext_wall",
+      "kind": "facade",
+      "style": "chr001",
+      "room": "chr001_clockmakers_row",
+      "subject": "The outside wall of Corwin Sleet's clock shop: Mustard-yellow painted horizontal clapboard siding, each board about six inches tall, slightly glossy."
+    },
+    {
+      "id": "chr001_corwinshop_ext_roof",
+      "kind": "roof",
+      "style": "chr001",
+      "room": "chr001_clockmakers_row",
+      "subject": "The roof of Corwin Sleet's clock shop: Dark chocolate-brown wooden shingles with pointed ends in neat overlapping rows."
+    },
+    {
+      "id": "chr001_corwinshop_ext_door",
+      "kind": "doorleaf",
+      "style": "chr001",
+      "size": "1024x1536",
+      "room": "chr001_clockmakers_row",
+      "subject": "The front door of Corwin Sleet's clock shop: A mustard-yellow shop door: the upper half small panes of dark glass with a faint warm glow, the lower half carved panels painted chocolate brown, a brass knob."
+    },
+    {
+      "id": "chr001_corwinshop_ext_window",
+      "kind": "exwindow",
+      "style": "chr001",
+      "room": "chr001_clockmakers_row",
+      "subject": "A window of Corwin Sleet's clock shop: A shop window of small panes in a chocolate-brown frame, with a mustard-and-brown striped awning above it. The glass is transparent."
+    },
+    {
+      "id": "chr001_corwinshop_ext_sign",
+      "kind": "sign",
+      "style": "chr001",
+      "room": "chr001_clockmakers_row",
+      "subject": "The hanging sign of Corwin Sleet's clock shop: A board shaped like a gold pocket watch with its lid open, with no words or letters."
+    },
+    {
+      "id": "chr001_glassworks_ext_wall",
+      "kind": "facade",
+      "style": "chr001",
+      "room": "chr001_clockmakers_row",
+      "subject": "The outside wall of The glassworks: Soot-darkened red brick in a running bond, each brick about eight inches long, pale mortar, a few bricks blackened."
+    },
+    {
+      "id": "chr001_glassworks_ext_roof",
+      "kind": "roof",
+      "style": "chr001",
+      "room": "chr001_clockmakers_row",
+      "subject": "The roof of The glassworks: Dark charcoal-gray slate tiles with square ends in neat overlapping rows."
+    },
+    {
+      "id": "chr001_glassworks_ext_door",
+      "kind": "doorleaf",
+      "style": "chr001",
+      "size": "1024x1536",
+      "room": "chr001_clockmakers_row",
+      "subject": "The front door of The glassworks: A wide timber door of thick upright planks bound with black iron bands, a small round window of dark amber glass near the top and a big iron ring handle."
+    },
+    {
+      "id": "chr001_glassworks_ext_window",
+      "kind": "exwindow",
+      "style": "chr001",
+      "room": "chr001_clockmakers_row",
+      "subject": "A window of The glassworks: A small window of thick bubbly amber glass panes in a black iron frame, under a little arch of red brick. The glass is transparent."
+    },
+    {
+      "id": "chr001_glassworks_ext_sign",
+      "kind": "sign",
+      "style": "chr001",
+      "room": "chr001_clockmakers_row",
+      "subject": "The hanging sign of The glassworks: A blown-glass vase swirled with blue and green, held in an iron ring, with no words or letters."
+    },
+    {
+      "id": "chr001_thornehouse_ext_wall",
+      "kind": "facade",
+      "style": "chr001",
+      "room": "chr001_holly_lane",
+      "subject": "The outside wall of The Thorne cottage: Cream lime plaster between dark brown timbers: upright posts about two feet apart and one level rail at mid height, the plaster smooth with a soft hand-troweled texture."
+    },
+    {
+      "id": "chr001_thornehouse_ext_roof",
+      "kind": "roof",
+      "style": "chr001",
+      "room": "chr001_holly_lane",
+      "subject": "The roof of The Thorne cottage: Deep golden thatch combed in neat layered rows."
+    },
+    {
+      "id": "chr001_thornehouse_ext_door",
+      "kind": "doorleaf",
+      "style": "chr001",
+      "size": "1024x1536",
+      "room": "chr001_holly_lane",
+      "subject": "The front door of The Thorne cottage: An evergreen-painted plank cottage door with black iron hinges and latch, a small round window of dark glass at eye level and a holly wreath with a red bow."
+    },
+    {
+      "id": "chr001_thornehouse_ext_window",
+      "kind": "exwindow",
+      "style": "chr001",
+      "room": "chr001_holly_lane",
+      "subject": "A window of The Thorne cottage: A cottage window of small diamond leaded panes in a white frame, little holly-green shutters with heart cut-outs folded open on both sides, and a window box of snowy holly. The glass is transparent."
+    },
+    {
+      "id": "chr001_stables_ext_wall",
+      "kind": "facade",
+      "style": "chr001",
+      "room": "chr001_stable_yard",
+      "subject": "The outside wall of The reindeer stables: Weathered silvery-brown spruce boards running upright, about ten inches wide, with a narrow batten over every joint."
+    },
+    {
+      "id": "chr001_stables_ext_roof",
+      "kind": "roof",
+      "style": "chr001",
+      "room": "chr001_stable_yard",
+      "subject": "The roof of The reindeer stables: Rough-split warm brown cedar shakes in staggered overlapping rows."
+    },
+    {
+      "id": "chr001_stables_ext_door",
+      "kind": "doorleaf",
+      "style": "chr001",
+      "size": "1536x1024",
+      "room": "chr001_stable_yard",
+      "subject": "The front door of The reindeer stables: A wide sliding stable door of weathered spruce boards with a big X brace, a black iron handle and a small wreath. Plain boards only: no words, no sign, no lettering anywhere on it."
+    },
+    {
+      "id": "chr001_stables_ext_window",
+      "kind": "exwindow",
+      "style": "chr001",
+      "room": "chr001_stable_yard",
+      "subject": "A window of The reindeer stables: A square stable window of four panes in a wooden frame, two plank shutters folded open on both sides and a tuft of hay on the sill. The glass is transparent."
+    },
+    {
+      "id": "chr001_stables_ext_sign",
+      "kind": "sign",
+      "style": "chr001",
+      "room": "chr001_stable_yard",
+      "subject": "The hanging sign of The reindeer stables: A board cut in the shape of a leaping reindeer, painted gold, with no words or letters."
+    },
+    {
+      "id": "chr001_hangar_ext_wall",
+      "kind": "facade",
+      "style": "chr001",
+      "room": "chr001_stable_yard",
+      "subject": "The outside wall of Santa's sleigh hangar: Tall upright boards painted deep cranberry red, each about a foot wide, with a narrow batten over every joint."
+    },
+    {
+      "id": "chr001_hangar_ext_roof",
+      "kind": "roof",
+      "style": "chr001",
+      "room": "chr001_stable_yard",
+      "subject": "The roof of Santa's sleigh hangar: Ribbed metal roofing painted dark green, the ribs running from the top of the image to the bottom."
+    },
+    {
+      "id": "chr001_hangar_ext_door",
+      "kind": "doorleaf",
+      "style": "chr001",
+      "size": "1536x1024",
+      "room": "chr001_stable_yard",
+      "subject": "The front door of Santa's sleigh hangar: Huge hangar doors of upright boards painted cranberry red with white trim, the two leaves meeting in the middle, each with a big white X brace and a row of iron rollers along the top."
+    },
+    {
+      "id": "chr001_hangar_ext_window",
+      "kind": "exwindow",
+      "style": "chr001",
+      "room": "chr001_stable_yard",
+      "subject": "A window of Santa's sleigh hangar: A tall window of many small panes in a white frame, with no shutters. The glass is transparent."
+    },
+    {
+      "id": "chr001_hangar_ext_sign",
+      "kind": "sign",
+      "style": "chr001",
+      "room": "chr001_stable_yard",
+      "subject": "The hanging sign of Santa's sleigh hangar: A board shaped like Santa's sleigh, red with gold runners, with no words or letters."
     }
   ],
   "styles": {
@@ -87111,7 +87542,15 @@
             "bureau_hall",
             "jingle_office"
           ],
-          "style": "plaster"
+          "style": "plaster",
+          "ext": {
+            "wall": "chr001_bureau_ext_wall",
+            "roof": "chr001_bureau_ext_roof",
+            "door": "chr001_bureau_ext_door",
+            "window": "chr001_bureau_ext_window",
+            "base": "chr001_ext_plinth",
+            "sign": "chr001_bureau_ext_sign"
+          }
         },
         {
           "model": "chr001_village_square_model_workshop",
@@ -87121,70 +87560,149 @@
             "marigold_office",
             "kitchen"
           ],
-          "style": "plaster"
+          "style": "plaster",
+          "ext": {
+            "wall": "chr001_workshop_ext_wall",
+            "roof": "chr001_workshop_ext_roof",
+            "door": "chr001_workshop_ext_door",
+            "window": "chr001_workshop_ext_window",
+            "base": "chr001_ext_plinth",
+            "sign": "chr001_workshop_ext_sign"
+          }
         },
         {
           "model": "chr001_village_square_model_archives",
           "rooms": [
             "archives"
           ],
-          "style": "plaster"
+          "style": "plaster",
+          "ext": {
+            "wall": "chr001_archives_ext_wall",
+            "roof": "chr001_archives_ext_roof",
+            "door": "chr001_archives_ext_door",
+            "window": "chr001_archives_ext_window",
+            "base": "chr001_ext_plinth",
+            "sign": "chr001_archives_ext_sign"
+          }
         },
         {
           "model": "chr001_village_square_model_lab",
           "rooms": [
             "lab"
           ],
-          "style": "plaster"
+          "style": "plaster",
+          "ext": {
+            "wall": "chr001_lab_ext_wall",
+            "roof": "chr001_lab_ext_roof",
+            "door": "chr001_lab_ext_door",
+            "window": "chr001_lab_ext_window",
+            "base": "chr001_ext_plinth",
+            "sign": "chr001_lab_ext_sign"
+          }
         },
         {
           "model": "chr001_village_square_model_guardhouse",
           "rooms": [
             "guard_house"
           ],
-          "style": "plaster"
+          "style": "plaster",
+          "ext": {
+            "wall": "chr001_guardhouse_ext_wall",
+            "roof": "chr001_guardhouse_ext_roof",
+            "door": "chr001_guardhouse_ext_door",
+            "window": "chr001_guardhouse_ext_window",
+            "base": "chr001_ext_plinth",
+            "sign": "chr001_guardhouse_ext_sign"
+          }
         },
         {
           "model": "chr001_clockmakers_row_model_thorneshop",
           "rooms": [
             "garrick_workshop"
           ],
-          "style": "plaster"
+          "style": "plaster",
+          "ext": {
+            "wall": "chr001_thorneshop_ext_wall",
+            "roof": "chr001_thorneshop_ext_roof",
+            "door": "chr001_thorneshop_ext_door",
+            "window": "chr001_thorneshop_ext_window",
+            "base": "chr001_ext_plinth",
+            "sign": "chr001_thorneshop_ext_sign"
+          }
         },
         {
           "model": "chr001_clockmakers_row_model_corwinshop",
           "rooms": [
             "corwin_shop"
           ],
-          "style": "plaster"
+          "style": "plaster",
+          "ext": {
+            "wall": "chr001_corwinshop_ext_wall",
+            "roof": "chr001_corwinshop_ext_roof",
+            "door": "chr001_corwinshop_ext_door",
+            "window": "chr001_corwinshop_ext_window",
+            "base": "chr001_ext_plinth",
+            "sign": "chr001_corwinshop_ext_sign"
+          }
         },
         {
           "model": "chr001_clockmakers_row_model_glassworks",
           "rooms": [
             "glassworks"
           ],
-          "style": "plaster"
+          "style": "plaster",
+          "ext": {
+            "wall": "chr001_glassworks_ext_wall",
+            "roof": "chr001_glassworks_ext_roof",
+            "door": "chr001_glassworks_ext_door",
+            "window": "chr001_glassworks_ext_window",
+            "base": "chr001_ext_plinth",
+            "sign": "chr001_glassworks_ext_sign"
+          }
         },
         {
           "model": "chr001_holly_lane_model_thornehouse",
           "rooms": [
             "thorne_parlor"
           ],
-          "style": "plaster"
+          "style": "plaster",
+          "ext": {
+            "wall": "chr001_thornehouse_ext_wall",
+            "roof": "chr001_thornehouse_ext_roof",
+            "door": "chr001_thornehouse_ext_door",
+            "window": "chr001_thornehouse_ext_window",
+            "base": "chr001_ext_plinth"
+          }
         },
         {
           "model": "chr001_stable_yard_model_stables",
           "rooms": [
             "stables"
           ],
-          "style": "plaster"
+          "style": "plaster",
+          "ext": {
+            "wall": "chr001_stables_ext_wall",
+            "roof": "chr001_stables_ext_roof",
+            "door": "chr001_stables_ext_door",
+            "window": "chr001_stables_ext_window",
+            "base": "chr001_ext_plinth",
+            "sign": "chr001_stables_ext_sign"
+          }
         },
         {
           "model": "chr001_stable_yard_model_hangar",
           "rooms": [
             "hangar"
           ],
-          "style": "plaster"
+          "style": "plaster",
+          "ext": {
+            "wall": "chr001_hangar_ext_wall",
+            "roof": "chr001_hangar_ext_roof",
+            "door": "chr001_hangar_ext_door",
+            "window": "chr001_hangar_ext_window",
+            "base": "chr001_ext_plinth",
+            "sign": "chr001_hangar_ext_sign"
+          }
         }
       ],
       "case": "CHR001",

@@ -63,6 +63,11 @@ const KIND: Record<string, string> = {
   outside: "View outside",
   model: "3D model (Meshy)",
   turn: "3D character view",
+  facade: "Outside wall (tiles)",
+  roof: "Roof (tiles)",
+  doorleaf: "Front door (outside face)",
+  exwindow: "Window from outside",
+  sign: "Hanging sign",
 };
 
 const roomLine = (r: StudioRoom) => {

@@ -343,13 +343,13 @@ async function clearShadow(input: Buffer) {
 async function finish(kind: string, input: Buffer) {
   // Wall pieces, ceiling lights and model references: cut out, trimmed to the thing itself, so a piece's
   // picture is exactly the size it is placed at on the wall.
-  if (kind === "piece" || kind === "fixture" || kind === "model") {
+  if (kind === "piece" || kind === "fixture" || kind === "model" || kind === "exwindow" || kind === "sign") {
     const cut = await cutOut(input);
     const trimmed = await sharp(cut).trim({ threshold: 1 }).toBuffer();
     return sharp(trimmed).resize({ width: 1536, height: 1536, fit: "inside", withoutEnlargement: true }).webp({ quality: 90, alphaQuality: 92 }).toBuffer();
   }
   // Tileable surfaces and trim are kept exactly as painted, at full size, so they repeat cleanly.
-  if (kind === "wall" || kind === "floor" || kind === "ceiling" || kind === "trim" || kind === "turn") return sharp(input).webp({ quality: 92 }).toBuffer();
+  if (kind === "wall" || kind === "floor" || kind === "ceiling" || kind === "trim" || kind === "turn" || kind === "facade" || kind === "roof" || kind === "doorleaf") return sharp(input).webp({ quality: 92 }).toBuffer();
   if (kind === "figure" || kind === "sprite" || kind === "strip") {
     const cut = await cutOut(input);
     const trimmed = await sharp(kind === "strip" ? cut : await clearShadow(cut)).trim({ threshold: 1 }).toBuffer();

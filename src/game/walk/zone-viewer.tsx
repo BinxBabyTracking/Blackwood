@@ -1065,10 +1065,15 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     const drawBuilding = (b: Building, parent: THREE.Group) => {
       const K = kitTextures();
       const timber = new THREE.MeshLambertMaterial({ color: 0x4a2e1d });
-      const stoneM = new THREE.MeshLambertMaterial({ map: K.stone });
-      const shingleM = new THREE.MeshLambertMaterial({ map: K.shingle });
+      // The building's own painted outside (Admin, Artwork tab), or the plain kit look until it's made.
+      const L = b.look;
+      const stoneM = new THREE.MeshLambertMaterial({ map: tiled(L?.base ?? null) ?? K.stone });
+      const shingleM = new THREE.MeshLambertMaterial({ map: tiled(L?.roof ?? null) ?? K.shingle });
+      const roofTile = L?.roof ? 1.2 : 1;
+      const doorOut = L?.door ? new THREE.MeshLambertMaterial({ map: tex(L.door) }) : null;
+      const winOut = L?.window ? new THREE.MeshLambertMaterial({ map: tex(L.window), alphaTest: 0.5, side: THREE.DoubleSide }) : null;
       const snowM = new THREE.MeshLambertMaterial({ color: 0xf2f6ff });
-      const plasterM = new THREE.MeshLambertMaterial({ map: K.plaster, side: THREE.DoubleSide });
+      const plasterM = new THREE.MeshLambertMaterial({ map: tiled(L?.wall ?? null) ?? K.plaster, side: THREE.DoubleSide });
       const beamM = new THREE.MeshLambertMaterial({ color: 0x7a4a2a });
       const brassM = new THREE.MeshStandardMaterial({ color: 0xb8893a, metalness: 0.6, roughness: 0.35, side: THREE.DoubleSide });
       const ironM = new THREE.MeshLambertMaterial({ color: 0x2a2420 });
@@ -1262,7 +1267,14 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
               m.position.set(x, y, out);
               wg.add(m);
             }
-            if (!p.to) {
+            if (!p.to && winOut) {
+              // The window as seen from outside: its frame, shutters and window box, over the hole.
+              const wm = new THREE.Mesh(new THREE.PlaneGeometry(p.w * 1.9, p.h * 1.35), winOut);
+              wm.rotation.y = Math.PI;
+              wm.position.set(cx, p.y + p.h / 2 - p.h * 0.1, -WALL - 0.13);
+              wm.userData.noShadow = true;
+              wg.add(wm);
+            } else if (!p.to) {
               // A sill with snow on it.
               const sill = kitBox(p.w + 0.36, 0.06, 0.2, timber);
               sill.position.set(cx, p.y - fw - 0.03, -WALL - 0.1);
@@ -1306,7 +1318,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           const reach = nbr(s2) ? oh + 0.02 : sh;
           const lenS = reach / Math.cos(pitch) + 0.1;
           const zc2 = reach / 2, yc2 = rise * (1 - zc2 / sh);
-          const sl = kitBox(len, 0.16, lenS, shingleM, 1);
+          const sl = kitBox(len, 0.16, lenS, shingleM, roofTile);
           sl.position.set(0, yc2, s2 * zc2);
           sl.rotation.x = s2 * pitch;
           roof.add(sl);
@@ -1388,11 +1400,16 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         }
       }
       // Doors.
+      let signed = false;
       for (const dr of b.doors) {
         const t = tex(dr.tex);
         const face = t ? new THREE.MeshLambertMaterial({ map: t, alphaTest: 0.5 }) : new THREE.MeshLambertMaterial({ color: 0x7a4a2a });
         const edge = new THREE.MeshLambertMaterial({ color: 0x5a3820 });
-        const slab = new THREE.Mesh(new THREE.BoxGeometry(dr.w - 0.04, dr.h - 0.03, 0.06), [edge, edge, edge, edge, face, face]);
+        // A front door shows its painted outside face to the street (the slab's +z or -z side, whichever faces out).
+        const base0 = Math.atan2(-dr.across[1], dr.across[0]);
+        const zOut = Math.sin(base0) * -dr.into[0] + Math.cos(base0) * -dr.into[1] > 0;
+        const outF = dr.outer && doorOut ? doorOut : face;
+        const slab = new THREE.Mesh(new THREE.BoxGeometry(dr.w - 0.04, dr.h - 0.03, 0.06), [edge, edge, edge, edge, zOut ? outF : face, zOut ? face : outF]);
         slab.position.set((dr.w - 0.04) / 2 + 0.02, (dr.h - 0.03) / 2, 0);
         const pivot = new THREE.Group();
         pivot.position.set(dr.at[0] - (dr.across[0] * dr.w) / 2, dr.y, dr.at[1] - (dr.across[1] * dr.w) / 2);
@@ -1409,6 +1426,27 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         sill.position.set(dr.at[0], dr.y - 0.25, dr.at[1]);
         sill.rotation.y = base;
         parent.add(sill);
+        if (dr.outer && L?.sign && !signed) {
+          // The hanging sign, on a bracket beside the front door, sticking out from the wall (two faces, so it reads
+          // the right way round from either side).
+          signed = true;
+          const st = tex(L.sign);
+          const sm = new THREE.MeshLambertMaterial({ map: st, alphaTest: 0.5 });
+          const S = 0.95;
+          const out = [-dr.into[0], -dr.into[1]];
+          const cx = dr.at[0] + dr.across[0] * (dr.w / 2 + 0.55) + out[0] * (dr.depth / 2 + S / 2);
+          const cz = dr.at[1] + dr.across[1] * (dr.w / 2 + 0.55) + out[1] * (dr.depth / 2 + S / 2);
+          // Faces along the wall: the picture's left edge (the bracket) at the wall.
+          const yaw = Math.atan2(out[0], out[1]) - Math.PI / 2;
+          for (const k of [1, -1]) {
+            const pl = new THREE.Mesh(new THREE.PlaneGeometry(S, S), sm);
+            pl.position.set(cx, dr.y + dr.h + 0.35, cz);
+            pl.rotation.y = yaw + (k < 0 ? Math.PI : 0);
+            if (k < 0) pl.scale.x = -1;
+            pl.userData.noShadow = true;
+            parent.add(pl);
+          }
+        }
         if (dr.outer) {
           // A stone step up to it from outside.
           const step = kitBox(dr.w + 0.5, 0.6, 0.5, stoneM, 1);
