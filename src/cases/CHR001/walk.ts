@@ -228,7 +228,19 @@ const spots: Spot[] = [
 /** What shows when: the body only after the murder, Aldric only while he lives, the Chronometer where it is. */
 const shown: Shown[] = [
   { model: M("tower_workshop", "body"), when: { dead: true } },
-  { person: "aldric", when: { dead: false } },
+  // Who is where (build contract): each person is in their own place only at the times they're there.
+  { person: "aldric", when: { dead: false, from: "08:20", until: "10:00" } },
+  { person: "aldric", when: { dead: false, from: "10:30", until: "14:00" } },
+  { person: "pip", when: { from: "08:20", until: "11:30" } },
+  { person: "pip", when: { from: "12:02" } },
+  { person: "garrick", when: { from: "08:40", until: "10:15" } },
+  { person: "garrick", when: { from: "12:30" } },
+  { person: "garrick", when: { from: "11:50", flag: "garrick_seen" } },
+  { person: "mira", when: { from: "09:00" } },
+  { person: "corwin", when: { until: "09:20" } },
+  { person: "corwin", when: { from: "09:45" } },
+  { person: "vell", when: { until: "12:05" } },
+  { person: "vell", when: { from: "12:05", dead: false } },
   { model: M("chronometer_chamber", "chronometer"), zone: "chronometer_chamber", when: { stolen: false } },
   { model: M("chronometer_chamber", "chronometer"), zone: "clock_base", when: { stolen: true, from: "12:12" } },
 ];
