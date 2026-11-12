@@ -9,6 +9,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { liveArtUrl, liveModelUrl } from "@/art/painted";
 import { buildWorld, type SavedLayout } from "@/game/walk/zones";
 import { ZoneViewer } from "@/game/walk/zone-viewer";
+import { CHR001_WALK } from "@/cases/CHR001/walk";
+import type { StoryData } from "@/game/walk/story";
 
 export const metadata: Metadata = { title: "Testing Zone" };
 
@@ -99,5 +101,18 @@ async function World({ searchParams }: { searchParams: Promise<Record<string, st
     shrink: Number.isFinite(Number(one(q.shrink))) && Number(one(q.shrink)) > 0 ? Number(one(q.shrink)) : (DEFAULT_SHRINK[caseId] ?? 1),
   });
   const eye = Number(one(q.eye));
-  return <ZoneViewer world={world} title={`${def.title} (testing)`} eye={Number.isFinite(eye) && eye > 0.3 ? eye : (DEFAULT_EYE[caseId] ?? 1.6)} />;
+  // The story (clock, loop, evidence) runs unless &story=0 (for arranging rooms without it).
+  const base: StoryData | null = caseId === "CHR001" && one(q.story) !== "0" ? CHR001_WALK : null;
+  const story: StoryData | undefined = base
+    ? { ...base, pictures: Object.fromEntries(base.evidence.map((e) => [`ev.${e.id}`, pics.get(`${prefix}_ev_${e.id.toLowerCase()}`) ?? ""]).filter(([, u]) => u)) }
+    : undefined;
+  return (
+    <ZoneViewer
+      world={world}
+      title={`${def.title} (testing)`}
+      eye={Number.isFinite(eye) && eye > 0.3 ? eye : (DEFAULT_EYE[caseId] ?? 1.6)}
+      story={story}
+      storyKey={`walkstory:${caseId}:${me.id}`}
+    />
+  );
 }

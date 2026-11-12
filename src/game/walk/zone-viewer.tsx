@@ -16,6 +16,9 @@ import { makeAurora } from "./aurora";
 import { holdNpc, makeNpc, resetNpc, rigOf, stepNpc } from "./npc";
 import type { Npc } from "./npc";
 import { clearRoomLayout, saveRoomLayout } from "@/app/actions/art";
+import { StoryRun, type StoryData } from "./story";
+import { StoryOverlay } from "./story-overlay";
+import { roomToWorld } from "./zones";
 import type { Building, KitDoor, Side, World, Zone, ZoneModel, ZonePerson, ZoneWall } from "./zones";
 
 /*
@@ -600,12 +603,17 @@ type Person = {
   held: boolean;
 };
 
-export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: string; eye?: number }) {
+export function ZoneViewer({ world, title, eye: eyeIn, story, storyKey }: { world: World; title: string; eye?: number; story?: StoryData; storyKey?: string }) {
+  // The story running in this world (the clock, the loop, evidence), when there is one.
+  const [run] = useState(() => (story ? new StoryRun(story, storyKey ?? `walkstory:${world.caseId}`) : null));
   const mountRef = useRef<HTMLDivElement>(null);
   const stickRef = useRef<HTMLDivElement>(null);
   const knobRef = useRef<HTMLDivElement>(null);
   const goRef = useRef<(to: string, from?: string) => void>(() => {});
-  const [zoneId, setZoneId] = useState(world.start);
+  const [zoneId, setZoneId] = useState(() => {
+    const want = run ? (run.s.where ?? (run.s.loop === 1 ? run.d.firstStart.zone : run.d.dayStart.zone)) : world.start;
+    return world.zones.some((z) => z.id === want) ? want : world.start;
+  });
   const [progress, setProgress] = useState(0);
   const [ready, setReady] = useState(false);
   const [menu, setMenu] = useState(false);
@@ -2318,6 +2326,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       }
       // People: you can't walk through them, but you can always step away.
       return !people.some((p) => {
+        if (!p.grp.visible) return false;
         const d = Math.hypot(x - p.npc.x, zz - p.npc.z);
         return d < RADIUS + 0.25 && d < Math.hypot(pos.x - p.npc.x, pos.z - p.npc.z);
       });
@@ -2353,6 +2362,98 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       if (!tryTo(pos.x + dx, pos.z + dz)) if (!tryTo(pos.x + dx, pos.z)) tryTo(pos.x, pos.z + dz);
     };
 
+    // The story's spots: a soft glow over everything you can look at closely, and which one you're facing.
+    const markers = new Map<string, { sprite: THREE.Sprite; pos: THREE.Vector3; phase: number; zone: string }>();
+    let glowTex: THREE.Texture | null = null;
+    const glow = () => {
+      if (glowTex) return glowTex;
+      const c = document.createElement("canvas");
+      c.width = c.height = 64;
+      const g = c.getContext("2d")!;
+      const r = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+      r.addColorStop(0, "rgba(255,240,200,1)");
+      r.addColorStop(0.25, "rgba(255,210,120,0.8)");
+      r.addColorStop(1, "rgba(255,190,80,0)");
+      g.fillStyle = r;
+      g.fillRect(0, 0, 64, 64);
+      return (glowTex = new THREE.CanvasTexture(c));
+    };
+    /** Where a spot's anchor is in the world: on top of its model, or in front of its wall piece. */
+    const anchorAt = (z: Zone, sp: { zone: string; anchor: string; lift?: number }) => {
+      for (const M of z.models) {
+        if (M.id !== sp.anchor || (M.room ?? z.id) !== sp.zone) continue;
+        const b = placed.get(M)?.box;
+        if (b && !b.isEmpty()) {
+          const c = b.getCenter(new THREE.Vector3());
+          return new THREE.Vector3(c.x, Math.min(b.max.y + 0.15, b.min.y + 1.6) + (sp.lift ?? 0), c.z);
+        }
+        return new THREE.Vector3(M.pos[0], M.elev + Math.min(M.size[2], 1.4) + 0.15 + (sp.lift ?? 0), M.pos[1]);
+      }
+      const label = sp.anchor.replace(/^[a-z0-9]+_/, "").replace(/_(model|piece|outside|fixture)_/, " ").replace(/_/g, " ");
+      const rz = sp.zone === z.id ? z : world.zones.find((q) => q.id === sp.zone);
+      const kr = sp.zone === z.id ? null : z.buildings?.flatMap((b) => b.rooms).find((r) => r.zone === sp.zone);
+      if (!rz || (sp.zone !== z.id && !kr)) return null;
+      for (const side of ["front", "back", "left", "right"] as Side[]) {
+        const p = rz.walls[side].pieces.find((q) => q.label === label);
+        if (!p) continue;
+        const f = wallFrame(rz, side);
+        const lx = p.x + p.w / 2 - f.width / 2;
+        const x = f.pos[0] + lx * Math.cos(f.rot) + 0.25 * Math.sin(f.rot), zz = f.pos[1] - lx * Math.sin(f.rot) + 0.25 * Math.cos(f.rot);
+        const y = p.y + p.h / 2 + (sp.lift ?? 0);
+        if (!kr) return new THREE.Vector3(x, y, zz);
+        const w = roomToWorld(kr, [x, zz]);
+        return new THREE.Vector3(w[0], kr.y + y, w[1]);
+      }
+      return null;
+    };
+    let spotsKey = "";
+    const refreshSpots = (z: Zone) => {
+      if (!run || !root) return;
+      const zones = [z.id, ...(z.buildings ?? []).flatMap((b) => b.rooms.map((r) => r.zone))];
+      const list = run.spotsIn(zones);
+      const key = z.id + "|" + list.map((x) => x.id).join(",");
+      if (key === spotsKey && [...markers.values()].every((m) => m.sprite.parent === root)) return;
+      spotsKey = key;
+      for (const m of markers.values()) m.sprite.removeFromParent();
+      markers.clear();
+      for (const sp of list) {
+        const p = anchorAt(z, sp);
+        if (!p) continue;
+        const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: glow(), color: 0xffd890, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+        sprite.scale.setScalar(0.32);
+        sprite.position.copy(p);
+        sprite.userData.spot = sp.id;
+        sprite.userData.noShadow = true;
+        root.add(sprite);
+        markers.set(sp.id, { sprite, pos: p, phase: Math.random() * 6, zone: sp.zone });
+      }
+    };
+    /** The spot you're closest to and facing, within reach. */
+    const nearSpot = () => {
+      if (!run) return;
+      const fx = -Math.sin(look.yaw), fz = -Math.cos(look.yaw);
+      let best: string | null = null, bd = 2.3;
+      for (const [id, m] of markers) {
+        if (!m.sprite.visible) continue;
+        const dx = m.pos.x - pos.x, dz = m.pos.z - pos.z, dy = m.pos.y - pos.y;
+        const d = Math.hypot(dx, dz);
+        if (Math.abs(dy) > 2.2 || d > bd) continue;
+        if (d > 0.9 && (dx * fx + dz * fz) / d < 0.45) continue;
+        bd = d;
+        best = id;
+      }
+      if (best !== run.ui.near) run.setUi({ near: best });
+    };
+    const spotTapped = (cx: number, cy: number) => {
+      if (!markers.size) return null;
+      const r = canvas.getBoundingClientRect();
+      const locked = document.pointerLockElement === canvas;
+      ray.setFromCamera(new THREE.Vector2(locked ? 0 : ((cx - r.left) / r.width) * 2 - 1, locked ? 0 : -((cy - r.top) / r.height) * 2 + 1), camera);
+      const hit = ray.intersectObjects([...markers.values()].map((m) => m.sprite), false)[0];
+      if (!hit || hit.distance > 4) return null;
+      return (hit.object.userData.spot as string) ?? null;
+    };
+
     const keys = new Set<string>();
     /** The door you're facing, close by. */
     const doorAhead = () => {
@@ -2384,6 +2485,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       const k = e.key.toLowerCase();
       if (k === "e") {
         if (down && !e.repeat) {
+          if (run?.ui.open || run?.ui.panel) return;
+          if (run?.ui.near) return run.setUi({ open: run.ui.near });
           const kd = doorAhead();
           if (kd) kd.open = !kd.open;
         }
@@ -2400,6 +2503,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     const canvas = renderer.domElement;
     const onClick = (e: MouseEvent) => {
       if (editRef.current) return pick(e.clientX, e.clientY);
+      const sp = spotTapped(e.clientX, e.clientY);
+      if (sp && run) return run.setUi({ open: sp });
       const kd = doorTapped(e.clientX, e.clientY);
       if (kd) {
         kd.open = !kd.open;
@@ -2489,6 +2594,12 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       last = t;
       const z = current;
       if (!z) return;
+      if (run && !editRef.current) {
+        const inside = kitRooms.find((r) => pos.x > r.x0 && pos.x < r.x1 && pos.z > r.z0 && pos.z < r.z1)?.zone ?? z.id;
+        for (const ev of run.tick(dt, inside)) if (ev.kind === "go") goRef.current(ev.zone);
+        if (frame % 6 === 0) nearSpot();
+        for (const mk of markers.values()) mk.sprite.material.opacity = 0.55 + 0.35 * Math.sin(t * 2.4 + mk.phase);
+      }
       if (keys.has("arrowleft")) look.yaw += dt * 1.8;
       if (keys.has("arrowright")) look.yaw -= dt * 1.8;
       let f = (keys.has("w") || keys.has("arrowup") ? 1 : 0) - (keys.has("s") || keys.has("arrowdown") ? 1 : 0) - stick.y;
@@ -2564,9 +2675,14 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         for (const [M, pl] of placed) {
           const g = (pl as { grp?: THREE.Object3D }).grp;
           if (!g) continue;
-          g.visible = M.room ? near(M.room) : OUTDOOR_M === Infinity || M.light || Math.hypot(M.pos[0] - pos.x, M.pos[1] - pos.z) < OUTDOOR_M;
+          g.visible = (M.room ? near(M.room) : OUTDOOR_M === Infinity || M.light || Math.hypot(M.pos[0] - pos.x, M.pos[1] - pos.z) < OUTDOOR_M) && (!run || run.modelShown(M.id, M.room ?? z.id));
         }
-        for (const p of people) p.grp.visible = p.P.room ? near(p.P.room) : OUTDOOR_M === Infinity || Math.hypot(p.npc.x - pos.x, p.npc.z - pos.z) < OUTDOOR_M;
+        for (const p of people) p.grp.visible = (p.P.room ? near(p.P.room) : OUTDOOR_M === Infinity || Math.hypot(p.npc.x - pos.x, p.npc.z - pos.z) < OUTDOOR_M) && (!run || run.personShown(p.P.id));
+        if (run) {
+          refreshSpots(z);
+          // A building's glows only near it or inside it, like its rooms.
+          for (const mk of markers.values()) mk.sprite.visible = mk.zone === z.id || near(mk.zone);
+        }
       }
       for (const p of people) {
         if (!p.grp.visible) continue;
@@ -2717,6 +2833,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     <main className="fixed inset-0 select-none overflow-hidden bg-black text-paper">
       <div ref={mountRef} className="absolute inset-0 touch-none" />
       <div className={`pointer-events-none absolute inset-0 bg-black transition-opacity duration-200 ${fade ? "opacity-100" : "opacity-0"}`} />
+      {run && ready && !edit ? <StoryOverlay run={run} touch={touch} onLook={() => run.setUi({ open: run.ui.near })} /> : null}
       <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 bg-gradient-to-b from-black/70 to-transparent p-3 text-sm">
         <div>
           <p className="font-semibold">{placeName ?? zone.name}</p>
