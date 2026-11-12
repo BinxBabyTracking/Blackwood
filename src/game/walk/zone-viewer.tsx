@@ -1179,7 +1179,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       }
       for (const side of ["front", "back", "left", "right"] as Side[]) {
         // Open land has woods and hills past its edge instead of a painted backdrop.
-        if (z.outdoor && !z.terrain?.rim) buildBackdrop(z, side, z.walls[side].backdrop, root);
+        if (z.terrain?.rim) continue;
+        if (z.outdoor) buildBackdrop(z, side, z.walls[side].backdrop, root);
         else buildWall(z, side, z.walls[side], root);
       }
 
