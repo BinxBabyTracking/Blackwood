@@ -339,6 +339,8 @@ export function buildWorld(opts: {
 }
 
 const WALL_T = 0.15;
+/** How far a building's floor stands above the levelled ground round it (on its stone foundation). */
+export const FOUND = 0.4;
 /** A quarter-turn rotation (three.js sense: degrees about y) of a point or direction. */
 export function turnXZ(v: number[], deg: number) {
   const a = (deg * Math.PI) / 180, c = Math.round(Math.cos(a)), s = Math.round(Math.sin(a));
@@ -376,7 +378,8 @@ function raise(land: Zone, def: { model: string; rooms: string[]; style?: string
   const n = M.door.dir != null ? [Math.round(Math.sin((M.door.dir * Math.PI) / 180)), Math.round(Math.cos((M.door.dir * Math.PI) / 180))] : NORMAL[M.face ?? "back"];
   const half = n[0] ? (f.x1 - f.x0) / 2 : (f.z1 - f.z0) / 2;
   const F = [(f.x0 + f.x1) / 2 + n[0] * half, (f.z0 + f.z1) / 2 + n[1] * half];
-  const y = heightAt(land.terrain, M.pos[0], M.pos[1]) + 0.02;
+  const ground = heightAt(land.terrain, M.pos[0], M.pos[1]);
+  const y = ground + FOUND;
   const place = (r: Zone, side: Side, p: ZonePiece, outward: number[], at: number[]): KitRoom => {
     // Turn the room so this door's way out of it points `outward`, then slide it so the door sits at `at`.
     const wp = wallPoint(side, r.size[0], r.size[1], p.x + p.w / 2);
@@ -420,7 +423,7 @@ function raise(land: Zone, def: { model: string; rooms: string[]; style?: string
     }
     const c0 = roomToWorld(kr, [-w / 2, -d / 2]), c1 = roomToWorld(kr, [w / 2, d / 2]);
     const area = [Math.min(c0[0], c1[0]), Math.min(c0[1], c1[1]), Math.max(c0[0], c1[0]), Math.max(c0[1], c1[1])];
-    for (const p of r.people) land.people.push({ ...p, pos: roomToWorld(kr, p.pos), rotY: p.rotY + (kr.rot * Math.PI) / 180, elev: (p.elev ?? 0) + 0.02, room: r.id, area });
+    for (const p of r.people) land.people.push({ ...p, pos: roomToWorld(kr, p.pos), rotY: p.rotY + (kr.rot * Math.PI) / 180, elev: (p.elev ?? 0) + FOUND, room: r.id, area });
     r.people = [];
     r.host = { zone: land.id, at: roomToWorld(kr, [0, 0]), yaw: (kr.rot * Math.PI) / 180 };
     for (const side of SIDES) {
@@ -466,6 +469,17 @@ function raise(land: Zone, def: { model: string; rooms: string[]; style?: string
       if (Math.abs((q[0] - F[0]) * n[1] - (q[1] - F[1]) * n[0]) < 1.5 && (q[0] - F[0]) * n[0] + (q[1] - F[1]) * n[1] < 0.5 && (q[0] - F[0]) * n[0] + (q[1] - F[1]) * n[1] > -3)
         p.pts[k] = [F[0] + n[0] * 0.05, F[1] + n[1] * 0.05];
     }
+  }
+  // Level ground under the whole building (last, so nothing else bends it), easing out round it; whatever
+  // already stands nearby moves with the ground.
+  if (land.terrain) {
+    const xs = walls.flatMap((b) => [b.x0, b.x1]), zs = walls.flatMap((b) => [b.z0, b.z1]);
+    const rect = [Math.min(...xs) - 0.8, Math.min(...zs) - 0.8, Math.max(...xs) + 0.8, Math.max(...zs) + 0.8];
+    const before = land.models.map((m) => (m.room || m.kit ? 0 : heightAt(land.terrain, m.pos[0], m.pos[1])));
+    land.terrain.pads.push({ rect, h: ground, fall: 5 });
+    land.models.forEach((m, i) => {
+      if (!m.room && !m.kit) m.elev += heightAt(land.terrain, m.pos[0], m.pos[1]) - before[i];
+    });
   }
   M.kit = true;
   M.solid = false;
@@ -1171,7 +1185,7 @@ export function roomLayoutOf(land: Zone, room: Zone, kr: KitRoom): SavedLayout {
       .map((m) => ({ ...m, room: undefined, file: null, pos: worldToRoom(kr, m.pos), rotY: norm(m.rotY - kr.rot), elev: m.elev - kr.y })),
     people: land.people
       .filter((p) => p.room === room.id)
-      .map((p) => ({ id: p.id, pos: worldToRoom(kr, p.pos), rotY: p.rotY - (kr.rot * Math.PI) / 180, elev: (p.elev ?? 0) - 0.02, sit: p.sit })),
+      .map((p) => ({ id: p.id, pos: worldToRoom(kr, p.pos), rotY: p.rotY - (kr.rot * Math.PI) / 180, elev: (p.elev ?? 0) - FOUND, sit: p.sit })),
   };
 }
 

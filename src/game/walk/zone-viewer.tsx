@@ -788,7 +788,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     /** Inside a building (0 out, 1 in), eased, and the room you're in. */
     let indoors = 0;
     let roomHere: string | null = null;
-    let kitRooms: { x0: number; x1: number; z0: number; z1: number; name: string }[] = [];
+    let kitRooms: { x0: number; x1: number; z0: number; z1: number; name: string; y: number }[] = [];
     let outerLights: { hemi: THREE.HemisphereLight; moon: THREE.DirectionalLight; warm: THREE.AmbientLight } | null = null;
     let token = 0;
     let cooldown = 0;
@@ -1015,7 +1015,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         const [w, d, H] = rz.size;
         {
           const half = kr.rot % 180 === 0 ? [w / 2, d / 2] : [d / 2, w / 2];
-          kitRooms.push({ x0: kr.pos[0] - half[0], x1: kr.pos[0] + half[0], z0: kr.pos[1] - half[1], z1: kr.pos[1] + half[1], name: rz.name });
+          kitRooms.push({ x0: kr.pos[0] - half[0], x1: kr.pos[0] + half[0], z0: kr.pos[1] - half[1], z1: kr.pos[1] + half[1], name: rz.name, y: kr.y });
         }
         const g = new THREE.Group();
         g.position.set(kr.pos[0], kr.y, kr.pos[1]);
@@ -1079,10 +1079,22 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
             m.position.set((q.x0 + q.x1) / 2, (q.y0 + q.y1) / 2, -WALL);
             wg.add(m);
           }
-          // Plinth along the foot of the wall.
-          const pl = kitBox(W + 2 * WALL + 0.16, 0.75, 0.08, stoneM, 1);
-          pl.position.set(0, foot + 0.375 + 0.3, -WALL - 0.04);
-          wg.add(pl);
+          // The stone foundation along the foot of the wall, up to the floor, open at doorways.
+          {
+            const gaps = rz.walls[side].pieces.filter((p) => p.to).map((p) => [p.x - W / 2, p.x + p.w - W / 2]).sort((a, b2) => a[0] - b2[0]);
+            let u = -W / 2 - WALL - 0.08;
+            const runs: number[][] = [];
+            for (const [a0, a1] of gaps) {
+              if (a0 > u) runs.push([u, a0]);
+              u = Math.max(u, a1);
+            }
+            if (u < W / 2 + WALL + 0.08) runs.push([u, W / 2 + WALL + 0.08]);
+            for (const [a0, a1] of runs) {
+              const pl = kitBox(a1 - a0, -foot + 0.02, 0.1, stoneM, 1);
+              pl.position.set((a0 + a1) / 2, (foot + 0.02) / 2, -WALL - 0.05);
+              wg.add(pl);
+            }
+          }
           for (const p of rz.walls[side].pieces) {
             if (!p.opening) continue;
             const cx = p.x + p.w / 2 - W / 2;
@@ -1166,10 +1178,15 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         // Which way round opens it into the room.
         const swing = Math.cos(base + 1) * dr.into[0] - Math.sin(base + 1) * dr.into[1] > 0 ? 1 : -1;
         kitDoors.push({ d: dr, pivot, slab, base, swing, open: false, k: 0 });
+        // A solid threshold across the doorway.
+        const sill = kitBox(dr.w, 0.5, dr.depth + 0.02, new THREE.MeshLambertMaterial({ color: 0x6a4a30 }));
+        sill.position.set(dr.at[0], dr.y - 0.25, dr.at[1]);
+        sill.rotation.y = base;
+        parent.add(sill);
         if (dr.outer) {
-          // A stone step outside.
-          const step = kitBox(dr.w + 0.5, 0.18, 0.55, stoneM, 1);
-          step.position.set(dr.at[0] - dr.into[0] * (dr.depth / 2 + 0.28), dr.y - 0.09, dr.at[1] - dr.into[1] * (dr.depth / 2 + 0.28));
+          // A stone step up to it from outside.
+          const step = kitBox(dr.w + 0.5, 0.6, 0.5, stoneM, 1);
+          step.position.set(dr.at[0] - dr.into[0] * (dr.depth / 2 + 0.25), dr.y - 0.2 - 0.3, dr.at[1] - dr.into[1] * (dr.depth / 2 + 0.25));
           step.rotation.y = base;
           parent.add(step);
         }
@@ -2142,6 +2159,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     let busy = false;
     const tmp = new THREE.Vector3();
     let frame = 0;
+    (window as unknown as { __walk?: unknown }).__walk = { pos, look, doors: () => kitDoors, stand: () => standY };
     const loop = () => {
       frame = requestAnimationFrame(loop);
       const t = clock.getElapsedTime();
@@ -2162,7 +2180,18 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       const fx = -Math.sin(look.yaw), fz = -Math.cos(look.yaw);
       const rx = Math.cos(look.yaw), rz = -Math.sin(look.yaw);
       if (len > 0.01) move((fx * f + rx * s) * sp, (fz * f + rz * s) * sp);
-      if (!z.stairs) standY = heightAt(z.terrain, pos.x, pos.z);
+      if (!z.stairs) {
+        // Inside a building (or in one of its doorways) you stand on its floor; the step up is eased.
+        let floorY: number | null = kitRooms.find((r) => pos.x > r.x0 - 0.05 && pos.x < r.x1 + 0.05 && pos.z > r.z0 - 0.05 && pos.z < r.z1 + 0.05)?.y ?? null;
+        if (floorY == null)
+          for (const kd of kitDoors) {
+            const dx = pos.x - kd.d.at[0], dz = pos.z - kd.d.at[1];
+            const along = dx * kd.d.across[0] + dz * kd.d.across[1], out = dx * kd.d.into[0] + dz * kd.d.into[1];
+            if (Math.abs(along) < kd.d.w / 2 + 0.1 && out > -kd.d.depth / 2 - (kd.d.outer ? 0.55 : 0.05) && out < kd.d.depth / 2 + 0.05) floorY = kd.d.outer && out < -kd.d.depth / 2 ? kd.d.y - 0.2 : kd.d.y;
+          }
+        const want = floorY ?? heightAt(z.terrain, pos.x, pos.z);
+        standY = Math.abs(want - standY) > 1 ? want : standY + (want - standY) * Math.min(1, dt * 12);
+      }
       pos.y = EYE + standY;
       camera.position.copy(pos);
       camera.rotation.set(look.pitch, look.yaw, 0, "YXZ");
