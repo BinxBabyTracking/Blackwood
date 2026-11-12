@@ -30,6 +30,8 @@ export type Terrain = {
   pads: { rect: number[]; h: number; fall: number }[];
   hills: number[][];
   paths: { pts: number[][]; w: number }[];
+  /** The walkable size (width, depth); past it the ground rises into wooded hills that fade into the snow. */
+  rim?: number[];
 };
 export type ZoneDoor = { to: string; label: string; at: number[]; span: number; normal: number[]; kind: "wall" | "model" | "pass"; mi?: number; y?: number };
 /** A flight of stairs (height running along an axis) or a landing (flat), in zone metres. */
@@ -622,6 +624,14 @@ export function heightAt(t: Terrain | undefined, x: number, z: number) {
     const w = 1 - smooth(Math.hypot(dx, dz) / p.fall);
     h = h + (p.h - h) * w;
   }
+  if (t.rim) {
+    // Beyond the edge you can walk to: the land climbs gently into rolling hills.
+    const o = Math.max(Math.abs(x) - t.rim[0] / 2, Math.abs(z) - t.rim[1] / 2, 0);
+    if (o > 0) {
+      const k = smooth(Math.min(1, o / 30));
+      h += o * 0.1 + k * (5 + 3 * Math.sin(x * 0.045 + z * 0.02) + 2.5 * Math.sin(z * 0.06 - x * 0.03 + 2) + 1.5 * Math.sin((x - z) * 0.11));
+    }
+  }
   return h;
 }
 
@@ -667,8 +677,9 @@ export function linkBuildings(z: Zone, t: Terrain) {
     for (const e of [p.pts[0], p.pts[p.pts.length - 1]])
       if (edgeOf(e)) {
         const n = Math.abs(e[0]) > W / 2 - 4 ? [-Math.sign(e[0]), 0] : [0, -Math.sign(e[1])];
-        const edge = [n[0] ? -n[0] * (W / 2 + 1) : e[0], n[1] ? -n[1] * (D / 2 + 1) : e[1]];
-        gates.push({ edge, out: [edge[0] + n[0] * 5, edge[1] + n[1] * 5], w: p.w });
+        // On past the edge into the woods, until the snow hides it.
+        const edge = [n[0] ? -n[0] * (W / 2 + 70) : e[0], n[1] ? -n[1] * (D / 2 + 70) : e[1]];
+        gates.push({ edge, out: [edge[0] + n[0] * 74, edge[1] + n[1] * 74], w: p.w });
       }
   }
   t.paths = t.paths.filter((p) => !hits(p.pts, 0.3));
@@ -823,6 +834,7 @@ function dressLand(z: Zone, rec: LandRec, model: (id: string) => string | null, 
     }),
     hills: (rec.hills ?? []).map(([x, y, h, r]) => [...at([x, y]), h * FT, r * FT]),
     paths: (rec.paths ?? []).map((p) => ({ pts: p.pointsFt.map(at), w: p.widthFt * FT })),
+    rim: [W, D],
   };
   // Each building stands on its own level, the ground easing between them.
   const margin = (rec.buildingMarginFt ?? 6) * FT, fall = (rec.buildingFallFt ?? 25) * FT;

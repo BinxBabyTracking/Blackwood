@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader, type GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { trimRuns, wallRects } from "./walk-viewer";
 import { doorsOf, floorSize, groundAt, heightAt, layoutOf } from "./zones";
 import { holdNpc, makeNpc, resetNpc, rigOf, stepNpc } from "./npc";
@@ -194,6 +195,54 @@ function layKerbs(root: THREE.Object3D, T: NonNullable<Zone["terrain"]>, pts: nu
     root.add(new THREE.Mesh(sg, SNOW_MAT));
   }
 }
+/** Snowy night haze: what the distance fades into. */
+const HAZE = 0x1a2648;
+/** The night sky: deep blue overhead, easing into the haze at the horizon so far hills melt away. */
+function skyDome() {
+  const g = new THREE.SphereGeometry(360, 32, 16);
+  const col: number[] = [];
+  const top = new THREE.Color(0x040817), low = new THREE.Color(HAZE), c = new THREE.Color();
+  const pa = g.attributes.position as THREE.BufferAttribute;
+  for (let i = 0; i < pa.count; i++) {
+    const t = Math.max(0, Math.min(1, pa.getY(i) / 360 / 0.45));
+    c.copy(low).lerp(top, Math.pow(t, 0.7));
+    col.push(c.r, c.g, c.b);
+  }
+  g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
+  const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false }));
+  m.renderOrder = -1;
+  m.frustumCulled = false;
+  return m;
+}
+/** A low snowy pine, one unit tall, for the far woods (the fog keeps it from needing detail). */
+let pineGeo: THREE.BufferGeometry | null = null;
+function lowPine() {
+  if (pineGeo) return pineGeo;
+  const parts: THREE.BufferGeometry[] = [];
+  const paint = (g: THREE.BufferGeometry, hex: number) => {
+    const c = new THREE.Color(hex), n = g.attributes.position.count, a: number[] = [];
+    for (let i = 0; i < n; i++) a.push(c.r, c.g, c.b);
+    g.setAttribute("color", new THREE.Float32BufferAttribute(a, 3));
+    g.deleteAttribute("uv");
+    return g.index ? g.toNonIndexed() : g;
+  };
+  const trunk = new THREE.CylinderGeometry(0.03, 0.045, 0.2, 6);
+  trunk.translate(0, 0.1, 0);
+  parts.push(paint(trunk, 0x4a3426));
+  const tiers = [[0.15, 0.36, 0.42], [0.37, 0.29, 0.36], [0.57, 0.21, 0.3], [0.75, 0.13, 0.25]];
+  for (const [y, r, h] of tiers) {
+    const cone = new THREE.ConeGeometry(r, h, 7);
+    cone.translate(0, y + h / 2, 0);
+    parts.push(paint(cone, 0x23402f));
+    const cap = new THREE.ConeGeometry(r * 0.72, h * 0.55, 7);
+    cap.translate(0, y + h * 0.45 + (h * 0.55) / 2 + 0.012, 0);
+    parts.push(paint(cap, 0xe9eff9));
+  }
+  pineGeo = mergeGeometries(parts)!;
+  pineGeo.computeVertexNormals();
+  return pineGeo;
+}
+
 const KERB_MAT = (() => {
   if (typeof document === "undefined") return new THREE.MeshStandardMaterial({ color: 0x6a6d74 });
   const c = document.createElement("canvas");
@@ -798,6 +847,89 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       g.add(wg);
     };
 
+    /**
+     * Woods past the edge of open land: thick near the edge (the village's own pines, many at once) and thinning,
+     * lower-detail, into the snowy haze. Kept off the roads that run out into them.
+     */
+    const plantWoods = (z: Zone, T: NonNullable<Zone["terrain"]>) => {
+      const parent = root!;
+      const my = token;
+      const [W, D] = T.rim!;
+      let seed = 4242;
+      const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+      const segD = (x: number, y: number, a: number[], b: number[]) => {
+        const dx = b[0] - a[0], dy = b[1] - a[1];
+        const k = Math.max(0, Math.min(1, ((x - a[0]) * dx + (y - a[1]) * dy) / (dx * dx + dy * dy || 1)));
+        return Math.hypot(x - a[0] - dx * k, y - a[1] - dy * k);
+      };
+      const near: number[][] = [], far: number[][] = [];
+      for (let i = 0; i < 9000 && near.length + far.length < 2600; i++) {
+        const x = (rnd() - 0.5) * (W + 190), y = (rnd() - 0.5) * (D + 190);
+        const o = Math.max(Math.abs(x) - W / 2, Math.abs(y) - D / 2);
+        if (o < 2.5) continue;
+        // Thick at the edge, thinner further out.
+        if (rnd() > 1.15 - o / 110) {
+          if (T.paths.some((p) => p.pts.slice(1).some((b, k) => segD(x, y, p.pts[k], b) < p.w / 2 + 2.2))) continue;
+          (o < 32 ? near : far).push([x, y, o]);
+        }
+      }
+      const put = (list: number[][], geo: THREE.BufferGeometry, mat: THREE.Material | THREE.Material[], base: THREE.Matrix4, tall: [number, number], from: number, count: number) => {
+        const im = new THREE.InstancedMesh(geo, mat, count);
+        const m = new THREE.Matrix4(), q = new THREE.Quaternion(), up = new THREE.Vector3(0, 1, 0);
+        for (let i = 0; i < count; i++) {
+          const [x, y] = list[from + i];
+          const h = tall[0] + rnd() * (tall[1] - tall[0]);
+          q.setFromAxisAngle(up, rnd() * Math.PI * 2);
+          m.compose(new THREE.Vector3(x, heightAt(T, x, y) - 0.15, y), q, new THREE.Vector3(h * (0.85 + rnd() * 0.3), h, h * (0.85 + rnd() * 0.3)));
+          im.setMatrixAt(i, m.multiply(base));
+        }
+        im.frustumCulled = false;
+        parent.add(im);
+      };
+      // Far woods: simple pines.
+      put(far, lowPine(), new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }), new THREE.Matrix4(), [7, 15], 0, far.length);
+      // Near woods: the village's own pine models, as many as the phone can comfortably draw.
+      const files = [...new Set(z.models.filter((m) => /pine/.test(m.id) && m.file).map((m) => m.file!))];
+      if (!files.length) {
+        put(near, lowPine(), new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }), new THREE.Matrix4(), [6, 12], 0, near.length);
+        return;
+      }
+      Promise.all(files.map((f) => loadGltf(f).catch(() => null))).then((gs) => {
+        if (my !== token) return;
+        const kinds = gs.filter((g): g is GLTF => !!g).map((g) => {
+          g.scene.updateMatrixWorld(true);
+          const box = new THREE.Box3().setFromObject(g.scene);
+          const k = 1 / Math.max(0.01, box.max.y - box.min.y);
+          const norm = new THREE.Matrix4().makeScale(k, k, k).multiply(new THREE.Matrix4().makeTranslation(-(box.min.x + box.max.x) / 2, -box.min.y, -(box.min.z + box.max.z) / 2));
+          const meshes: { geo: THREE.BufferGeometry; mat: THREE.Material | THREE.Material[]; base: THREE.Matrix4 }[] = [];
+          let tris = 0;
+          g.scene.traverse((o) => {
+            const mesh = o as THREE.Mesh;
+            if (!mesh.isMesh) return;
+            tris += (mesh.geometry.index?.count ?? mesh.geometry.attributes.position.count) / 3;
+            meshes.push({ geo: mesh.geometry, mat: mesh.material, base: norm.clone().multiply(mesh.matrixWorld) });
+          });
+          return { meshes, tris };
+        });
+        if (!kinds.length) {
+          put(near, lowPine(), new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }), new THREE.Matrix4(), [6, 12], 0, near.length);
+          return;
+        }
+        // About a million triangles for the near woods; any trees beyond that are the simple kind.
+        const each = Math.floor(near.length / kinds.length);
+        let at = 0;
+        for (const kd of kinds) {
+          const n = Math.min(each, Math.floor(1_000_000 / kinds.length / Math.max(1, kd.tris)));
+          for (const ms of kd.meshes) {
+            seed = 777 + at;
+            put(near, ms.geo, ms.mat, ms.base, [6, 11], at, n);
+          }
+          at += n;
+        }
+        if (at < near.length) put(near, lowPine(), new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }), new THREE.Matrix4(), [6, 12], at, near.length - at);
+      });
+    };
+
     const build = (z: Zone, arriveFrom?: string, keep?: { x: number; z: number; yaw: number; pitch: number }) => {
       const my = ++token;
       if (root) {
@@ -830,15 +962,16 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       // Light and sky.
       if (z.outdoor) {
         scene.background = new THREE.Color(0x0b1430);
-        scene.fog = new THREE.FogExp2(0x101c3c, 0.012);
+        scene.fog = new THREE.FogExp2(HAZE, z.terrain?.rim ? 0.0115 : 0.012);
+        if (z.terrain?.rim) root.add(skyDome());
         root.add(stars);
         root.add(new THREE.HemisphereLight(0x9fb4e8, 0x2a2e48, 1.5));
         const moon = new THREE.DirectionalLight(0xc8d6ff, 0.9);
         moon.position.set(-30, 60, 20);
         root.add(moon);
         // Falling snow around you.
-        const n = 1200, sp2: number[] = [];
-        for (let i = 0; i < n; i++) sp2.push((Math.random() - 0.5) * 40, Math.random() * 16, (Math.random() - 0.5) * 40);
+        const n = 2200, sp2: number[] = [];
+        for (let i = 0; i < n; i++) sp2.push((Math.random() - 0.5) * 56, Math.random() * 16, (Math.random() - 0.5) * 56);
         const sg = new THREE.BufferGeometry();
         sg.setAttribute("position", new THREE.Float32BufferAttribute(sp2, 3));
         snow = new THREE.Points(sg, new THREE.PointsMaterial({ color: 0xffffff, size: 2.5, sizeAttenuation: false, transparent: true, opacity: 0.8 }));
@@ -853,7 +986,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       // Ground, ceiling, decals.
       const T = z.terrain;
       const ft = tiled(T?.floor ?? z.floor.tex);
-      const floorW = z.outdoor ? w + 60 : w, floorD = z.outdoor ? d + 60 : d;
+      const beyond = T?.rim ? 200 : 60;
+      const floorW = z.outdoor ? w + beyond : w, floorD = z.outdoor ? d + beyond : d;
       if (T) {
         // Rolling snowy ground, a vertex every metre and a half.
         const nx = Math.ceil(floorW / 1.5), nz = Math.ceil(floorD / 1.5);
@@ -930,6 +1064,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
             root.add(cm);
           }
         }
+        if (T.rim) plantWoods(z, T);
       } else {
         const floor = new THREE.Mesh(tiledPlane(floorW, floorD, 0, 0, z.floor.tile), ft ? new THREE.MeshLambertMaterial({ map: ft }) : plain(z.outdoor ? 0xe8eef8 : 0x8a6a4a));
         floor.rotation.x = -Math.PI / 2;
@@ -979,7 +1114,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         root.add(pl);
       }
       for (const side of ["front", "back", "left", "right"] as Side[]) {
-        if (z.outdoor) buildBackdrop(z, side, z.walls[side].backdrop, root);
+        // Open land has woods and hills past its edge instead of a painted backdrop.
+        if (z.outdoor && !z.terrain?.rim) buildBackdrop(z, side, z.walls[side].backdrop, root);
         else buildWall(z, side, z.walls[side], root);
       }
 
