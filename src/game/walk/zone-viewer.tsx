@@ -828,6 +828,15 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     let flames: { light: THREE.PointLight; base: number; phase: number; amount: number }[] = [];
     /** Strings of fairy lights that twinkle. */
     let twinkles: { mesh: THREE.InstancedMesh; phase: number; last?: number }[] = [];
+    /** Lights in buildings: every lamp, lantern and fire, lit for real only when among the nearest few (a fixed pool). */
+    type KitLight = { at: THREE.Vector3; color: number; intensity: number; distance: number; decay: number; flicker: number; phase: number };
+    let kitLights: KitLight[] = [];
+    let lightPool: { light: THREE.PointLight; def: KitLight | null }[] = [];
+    let poolAt = 0;
+    const addKitLight = (o: THREE.Object3D, x: number, y: number, z: number, color: number, intensity: number, distance: number, decay: number, flicker = 0) => {
+      o.updateWorldMatrix(true, false);
+      kitLights.push({ at: o.localToWorld(new THREE.Vector3(x, y, z)), color, intensity, distance, decay, flicker, phase: Math.random() * 10 });
+    };
     let kitDoors: { d: KitDoor; pivot: THREE.Group; slab: THREE.Mesh; base: number; swing: number; open: boolean; k: number }[] = [];
     /** Inside a building (0 out, 1 in), eased, and the room you're in. */
     let indoors = 0;
@@ -914,7 +923,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     };
     const plain = (color: number) => new THREE.MeshLambertMaterial({ color, side: THREE.DoubleSide });
 
-    const buildWall = (z: Zone, side: Side, def: ZoneWall, g: THREE.Group, kit = false) => {
+    const buildWall = (z: Zone, side: Side, def: ZoneWall, g: THREE.Group, kit = false, doorway: (to: string) => boolean = () => true) => {
       const f = wallFrame(z, side);
       const H = z.size[2];
       const W = f.width;
@@ -957,7 +966,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       }
       for (const p of def.pieces) {
         // In a building, a doorway holds a real door, and a window looks out on the real world.
-        if (kit && p.to) continue;
+        if (kit && p.to && doorway(p.to)) continue;
         const t = tex(p.tex);
         const mat = t ? new THREE.MeshLambertMaterial({ map: t, alphaTest: 0.5, side: THREE.DoubleSide }) : new THREE.MeshLambertMaterial({ color: 0x8a5a3a, transparent: true, opacity: 0.6 });
         if (t && p.opening)
@@ -1101,6 +1110,9 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         parent.add(lights, berries);
         twinkles.push({ mesh: lights, phase: Math.random() * 10 });
       };
+      // A real doorway (opened through the wall, with a door): to outside, or between this building's rooms.
+      const own = new Set(b.rooms.map((r) => r.zone));
+      const doorway = (to: string) => to === current?.id || own.has(to);
       for (const kr of b.rooms) {
         const rz = world.zones.find((q) => q.id === kr.zone);
         if (!rz) continue;
@@ -1150,17 +1162,13 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           g.add(chain, shade, bulb);
           if (fx.light && lit < 2) {
             lit++;
-            const pl = new THREE.PointLight(0xffc98a, 2.2, 10, 1.6);
-            pl.position.set(fx.pos[0], bulbY - 0.1, fx.pos[1]);
-            g.add(pl);
+            addKitLight(g, fx.pos[0], bulbY - 0.1, fx.pos[1], 0xffc98a, 2.2, 10, 1.6);
           }
         }
         if (!lit) {
-          const pl = new THREE.PointLight(0xffc98a, 3, 12, 1.4);
-          pl.position.set(0, H - 0.4, 0);
-          g.add(pl);
+          addKitLight(g, 0, H - 0.4, 0, 0xffc98a, 3, 12, 1.4);
         }
-        for (const side of ["front", "back", "left", "right"] as Side[]) buildWall(rz, side, rz.walls[side], g, true);
+        for (const side of ["front", "back", "left", "right"] as Side[]) buildWall(rz, side, rz.walls[side], g, true, doorway);
         // Lanterns on the walls, where nothing hangs: one lit for real, the others glowing.
         {
           const ly = Math.min(1.75, H * 0.62);
@@ -1190,11 +1198,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
             base.position.set(x, ly - 0.055, 0.22);
             wg.add(plate, arm, cap, glass, base);
             if (hung === 0) {
-              const pl = new THREE.PointLight(0xffa860, 2.6, 6, 1.8);
-              pl.position.set(x, ly + 0.04, 0.32);
-              wg.add(pl);
-              flames.push({ light: pl, base: 2.6, phase: Math.random() * 10, amount: 0.08 });
-              castFrom(pl);
+              addKitLight(wg, x, ly + 0.04, 0.32, 0xffa860, 2.6, 6, 1.8, 0.08);
             }
             hung++;
           }
@@ -1209,7 +1213,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           wg.position.set(f.pos[0], 0, f.pos[1]);
           wg.rotation.y = f.rot;
           g.add(wg);
-          const holes = rz.walls[side].pieces.filter((p) => p.opening).map((p) => ({ x0: p.x - W / 2, x1: p.x + p.w - W / 2, y0: p.y, y1: p.y + p.h }));
+          const holes = rz.walls[side].pieces.filter((p) => p.opening && (!p.to || doorway(p.to))).map((p) => ({ x0: p.x - W / 2, x1: p.x + p.w - W / 2, y0: p.y, y1: p.y + p.h }));
           for (const q of wallRects(-W / 2 - WALL, W / 2 + WALL, foot, top, holes)) {
             const m = new THREE.Mesh(tiledPlane(q.x1 - q.x0, q.y1 - q.y0, -q.x1, q.y0, 2), plasterM);
             m.rotation.y = Math.PI;
@@ -1218,7 +1222,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           }
           // The stone foundation along the foot of the wall, up to the floor, open at doorways.
           {
-            const gaps = rz.walls[side].pieces.filter((p) => p.to).map((p) => [p.x - W / 2, p.x + p.w - W / 2]).sort((a, b2) => a[0] - b2[0]);
+            const gaps = rz.walls[side].pieces.filter((p) => p.to && doorway(p.to)).map((p) => [p.x - W / 2, p.x + p.w - W / 2]).sort((a, b2) => a[0] - b2[0]);
             let u = -W / 2 - WALL - 0.08;
             const runs: number[][] = [];
             for (const [a0, a1] of gaps) {
@@ -1233,7 +1237,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
             }
           }
           for (const p of rz.walls[side].pieces) {
-            if (!p.opening) continue;
+            if (!p.opening || (p.to && !doorway(p.to))) continue;
             const cx = p.x + p.w / 2 - W / 2;
             const fw = 0.11, out = -WALL - 0.035;
             const jambs: [number, number, number, number][] = [
@@ -1265,20 +1269,35 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         }
         // The roof, the ceiling under it and the timbers holding it up, built in the roof's frame: ridge along x,
         // slopes falling to either side in z.
-        const span = 2 * sh, len = 2 * (il + WALL) + 0.16;
-        const slope = Math.hypot(sh, rise);
+        const len = 2 * (il + WALL) + 0.16;
         const oh = ih + WALL;
         const roof = new THREE.Group();
         roof.position.y = y0;
         if (!along) roof.rotation.y = Math.PI / 2;
         g.add(roof);
+        // Each slope runs down to its eave; an eave backing onto another room of the building stops at the wall.
+        const nbr = (s2: number) => {
+          const ln = along ? [0, s2] : [s2, 0];
+          const wn = [ln[0] * Math.cos((kr.rot * Math.PI) / 180) + ln[1] * Math.sin((kr.rot * Math.PI) / 180), -ln[0] * Math.sin((kr.rot * Math.PI) / 180) + ln[1] * Math.cos((kr.rot * Math.PI) / 180)];
+          const px = kr.pos[0] + wn[0] * (ih + WALL + 0.35), pz = kr.pos[1] + wn[1] * (ih + WALL + 0.35);
+          return b.rooms.some((o) => {
+            if (o === kr) return false;
+            const oz = world.zones.find((q) => q.id === o.zone);
+            if (!oz) return false;
+            const hw = (o.rot % 180 === 0 ? oz.size[0] : oz.size[1]) / 2 + WALL, hd = (o.rot % 180 === 0 ? oz.size[1] : oz.size[0]) / 2 + WALL;
+            return Math.abs(px - o.pos[0]) < hw && Math.abs(pz - o.pos[1]) < hd;
+          });
+        };
         for (const s2 of [-1, 1]) {
-          const sl = kitBox(len, 0.16, slope + 0.1, shingleM, 1);
-          sl.position.set(0, rise / 2, (s2 * span) / 4);
+          const reach = nbr(s2) ? oh + 0.02 : sh;
+          const lenS = reach / Math.cos(pitch) + 0.1;
+          const zc2 = reach / 2, yc2 = rise * (1 - zc2 / sh);
+          const sl = kitBox(len, 0.16, lenS, shingleM, 1);
+          sl.position.set(0, yc2, s2 * zc2);
           sl.rotation.x = s2 * pitch;
           roof.add(sl);
-          const sn = kitBox(len - 0.12, 0.12, slope - 0.15, snowM);
-          sn.position.set(0, rise / 2 + Math.cos(pitch) * 0.13, (s2 * span) / 4 + s2 * Math.sin(pitch) * 0.13);
+          const sn = kitBox(len - 0.12, 0.12, lenS - 0.25, snowM);
+          sn.position.set(0, yc2 + Math.cos(pitch) * 0.13, s2 * zc2 + s2 * Math.sin(pitch) * 0.13);
           sn.rotation.x = s2 * pitch;
           roof.add(sn);
         }
@@ -1490,6 +1509,9 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       kitRooms = [];
       flames = [];
       twinkles = [];
+      kitLights = [];
+      lightPool = [];
+      poolAt = -1;
       casters = 0;
       pointCasters = [];
       outerLights = null;
@@ -1735,8 +1757,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         sh.position.set(M.pos[0], M.elev + 0.006, M.pos[1]);
         if (onGround && !M.scatter) root.add(sh);
         placed.set(M, { shadow: sh });
-        if (M.light && lamps < 10 && !M.scatter) {
-          lamps++;
+        if (M.light && !M.scatter && (lamps < 10 || M.room)) {
+          if (!M.room) lamps++;
           const fire = /stove|fire|hearth|furnace|forge|oven|kiln/.test(M.id);
           const inside = !z.outdoor || !!M.room;
           const pl = new THREE.PointLight(fire ? 0xff8236 : 0xffc77a, fire && inside ? 9 : inside ? 4 : 10, fire && inside ? 11 : inside ? 8 : 14, fire ? 1.5 : 1.6);
@@ -1751,9 +1773,15 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
             lz += (dz / dl) * Math.min(out, dl * 0.5);
           }
           pl.position.set(lx, M.elev + M.size[2] * (fire ? 0.3 : 0.9), lz);
-          root.add(pl);
-          if (fire) flames.push({ light: pl, base: pl.intensity, phase: Math.random() * 10, amount: 0.3 });
-          if (fire && inside) castFrom(pl);
+          if (M.room) {
+            // In a building: one of its pooled lights.
+            kitLights.push({ at: pl.position.clone(), color: pl.color.getHex(), intensity: pl.intensity, distance: pl.distance, decay: pl.decay, flicker: fire ? 0.3 : 0, phase: Math.random() * 10 });
+            pl.dispose();
+          } else {
+            root.add(pl);
+            if (fire) flames.push({ light: pl, base: pl.intensity, phase: Math.random() * 10, amount: 0.3 });
+            if (fire && inside) castFrom(pl);
+          }
         }
         if (!M.file && M.scatter) {
           if (/pine/.test(M.id)) {
@@ -1917,6 +1945,15 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
 
       if (z.stairs) buildStairs(z, root);
       reblock();
+      if (kitLights.length) {
+        for (let i = 0; i < Math.min(kitLights.length, lowPower ? 5 : 8); i++) {
+          const light = new THREE.PointLight(0xffc98a, 0, 10, 1.6);
+          root.add(light);
+          // The nearest two or three throw shadows (the room you're in, mostly).
+          if (i < (lowPower ? 1 : 3)) castFrom(light);
+          lightPool.push({ light, def: null });
+        }
+      }
       shadowify(root);
       // Where you arrive: at the door back to where you came from, a step inside, facing in.
       const back = arriveFrom ? z.doors.find((dr) => dr.to === arriveFrom) : null;
@@ -2507,6 +2544,30 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         m.target.position.set(pos.x, pos.y, pos.z);
         m.shadow.autoUpdate = indoors < 0.85;
         for (const pl of pointCasters) pl.shadow.autoUpdate = indoors > 0.15;
+      }
+      if (lightPool.length) {
+        if (t - poolAt > 0.25 || poolAt < 0) {
+          poolAt = t;
+          const near = [...kitLights].sort((a, b2) => a.at.distanceToSquared(pos) - b2.at.distanceToSquared(pos));
+          lightPool.forEach((sl, i) => {
+            const d = near[i] ?? null;
+            sl.def = d;
+            if (!d) return;
+            sl.light.position.copy(d.at);
+            sl.light.color.setHex(d.color);
+            sl.light.distance = d.distance;
+            sl.light.decay = d.decay;
+          });
+        }
+        for (const sl of lightPool) {
+          const d = sl.def;
+          if (!d) {
+            sl.light.intensity = 0;
+            continue;
+          }
+          const q = t * 9 + d.phase;
+          sl.light.intensity = d.intensity * (1 - d.flicker * (0.5 + 0.25 * Math.sin(q) + 0.15 * Math.sin(q * 2.7 + 1.3) + 0.1 * Math.sin(q * 6.1)));
+        }
       }
       for (const f of flames) {
         const q = t * 9 + f.phase;

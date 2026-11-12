@@ -87112,6 +87112,79 @@
             "jingle_office"
           ],
           "style": "plaster"
+        },
+        {
+          "model": "chr001_village_square_model_workshop",
+          "rooms": [
+            "toy_floor",
+            "santa_office",
+            "marigold_office",
+            "kitchen"
+          ],
+          "style": "plaster"
+        },
+        {
+          "model": "chr001_village_square_model_archives",
+          "rooms": [
+            "archives"
+          ],
+          "style": "plaster"
+        },
+        {
+          "model": "chr001_village_square_model_lab",
+          "rooms": [
+            "lab"
+          ],
+          "style": "plaster"
+        },
+        {
+          "model": "chr001_village_square_model_guardhouse",
+          "rooms": [
+            "guard_house"
+          ],
+          "style": "plaster"
+        },
+        {
+          "model": "chr001_clockmakers_row_model_thorneshop",
+          "rooms": [
+            "garrick_workshop"
+          ],
+          "style": "plaster"
+        },
+        {
+          "model": "chr001_clockmakers_row_model_corwinshop",
+          "rooms": [
+            "corwin_shop"
+          ],
+          "style": "plaster"
+        },
+        {
+          "model": "chr001_clockmakers_row_model_glassworks",
+          "rooms": [
+            "glassworks"
+          ],
+          "style": "plaster"
+        },
+        {
+          "model": "chr001_holly_lane_model_thornehouse",
+          "rooms": [
+            "thorne_parlor"
+          ],
+          "style": "plaster"
+        },
+        {
+          "model": "chr001_stable_yard_model_stables",
+          "rooms": [
+            "stables"
+          ],
+          "style": "plaster"
+        },
+        {
+          "model": "chr001_stable_yard_model_hangar",
+          "rooms": [
+            "hangar"
+          ],
+          "style": "plaster"
         }
       ],
       "case": "CHR001",

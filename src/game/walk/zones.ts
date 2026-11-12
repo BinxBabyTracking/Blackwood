@@ -45,7 +45,7 @@ export type KitRoom = { zone: string; pos: number[]; rot: number; y: number };
  */
 export type KitDoor = { id: string; at: number[]; y: number; w: number; h: number; across: number[]; into: number[]; depth: number; tex: string | null; outer: boolean; lock?: string };
 /** A building put together in code from its rooms: real walls, roof and doors you open. */
-export type Building = { id: string; model: string; style: string; rooms: KitRoom[]; doors: KitDoor[]; walls: { x0: number; x1: number; z0: number; z1: number }[] };
+export type Building = { id: string; model: string; style: string; rooms: KitRoom[]; doors: KitDoor[]; walls: { x0: number; x1: number; z0: number; z1: number }[]; /** Doorways that lead somewhere outside the building (the old way, walking through). */ travel?: ZoneDoor[] };
 export type Zone = {
   id: string;
   room: string;
@@ -400,11 +400,60 @@ function raise(land: Zone, def: { model: string; rooms: string[]; style?: string
         const b = zones.find((q) => q.id === p.to)!;
         const back = doorOf(b, a.id);
         if (!back) continue;
-        const wp = wallPoint(side, a.size[0], a.size[1], p.x + p.w / 2);
-        const out = turnXZ([-wp.normal[0], -wp.normal[1]], ka.rot);
-        const at = roomToWorld(ka, wp.at);
-        // Through one shared wall: two thicknesses.
-        const kb = place(b, back.side, back.p, [-out[0], -out[1]], [at[0] + out[0] * 2 * WALL_T, at[1] + out[1] * 2 * WALL_T]);
+        const fit = () => {
+          const wp = wallPoint(side, a.size[0], a.size[1], p.x + p.w / 2);
+          const out = turnXZ([-wp.normal[0], -wp.normal[1]], ka.rot);
+          const at = roomToWorld(ka, wp.at);
+          // Through one shared wall: two thicknesses.
+          return { out, kb: place(b, back.side, back.p, [-out[0], -out[1]], [at[0] + out[0] * 2 * WALL_T, at[1] + out[1] * 2 * WALL_T]) };
+        };
+        let { out, kb } = fit();
+        // If it runs into a room already standing, slide the doorway (in both walls) along until it's clear.
+        const rectOf = (r: Zone, k: KitRoom) => {
+          const hw = (k.rot % 180 === 0 ? r.size[0] : r.size[1]) / 2 + WALL_T, hd = (k.rot % 180 === 0 ? r.size[1] : r.size[0]) / 2 + WALL_T;
+          return [k.pos[0] - hw, k.pos[1] - hd, k.pos[0] + hw, k.pos[1] + hd];
+        };
+        const clash = (k: KitRoom) => {
+          const q = rectOf(b, k);
+          return [...placed.entries()].some(([id, k2]) => {
+            if (id === a.id) return false;
+            const o = rectOf(zones.find((zz) => zz.id === id)!, k2);
+            return q[0] < o[2] - 0.01 && q[2] > o[0] + 0.01 && q[1] < o[3] - 0.01 && q[3] > o[1] + 0.01;
+          });
+        };
+        if (clash(kb)) {
+          const tdir = [-out[1], out[0]];
+          const along = (r: Zone, sd: Side, k: KitRoom) => {
+            const d0 = wallPoint(sd, r.size[0], r.size[1], 0).at, d1 = wallPoint(sd, r.size[0], r.size[1], 1).at;
+            const t = turnXZ([d1[0] - d0[0], d1[1] - d0[1]], k.rot);
+            return t[0] * tdir[0] + t[1] * tdir[1];
+          };
+          const La = side === "front" || side === "back" ? a.size[0] : a.size[1];
+          const Lb = back.side === "front" || back.side === "back" ? b.size[0] : b.size[1];
+          const ax0 = p.x, bx0 = back.p.x, sa = along(a, side, ka);
+          let done = false;
+          const sb = along(b, back.side, kb);
+          // Move the new room's own doorway first (the room slides past it); failing that, the doorway it joins.
+          for (const mode of ["own", "parent"] as const)
+          for (let step = 1; step <= 40 && !done; step++)
+            for (const sg of [1, -1]) {
+              const sl = sg * step * 0.1;
+              p.x = mode === "parent" ? ax0 + sl * sa : ax0;
+              back.p.x = mode === "own" ? bx0 - sl * sb : bx0;
+              if (p.x < 0.1 || p.x + p.w > La - 0.1 || back.p.x < 0.1 || back.p.x + back.p.w > Lb - 0.1) continue;
+              const f2 = fit();
+              if (!clash(f2.kb)) {
+                ({ out, kb } = f2);
+                done = true;
+                break;
+              }
+            }
+          if (!done) {
+            p.x = ax0;
+            back.p.x = bx0;
+            ({ out, kb } = fit());
+          }
+        }
         placed.set(b.id, kb);
         queue.push(b);
       }
@@ -412,6 +461,7 @@ function raise(land: Zone, def: { model: string; rooms: string[]; style?: string
   const kit: KitRoom[] = [...placed.values()];
   const doors: KitDoor[] = [];
   const walls: Building["walls"] = [];
+  const travel: ZoneDoor[] = [];
   const seen = new Set<string>();
   for (const kr of kit) {
     const r = zones.find((q) => q.id === kr.zone)!;
@@ -429,8 +479,13 @@ function raise(land: Zone, def: { model: string; rooms: string[]; style?: string
     for (const side of SIDES) {
       const pieces = r.walls[side].pieces;
       const L = side === "front" || side === "back" ? w : d;
-      // Wall to bump into, broken where a door opens.
-      const gaps = pieces.filter((p) => p.to).map((p) => [p.x, p.x + p.w]).sort((a, b) => a[0] - b[0]);
+      // Wall to bump into, broken where a real door opens (doors to places elsewhere stay pictures you walk into).
+      const gaps = pieces.filter((p) => p.to && (p.to === land.id || inside.has(p.to))).map((p) => [p.x, p.x + p.w]).sort((a, b) => a[0] - b[0]);
+      for (const p of pieces) {
+        if (!p.to || p.to === land.id || inside.has(p.to)) continue;
+        const wp = wallPoint(side, w, d, p.x + p.w / 2);
+        travel.push({ to: p.to, label: p.label, at: roomToWorld(kr, wp.at), span: p.w / 2, normal: turnXZ(wp.normal, kr.rot), kind: "wall", y: kr.y + p.y });
+      }
       let u = 0;
       const runs: number[][] = [];
       for (const g of gaps) {
@@ -470,6 +525,16 @@ function raise(land: Zone, def: { model: string; rooms: string[]; style?: string
         p.pts[k] = [F[0] + n[0] * 0.05, F[1] + n[1] * 0.05];
     }
   }
+  // No trees or rocks in the building or on its doorsteps.
+  {
+    const xs = walls.flatMap((b) => [b.x0, b.x1]), zs = walls.flatMap((b) => [b.z0, b.z1]);
+    const box = [Math.min(...xs) - 1.5, Math.min(...zs) - 1.5, Math.max(...xs) + 1.5, Math.max(...zs) + 1.5];
+    land.models = land.models.filter((m) => {
+      if (!m.scatter || m.light) return true;
+      if (m.pos[0] > box[0] && m.pos[0] < box[2] && m.pos[1] > box[1] && m.pos[1] < box[3]) return false;
+      return !doors.some((dr) => dr.outer && Math.hypot(m.pos[0] - (dr.at[0] - dr.into[0] * 2), m.pos[1] - (dr.at[1] - dr.into[1] * 2)) < 3);
+    });
+  }
   // Level ground under the whole building (last, so nothing else bends it), easing out round it; whatever
   // already stands nearby moves with the ground.
   if (land.terrain) {
@@ -483,7 +548,7 @@ function raise(land: Zone, def: { model: string; rooms: string[]; style?: string
   }
   M.kit = true;
   M.solid = false;
-  land.buildings = [...(land.buildings ?? []), { id: def.model, model: def.model, style: def.style ?? "plaster", rooms: kit, doors, walls }];
+  land.buildings = [...(land.buildings ?? []), { id: def.model, model: def.model, style: def.style ?? "plaster", rooms: kit, doors, walls, travel }];
   land.doors = doorsOf(land);
 }
 
@@ -533,6 +598,7 @@ export function doorsOf(z: Zone): ZoneDoor[] {
     out.push({ to, label: m.label, at: at2, span: through ? Math.max(0.6, mw / 2 - 0.3) : Math.max(0.9, Math.min(mw / 3, 3)), normal: n, kind: through ? "pass" : "model", mi: z.models.indexOf(m) });
     if (through) m.solid = false;
   }
+  for (const b of z.buildings ?? []) out.push(...(b.travel ?? []));
   return out;
 }
 
