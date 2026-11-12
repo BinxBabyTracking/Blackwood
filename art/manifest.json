@@ -87104,6 +87104,16 @@
     },
     {
       "id": "chr001_village_square",
+      "buildings": [
+        {
+          "model": "chr001_village_square_model_bureau",
+          "rooms": [
+            "bureau_hall",
+            "jingle_office"
+          ],
+          "style": "plaster"
+        }
+      ],
       "case": "CHR001",
       "location": "village_square",
       "name": "The village",

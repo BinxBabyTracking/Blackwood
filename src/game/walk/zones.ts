@@ -10,7 +10,7 @@
 
 export type ZonePiece = { tex: string | null; x: number; y: number; w: number; h: number; opening: boolean; outside: string | null; label: string; to: string | null; fixed: boolean };
 export type ZoneWall = { tex: string | null; tile: number; lower: { tex: string | null; tile: number; to: number } | null; pieces: ZonePiece[]; backdrop: string | null };
-export type ZoneModel = { id: string; file: string | null; label: string; pos: number[]; elev: number; rotY: number; rotX: number; size: number[]; solid: boolean; light: boolean; scatter?: boolean; block?: number; level?: number; lights?: boolean; face?: string; turn?: number; door?: { to: string; through: boolean; dir?: number } };
+export type ZoneModel = { /** Inside a building: the room it belongs to (its layout is saved there). */ room?: string; /** Replaced by a building put together in code: not drawn. */ kit?: boolean; id: string; file: string | null; label: string; pos: number[]; elev: number; rotY: number; rotX: number; size: number[]; solid: boolean; light: boolean; scatter?: boolean; block?: number; level?: number; lights?: boolean; face?: string; turn?: number; door?: { to: string; through: boolean; dir?: number } };
 
 /** A room as Ian arranged it in Edit mode: replaces the generated layout. Model heights are above the ground. */
 export type SavedLayout = {
@@ -36,7 +36,16 @@ export type Terrain = {
 export type ZoneDoor = { to: string; label: string; at: number[]; span: number; normal: number[]; kind: "wall" | "model" | "pass"; mi?: number; y?: number };
 /** A flight of stairs (height running along an axis) or a landing (flat), in zone metres. */
 export type Stair = { rect: number[]; h0: number; h1: number; axis?: "x" | "z"; from?: number; to?: number };
-export type ZonePerson = { id: string; name: string; file: string | null; height: number; pos: number[]; rotY: number; elev?: number; sit?: boolean };
+export type ZonePerson = { id: string; name: string; file: string | null; height: number; pos: number[]; rotY: number; elev?: number; sit?: boolean; /** Inside a building: their room, and its floor (x0, z0, x1, z1) to keep to. */ room?: string; area?: number[] };
+/** A room standing in a building: its zone, where its centre is, its turn (degrees, a quarter turn at a time) and floor height. */
+export type KitRoom = { zone: string; pos: number[]; rot: number; y: number };
+/**
+ * A real door in a doorway. `at` is the middle of the doorway (and of the wall's thickness), `across` runs from the
+ * hinge to the latch, and `into` is the way it swings open.
+ */
+export type KitDoor = { id: string; at: number[]; y: number; w: number; h: number; across: number[]; into: number[]; depth: number; tex: string | null; outer: boolean; lock?: string };
+/** A building put together in code from its rooms: real walls, roof and doors you open. */
+export type Building = { id: string; model: string; style: string; rooms: KitRoom[]; doors: KitDoor[]; walls: { x0: number; x1: number; z0: number; z1: number }[] };
 export type Zone = {
   id: string;
   room: string;
@@ -55,6 +64,10 @@ export type Zone = {
   people: ZonePerson[];
   terrain?: Terrain;
   stairs?: Stair[];
+  /** Open land: buildings you can walk into. */
+  buildings?: Building[];
+  /** A room inside a building out there: where it stands (going here takes you into the building). */
+  host?: { zone: string; at: number[]; yaw: number };
 };
 export type Side = "front" | "back" | "left" | "right";
 export type World = { caseId: string; name: string; start: string; zones: Zone[]; missing: string[] };
@@ -315,8 +328,149 @@ export function buildWorld(opts: {
       z.people.push({ id, name: p.name, file, height: p.height ?? 1.05, pos: spot(z, goal), rotY: 0 });
     }
   }
+  // Buildings you walk into: their rooms stand in the open land, joined by real doors.
+  for (const z of zones) {
+    const rec = opts.records.find((r) => r.id === z.room);
+    const list = (rec?.buildings as { model: string; rooms: string[]; style?: string }[] | undefined) ?? [];
+    for (const b of list) raise(z, b, zones);
+  }
   const start = opts.start && zones.some((z) => z.id === opts.start) ? opts.start : zones[0]?.id ?? "";
   return { caseId: opts.caseId, name: opts.name, start, zones, missing: [...missing].sort() };
+}
+
+const WALL_T = 0.15;
+/** A quarter-turn rotation (three.js sense: degrees about y) of a point or direction. */
+export function turnXZ(v: number[], deg: number) {
+  const a = (deg * Math.PI) / 180, c = Math.round(Math.cos(a)), s = Math.round(Math.sin(a));
+  return [v[0] * c + v[1] * s, -v[0] * s + v[1] * c];
+}
+const angleOf = (v: number[]) => (Math.atan2(v[0], v[1]) * 180) / Math.PI;
+/** A point in a building's room, in the open land's metres. */
+export const roomToWorld = (r: KitRoom, v: number[]) => {
+  const t = turnXZ(v, r.rot);
+  return [t[0] + r.pos[0], t[1] + r.pos[1]];
+};
+export const worldToRoom = (r: KitRoom, v: number[]) => turnXZ([v[0] - r.pos[0], v[1] - r.pos[1]], -r.rot);
+
+/**
+ * Stands a building's rooms in the open land where its Meshy model was: the room whose door leads outside goes at the
+ * model's front, facing the way it did, and each room beyond is set against the wall its door is in, so the
+ * doorways line up through one shared wall. Furniture and people move into the open land (marked with their room
+ * so Edit mode saves them back there); the model is hidden.
+ */
+function raise(land: Zone, def: { model: string; rooms: string[]; style?: string }, zones: Zone[]) {
+  const M = land.models.find((m) => m.id === def.model);
+  if (!M || !M.door) return;
+  const rooms = def.rooms.map((id) => zones.find((q) => q.id === id)).filter((q): q is Zone => !!q);
+  const first = zones.find((q) => q.id === M.door!.to);
+  if (!first || !rooms.includes(first)) return;
+  const inside = new Set(rooms.map((r) => r.id));
+  const doorOf = (r: Zone, to: string) => {
+    for (const side of SIDES) for (const p of r.walls[side].pieces) if (p.to === to) return { side, p };
+    return null;
+  };
+  const front = doorOf(first, land.id);
+  if (!front) return;
+  // The way out of the front door, and the middle of the model's front.
+  const f = footprint(M);
+  const n = M.door.dir != null ? [Math.round(Math.sin((M.door.dir * Math.PI) / 180)), Math.round(Math.cos((M.door.dir * Math.PI) / 180))] : NORMAL[M.face ?? "back"];
+  const half = n[0] ? (f.x1 - f.x0) / 2 : (f.z1 - f.z0) / 2;
+  const F = [(f.x0 + f.x1) / 2 + n[0] * half, (f.z0 + f.z1) / 2 + n[1] * half];
+  const y = heightAt(land.terrain, M.pos[0], M.pos[1]) + 0.02;
+  const place = (r: Zone, side: Side, p: ZonePiece, outward: number[], at: number[]): KitRoom => {
+    // Turn the room so this door's way out of it points `outward`, then slide it so the door sits at `at`.
+    const wp = wallPoint(side, r.size[0], r.size[1], p.x + p.w / 2);
+    const out = [-wp.normal[0], -wp.normal[1]];
+    const rot = (((Math.round((angleOf(outward) - angleOf(out)) / 90) * 90) % 360) + 360) % 360;
+    const d = turnXZ(wp.at, rot);
+    return { zone: r.id, pos: [at[0] - d[0], at[1] - d[1]], rot, y };
+  };
+  const placed = new Map<string, KitRoom>();
+  placed.set(first.id, place(first, front.side, front.p, n, [F[0] - n[0] * WALL_T, F[1] - n[1] * WALL_T]));
+  const queue = [first];
+  while (queue.length) {
+    const a = queue.shift()!;
+    const ka = placed.get(a.id)!;
+    for (const side of SIDES)
+      for (const p of a.walls[side].pieces) {
+        if (!p.to || !inside.has(p.to) || placed.has(p.to)) continue;
+        const b = zones.find((q) => q.id === p.to)!;
+        const back = doorOf(b, a.id);
+        if (!back) continue;
+        const wp = wallPoint(side, a.size[0], a.size[1], p.x + p.w / 2);
+        const out = turnXZ([-wp.normal[0], -wp.normal[1]], ka.rot);
+        const at = roomToWorld(ka, wp.at);
+        // Through one shared wall: two thicknesses.
+        const kb = place(b, back.side, back.p, [-out[0], -out[1]], [at[0] + out[0] * 2 * WALL_T, at[1] + out[1] * 2 * WALL_T]);
+        placed.set(b.id, kb);
+        queue.push(b);
+      }
+  }
+  const kit: KitRoom[] = [...placed.values()];
+  const doors: KitDoor[] = [];
+  const walls: Building["walls"] = [];
+  const seen = new Set<string>();
+  for (const kr of kit) {
+    const r = zones.find((q) => q.id === kr.zone)!;
+    const [w, d] = r.size;
+    // Furniture and people into the open land.
+    for (const m of r.models) {
+      const pos = roomToWorld(kr, m.pos);
+      land.models.push({ ...m, pos, rotY: norm(m.rotY + kr.rot), elev: m.elev + kr.y, room: r.id, door: m.door, size: [...m.size] });
+    }
+    const c0 = roomToWorld(kr, [-w / 2, -d / 2]), c1 = roomToWorld(kr, [w / 2, d / 2]);
+    const area = [Math.min(c0[0], c1[0]), Math.min(c0[1], c1[1]), Math.max(c0[0], c1[0]), Math.max(c0[1], c1[1])];
+    for (const p of r.people) land.people.push({ ...p, pos: roomToWorld(kr, p.pos), rotY: p.rotY + (kr.rot * Math.PI) / 180, elev: (p.elev ?? 0) + 0.02, room: r.id, area });
+    r.people = [];
+    r.host = { zone: land.id, at: roomToWorld(kr, [0, 0]), yaw: (kr.rot * Math.PI) / 180 };
+    for (const side of SIDES) {
+      const pieces = r.walls[side].pieces;
+      const L = side === "front" || side === "back" ? w : d;
+      // Wall to bump into, broken where a door opens.
+      const gaps = pieces.filter((p) => p.to).map((p) => [p.x, p.x + p.w]).sort((a, b) => a[0] - b[0]);
+      let u = 0;
+      const runs: number[][] = [];
+      for (const g of gaps) {
+        if (g[0] > u) runs.push([u, g[0]]);
+        u = Math.max(u, g[1]);
+      }
+      if (u < L) runs.push([u, L]);
+      for (const [u0, u1] of runs) {
+        const a = wallPoint(side, w, d, u0), b = wallPoint(side, w, d, u1);
+        const o = [-a.normal[0] * WALL_T, -a.normal[1] * WALL_T];
+        const pts = [a.at, b.at, [a.at[0] + o[0], a.at[1] + o[1]], [b.at[0] + o[0], b.at[1] + o[1]]].map((q) => roomToWorld(kr, q));
+        walls.push({ x0: Math.min(...pts.map((q) => q[0])), x1: Math.max(...pts.map((q) => q[0])), z0: Math.min(...pts.map((q) => q[1])), z1: Math.max(...pts.map((q) => q[1])) });
+      }
+      // A door in each doorway (once for a doorway two rooms share).
+      for (const p of pieces) {
+        if (!p.to || (p.to !== land.id && !inside.has(p.to))) continue;
+        const key = [r.id, p.to].sort().join("|");
+        if (p.to !== land.id && seen.has(key)) continue;
+        seen.add(key);
+        const outer = p.to === land.id;
+        const depth = outer ? WALL_T : 2 * WALL_T;
+        const wp = wallPoint(side, w, d, p.x + p.w / 2);
+        const into = turnXZ(wp.normal, kr.rot);
+        const mid = roomToWorld(kr, wp.at);
+        const at = [mid[0] - into[0] * (depth / 2), mid[1] - into[1] * (depth / 2)];
+        // Hinged on the left as you come in.
+        const across = turnXZ(wallPoint(side, w, d, p.x + p.w).at.map((v, i) => v - wallPoint(side, w, d, p.x).at[i]), kr.rot).map((v) => v / p.w);
+        doors.push({ id: `${r.id}:${p.to}`, at, y: kr.y, w: p.w, h: p.h, across, into, depth, tex: p.tex, outer });
+      }
+    }
+  }
+  // The path to the old front door stops at the new one.
+  for (const p of land.terrain?.paths ?? []) {
+    for (const k of [0, p.pts.length - 1]) {
+      const q = p.pts[k];
+      if (Math.abs((q[0] - F[0]) * n[1] - (q[1] - F[1]) * n[0]) < 1.5 && (q[0] - F[0]) * n[0] + (q[1] - F[1]) * n[1] < 0.5 && (q[0] - F[0]) * n[0] + (q[1] - F[1]) * n[1] > -3)
+        p.pts[k] = [F[0] + n[0] * 0.05, F[1] + n[1] * 0.05];
+    }
+  }
+  M.kit = true;
+  M.solid = false;
+  land.buildings = [...(land.buildings ?? []), { id: def.model, model: def.model, style: def.style ?? "plaster", rooms: kit, doors, walls }];
+  land.doors = doorsOf(land);
 }
 
 /** A clear spot to stand: near the middle, a little toward the front, away from furniture, doors and other people. */
@@ -352,7 +506,7 @@ export function doorsOf(z: Zone): ZoneDoor[] {
         out.push({ to: p.to, label: p.label, at: wp.at, span: p.w / 2, normal: wp.normal, kind: "wall", y: p.y });
       }
   for (const m of z.models) {
-    if (!m.door) continue;
+    if (!m.door || m.kit) continue;
     const { to, through } = m.door;
     // The way in faces the side set in Edit mode (degrees, world), or the side the record names.
     const n = m.door.dir != null ? [Math.round(Math.sin((m.door.dir * Math.PI) / 180)), Math.round(Math.cos((m.door.dir * Math.PI) / 180))] : NORMAL[m.face ?? "back"];
@@ -996,11 +1150,28 @@ export function layoutOf(z: Zone): SavedLayout {
   return {
     v: 1,
     size: [...z.size],
-    models: z.models.map((m) => ({ ...m, file: null, elev: m.elev - heightAt(z.terrain, m.pos[0], m.pos[1]) })),
+    models: z.models.filter((m) => !m.room).map((m) => ({ ...m, kit: undefined, solid: m.kit ? true : m.solid, file: null, elev: m.elev - heightAt(z.terrain, m.pos[0], m.pos[1]) })),
     pieces: Object.fromEntries(SIDES.map((s) => [s, z.walls[s].pieces.map((p) => ({ x: p.x, y: p.y, w: p.w, h: p.h }))])),
     fixtures: z.fixtures,
     decals: z.decals,
-    people: z.people.map((p) => ({ id: p.id, pos: [...p.pos], rotY: p.rotY, elev: p.elev, sit: p.sit })),
+    people: z.people.filter((p) => !p.room).map((p) => ({ id: p.id, pos: [...p.pos], rotY: p.rotY, elev: p.elev, sit: p.sit })),
+  };
+}
+
+/**
+ * A building room's arrangement for saving to that room: its furniture and people as they stand in the open land,
+ * turned back into the room's own metres.
+ */
+export function roomLayoutOf(land: Zone, room: Zone, kr: KitRoom): SavedLayout {
+  const base = layoutOf(room);
+  return {
+    ...base,
+    models: land.models
+      .filter((m) => m.room === room.id)
+      .map((m) => ({ ...m, room: undefined, file: null, pos: worldToRoom(kr, m.pos), rotY: norm(m.rotY - kr.rot), elev: m.elev - kr.y })),
+    people: land.people
+      .filter((p) => p.room === room.id)
+      .map((p) => ({ id: p.id, pos: worldToRoom(kr, p.pos), rotY: p.rotY - (kr.rot * Math.PI) / 180, elev: (p.elev ?? 0) - 0.02, sit: p.sit })),
   };
 }
 

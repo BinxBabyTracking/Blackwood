@@ -166,7 +166,10 @@ function choose(w: World, n: Npc, t: number) {
   const z = w.zone;
   const home = n.P.pos;
   const reach = z.outdoor ? 8 : 99;
-  const near = (m: ZoneModel) => Math.hypot(m.pos[0] - home[0], m.pos[1] - home[1]) < reach && !taken(w, n, m);
+  // Inside a building: keep to your own room.
+  const A = n.P.area;
+  const within = (x: number, y: number) => !A || (x > A[0] + 0.3 && x < A[2] - 0.3 && y > A[1] + 0.3 && y < A[3] - 0.3);
+  const near = (m: ZoneModel) => (A ? within(m.pos[0], m.pos[1]) : Math.hypot(m.pos[0] - home[0], m.pos[1] - home[1]) < reach) && !taken(w, n, m);
   const seats = z.models.filter((m) => SEAT.test(m.id) && near(m));
   const works = z.models.filter((m) => m.solid && WORK.test(m.id) && !NOT_WORK.test(m.id) && !SEAT.test(m.id) && near(m));
   for (let tries = 0; tries < 6; tries++) {
@@ -176,8 +179,8 @@ function choose(w: World, n: Npc, t: number) {
     else if (r < 0.7 && seats.length) act = seatSpot(w, n, seats[Math.floor(Math.random() * seats.length)]);
     else {
       const rr = z.outdoor ? 6 : Math.max(z.size[0], z.size[1]) / 2;
-      const g = [home[0] + (Math.random() * 2 - 1) * rr, home[1] + (Math.random() * 2 - 1) * rr];
-      if (Math.hypot(g[0] - n.x, g[1] - n.z) > 0.8 && clearAt(w, g[0], g[1], 0.4) && lineClear(w, [n.x, n.z], g)) {
+      const g = A ? [A[0] + Math.random() * (A[2] - A[0]), A[1] + Math.random() * (A[3] - A[1])] : [home[0] + (Math.random() * 2 - 1) * rr, home[1] + (Math.random() * 2 - 1) * rr];
+      if (within(g[0], g[1]) && Math.hypot(g[0] - n.x, g[1] - n.z) > 0.8 && clearAt(w, g[0], g[1], 0.4) && lineClear(w, [n.x, n.z], g)) {
         n.goal = g;
         n.act = null;
         n.mode = "walk";

@@ -7,12 +7,12 @@ import { GLTFLoader, type GLTF } from "three/examples/jsm/loaders/GLTFLoader.js"
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { trimRuns, wallRects } from "./walk-viewer";
-import { doorsOf, floorSize, groundAt, heightAt, layoutOf } from "./zones";
+import { doorsOf, floorSize, groundAt, heightAt, layoutOf, roomLayoutOf } from "./zones";
 import { makeAurora } from "./aurora";
 import { holdNpc, makeNpc, resetNpc, rigOf, stepNpc } from "./npc";
 import type { Npc } from "./npc";
 import { clearRoomLayout, saveRoomLayout } from "@/app/actions/art";
-import type { Side, World, Zone, ZoneModel, ZonePerson, ZoneWall } from "./zones";
+import type { Building, KitDoor, Side, World, Zone, ZoneModel, ZonePerson, ZoneWall } from "./zones";
 
 /*
  * A case's walkable world from its room records: one place at a time, and walking into a door, a building's front
@@ -229,6 +229,101 @@ function edgeFog<M extends THREE.Material>(mat: M, rim: number[]): M {
   mat.customProgramCacheKey = () => "edgefog";
   mat.needsUpdate = true;
   return mat;
+}
+
+/* ---------- Building kit: walls, roofs and doors put together in code ---------- */
+
+let kitTex: { plaster: THREE.CanvasTexture; shingle: THREE.CanvasTexture; stone: THREE.CanvasTexture } | null = null;
+/** Painted plaster between dark timbers, red clay shingles, and a fieldstone plinth: drawn once, tiling. */
+function kitTextures() {
+  if (kitTex) return kitTex;
+  let seed = 99;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const make = (w: number, h: number, draw: (g: CanvasRenderingContext2D) => void) => {
+    const c = document.createElement("canvas");
+    c.width = w;
+    c.height = h;
+    draw(c.getContext("2d")!);
+    const t = new THREE.CanvasTexture(c);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = 4;
+    return t;
+  };
+  // 2 m square: cream plaster, a timber frame round it and a brace.
+  const plaster = make(512, 512, (g) => {
+    g.fillStyle = "#efe2c4";
+    g.fillRect(0, 0, 512, 512);
+    for (let i = 0; i < 2600; i++) {
+      g.fillStyle = `rgba(${150 + rnd() * 60},${130 + rnd() * 50},${100 + rnd() * 40},${0.05 + rnd() * 0.07})`;
+      g.fillRect(rnd() * 512, rnd() * 512, 2 + rnd() * 9, 2 + rnd() * 9);
+    }
+    g.fillStyle = "#4a2e1d";
+    g.fillRect(0, 0, 26, 512);
+    g.fillRect(0, 0, 512, 22);
+    g.fillRect(0, 250, 512, 18);
+    g.save();
+    g.translate(26, 268);
+    g.rotate(-Math.atan2(240, 486));
+    g.fillRect(0, 0, Math.hypot(486, 240), 16);
+    g.restore();
+    g.strokeStyle = "rgba(0,0,0,0.25)";
+    for (let i = 0; i < 40; i++) {
+      g.beginPath();
+      const y = rnd() * 512;
+      g.moveTo(0, y);
+      g.lineTo(26, y + rnd() * 6);
+      g.stroke();
+    }
+  });
+  // 1 m square: rows of rounded shingles, staggered.
+  const shingle = make(256, 256, (g) => {
+    g.fillStyle = "#5a1712";
+    g.fillRect(0, 0, 256, 256);
+    for (let row = 0; row < 8; row++)
+      for (let k = -1; k < 9; k++) {
+        const x = k * 32 + (row % 2) * 16, y = row * 32;
+        const v = 0.75 + rnd() * 0.35;
+        g.fillStyle = `rgb(${Math.round(160 * v)},${Math.round(42 * v)},${Math.round(34 * v)})`;
+        g.beginPath();
+        g.moveTo(x + 1, y);
+        g.lineTo(x + 31, y);
+        g.lineTo(x + 31, y + 22);
+        g.quadraticCurveTo(x + 16, y + 34, x + 1, y + 22);
+        g.closePath();
+        g.fill();
+        g.fillStyle = "rgba(0,0,0,0.25)";
+        g.fillRect(x + 1, y, 30, 3);
+      }
+  });
+  // 1 m square: grey fieldstones in mortar.
+  const stone = make(256, 256, (g) => {
+    g.fillStyle = "#59575a";
+    g.fillRect(0, 0, 256, 256);
+    for (let row = 0; row < 5; row++)
+      for (let k = -1; k < 6; k++) {
+        const x = k * 52 + (row % 2) * 26 + rnd() * 6, y = row * 52 + rnd() * 4;
+        const v = 0.7 + rnd() * 0.4;
+        g.fillStyle = `rgb(${Math.round(150 * v)},${Math.round(146 * v)},${Math.round(150 * v)})`;
+        g.beginPath();
+        g.ellipse(x + 25, y + 24, 23, 21, rnd() * 0.5, 0, Math.PI * 2);
+        g.fill();
+      }
+  });
+  return (kitTex = { plaster, shingle, stone });
+}
+/** A box whose texture repeats every `tile` metres along its faces. */
+function kitBox(w: number, h: number, d: number, mat: THREE.Material, tile = 0) {
+  const g = new THREE.BoxGeometry(w, h, d);
+  if (tile) {
+    const uv = g.attributes.uv as THREE.BufferAttribute, n = g.attributes.normal as THREE.BufferAttribute;
+    for (let i = 0; i < uv.count; i++) {
+      const ax = Math.abs(n.getX(i)), ay = Math.abs(n.getY(i));
+      const [a, b] = ax > 0.5 ? [d, h] : ay > 0.5 ? [w, d] : [w, h];
+      uv.setXY(i, (uv.getX(i) * a) / tile, (uv.getY(i) * b) / tile);
+    }
+  }
+  return new THREE.Mesh(g, mat);
 }
 
 /** Snowy night haze: what the distance fades into. */
@@ -520,6 +615,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
   const fineRef = useRef(false);
   const [showMissing, setShowMissing] = useState(false);
   const [near, setNear] = useState<string | null>(null);
+  const [hint, setHint] = useState<string | null>(null);
+  const [placeName, setPlaceName] = useState<string | null>(null);
   const [touch, setTouch] = useState(false);
   const [fade, setFade] = useState(false);
   const zone = world.zones.find((z) => z.id === zoneId) ?? world.zones[0];
@@ -630,6 +727,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       const z = current;
       if (!z) return;
       blockers = [];
+      for (const b of z.buildings ?? []) blockers.push(...b.walls);
       for (const M of z.models) {
         const [fw, fd] = floorSize(M);
         const onGround = M.elev - heightAt(z.terrain, M.pos[0], M.pos[1]) < 0.05;
@@ -685,6 +783,13 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     };
     let snow: THREE.Points | null = null;
     let aurora: ReturnType<typeof makeAurora> | null = null;
+    /** Doors in buildings: closed or open, and how far round they've swung (0 shut, 1 open). */
+    let kitDoors: { d: KitDoor; pivot: THREE.Group; slab: THREE.Mesh; base: number; swing: number; open: boolean; k: number }[] = [];
+    /** Inside a building (0 out, 1 in), eased, and the room you're in. */
+    let indoors = 0;
+    let roomHere: string | null = null;
+    let kitRooms: { x0: number; x1: number; z0: number; z1: number; name: string }[] = [];
+    let outerLights: { hemi: THREE.HemisphereLight; moon: THREE.DirectionalLight; warm: THREE.AmbientLight } | null = null;
     let token = 0;
     let cooldown = 0;
 
@@ -765,7 +870,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     };
     const plain = (color: number) => new THREE.MeshLambertMaterial({ color, side: THREE.DoubleSide });
 
-    const buildWall = (z: Zone, side: Side, def: ZoneWall, g: THREE.Group) => {
+    const buildWall = (z: Zone, side: Side, def: ZoneWall, g: THREE.Group, kit = false) => {
       const f = wallFrame(z, side);
       const H = z.size[2];
       const W = f.width;
@@ -807,6 +912,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         wg.add(top);
       }
       for (const p of def.pieces) {
+        // In a building, a doorway holds a real door, and a window looks out on the real world.
+        if (kit && p.to) continue;
         const t = tex(p.tex);
         const mat = t ? new THREE.MeshLambertMaterial({ map: t, alphaTest: 0.5, side: THREE.DoubleSide }) : new THREE.MeshLambertMaterial({ color: 0x8a5a3a, transparent: true, opacity: 0.6 });
         if (t && p.opening)
@@ -828,7 +935,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           s.position.set(p.x + p.w / 2 - W / 2, p.y + p.h + 0.25, 0.05);
           wg.add(s);
         }
-        if (p.opening) {
+        if (p.opening && !kit) {
           // What's seen through it: the view outside, or a warm dark doorway.
           const view = tex(p.outside);
           const back = new THREE.Mesh(
@@ -890,6 +997,185 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
      * Woods past the edge of open land: thick near the edge (the village's own pines, many at once) and thinning,
      * lower-detail, into the snowy haze. Kept off the roads that run out into them.
      */
+    /**
+     * A building put together from its rooms: each room's inside from its own data (floor, ceiling, walls, trim,
+     * lamps), and outside a kit of pieces: thick plastered timber-frame walls with corner posts on a stone plinth,
+     * framed windows, a steep shingled roof with snow on it and deep eaves, and a real door in every doorway.
+     */
+    const drawBuilding = (b: Building, parent: THREE.Group) => {
+      const K = kitTextures();
+      const timber = new THREE.MeshLambertMaterial({ color: 0x4a2e1d });
+      const stoneM = new THREE.MeshLambertMaterial({ map: K.stone });
+      const shingleM = new THREE.MeshLambertMaterial({ map: K.shingle });
+      const snowM = new THREE.MeshLambertMaterial({ color: 0xf2f6ff });
+      const plasterM = new THREE.MeshLambertMaterial({ map: K.plaster, side: THREE.DoubleSide });
+      for (const kr of b.rooms) {
+        const rz = world.zones.find((q) => q.id === kr.zone);
+        if (!rz) continue;
+        const [w, d, H] = rz.size;
+        {
+          const half = kr.rot % 180 === 0 ? [w / 2, d / 2] : [d / 2, w / 2];
+          kitRooms.push({ x0: kr.pos[0] - half[0], x1: kr.pos[0] + half[0], z0: kr.pos[1] - half[1], z1: kr.pos[1] + half[1], name: rz.name });
+        }
+        const g = new THREE.Group();
+        g.position.set(kr.pos[0], kr.y, kr.pos[1]);
+        g.rotation.y = (kr.rot * Math.PI) / 180;
+        parent.add(g);
+        // Inside.
+        const ftx = tiled(rz.floor.tex);
+        const floor = new THREE.Mesh(tiledPlane(w, d, 0, 0, rz.floor.tile), ftx ? new THREE.MeshLambertMaterial({ map: ftx }) : plain(0x8a6a4a));
+        floor.rotation.x = -Math.PI / 2;
+        g.add(floor);
+        if (rz.ceiling) {
+          const ct = tiled(rz.ceiling.tex);
+          const ceil = new THREE.Mesh(tiledPlane(w, d, 0, 0, rz.ceiling.tile), ct ? new THREE.MeshLambertMaterial({ map: ct }) : plain(0xd8cbb0));
+          ceil.rotation.x = Math.PI / 2;
+          ceil.position.y = H;
+          g.add(ceil);
+        }
+        for (const dc of rz.decals) {
+          const t = dc.tile ? tiled(dc.tex) : tex(dc.tex);
+          if (!t) continue;
+          const geo = dc.tile ? tiledPlane(dc.size[0], dc.size[1], 0, 0, dc.tile) : new THREE.PlaneGeometry(dc.size[0], dc.size[1]);
+          const m = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ map: t, alphaTest: 0.3, transparent: true }));
+          m.rotation.set(-Math.PI / 2, 0, (dc.rotY * Math.PI) / 180);
+          m.position.set(dc.pos[0], 0.01, dc.pos[1]);
+          g.add(m);
+        }
+        let lit = 0;
+        for (const fx of rz.fixtures) {
+          const t = tex(fx.tex);
+          const m = new THREE.Mesh(new THREE.PlaneGeometry(fx.size[0], fx.size[1]), t ? new THREE.MeshLambertMaterial({ map: t, alphaTest: 0.5, emissive: 0xffd9a0, emissiveMap: fx.light ? t : null, emissiveIntensity: 0.9 }) : plain(0xffe0a0));
+          m.rotation.x = Math.PI / 2;
+          m.position.set(fx.pos[0], H - 0.02, fx.pos[1]);
+          g.add(m);
+          if (fx.light && lit < 3) {
+            lit++;
+            const pl = new THREE.PointLight(0xffd29a, 6, 12, 1.6);
+            pl.position.set(fx.pos[0], H - 0.4, fx.pos[1]);
+            g.add(pl);
+          }
+        }
+        if (!lit) {
+          const pl = new THREE.PointLight(0xffd29a, 7, 12, 1.4);
+          pl.position.set(0, H - 0.4, 0);
+          g.add(pl);
+        }
+        for (const side of ["front", "back", "left", "right"] as Side[]) buildWall(rz, side, rz.walls[side], g, true);
+
+        // Outside: plastered walls with the openings cut through, framed.
+        const top = H + 0.3, foot = -0.7;
+        for (const side of ["front", "back", "left", "right"] as Side[]) {
+          const f = wallFrame(rz, side);
+          const W = f.width;
+          const wg = new THREE.Group();
+          wg.position.set(f.pos[0], 0, f.pos[1]);
+          wg.rotation.y = f.rot;
+          g.add(wg);
+          const holes = rz.walls[side].pieces.filter((p) => p.opening).map((p) => ({ x0: p.x - W / 2, x1: p.x + p.w - W / 2, y0: p.y, y1: p.y + p.h }));
+          for (const q of wallRects(-W / 2 - WALL, W / 2 + WALL, foot, top, holes)) {
+            const m = new THREE.Mesh(tiledPlane(q.x1 - q.x0, q.y1 - q.y0, -q.x1, q.y0, 2), plasterM);
+            m.rotation.y = Math.PI;
+            m.position.set((q.x0 + q.x1) / 2, (q.y0 + q.y1) / 2, -WALL);
+            wg.add(m);
+          }
+          // Plinth along the foot of the wall.
+          const pl = kitBox(W + 2 * WALL + 0.16, 0.75, 0.08, stoneM, 1);
+          pl.position.set(0, foot + 0.375 + 0.3, -WALL - 0.04);
+          wg.add(pl);
+          for (const p of rz.walls[side].pieces) {
+            if (!p.opening) continue;
+            const cx = p.x + p.w / 2 - W / 2;
+            const fw = 0.11, out = -WALL - 0.035;
+            const jambs: [number, number, number, number][] = [
+              [cx - p.w / 2 - fw / 2, p.y + p.h / 2, fw, p.h + fw],
+              [cx + p.w / 2 + fw / 2, p.y + p.h / 2, fw, p.h + fw],
+              [cx, p.y + p.h + fw / 2, p.w + 2 * fw, fw],
+            ];
+            if (!p.to) jambs.push([cx, p.y - fw / 2, p.w + 2 * fw + 0.1, fw]);
+            for (const [x, y, bw, bh] of jambs) {
+              const m = kitBox(bw, bh, 0.08, timber);
+              m.position.set(x, y, out);
+              wg.add(m);
+            }
+            if (!p.to) {
+              // A sill with snow on it.
+              const sill = kitBox(p.w + 0.36, 0.06, 0.2, timber);
+              sill.position.set(cx, p.y - fw - 0.03, -WALL - 0.1);
+              const sn = kitBox(p.w + 0.3, 0.04, 0.16, snowM);
+              sn.position.set(cx, p.y - fw + 0.02, -WALL - 0.11);
+              wg.add(sill, sn);
+            }
+          }
+        }
+        // Corner posts.
+        for (const [sx, sz] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) {
+          const post = kitBox(WALL + 0.1, top - foot, WALL + 0.1, timber);
+          post.position.set(sx * (w / 2 + WALL / 2), (top + foot) / 2, sz * (d / 2 + WALL / 2));
+          g.add(post);
+        }
+        // Ceiling slab, then the roof: ridge along the longer side, steep, with deep eaves and snow.
+        const slab = kitBox(w + 2 * WALL + 0.1, 0.32, d + 2 * WALL + 0.1, timber);
+        slab.position.y = H + 0.16;
+        g.add(slab);
+        const along = w >= d;
+        const span = (along ? d : w) + 2 * WALL + 0.9, len = (along ? w : d) + 2 * WALL + 0.16;
+        const rise = (span / 2) * Math.tan((42 * Math.PI) / 180);
+        const slope = Math.hypot(span / 2, rise), pitch = Math.atan2(rise, span / 2);
+        const roof = new THREE.Group();
+        roof.position.y = top;
+        if (!along) roof.rotation.y = Math.PI / 2;
+        g.add(roof);
+        for (const s2 of [-1, 1]) {
+          const sl = kitBox(len, 0.16, slope + 0.1, shingleM, 1);
+          sl.position.set(0, rise / 2, (s2 * span) / 4);
+          sl.rotation.x = s2 * pitch;
+          roof.add(sl);
+          const sn = kitBox(len - 0.12, 0.12, slope - 0.15, snowM);
+          sn.position.set(0, rise / 2 + Math.cos(pitch) * 0.13, (s2 * span) / 4 + s2 * Math.sin(pitch) * 0.13);
+          sn.rotation.x = s2 * pitch;
+          roof.add(sn);
+        }
+        // Gable ends, plastered.
+        const gw = span - 0.9;
+        const tri = new THREE.Shape([new THREE.Vector2(-gw / 2, 0), new THREE.Vector2(gw / 2, 0), new THREE.Vector2(0, rise * (gw / span))]);
+        for (const e of [-1, 1]) {
+          const geo = new THREE.ShapeGeometry(tri);
+          const uv = geo.attributes.uv as THREE.BufferAttribute, pa = geo.attributes.position as THREE.BufferAttribute;
+          for (let i = 0; i < uv.count; i++) uv.setXY(i, pa.getX(i) / 2, pa.getY(i) / 2);
+          const m = new THREE.Mesh(geo, plasterM);
+          m.rotation.y = Math.PI / 2;
+          m.position.set((e * len) / 2 - e * 0.08, 0, 0);
+          roof.add(m);
+        }
+      }
+      // Doors.
+      for (const dr of b.doors) {
+        const t = tex(dr.tex);
+        const face = t ? new THREE.MeshLambertMaterial({ map: t, alphaTest: 0.5 }) : new THREE.MeshLambertMaterial({ color: 0x7a4a2a });
+        const edge = new THREE.MeshLambertMaterial({ color: 0x5a3820 });
+        const slab = new THREE.Mesh(new THREE.BoxGeometry(dr.w - 0.04, dr.h - 0.03, 0.06), [edge, edge, edge, edge, face, face]);
+        slab.position.set((dr.w - 0.04) / 2 + 0.02, (dr.h - 0.03) / 2, 0);
+        const pivot = new THREE.Group();
+        pivot.position.set(dr.at[0] - (dr.across[0] * dr.w) / 2, dr.y, dr.at[1] - (dr.across[1] * dr.w) / 2);
+        const base = Math.atan2(-dr.across[1], dr.across[0]);
+        pivot.rotation.y = base;
+        pivot.add(slab);
+        parent.add(pivot);
+        slab.userData.door = dr.id;
+        // Which way round opens it into the room.
+        const swing = Math.cos(base + 1) * dr.into[0] - Math.sin(base + 1) * dr.into[1] > 0 ? 1 : -1;
+        kitDoors.push({ d: dr, pivot, slab, base, swing, open: false, k: 0 });
+        if (dr.outer) {
+          // A stone step outside.
+          const step = kitBox(dr.w + 0.5, 0.18, 0.55, stoneM, 1);
+          step.position.set(dr.at[0] - dr.into[0] * (dr.depth / 2 + 0.28), dr.y - 0.09, dr.at[1] - dr.into[1] * (dr.depth / 2 + 0.28));
+          step.rotation.y = base;
+          parent.add(step);
+        }
+      }
+    };
+
     const plantWoods = (z: Zone, T: NonNullable<Zone["terrain"]>) => {
       const parent = root!;
       const my = token;
@@ -990,6 +1276,10 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       people = [];
       snow = null;
       aurora = null;
+      kitDoors = [];
+      kitRooms = [];
+      outerLights = null;
+      roomHere = null;
       const [w, d, H] = z.size;
       setReady(false);
       setProgress(0);
@@ -1010,10 +1300,15 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           root.add(aurora.group);
         }
         root.add(stars);
-        root.add(new THREE.HemisphereLight(0x9fb4e8, 0x2a2e48, 1.5));
+        const hemi = new THREE.HemisphereLight(0x9fb4e8, 0x2a2e48, 1.5);
+        root.add(hemi);
         const moon = new THREE.DirectionalLight(0xc8d6ff, 0.9);
         moon.position.set(-30, 60, 20);
         root.add(moon);
+        // Warm light that comes up when you step inside a building.
+        const warm = new THREE.AmbientLight(0xffe2c0, 0);
+        root.add(warm);
+        outerLights = { hemi, moon, warm };
         // Falling snow around you.
         const n = 2200, sp2: number[] = [];
         for (let i = 0; i < n; i++) sp2.push((Math.random() - 0.5) * 56, Math.random() * 16, (Math.random() - 0.5) * 56);
@@ -1093,14 +1388,17 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
             dx /= len;
             dz /= len;
             if (i > 0) along += Math.hypot(q[0] - pts[i - 1][0], q[1] - pts[i - 1][1]);
-            for (const side of [-1, 1]) {
+            // Several points across, so the cobbles follow a hump in the ground rather than cutting under it.
+            const ACROSS = 6;
+            for (let k = 0; k <= ACROSS; k++) {
+              const side = (k / ACROSS) * 2 - 1;
               const x = q[0] - dz * side * (path.w / 2), zz = q[1] + dx * side * (path.w / 2);
-              pos2.push(x, heightAt(T, x, zz) + 0.04, zz);
+              pos2.push(x, heightAt(T, x, zz) + 0.07, zz);
               uvs.push(((side + 1) / 2) * (path.w / COBBLE_M), along / COBBLE_M);
             }
             if (i > 0) {
-              const o = i * 2;
-              idx.push(o - 2, o - 1, o, o - 1, o + 1, o);
+              const o = i * (ACROSS + 1), p0 = o - (ACROSS + 1);
+              for (let k = 0; k < ACROSS; k++) idx.push(p0 + k, p0 + k + 1, o + k, p0 + k + 1, o + k + 1, o + k);
             }
           });
           const pg = new THREE.BufferGeometry();
@@ -1120,7 +1418,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
             const cu = cg.attributes.uv as THREE.BufferAttribute;
             for (let i = 0; i < ca.count; i++) {
               const x = ca.getX(i) + e[0], zz = ca.getZ(i) + e[1];
-              ca.setXYZ(i, x, heightAt(T, x, zz) + 0.038, zz);
+              ca.setXYZ(i, x, heightAt(T, x, zz) + 0.068, zz);
               cu.setXY(i, x / COBBLE_M, zz / COBBLE_M);
             }
             cg.computeVertexNormals();
@@ -1183,6 +1481,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         if (z.outdoor) buildBackdrop(z, side, z.walls[side].backdrop, root);
         else buildWall(z, side, z.walls[side], root);
       }
+      for (const b of z.buildings ?? []) drawBuilding(b, root);
 
       // Furniture, buildings and props.
       const contact = (() => {
@@ -1197,6 +1496,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         return new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false });
       })();
       for (const M of z.models) {
+        if (M.kit) continue;
         const [fw, fd] = floorSize(M);
         const ground = heightAt(z.terrain, M.pos[0], M.pos[1]);
         const onGround = M.elev - ground < 0.05;
@@ -1208,7 +1508,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         placed.set(M, { shadow: sh });
         if (M.light && lamps < 10 && !M.scatter) {
           lamps++;
-          const pl = new THREE.PointLight(0xffc77a, z.outdoor ? 10 : 4, z.outdoor ? 14 : 8, 1.6);
+          const pl = new THREE.PointLight(0xffc77a, z.outdoor && !M.room ? 10 : 4, z.outdoor && !M.room ? 14 : 8, 1.6);
           pl.position.set(M.pos[0], M.elev + M.size[2] * 0.9, M.pos[1]);
           root.add(pl);
         }
@@ -1415,17 +1715,27 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       }
       cooldown = 1;
     };
+    /** Into a place: a room inside a building is entered where it stands in the open land. */
+    const enter = (z: Zone, from?: string) => {
+      const host = z.host ? world.zones.find((q) => q.id === z.host!.zone) : null;
+      if (host && z.host) {
+        build(host, undefined, { x: z.host.at[0], z: z.host.at[1], yaw: z.host.yaw, pitch: 0 });
+        setZoneId(host.id);
+      } else {
+        build(z, from);
+        setZoneId(z.id);
+      }
+    };
     goRef.current = (to: string, from?: string) => {
       const z = world.zones.find((q) => q.id === to);
       if (!z) return;
       setFade(true);
       setTimeout(() => {
-        build(z, from);
-        setZoneId(z.id);
+        enter(z, from);
         setTimeout(() => setFade(false), 120);
       }, 220);
     };
-    build(zone);
+    enter(zone);
     // Edit mode: arrange one piece at a time (move, raise, turn, scale, copy, remove) and the room's size; saved per room.
     const ray = new THREE.Raycaster();
     const ft = (v: number) => `${(v / 0.3048).toFixed(1)} ft`;
@@ -1447,7 +1757,16 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         const z = current;
         if (!z) return;
         const res = await saveRoomLayout(z.room, JSON.parse(JSON.stringify(layoutOf(z)))).catch(() => ({ error: "The connection dropped." }));
-        setSaving("error" in res ? res.error : "Saved");
+        // Rooms inside buildings keep their own arrangements.
+        let err = "error" in res ? res.error : "";
+        for (const b of z.buildings ?? [])
+          for (const kr of b.rooms) {
+            const rz = world.zones.find((q) => q.id === kr.zone);
+            if (!rz) continue;
+            const r2 = await saveRoomLayout(rz.room, JSON.parse(JSON.stringify(roomLayoutOf(z, rz, kr)))).catch(() => ({ error: "The connection dropped." }));
+            if ("error" in r2) err = r2.error;
+          }
+        setSaving(err || "Saved");
       }, 700);
     };
     const settle = () => {
@@ -1592,6 +1911,10 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       room: (dw: number, dd: number, dh: number) => {
         const z = current;
         if (!z) return;
+        if (z.buildings?.length) {
+          setSaving("Room sizes inside buildings can't be changed here yet.");
+          return;
+        }
         const step = fineRef.current ? 0.1 : 0.3;
         z.size = [Math.max(2, z.size[0] + dw * step), Math.max(2, z.size[1] + dd * step), Math.max(2, z.size[2] + dh * step)];
         for (const side of ["front", "back", "left", "right"] as Side[]) {
@@ -1647,6 +1970,14 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       const [w, d] = z.size;
       if (x < -w / 2 + RADIUS || x > w / 2 - RADIUS || zz < -d / 2 + RADIUS || zz > d / 2 - RADIUS) return false;
       if (blockers.some((b) => x > b.x0 - RADIUS && x < b.x1 + RADIUS && zz > b.z0 - RADIUS && zz < b.z1 + RADIUS)) return false;
+      // A door that isn't open (or is still swinging) fills its doorway.
+      for (const kd of kitDoors) {
+        if (kd.k > 0.8) continue;
+        const { at, across, w: dw } = kd.d;
+        const ax = at[0] - (across[0] * dw) / 2, az = at[1] - (across[1] * dw) / 2;
+        const t = Math.max(0, Math.min(dw, (x - ax) * across[0] + (zz - az) * across[1]));
+        if (Math.hypot(x - ax - across[0] * t, zz - az - across[1] * t) < RADIUS + 0.04) return false;
+      }
       // People: you can't walk through them, but you can always step away.
       return !people.some((p) => {
         const d = Math.hypot(x - p.npc.x, zz - p.npc.z);
@@ -1684,10 +2015,41 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     };
 
     const keys = new Set<string>();
+    /** The door you're facing, close by. */
+    const doorAhead = () => {
+      const fx = -Math.sin(look.yaw), fz = -Math.cos(look.yaw);
+      let best: (typeof kitDoors)[number] | null = null, bd = 2.4;
+      for (const kd of kitDoors) {
+        const dx = kd.d.at[0] - pos.x, dz = kd.d.at[1] - pos.z;
+        const dist = Math.hypot(dx, dz);
+        if (dist < bd && (dx * fx + dz * fz) / (dist || 1) > 0.35) {
+          bd = dist;
+          best = kd;
+        }
+      }
+      return best;
+    };
+    /** The door under a tap or click (or the middle of the screen when the mouse is captured). */
+    const doorTapped = (cx: number, cy: number) => {
+      if (!kitDoors.length) return null;
+      const r = canvas.getBoundingClientRect();
+      const locked = document.pointerLockElement === canvas;
+      ray.setFromCamera(new THREE.Vector2(locked ? 0 : ((cx - r.left) / r.width) * 2 - 1, locked ? 0 : -((cy - r.top) / r.height) * 2 + 1), camera);
+      const hit = ray.intersectObjects(kitDoors.map((kd) => kd.slab), false)[0];
+      if (!hit || hit.distance > 3.5) return null;
+      return kitDoors.find((kd) => kd.slab === hit.object) ?? null;
+    };
     const onKey = (down: boolean) => (e: KeyboardEvent) => {
       const tg = e.target as HTMLElement | null;
       if (tg && (tg.tagName === "INPUT" || tg.tagName === "SELECT" || tg.tagName === "TEXTAREA")) return;
       const k = e.key.toLowerCase();
+      if (k === "e") {
+        if (down && !e.repeat) {
+          const kd = doorAhead();
+          if (kd) kd.open = !kd.open;
+        }
+        return;
+      }
       if (!["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright", "shift"].includes(k)) return;
       if (down) keys.add(k);
       else keys.delete(k);
@@ -1699,6 +2061,11 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     const canvas = renderer.domElement;
     const onClick = (e: MouseEvent) => {
       if (editRef.current) return pick(e.clientX, e.clientY);
+      const kd = doorTapped(e.clientX, e.clientY);
+      if (kd) {
+        kd.open = !kd.open;
+        return;
+      }
       if (!("ontouchstart" in window)) canvas.requestPointerLock?.();
     };
     const onMouse = (e: MouseEvent) => {
@@ -1771,6 +2138,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     const clock = new THREE.Clock();
     let last = 0;
     let nearShown: string | null = null;
+    let hintShown: string | null = null;
     let busy = false;
     const tmp = new THREE.Vector3();
     let frame = 0;
@@ -1867,6 +2235,38 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         }
       }
       aurora?.update(t, pos);
+      // Doors swing.
+      for (const kd of kitDoors) {
+        const want = kd.open ? 1 : 0;
+        if (kd.k !== want) {
+          kd.k = want > kd.k ? Math.min(1, kd.k + dt * 1.6) : Math.max(0, kd.k - dt * 1.6);
+          const e = kd.k * kd.k * (3 - 2 * kd.k);
+          kd.pivot.rotation.y = kd.base + kd.swing * e * 1.75;
+        }
+      }
+      // Inside a building: lamplight instead of moonlight, no snow or haze.
+      if (outerLights) {
+        const inRoom = kitRooms.find((r) => pos.x > r.x0 && pos.x < r.x1 && pos.z > r.z0 && pos.z < r.z1) ?? null;
+        indoors += ((inRoom ? 1 : 0) - indoors) * Math.min(1, dt * 3);
+        outerLights.hemi.intensity = 1.5 * (1 - indoors * 0.7);
+        outerLights.moon.intensity = 0.9 * (1 - indoors * 0.85);
+        outerLights.warm.intensity = 0.45 * indoors;
+        if (scene.fog instanceof THREE.FogExp2) scene.fog.density = 0.0115 * (1 - indoors * 0.85);
+        if (snow) snow.visible = indoors < 0.5;
+        const name = inRoom?.name ?? null;
+        if (name !== roomHere) {
+          roomHere = name;
+          setPlaceName(name);
+        }
+      }
+      if (kitDoors.length && frame % 6 === 0) {
+        const kd = doorAhead();
+        const h = kd ? `${kd.open ? "Close" : "Open"} the door: tap it or press E` : null;
+        if (h !== hintShown) {
+          hintShown = h;
+          setHint(h);
+        }
+      }
       if (snow) {
         const a = snow.geometry.attributes.position as THREE.BufferAttribute;
         for (let i = 0; i < a.count; i++) {
@@ -1903,10 +2303,11 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       <div className={`pointer-events-none absolute inset-0 bg-black transition-opacity duration-200 ${fade ? "opacity-100" : "opacity-0"}`} />
       <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 bg-gradient-to-b from-black/70 to-transparent p-3 text-sm">
         <div>
-          <p className="font-semibold">{zone.name}</p>
+          <p className="font-semibold">{placeName ?? zone.name}</p>
           <p className="text-xs text-smoke">{title}</p>
           {!ready ? <p className="text-xs text-smoke">Loading {Math.round(progress * 100)}%</p> : null}
           {nearZone ? <p className="mt-1 text-xs text-brass">To {nearZone.name}: keep walking</p> : null}
+          {hint ? <p className="mt-1 text-xs text-brass">{hint}</p> : null}
         </div>
         <div className="flex shrink-0 gap-3">
           <button
