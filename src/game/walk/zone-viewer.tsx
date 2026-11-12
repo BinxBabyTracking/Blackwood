@@ -841,7 +841,13 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     /** Inside a building (0 out, 1 in), eased, and the room you're in. */
     let indoors = 0;
     let roomHere: string | null = null;
-    let kitRooms: { x0: number; x1: number; z0: number; z1: number; name: string; y: number }[] = [];
+    let kitRooms: { x0: number; x1: number; z0: number; z1: number; name: string; y: number; zone?: string; building?: string }[] = [];
+    /** Building insides, for the render distance. */
+    let insides: { group: THREE.Object3D; rect: { x0: number; x1: number; z0: number; z1: number }; building: string }[] = [];
+    let farAt = -1;
+    /** How far you can see inside buildings, and (on phones) things outdoors. */
+    const INSIDE_M = "ontouchstart" in window ? 16 : 32;
+    const OUTDOOR_M = "ontouchstart" in window ? 75 : Infinity;
     let outerLights: { hemi: THREE.HemisphereLight; moon: THREE.DirectionalLight; warm: THREE.AmbientLight } | null = null;
     let token = 0;
     let cooldown = 0;
@@ -1119,17 +1125,21 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         const [w, d, H] = rz.size;
         {
           const half = kr.rot % 180 === 0 ? [w / 2, d / 2] : [d / 2, w / 2];
-          kitRooms.push({ x0: kr.pos[0] - half[0], x1: kr.pos[0] + half[0], z0: kr.pos[1] - half[1], z1: kr.pos[1] + half[1], name: rz.name, y: kr.y });
+          kitRooms.push({ x0: kr.pos[0] - half[0], x1: kr.pos[0] + half[0], z0: kr.pos[1] - half[1], z1: kr.pos[1] + half[1], name: rz.name, y: kr.y, zone: kr.zone, building: b.id });
         }
         const g = new THREE.Group();
         g.position.set(kr.pos[0], kr.y, kr.pos[1]);
         g.rotation.y = (kr.rot * Math.PI) / 180;
         parent.add(g);
+        // The inside, drawn only near you (render distance); the outside always.
+        const ig = new THREE.Group();
+        g.add(ig);
+        insides.push({ group: ig, rect: kitRooms[kitRooms.length - 1], building: b.id });
         // Inside.
         const ftx = tiled(rz.floor.tex);
         const floor = new THREE.Mesh(tiledPlane(w, d, 0, 0, rz.floor.tile), ftx ? new THREE.MeshLambertMaterial({ map: ftx }) : plain(0x8a6a4a));
         floor.rotation.x = -Math.PI / 2;
-        g.add(floor);
+        ig.add(floor);
         for (const dc of rz.decals) {
           const t = dc.tile ? tiled(dc.tex) : tex(dc.tex);
           if (!t) continue;
@@ -1137,7 +1147,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           const m = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ map: t, alphaTest: 0.3, transparent: true }));
           m.rotation.set(-Math.PI / 2, 0, (dc.rotY * Math.PI) / 180);
           m.position.set(dc.pos[0], 0.01, dc.pos[1]);
-          g.add(m);
+          ig.add(m);
         }
         // The roof over this room: ridge along the longer side, steep, deep eaves. The room is open up into it.
         const along = w >= d;
@@ -1159,7 +1169,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           shade.position.set(fx.pos[0], bulbY + 0.06, fx.pos[1]);
           const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.075, 14, 10), bulbM);
           bulb.position.set(fx.pos[0], bulbY - 0.02, fx.pos[1]);
-          g.add(chain, shade, bulb);
+          ig.add(chain, shade, bulb);
           if (fx.light && lit < 2) {
             lit++;
             addKitLight(g, fx.pos[0], bulbY - 0.1, fx.pos[1], 0xffc98a, 2.2, 10, 1.6);
@@ -1168,7 +1178,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         if (!lit) {
           addKitLight(g, 0, H - 0.4, 0, 0xffc98a, 3, 12, 1.4);
         }
-        for (const side of ["front", "back", "left", "right"] as Side[]) buildWall(rz, side, rz.walls[side], g, true, doorway);
+        for (const side of ["front", "back", "left", "right"] as Side[]) buildWall(rz, side, rz.walls[side], ig, true, doorway);
         // Lanterns on the walls, where nothing hangs: one lit for real, the others glowing.
         {
           const ly = Math.min(1.75, H * 0.62);
@@ -1183,7 +1193,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
             const wg = new THREE.Group();
             wg.position.set(f.pos[0], 0, f.pos[1]);
             wg.rotation.y = f.rot;
-            g.add(wg);
+            ig.add(wg);
             const x = u - W / 2;
             const plate = kitBox(0.12, 0.26, 0.03, ironM);
             plate.position.set(x, ly + 0.05, 0.015);
@@ -1275,6 +1285,9 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         roof.position.y = y0;
         if (!along) roof.rotation.y = Math.PI / 2;
         g.add(roof);
+        const roofIn = new THREE.Group();
+        roof.add(roofIn);
+        insides.push({ group: roofIn, rect: kitRooms[kitRooms.length - 1], building: b.id });
         // Each slope runs down to its eave; an eave backing onto another room of the building stops at the wall.
         const nbr = (s2: number) => {
           const ln = along ? [0, s2] : [s2, 0];
@@ -1332,44 +1345,44 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           const c = kitBox(2 * il, 0.02, cl, ceilM, rz.ceiling?.tile ?? 1.2);
           c.position.set(0, (hk + peak) / 2, (s2 * ih) / 2);
           c.rotation.x = s2 * cp;
-          roof.add(c);
+          roofIn.add(c);
           const knee = kitBox(2 * il, hk + 0.06, 0.02, kneeM, Math.max(0.3, H));
           knee.position.set(0, (hk - 0.06) / 2, s2 * (ih - 0.012));
-          roof.add(knee);
+          roofIn.add(knee);
           const end = tilePlane(new THREE.Shape([V(-ih, -0.06), V(ih, -0.06), V(ih, hk), V(0, peak), V(-ih, hk)]), kneeM, Math.max(0.3, H));
           end.rotation.y = Math.PI / 2;
           end.position.set(s2 * (il - 0.012), 0, 0);
-          roof.add(end);
+          roofIn.add(end);
         }
         // Timbers: a ridge beam, and trusses across the room (tie beam, king post, rafters and curved braces).
         const ridge = kitBox(2 * il, 0.16, 0.16, beamM);
         ridge.position.set(0, peak - 0.1, 0);
-        roof.add(ridge);
-        festoon(roof, [new THREE.Vector3(-il + 0.1, peak - 0.2, 0.09), new THREE.Vector3(il - 0.1, peak - 0.2, 0.09)], 0.22);
+        roofIn.add(ridge);
+        festoon(roofIn, [new THREE.Vector3(-il + 0.1, peak - 0.2, 0.09), new THREE.Vector3(il - 0.1, peak - 0.2, 0.09)], 0.22);
         const n = Math.max(1, Math.round((2 * il) / 1.8));
         for (let i = 0; i < n; i++) {
           const x = -il + ((i + 0.5) * 2 * il) / n;
           const tie = kitBox(0.14, 0.18, 2 * ih, beamM);
           tie.position.set(x, 0.05, 0);
-          roof.add(tie);
+          roofIn.add(tie);
           const king = kitBox(0.13, peak - 0.15, 0.13, beamM);
           king.position.set(x, (peak + 0.05) / 2, 0);
-          roof.add(king);
+          roofIn.add(king);
           // Garland swagged along the tie beam, with lights.
-          festoon(roof, [new THREE.Vector3(x + 0.09, -0.02, -ih + 0.1), new THREE.Vector3(x + 0.09, -0.02, ih - 0.1)], 0.16);
+          festoon(roofIn, [new THREE.Vector3(x + 0.09, -0.02, -ih + 0.1), new THREE.Vector3(x + 0.09, -0.02, ih - 0.1)], 0.16);
           for (const s2 of [-1, 1]) {
             const raf = kitBox(0.12, 0.14, cl, beamM);
             raf.position.set(x, (hk + peak) / 2 - 0.09, (s2 * ih) / 2);
             raf.rotation.x = s2 * cp;
-            roof.add(raf);
+            roofIn.add(raf);
             // A post down the wall, and an arched brace sweeping up from it to the king post.
             // A short post at the top of the wall (clear of anything hung lower), and an arched brace from it.
             const post = kitBox(0.13, 0.42, 0.13, beamM);
             post.position.set(x, -0.16, s2 * (ih - 0.07));
-            roof.add(post);
+            roofIn.add(post);
             const curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(x, -0.37, s2 * (ih - 0.07)), new THREE.Vector3(x, 0.15, s2 * ih * 0.25), new THREE.Vector3(x, peak * 0.6, s2 * 0.06));
             const brace = new THREE.Mesh(new THREE.TubeGeometry(curve, 16, 0.055, 6), beamM);
-            roof.add(brace);
+            roofIn.add(brace);
           }
         }
       }
@@ -1507,6 +1520,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       aurora = null;
       kitDoors = [];
       kitRooms = [];
+      insides = [];
+      farAt = -1;
       flames = [];
       twinkles = [];
       kitLights = [];
@@ -1918,6 +1933,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
               if (b.isBone) bones.set(b.name.toLowerCase(), b);
             });
             const rig = rigOf(bones);
+            // Measure with the bones in place (a skeleton under a turned root reads wrong otherwise).
+            obj.updateMatrixWorld(true);
             const box = new THREE.Box3().setFromObject(obj);
             const k = P.height / Math.max(0.01, box.max.y - box.min.y);
             const grp = new THREE.Group();
@@ -2493,7 +2510,26 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       // People breathe, blink and look at you when you're near.
       tNow = t;
       const life = { zone: z, blockers, boxOf: (m: ZoneModel) => placed.get(m)?.box, others: people.map((p) => p.npc), player: { x: pos.x, z: pos.z } };
+      // Render distance: building insides (and what's in them) only near you or when you're in that building; on
+      // phones, far-off things outdoors too. Checked a few times a second.
+      if (t - farAt > 0.3 || farAt < 0) {
+        farAt = t;
+        const here = kitRooms.find((r) => pos.x > r.x0 && pos.x < r.x1 && pos.z > r.z0 && pos.z < r.z1)?.building ?? null;
+        const gap = (r: { x0: number; x1: number; z0: number; z1: number }) => Math.hypot(Math.max(r.x0 - pos.x, 0, pos.x - r.x1), Math.max(r.z0 - pos.z, 0, pos.z - r.z1));
+        const near = (room?: string) => {
+          const r = kitRooms.find((q) => q.zone === room);
+          return !r || r.building === here || gap(r) < INSIDE_M;
+        };
+        for (const ins of insides) ins.group.visible = ins.building === here || gap(ins.rect) < INSIDE_M;
+        for (const [M, pl] of placed) {
+          const g = (pl as { grp?: THREE.Object3D }).grp;
+          if (!g) continue;
+          g.visible = M.room ? near(M.room) : OUTDOOR_M === Infinity || M.light || Math.hypot(M.pos[0] - pos.x, M.pos[1] - pos.z) < OUTDOOR_M;
+        }
+        for (const p of people) p.grp.visible = p.P.room ? near(p.P.room) : OUTDOOR_M === Infinity || Math.hypot(p.npc.x - pos.x, p.npc.z - pos.z) < OUTDOOR_M;
+      }
       for (const p of people) {
+        if (!p.grp.visible) continue;
         if (editRef.current) {
           if (!p.held) placePerson(p);
         } else {
