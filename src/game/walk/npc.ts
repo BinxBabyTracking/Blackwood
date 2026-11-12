@@ -84,7 +84,18 @@ type Anim = {
   ew: number;
   ea: number;
   wasTalking: boolean;
+  /** Every bone, and its turn as the clips last left it. The mixer only writes a bone when the clip changes it, so
+   * anything added on top (the head turning to you, busy hands) has to be taken off again before the next frame. */
+  bones: THREE.Bone[];
+  post: Float32Array;
 };
+
+function restoreBones(A: Anim) {
+  A.bones.forEach((b, i) => b.quaternion.fromArray(A.post, i * 4));
+}
+function keepBones(A: Anim) {
+  A.bones.forEach((b, i) => b.quaternion.toArray(A.post, i * 4));
+}
 
 /** Wires up the walk, sit and agree clips when a character file has them. The sit clip is a seated loop; standing still is the idle loop, or else the first frame of agree (or walk). */
 function makeAnim(root: THREE.Object3D, grp: THREE.Object3D, rig: Rig, clips: THREE.AnimationClip[]): Anim | null {
@@ -145,7 +156,13 @@ function makeAnim(root: THREE.Object3D, grp: THREE.Object3D, rig: Rig, clips: TH
   const scale = grp.getWorldScale(new THREE.Vector3()).x;
   // The pelvis track is in the model's own units, before scaling.
   const stride = drift > 0 ? (drift * scale) / walk.duration : 0.5;
-  return { mixer, stand, sit, walk: wa, agree, extras, extra: null, ex: 0, nextExtra: 6 + Math.random() * 14, stride, drop: Math.max(0, up - down), ew: 0, ea: 0, wasTalking: false };
+  const bones: THREE.Bone[] = [];
+  root.traverse((o) => {
+    if ((o as THREE.Bone).isBone) bones.push(o as THREE.Bone);
+  });
+  const post = new Float32Array(bones.length * 4);
+  bones.forEach((b, i) => b.quaternion.toArray(post, i * 4));
+  return { bones, post, mixer, stand, sit, walk: wa, agree, extras, extra: null, ex: 0, nextExtra: 6 + Math.random() * 14, stride, drop: Math.max(0, up - down), ew: 0, ea: 0, wasTalking: false };
 }
 
 const SEAT = /chair|stool|(?<!work)bench|sofa|settee|couch|armchair|seat/;
@@ -470,7 +487,9 @@ function animate(n: Npc, w: World, t: number, dt: number, moving: boolean) {
   const ground = heightAt(w.zone.terrain, n.x, n.z) + (n.P.floor ?? 0);
   n.grp.position.set(n.x, ground + n.elev + A.drop * sk, n.z);
   n.grp.rotation.y = n.rot;
+  restoreBones(A);
   A.mixer.update(dt);
+  keepBones(A);
   // At a bench or desk: hands busy, on top of the clip.
   const wk = n.workK;
   if (wk > 0.01) {
@@ -497,7 +516,9 @@ export function holdNpc(n: Npc, zone: Zone) {
     A.sit.weight = s;
     A.stand.weight = 1 - s;
     n.grp.position.y += A.drop * s;
+    restoreBones(A);
     A.mixer.update(0);
+    keepBones(A);
     return;
   }
   applyPose(n.rig, n.grp, { thigh_l: -88 * s, thigh_r: -88 * s, calf_l: 88 * s, calf_r: 88 * s, upperarm_l: -22 * s, upperarm_r: -22 * s, lowerarm_l: -40 * s, lowerarm_r: -40 * s });

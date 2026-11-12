@@ -693,7 +693,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
 
     let root: THREE.Group | null = null;
     let current: Zone | null = null;
-    let blockers: { x0: number; x1: number; z0: number; z1: number }[] = [];
+    // top: how high it stands (so you can walk over it on a stair or landing above); none means all the way up.
+    let blockers: { x0: number; x1: number; z0: number; z1: number; top?: number }[] = [];
     const haloMatShared = (() => {
       const c = document.createElement("canvas");
       c.width = c.height = 64;
@@ -775,8 +776,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         if (M.block != null) blockers.push({ x0: M.pos[0] - M.block, x1: M.pos[0] + M.block, z0: M.pos[1] - M.block, z1: M.pos[1] + M.block });
         else if (M.solid && onGround && M.size[2] > 0.25) {
           // The model's real footprint once it has loaded (a model can come out smaller or larger than planned).
-          if (b) blockers.push({ x0: b.min.x + 0.05, x1: b.max.x - 0.05, z0: b.min.z + 0.05, z1: b.max.z - 0.05 });
-          else blockers.push({ x0: M.pos[0] - fw / 2, x1: M.pos[0] + fw / 2, z0: M.pos[1] - fd / 2, z1: M.pos[1] + fd / 2 });
+          if (b) blockers.push({ x0: b.min.x + 0.05, x1: b.max.x - 0.05, z0: b.min.z + 0.05, z1: b.max.z - 0.05, top: b.max.y });
+          else blockers.push({ x0: M.pos[0] - fw / 2, x1: M.pos[0] + fw / 2, z0: M.pos[1] - fd / 2, z1: M.pos[1] + fd / 2, top: M.elev + M.size[2] });
         }
       }
       // Doors into buildings: at the real front of the building.
@@ -2267,7 +2268,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       const z = current!;
       const [w, d] = z.size;
       if (x < -w / 2 + RADIUS || x > w / 2 - RADIUS || zz < -d / 2 + RADIUS || zz > d / 2 - RADIUS) return false;
-      if (blockers.some((b) => x > b.x0 - RADIUS && x < b.x1 + RADIUS && zz > b.z0 - RADIUS && zz < b.z1 + RADIUS)) return false;
+      // Something you're standing above (on a stair or landing over it) doesn't get in the way.
+      if (blockers.some((b) => (b.top == null || b.top > standY + 0.3) && x > b.x0 - RADIUS && x < b.x1 + RADIUS && zz > b.z0 - RADIUS && zz < b.z1 + RADIUS)) return false;
       // A door that isn't open (or is still swinging) fills its doorway.
       for (const kd of kitDoors) {
         if (kd.k > 0.8) continue;
