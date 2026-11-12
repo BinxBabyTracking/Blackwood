@@ -635,6 +635,34 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     // Film-like colour, and a soft glow round anything bright (lamps, lanterns, fire).
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.25;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    const lowPower = "ontouchstart" in window;
+    /** Shadows from a few nearby lights (point lights cost six renders each, so only a handful). */
+    let casters = 0;
+    const castFrom = (pl: THREE.PointLight) => {
+      if (casters >= (lowPower ? 2 : 4)) return;
+      casters++;
+      pl.castShadow = true;
+      pl.shadow.mapSize.set(lowPower ? 256 : 512, lowPower ? 256 : 512);
+      pl.shadow.camera.near = 0.1;
+      pl.shadow.camera.far = pl.distance || 12;
+      pl.shadow.bias = -0.003;
+      pl.shadow.normalBias = 0.03;
+      pl.shadow.radius = 3;
+      pointCasters.push(pl);
+    };
+    let pointCasters: THREE.PointLight[] = [];
+    /** Everything solid casts and catches shadows (not the sky, glows, glass, or the far woods). */
+    const shadowify = (o: THREE.Object3D) =>
+      o.traverse((c) => {
+        const mesh = c as THREE.Mesh;
+        if (!mesh.isMesh || (c as THREE.InstancedMesh).isInstancedMesh || c.userData.noShadow) return;
+        const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        if (mats.some((m) => m.transparent || (m as THREE.MeshBasicMaterial).isMeshBasicMaterial || m.type === "ShaderMaterial")) return;
+        mesh.receiveShadow = true;
+        mesh.castShadow = !c.userData.noCast;
+      });
     mount.appendChild(renderer.domElement);
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(70, mount.clientWidth / mount.clientHeight, 0.05, 1200);
@@ -798,6 +826,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     /** Doors in buildings: closed or open, and how far round they've swung (0 shut, 1 open). */
     /** Lights that flicker: fires, stoves and lanterns. */
     let flames: { light: THREE.PointLight; base: number; phase: number; amount: number }[] = [];
+    /** Strings of fairy lights that twinkle. */
+    let twinkles: { mesh: THREE.InstancedMesh; phase: number; last?: number }[] = [];
     let kitDoors: { d: KitDoor; pivot: THREE.Group; slab: THREE.Mesh; base: number; swing: number; open: boolean; k: number }[] = [];
     /** Inside a building (0 out, 1 in), eased, and the room you're in. */
     let indoors = 0;
@@ -1028,6 +1058,49 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       const ironM = new THREE.MeshLambertMaterial({ color: 0x2a2420 });
       const bulbM = new THREE.MeshStandardMaterial({ color: 0xfff1d6, emissive: 0xffc070, emissiveIntensity: 4 });
       const glassM = new THREE.MeshStandardMaterial({ color: 0xffe2a8, emissive: 0xffa94d, emissiveIntensity: 2.6, transparent: true, opacity: 0.92 });
+      const pineM = new THREE.MeshLambertMaterial({ color: 0x1f4a2c, flatShading: true });
+      const pine2M = new THREE.MeshLambertMaterial({ color: 0x2f6a3a, flatShading: true });
+      const berryM = new THREE.MeshLambertMaterial({ color: 0xb01818 });
+      const bulbGeo = new THREE.SphereGeometry(0.028, 8, 6);
+      const berryGeo = new THREE.SphereGeometry(0.03, 6, 5);
+      const BULBS = [new THREE.Color(3.2, 0.35, 0.3), new THREE.Color(0.4, 2.8, 0.6), new THREE.Color(0.5, 0.9, 3.4), new THREE.Color(3.2, 2.1, 0.5), new THREE.Color(2.8, 2.6, 2.4)];
+      /** Garland swagged between two points (dipping in scallops about a metre long), with berries and fairy lights. */
+      const festoon = (parent: THREE.Object3D, ends: THREE.Vector3[], sag: number) => {
+        const [a, b2] = ends;
+        const L = a.distanceTo(b2);
+        const swags = Math.max(1, Math.round(L / 0.9));
+        const pts: THREE.Vector3[] = [];
+        const N = swags * 12;
+        for (let i = 0; i <= N; i++) {
+          const t2 = i / N;
+          const p = a.clone().lerp(b2, t2);
+          p.y -= sag * Math.sin(((t2 * swags) % 1) * Math.PI);
+          pts.push(p);
+        }
+        const curve = new THREE.CatmullRomCurve3(pts);
+        // Two twisted strands make it full.
+        const g1 = new THREE.Mesh(new THREE.TubeGeometry(curve, N * 2, 0.06, 6), pineM);
+        const twist = new THREE.CatmullRomCurve3(pts.map((p, i) => p.clone().add(new THREE.Vector3(0, Math.sin(i * 1.7) * 0.03, Math.cos(i * 1.7) * 0.03))));
+        const g2 = new THREE.Mesh(new THREE.TubeGeometry(twist, N * 2, 0.045, 5), pine2M);
+        parent.add(g1, g2);
+        const count = Math.max(2, Math.round(curve.getLength() / 0.2));
+        const lights = new THREE.InstancedMesh(bulbGeo, new THREE.MeshBasicMaterial({ color: 0xffffff }), count);
+        const berries = new THREE.InstancedMesh(berryGeo, berryM, Math.ceil(count / 2));
+        const m = new THREE.Matrix4();
+        for (let i = 0; i < count; i++) {
+          const p = curve.getPointAt((i + 0.5) / count);
+          m.makeTranslation(p.x + (i % 2 ? 0.05 : -0.05), p.y - 0.05, p.z + (i % 2 ? 0.03 : -0.03));
+          lights.setMatrixAt(i, m);
+          lights.setColorAt(i, BULBS[i % BULBS.length]);
+          if (i % 2 === 0) {
+            m.makeTranslation(p.x - 0.03, p.y + 0.04, p.z + 0.05);
+            berries.setMatrixAt(i / 2, m);
+          }
+        }
+        lights.userData.noShadow = true;
+        parent.add(lights, berries);
+        twinkles.push({ mesh: lights, phase: Math.random() * 10 });
+      };
       for (const kr of b.rooms) {
         const rz = world.zones.find((q) => q.id === kr.zone);
         if (!rz) continue;
@@ -1077,13 +1150,13 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           g.add(chain, shade, bulb);
           if (fx.light && lit < 2) {
             lit++;
-            const pl = new THREE.PointLight(0xffc98a, 6, 12, 1.6);
+            const pl = new THREE.PointLight(0xffc98a, 2.2, 10, 1.6);
             pl.position.set(fx.pos[0], bulbY - 0.1, fx.pos[1]);
             g.add(pl);
           }
         }
         if (!lit) {
-          const pl = new THREE.PointLight(0xffc98a, 7, 12, 1.4);
+          const pl = new THREE.PointLight(0xffc98a, 3, 12, 1.4);
           pl.position.set(0, H - 0.4, 0);
           g.add(pl);
         }
@@ -1121,6 +1194,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
               pl.position.set(x, ly + 0.04, 0.32);
               wg.add(pl);
               flames.push({ light: pl, base: 2.6, phase: Math.random() * 10, amount: 0.08 });
+              castFrom(pl);
             }
             hung++;
           }
@@ -1252,25 +1326,29 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         const ridge = kitBox(2 * il, 0.16, 0.16, beamM);
         ridge.position.set(0, peak - 0.1, 0);
         roof.add(ridge);
+        festoon(roof, [new THREE.Vector3(-il + 0.1, peak - 0.2, 0.09), new THREE.Vector3(il - 0.1, peak - 0.2, 0.09)], 0.22);
         const n = Math.max(1, Math.round((2 * il) / 1.8));
         for (let i = 0; i < n; i++) {
           const x = -il + ((i + 0.5) * 2 * il) / n;
           const tie = kitBox(0.14, 0.18, 2 * ih, beamM);
-          tie.position.set(x, -0.2, 0);
+          tie.position.set(x, 0.05, 0);
           roof.add(tie);
-          const king = kitBox(0.13, peak + 0.1, 0.13, beamM);
-          king.position.set(x, (peak - 0.2) / 2, 0);
+          const king = kitBox(0.13, peak - 0.15, 0.13, beamM);
+          king.position.set(x, (peak + 0.05) / 2, 0);
           roof.add(king);
+          // Garland swagged along the tie beam, with lights.
+          festoon(roof, [new THREE.Vector3(x + 0.09, -0.02, -ih + 0.1), new THREE.Vector3(x + 0.09, -0.02, ih - 0.1)], 0.16);
           for (const s2 of [-1, 1]) {
             const raf = kitBox(0.12, 0.14, cl, beamM);
             raf.position.set(x, (hk + peak) / 2 - 0.09, (s2 * ih) / 2);
             raf.rotation.x = s2 * cp;
             roof.add(raf);
             // A post down the wall, and an arched brace sweeping up from it to the king post.
-            const post = kitBox(0.13, 0.85, 0.13, beamM);
-            post.position.set(x, -0.62, s2 * (ih - 0.07));
+            // A short post at the top of the wall (clear of anything hung lower), and an arched brace from it.
+            const post = kitBox(0.13, 0.42, 0.13, beamM);
+            post.position.set(x, -0.16, s2 * (ih - 0.07));
             roof.add(post);
-            const curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(x, -0.95, s2 * (ih - 0.07)), new THREE.Vector3(x, -0.2, s2 * ih * 0.25), new THREE.Vector3(x, peak * 0.55, s2 * 0.06));
+            const curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(x, -0.37, s2 * (ih - 0.07)), new THREE.Vector3(x, 0.15, s2 * ih * 0.25), new THREE.Vector3(x, peak * 0.6, s2 * 0.06));
             const brace = new THREE.Mesh(new THREE.TubeGeometry(curve, 16, 0.055, 6), beamM);
             roof.add(brace);
           }
@@ -1411,6 +1489,9 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       kitDoors = [];
       kitRooms = [];
       flames = [];
+      twinkles = [];
+      casters = 0;
+      pointCasters = [];
       outerLights = null;
       roomHere = null;
       const [w, d, H] = z.size;
@@ -1418,6 +1499,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       setProgress(0);
       let want = 0, got = 0;
       const tick = () => {
+        if (my === token && root) shadowify(root);
         got++;
         if (my === token) setProgress(want ? got / want : 1);
         if (my === token && got >= want) setReady(true);
@@ -1428,7 +1510,9 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         scene.background = new THREE.Color(0x0b1430);
         scene.fog = new THREE.FogExp2(HAZE, z.terrain?.rim ? 0.0115 : 0.012);
         if (z.terrain?.rim) {
-          root.add(skyDome());
+          const dome = skyDome();
+          dome.userData.noShadow = true;
+          root.add(dome);
           aurora = makeAurora();
           root.add(aurora.group);
         }
@@ -1437,7 +1521,17 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         root.add(hemi);
         const moon = new THREE.DirectionalLight(0xc8d6ff, 0.9);
         moon.position.set(-30, 60, 20);
-        root.add(moon);
+        root.add(moon, moon.target);
+        // Moon shadows round wherever you are.
+        moon.castShadow = true;
+        moon.shadow.mapSize.set(lowPower ? 1024 : 2048, lowPower ? 1024 : 2048);
+        const sc = moon.shadow.camera as THREE.OrthographicCamera;
+        sc.left = sc.bottom = -28;
+        sc.right = sc.top = 28;
+        sc.near = 1;
+        sc.far = 160;
+        moon.shadow.bias = -0.0008;
+        moon.shadow.normalBias = 0.04;
         // Warm light that comes up when you step inside a building.
         const warm = new THREE.AmbientLight(0xffe2c0, 0);
         root.add(warm);
@@ -1492,7 +1586,9 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         g.setIndex(gi);
         g.computeVertexNormals();
         const groundMat = ft ? new THREE.MeshLambertMaterial({ map: ft }) : plain(0xe8eef8);
-        root.add(new THREE.Mesh(g, T.rim ? edgeFog(groundMat, T.rim) : groundMat));
+        const groundMesh = new THREE.Mesh(g, T.rim ? edgeFog(groundMat, T.rim) : groundMat);
+        groundMesh.userData.noCast = true;
+        root.add(groundMesh);
         // Cobbled paths laid over it.
         const pmat = cobbleMaterial();
         const segD = (x: number, y: number, a: number[], b: number[]) => {
@@ -1642,10 +1738,22 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         if (M.light && lamps < 10 && !M.scatter) {
           lamps++;
           const fire = /stove|fire|hearth|furnace|forge|oven|kiln/.test(M.id);
-          const pl = new THREE.PointLight(fire ? 0xff8a3a : 0xffc77a, z.outdoor && !M.room ? 10 : 4, z.outdoor && !M.room ? 14 : 8, 1.6);
-          pl.position.set(M.pos[0], M.elev + M.size[2] * (fire ? 0.35 : 0.9), M.pos[1]);
+          const inside = !z.outdoor || !!M.room;
+          const pl = new THREE.PointLight(fire ? 0xff8236 : 0xffc77a, fire && inside ? 9 : inside ? 4 : 10, fire && inside ? 11 : inside ? 8 : 14, fire ? 1.5 : 1.6);
+          // A fire's light comes out into the room (from just in front of it), and throws shadows.
+          let lx = M.pos[0], lz = M.pos[1];
+          if (fire && inside) {
+            const kr = M.room ? kitRooms.find((r) => M.pos[0] > r.x0 && M.pos[0] < r.x1 && M.pos[1] > r.z0 && M.pos[1] < r.z1) : null;
+            const c = kr ? [(kr.x0 + kr.x1) / 2, (kr.z0 + kr.z1) / 2] : [0, 0];
+            const dx = c[0] - lx, dz = c[1] - lz, dl = Math.hypot(dx, dz) || 1;
+            const out = Math.max(M.size[0], M.size[1]) / 2 + 0.35;
+            lx += (dx / dl) * Math.min(out, dl * 0.5);
+            lz += (dz / dl) * Math.min(out, dl * 0.5);
+          }
+          pl.position.set(lx, M.elev + M.size[2] * (fire ? 0.3 : 0.9), lz);
           root.add(pl);
-          if (fire) flames.push({ light: pl, base: pl.intensity * 1.3, phase: Math.random() * 10, amount: 0.3 });
+          if (fire) flames.push({ light: pl, base: pl.intensity, phase: Math.random() * 10, amount: 0.3 });
+          if (fire && inside) castFrom(pl);
         }
         if (!M.file && M.scatter) {
           if (/pine/.test(M.id)) {
@@ -1809,6 +1917,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
 
       if (z.stairs) buildStairs(z, root);
       reblock();
+      shadowify(root);
       // Where you arrive: at the door back to where you came from, a step inside, facing in.
       const back = arriveFrom ? z.doors.find((dr) => dr.to === arriveFrom) : null;
       if (back) {
@@ -2383,6 +2492,22 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         }
       }
       aurora?.update(t, pos);
+      for (const tw of twinkles) {
+        const k = Math.floor(t * 3 + tw.phase) % tw.mesh.count;
+        if (k === tw.last) continue;
+        tw.last = k;
+        const c = new THREE.Color();
+        tw.mesh.getColorAt(k, c);
+        tw.mesh.setColorAt(k, c.multiplyScalar(c.r + c.g + c.b > 4 ? 0.35 : 1 / 0.35));
+        if (tw.mesh.instanceColor) tw.mesh.instanceColor.needsUpdate = true;
+      }
+      if (outerLights) {
+        const m = outerLights.moon;
+        m.position.set(pos.x - 30, pos.y + 60, pos.z + 20);
+        m.target.position.set(pos.x, pos.y, pos.z);
+        m.shadow.autoUpdate = indoors < 0.85;
+        for (const pl of pointCasters) pl.shadow.autoUpdate = indoors > 0.15;
+      }
       for (const f of flames) {
         const q = t * 9 + f.phase;
         f.light.intensity = f.base * (1 - f.amount * (0.5 + 0.25 * Math.sin(q) + 0.15 * Math.sin(q * 2.7 + 1.3) + 0.1 * Math.sin(q * 6.1)));
@@ -2400,9 +2525,9 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       if (outerLights) {
         const inRoom = kitRooms.find((r) => pos.x > r.x0 && pos.x < r.x1 && pos.z > r.z0 && pos.z < r.z1) ?? null;
         indoors += ((inRoom ? 1 : 0) - indoors) * Math.min(1, dt * 3);
-        outerLights.hemi.intensity = 1.5 * (1 - indoors * 0.7);
+        outerLights.hemi.intensity = 1.5 * (1 - indoors * 0.8);
         outerLights.moon.intensity = 0.9 * (1 - indoors * 0.85);
-        outerLights.warm.intensity = 0.45 * indoors;
+        outerLights.warm.intensity = 0.28 * indoors;
         if (scene.fog instanceof THREE.FogExp2) scene.fog.density = 0.0115 * (1 - indoors * 0.85);
         if (snow) snow.visible = indoors < 0.5;
         const name = inRoom?.name ?? null;
