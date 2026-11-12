@@ -633,6 +633,182 @@ const segDist = (x: number, z: number, a: number[], b: number[]) => {
 const padWeight = (t: Terrain, x: number, z: number) =>
   Math.max(0, ...t.pads.map((p) => 1 - smooth(Math.hypot(Math.max(p.rect[0] - x, 0, x - p.rect[2]), Math.max(p.rect[1] - z, 0, z - p.rect[3])) / p.fall)));
 
+/**
+ * A path from the front of every building to the square, or to a path that gets there: straight out from the
+ * door, then round anything in the way, joining the nearest part of the network. Nearest buildings go first so the
+ * far ones can join their paths.
+ */
+export function linkBuildings(z: Zone, t: Terrain) {
+  const [W, D] = z.size;
+  const square = t.pads[t.pads.length - 1]?.rect;
+  if (!square) return;
+  const sq = { x0: Math.min(square[0], square[2]), x1: Math.max(square[0], square[2]), z0: Math.min(square[1], square[3]), z1: Math.max(square[1], square[3]) };
+  const inSquare = (x: number, y: number, pad = 0) => x > sq.x0 + pad && x < sq.x1 - pad && y > sq.z0 + pad && y < sq.z1 - pad;
+  const buildings = z.models.filter((m) => !m.scatter && (m.level != null || m.door) && !inSquare(m.pos[0], m.pos[1]));
+  // Paths drawn by hand that run through a building are dropped; the generated ones replace them.
+  const hits = (pts: number[][], pad: number) =>
+    buildings.some((m) => {
+      const f = footprint(m);
+      return pts.slice(1).some((b, i) => {
+        const a = pts[i];
+        for (let k = 0; k <= 20; k++) {
+          const x = a[0] + ((b[0] - a[0]) * k) / 20, y = a[1] + ((b[1] - a[1]) * k) / 20;
+          if (x > f.x0 - pad && x < f.x1 + pad && y > f.z0 - pad && y < f.z1 + pad) return true;
+        }
+        return false;
+      });
+    });
+  // Roads out of the village (hand-drawn paths reaching the edge) keep their way out; the rest is routed fresh.
+  const edgeOf = (p: number[]) => Math.abs(p[0]) > W / 2 - 4 || Math.abs(p[1]) > D / 2 - 4;
+  const gates: { edge: number[]; out: number[]; w: number }[] = [];
+  for (const p of t.paths) {
+    if (!hits(p.pts, 0.3)) continue;
+    for (const e of [p.pts[0], p.pts[p.pts.length - 1]])
+      if (edgeOf(e)) {
+        const n = Math.abs(e[0]) > W / 2 - 4 ? [-Math.sign(e[0]), 0] : [0, -Math.sign(e[1])];
+        const edge = [n[0] ? -n[0] * (W / 2 + 1) : e[0], n[1] ? -n[1] * (D / 2 + 1) : e[1]];
+        gates.push({ edge, out: [edge[0] + n[0] * 5, edge[1] + n[1] * 5], w: p.w });
+      }
+  }
+  t.paths = t.paths.filter((p) => !hits(p.pts, 0.3));
+
+  const C = 1.5;
+  const nx = Math.ceil(W / C), nz = Math.ceil(D / C);
+  const cx = (i: number) => -W / 2 + (i + 0.5) * C, cz = (j: number) => -D / 2 + (j + 0.5) * C;
+  const blocked = new Uint8Array(nx * nz);
+  for (const m of z.models) {
+    if (m.scatter && !m.light) continue;
+    const f = footprint(m);
+    const big = buildings.includes(m);
+    // Under it: no way through. Close beside a building: possible, but only where there's no better way.
+    for (const [pad, v] of (big ? [[1.8, 1], [0.2, 2]] : [[0.6, 2]]) as [number, number][])
+      for (let i = Math.max(0, Math.floor((f.x0 - pad + W / 2) / C)); i <= Math.min(nx - 1, Math.floor((f.x1 + pad + W / 2) / C)); i++)
+        for (let j = Math.max(0, Math.floor((f.z0 - pad + D / 2) / C)); j <= Math.min(nz - 1, Math.floor((f.z1 + pad + D / 2) / C)); j++) blocked[j * nx + i] = Math.max(blocked[j * nx + i], v);
+  }
+  const cellOf = (x: number, y: number) => [Math.max(0, Math.min(nx - 1, Math.floor((x + W / 2) / C))), Math.max(0, Math.min(nz - 1, Math.floor((y + D / 2) / C)))];
+  const onNet = (x: number, y: number) => inSquare(x, y, 1) || t.paths.some((p) => p.pts.slice(1).some((b, i) => segDist(x, y, p.pts[i], b) < p.w / 2 - 0.2));
+  const sight = (a: number[], b: number[]) => {
+    const L = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    for (let s = 0; s <= L; s += C / 2) {
+      const [i, j] = cellOf(a[0] + ((b[0] - a[0]) * s) / L, a[1] + ((b[1] - a[1]) * s) / L);
+      if (blocked[j * nx + i] === 2) return false;
+    }
+    return true;
+  };
+
+  const order = buildings
+    .map((m) => ({ m, d: Math.hypot(m.pos[0] - (sq.x0 + sq.x1) / 2, m.pos[1] - (sq.z0 + sq.z1) / 2) }))
+    .sort((a, b) => a.d - b.d)
+    .map((o) => o.m);
+  const starts = order.map((m) => {
+    const f = footprint(m);
+    const n = m.door?.dir != null ? [Math.round(Math.sin((m.door.dir * Math.PI) / 180)), Math.round(Math.cos((m.door.dir * Math.PI) / 180))] : NORMAL[m.face ?? "back"];
+    const half = n[0] ? (f.x1 - f.x0) / 2 : (f.z1 - f.z0) / 2;
+    const c = [(f.x0 + f.x1) / 2, (f.z0 + f.z1) / 2];
+    return { edge: [c[0] + n[0] * (half - 0.3), c[1] + n[1] * (half - 0.3)], out: [c[0] + n[0] * (half + 3), c[1] + n[1] * (half + 3)], w: m.door ? 2.6 : 1.9 };
+  });
+  for (const { edge, out, w } of [...starts, ...gates]) {
+    if (onNet(out[0], out[1])) {
+      t.paths.push({ pts: [edge, out], w });
+      continue;
+    }
+    // Cheapest way to the network: short, avoiding steep ground.
+    const start = cellOf(out[0], out[1]);
+    const cost = new Float64Array(nx * nz).fill(Infinity);
+    const from = new Int32Array(nx * nz).fill(-1);
+    const heap: [number, number][] = [];
+    const push = (k: number, c2: number) => {
+      heap.push([c2, k]);
+      let i = heap.length - 1;
+      while (i > 0) {
+        const p = (i - 1) >> 1;
+        if (heap[p][0] <= heap[i][0]) break;
+        [heap[p], heap[i]] = [heap[i], heap[p]];
+        i = p;
+      }
+    };
+    const pop = () => {
+      const top = heap[0];
+      const last = heap.pop()!;
+      if (heap.length) {
+        heap[0] = last;
+        let i = 0;
+        for (;;) {
+          const l = 2 * i + 1, r = l + 1;
+          let s = i;
+          if (l < heap.length && heap[l][0] < heap[s][0]) s = l;
+          if (r < heap.length && heap[r][0] < heap[s][0]) s = r;
+          if (s === i) break;
+          [heap[s], heap[i]] = [heap[i], heap[s]];
+          i = s;
+        }
+      }
+      return top;
+    };
+    const k0 = start[1] * nx + start[0];
+    cost[k0] = 0;
+    push(k0, 0);
+    let goal = -1;
+    while (heap.length) {
+      const [c0, k] = pop();
+      if (c0 > cost[k]) continue;
+      const i = k % nx, j = (k - i) / nx;
+      if (k !== k0 && onNet(cx(i), cz(j))) {
+        goal = k;
+        break;
+      }
+      const h0 = heightAt(t, cx(i), cz(j));
+      for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]) {
+        const a = i + di, b = j + dj;
+        if (a < 0 || b < 0 || a >= nx || b >= nz) continue;
+        const kk = b * nx + a;
+        if (blocked[kk] === 2) continue;
+        const run = Math.hypot(di, dj) * C;
+        const rise = Math.abs(heightAt(t, cx(a), cz(b)) - h0);
+        const c2 = c0 + run * (blocked[kk] ? 6 : 1) + rise * 6;
+        if (c2 < cost[kk]) {
+          cost[kk] = c2;
+          from[kk] = k;
+          push(kk, c2);
+        }
+      }
+    }
+    if (goal < 0) {
+      t.paths.push({ pts: [edge, out], w });
+      continue;
+    }
+    const cells: number[][] = [];
+    for (let k = goal; k >= 0 && k !== k0; k = from[k]) cells.push([cx(k % nx), cz(Math.floor(k / nx))]);
+    cells.reverse();
+    // Straighten: keep only the turns needed to get round things.
+    const pts = [out];
+    let i = 0;
+    while (i < cells.length) {
+      let j = cells.length - 1;
+      while (j > i && !sight(pts[pts.length - 1], cells[j])) j--;
+      pts.push(cells[j]);
+      i = j + 1;
+    }
+    // Run a little into whatever it joins, so the cobbles meet.
+    const end = pts[pts.length - 1], prev = pts[pts.length - 2];
+    const L = Math.hypot(end[0] - prev[0], end[1] - prev[1]) || 1;
+    pts[pts.length - 1] = [end[0] + ((end[0] - prev[0]) / L) * 1.2, end[1] + ((end[1] - prev[1]) / L) * 1.2];
+    // Round the corners.
+    let line = pts;
+    for (let r = 0; r < 2; r++) {
+      const nxt = [line[0]];
+      for (let q = 0; q < line.length - 1; q++) {
+        const a = line[q], b = line[q + 1];
+        if (q > 0) nxt.push([a[0] * 0.75 + b[0] * 0.25, a[1] * 0.75 + b[1] * 0.25]);
+        if (q < line.length - 2) nxt.push([a[0] * 0.25 + b[0] * 0.75, a[1] * 0.25 + b[1] * 0.75]);
+      }
+      nxt.push(line[line.length - 1]);
+      line = nxt;
+    }
+    t.paths.push({ pts: [edge, ...line], w });
+  }
+}
+
 /** Lays an outdoor place on its hills: ground, paths, lamps along them, and woods (trees, bushes, rocks) between. */
 function dressLand(z: Zone, rec: LandRec, model: (id: string) => string | null, pic: (id?: unknown) => string | null, arranged = false) {
   const [W, D] = z.size;
@@ -658,8 +834,10 @@ function dressLand(z: Zone, rec: LandRec, model: (id: string) => string | null, 
   t.pads.push(...t.pads.splice(0, (rec.pads ?? []).length));
   z.terrain = t;
   for (const m of z.models) m.elev += heightAt(t, m.pos[0], m.pos[1]);
-  if (arranged) return;
+  linkBuildings(z, t);
   const nearPath = (x: number, y: number, pad: number) => t.paths.some((p) => p.pts.slice(1).some((b, i) => segDist(x, y, p.pts[i], b) < p.w / 2 + pad));
+  // A room arranged in Edit mode keeps its trees and rocks, except any now standing on a path.
+  if (arranged) z.models = z.models.filter((m) => !m.scatter || m.light || !nearPath(m.pos[0], m.pos[1], 0.3));
   const clear = (x: number, y: number, r: number) =>
     x > -W / 2 + r && x < W / 2 - r && y > -D / 2 + r && y < D / 2 - r &&
     z.models.every((m) => {
@@ -683,13 +861,14 @@ function dressLand(z: Zone, rec: LandRec, model: (id: string) => string | null, 
           const ux = (b[0] - a[0]) / L, uz = (b[1] - a[1]) / L;
           const x = a[0] + ux * d - uz * side * (p.w / 2 + 0.8), y = a[1] + uz * d + ux * side * (p.w / 2 + 0.8);
           side = -side;
-          if (!clear(x, y, 0.6)) continue;
+          if (!clear(x, y, 0.6) || nearPath(x, y, 0.3) || z.models.some((m) => m.light && m.scatter && Math.hypot(m.pos[0] - x, m.pos[1] - y) < every * 0.45)) continue;
           z.models.push({ id: lampId, file: model(lampId), label: "lamp", pos: [x, y], elev: heightAt(t, x, y), rotY: 0, rotX: 0, size: lampSize, solid: true, light: true, scatter: true, block: 0.25 });
         }
         carry = (carry - L) % every;
         if (carry < 0) carry += every;
       }
     }
+  if (arranged) return;
   // A ring of trees round the square, strung with lights.
   if (rec.ring) {
     const [cx, cz] = at(rec.ring.centerFt);
