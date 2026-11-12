@@ -2020,7 +2020,8 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       if (!free(x, zz)) return false;
       const g = z.stairs ? groundAt(z, x, zz, standY) : heightAt(z.terrain, x, zz);
       if (g == null) return false;
-      standY = g;
+      // On stairs the step sets your height; elsewhere the frame loop does (it knows building floors).
+      if (z.stairs) standY = g;
       pos.x = x;
       pos.z = zz;
       return true;
@@ -2159,7 +2160,6 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     let busy = false;
     const tmp = new THREE.Vector3();
     let frame = 0;
-    (window as unknown as { __walk?: unknown }).__walk = { pos, look, doors: () => kitDoors, stand: () => standY };
     const loop = () => {
       frame = requestAnimationFrame(loop);
       const t = clock.getElapsedTime();
