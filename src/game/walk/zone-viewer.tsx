@@ -8,6 +8,7 @@ import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { trimRuns, wallRects } from "./walk-viewer";
 import { doorsOf, floorSize, groundAt, heightAt, layoutOf } from "./zones";
+import { makeAurora } from "./aurora";
 import { holdNpc, makeNpc, resetNpc, rigOf, stepNpc } from "./npc";
 import type { Npc } from "./npc";
 import { clearRoomLayout, saveRoomLayout } from "@/app/actions/art";
@@ -199,13 +200,15 @@ function layKerbs(root: THREE.Object3D, T: NonNullable<Zone["terrain"]>, pts: nu
 const HAZE = 0x1a2648;
 /** The night sky: deep blue overhead, easing into the haze at the horizon so far hills melt away. */
 function skyDome() {
-  const g = new THREE.SphereGeometry(360, 32, 16);
+  const R = 900;
+  const g = new THREE.SphereGeometry(R, 48, 24);
   const col: number[] = [];
   const top = new THREE.Color(0x040817), low = new THREE.Color(HAZE), c = new THREE.Color();
   const pa = g.attributes.position as THREE.BufferAttribute;
   for (let i = 0; i < pa.count; i++) {
-    const t = Math.max(0, Math.min(1, pa.getY(i) / 360 / 0.45));
-    c.copy(low).lerp(top, Math.pow(t, 0.7));
+    // Haze right up past the far hills, then night sky.
+    const t = Math.max(0, Math.min(1, (pa.getY(i) / R - 0.07) / 0.45));
+    c.copy(low).lerp(top, Math.pow(t, 0.6));
     col.push(c.r, c.g, c.b);
   }
   g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
@@ -495,7 +498,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     mount.appendChild(renderer.domElement);
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(70, mount.clientWidth / mount.clientHeight, 0.05, 400);
+    const camera = new THREE.PerspectiveCamera(70, mount.clientWidth / mount.clientHeight, 0.05, 1200);
     const pos = new THREE.Vector3(0, EYE, 0);
     const look = { yaw: 0, pitch: 0 };
     const texLoader = new THREE.TextureLoader();
@@ -646,6 +649,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       return { pos: c, seat: seat - ground, rotY };
     };
     let snow: THREE.Points | null = null;
+    let aurora: ReturnType<typeof makeAurora> | null = null;
     let token = 0;
     let cooldown = 0;
 
@@ -863,12 +867,12 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
         return Math.hypot(x - a[0] - dx * k, y - a[1] - dy * k);
       };
       const near: number[][] = [], far: number[][] = [];
-      for (let i = 0; i < 9000 && near.length + far.length < 2600; i++) {
-        const x = (rnd() - 0.5) * (W + 190), y = (rnd() - 0.5) * (D + 190);
+      for (let i = 0; i < 16000 && near.length + far.length < 4200; i++) {
+        const x = (rnd() - 0.5) * (W + 300), y = (rnd() - 0.5) * (D + 300);
         const o = Math.max(Math.abs(x) - W / 2, Math.abs(y) - D / 2);
         if (o < 2.5) continue;
         // Thick at the edge, thinner further out.
-        if (rnd() > 1.15 - o / 110) {
+        if (rnd() < 1.2 - o / 140) {
           if (T.paths.some((p) => p.pts.slice(1).some((b, k) => segD(x, y, p.pts[k], b) < p.w / 2 + 2.2))) continue;
           (o < 32 ? near : far).push([x, y, o]);
         }
@@ -949,6 +953,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       pickBox = null;
       people = [];
       snow = null;
+      aurora = null;
       const [w, d, H] = z.size;
       setReady(false);
       setProgress(0);
@@ -963,7 +968,11 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       if (z.outdoor) {
         scene.background = new THREE.Color(0x0b1430);
         scene.fog = new THREE.FogExp2(HAZE, z.terrain?.rim ? 0.0115 : 0.012);
-        if (z.terrain?.rim) root.add(skyDome());
+        if (z.terrain?.rim) {
+          root.add(skyDome());
+          aurora = makeAurora();
+          root.add(aurora.group);
+        }
         root.add(stars);
         root.add(new THREE.HemisphereLight(0x9fb4e8, 0x2a2e48, 1.5));
         const moon = new THREE.DirectionalLight(0xc8d6ff, 0.9);
@@ -989,16 +998,34 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
       const beyond = T?.rim ? 200 : 60;
       const floorW = z.outdoor ? w + beyond : w, floorD = z.outdoor ? d + beyond : d;
       if (T) {
-        // Rolling snowy ground, a vertex every metre and a half.
-        const nx = Math.ceil(floorW / 1.5), nz = Math.ceil(floorD / 1.5);
-        const g = new THREE.PlaneGeometry(floorW, floorD, nx, nz);
-        g.rotateX(-Math.PI / 2);
-        const pa = g.attributes.position as THREE.BufferAttribute, uv = g.attributes.uv as THREE.BufferAttribute;
-        for (let i = 0; i < pa.count; i++) {
-          const x = pa.getX(i), zz = pa.getZ(i);
-          pa.setY(i, heightAt(T, x, zz));
-          uv.setXY(i, x / z.floor.tile, -zz / z.floor.tile);
-        }
+        // Rolling snowy ground: a vertex every metre and a half where you walk, coarser further out, running on
+        // into the hills far enough that its end is lost in the haze.
+        const axis = (half: number, reach: number) => {
+          const out: number[] = [];
+          for (let v = -half - reach; v <= half + reach + 0.01; ) {
+            out.push(v);
+            const o = Math.abs(v) - half;
+            v += o < 35 ? 1.5 : o < 120 ? 4 : 10;
+          }
+          return out;
+        };
+        const reach = T.rim ? 320 : 30;
+        const xs = axis(w / 2, reach), zs = axis(d / 2, reach);
+        const gp: number[] = [], guv: number[] = [], gi: number[] = [];
+        for (const zz of zs)
+          for (const x of xs) {
+            gp.push(x, heightAt(T, x, zz), zz);
+            guv.push(x / z.floor.tile, -zz / z.floor.tile);
+          }
+        for (let j = 0; j < zs.length - 1; j++)
+          for (let i = 0; i < xs.length - 1; i++) {
+            const a = j * xs.length + i, b = a + 1, c = a + xs.length, e = c + 1;
+            gi.push(a, c, b, b, c, e);
+          }
+        const g = new THREE.BufferGeometry();
+        g.setAttribute("position", new THREE.Float32BufferAttribute(gp, 3));
+        g.setAttribute("uv", new THREE.Float32BufferAttribute(guv, 2));
+        g.setIndex(gi);
         g.computeVertexNormals();
         root.add(new THREE.Mesh(g, ft ? new THREE.MeshLambertMaterial({ map: ft }) : plain(0xe8eef8)));
         // Cobbled paths laid over it.
@@ -1801,6 +1828,7 @@ export function ZoneViewer({ world, title, eye: eyeIn }: { world: World; title: 
           p.head.quaternion.premultiply(pq.clone().invert().multiply(wq).multiply(pq));
         }
       }
+      aurora?.update(t, pos);
       if (snow) {
         const a = snow.geometry.attributes.position as THREE.BufferAttribute;
         for (let i = 0; i < a.count; i++) {

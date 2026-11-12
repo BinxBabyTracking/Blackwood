@@ -630,6 +630,9 @@ export function heightAt(t: Terrain | undefined, x: number, z: number) {
     if (o > 0) {
       const k = smooth(Math.min(1, o / 30));
       h += o * 0.1 + k * (5 + 3 * Math.sin(x * 0.045 + z * 0.02) + 2.5 * Math.sin(z * 0.06 - x * 0.03 + 2) + 1.5 * Math.sin((x - z) * 0.11));
+      // Far off, mountains.
+      const m = smooth((o - 90) / 140);
+      if (m > 0) h += m * (35 + 22 * Math.sin(x * 0.013 + 1.3) * Math.sin(z * 0.017 + 0.4) + 14 * Math.sin((x + z) * 0.021));
     }
   }
   return h;
