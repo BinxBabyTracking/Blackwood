@@ -18,6 +18,8 @@ function viseme(ch: string): Shape | null {
   if ("uwq".includes(c)) return "mouth_oo";
   if ("fv".includes(c)) return "mouth_f";
   if ("mbp".includes(c)) return "mouth_closed";
+  // Teeth-together sounds (s, t, d, n, l, z, ch, j, r): lips apart over the teeth.
+  if ("stdnlzcjgxr".includes(c)) return "mouth_ee";
   if (/[a-z]/.test(c)) return "mouth_slight";
   return null;
 }
@@ -40,7 +42,8 @@ export function CharacterTest({ caseId, id, name, url }: { caseId: string; id: s
   const box = useRef<HTMLDivElement>(null);
   const faces = useRef<{ mesh: THREE.Mesh; dict: Record<string, number> }[]>([]);
   const manual = useRef<Record<string, number>>({});
-  const talk = useRef<{ audio: HTMLAudioElement; timing: Timing | null } | null>(null);
+  const talk = useRef<{ audio: HTMLAudioElement; timing: Timing | null; level?: AnalyserNode; buf?: Uint8Array } | null>(null);
+  const audioCtx = useRef<AudioContext | null>(null);
   const [state, setState] = useState(url ? "Loading…" : "");
   const [shapes, setShapes] = useState<string[]>([]);
   const [values, setValues] = useState<Record<string, number>>({});
@@ -153,13 +156,23 @@ export function CharacterTest({ caseId, id, name, url }: { caseId: string; id: s
       // what the mouth should be doing now
       const target: Record<string, number> = {};
       const tk = talk.current;
+      // Loudness 0..1 (when the browser lets us measure it).
+      let loud = 0.7;
+      if (tk?.level && tk.buf) {
+        tk.level.getByteTimeDomainData(tk.buf as Uint8Array<ArrayBuffer>);
+        let sum = 0;
+        for (const b of tk.buf) sum += ((b - 128) / 128) ** 2;
+        loud = Math.min(1, Math.sqrt(sum / tk.buf.length) * 5);
+      }
       if (tk && !tk.audio.paused && tk.timing) {
         const now = tk.audio.currentTime;
         const ch = tk.timing.starts.findIndex((s, i) => now >= s && now < (tk.timing!.ends[i] ?? s + 0.08));
         const v = ch >= 0 ? viseme(tk.timing.characters[ch]) : null;
-        if (v) target[v] = v === "mouth_closed" ? 1 : 0.9;
+        if (v) target[v] = v === "mouth_closed" ? 1 : Math.min(1, 0.45 + loud * 0.75);
       } else if (tk && !tk.audio.paused) {
-        target.mouth_ah = 0.35 + 0.35 * Math.abs(Math.sin(t * 14));
+        // No word timing: vowel shapes in turn, opening with the voice.
+        const cycle = ["mouth_ah", "mouth_ee", "mouth_oh", "mouth_slight", "mouth_oo", "mouth_ah"] as const;
+        target[cycle[Math.floor(t * 7) % cycle.length]] = loud > 0.06 ? Math.min(1, 0.3 + loud) : 0;
       }
       // blink every few seconds
       if (t > nextBlink) {
@@ -224,7 +237,20 @@ export function CharacterTest({ caseId, id, name, url }: { caseId: string; id: s
       if (!res.ok) throw new Error(((await res.json().catch(() => null)) as { error?: string } | null)?.error ?? "The voice didn't come back.");
       const audio = new Audio(URL.createObjectURL(await res.blob()));
       const timing = (await fetch(base + "&timing=1").then((r) => (r.ok ? r.json() : null)).catch(() => null)) as Timing | null;
-      talk.current = { audio, timing };
+      // How loud she is right now, to open the mouth wider on stressed sounds and close it in pauses.
+      let level: AnalyserNode | undefined;
+      try {
+        audioCtx.current ??= new AudioContext();
+        const src = audioCtx.current.createMediaElementSource(audio);
+        level = audioCtx.current.createAnalyser();
+        level.fftSize = 512;
+        src.connect(level);
+        level.connect(audioCtx.current.destination);
+        await audioCtx.current.resume();
+      } catch {
+        level = undefined;
+      }
+      talk.current = { audio, timing, level, buf: level ? new Uint8Array(level.fftSize) : undefined };
       audio.onended = () => setBusy(false);
       setState(timing ? "" : "No word timing came back, so the mouth is moving to a simple beat.");
       await audio.play();

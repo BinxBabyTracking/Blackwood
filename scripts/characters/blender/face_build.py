@@ -52,8 +52,22 @@ def jaw_weight(P, D):
     r = np.hypot(P[:, 1] - pivot[1], P[:, 2] - pivot[2])
     return np.clip(np.linalg.norm(D, axis=1) / np.maximum(r * math.radians(13), 1e-6), 0, 1)
 
-wf = jaw_weight(FW, FK["jawOpen"]) * (1 - 0.55 * ss(HW * 0.65, HW * 1.3, np.abs(FW[:, 0])))
-wc = jaw_weight(CW, CK["jawOpen"])
+wf0 = jaw_weight(FW, FK["jawOpen"])
+# Where the lip cut ends on each side (lower-lip skin right at the lip line, fully on the old jaw).
+cutv = np.where((wf0 > 0.9) & (np.abs(FW[:, 2] - (Y0 + K * FW[:, 0] ** 2)) < 0.004))[0]
+cut_l, cut_r = float(FW[cutv, 0].min()), float(FW[cutv, 0].max())
+print("lip cut ends", round(cut_l, 4), round(cut_r, 4))
+# Jaw weights from scratch: the lower lip fully along the cut; past the cut's ends the pull builds up slowly down
+# the cheek (so the skin stretches instead of folding); fading out toward the sides, the neck and the back.
+end = np.where(FW[:, 0] < 0, -cut_l, cut_r)
+ax_ = np.abs(FW[:, 0]); below = (Y0 + K * FW[:, 0] ** 2) - FW[:, 2]
+beyond = np.maximum(0, ax_ - end)
+ramp = 0.0015 + 0.9 * beyond
+vert = np.where(below > 0, ss(0, ramp, below), 0.0)
+vert = np.where((ax_ < end) & (wf0 > 0.5), 1.0, vert)
+lat = 1 - ss(end * 0.9, 0.066, ax_)
+wf = vert * lat * ss(Y0 - 0.075, Y0 - 0.055, FW[:, 2])
+wc = jaw_weight(CW, CK["jawOpen"]) * (1 - 0.85 * ss(HW * 0.55, HW * 1.15, np.abs(CW[:, 0])))
 print("jaw weights: face verts moving", int((wf > 0.01).sum()), "cup", int((wc > 0.01).sum()))
 
 # ---- 2. the jaw bone
@@ -90,7 +104,7 @@ face.select_set(True)
 bpy.context.view_layer.objects.active = face
 face.vertex_groups.active_index = face.vertex_groups["jaw"].index
 bpy.ops.object.mode_set(mode="WEIGHT_PAINT")
-bpy.ops.object.vertex_group_smooth(group_select_mode="ACTIVE", factor=0.6, repeat=10)
+bpy.ops.object.vertex_group_smooth(group_select_mode="ACTIVE", factor=0.4, repeat=3)
 bpy.ops.object.mode_set(mode="OBJECT")
 gj = face.vertex_groups["jaw"].index
 names = {vg.index: vg.name for vg in face.vertex_groups}
@@ -100,9 +114,10 @@ for v in face.data.vertices:
     wj = next((ge.weight for ge in v.groups if ge.group == gj), 0.0)
     if wf[i] > 0.95:
         wj = max(wj, 0.97)
-    # Only the chin and lower face: never the collar, neck or hair.
-    if wf[i] < 0.001 and not (abs(x[i]) < 0.052 and zc[i] - 0.055 < z[i] < zc[i] and y[i] < yf + 0.05):
+    if wf[i] < 0.001:
         wj = 0.0
+    # Only the front of the lower face: fade out toward the sides and the neck.
+    wj *= float(ss(yf + 0.045, yf + 0.028, y[i]) * ss(0.062, 0.048, abs(x[i])) * ss(zc[i] - 0.065, zc[i] - 0.05, z[i]))
     if upper[i]:
         wj = 0.0
     # The rest of the weights fill what the jaw leaves.
@@ -115,6 +130,39 @@ for v in face.data.vertices:
         face.vertex_groups["jaw"].add([i], wj, "REPLACE")
     elif any(ge.group == gj for ge in v.groups):
         face.vertex_groups["jaw"].remove([i])
+
+# Vertices that sit at the same spot (texture seams) share one jaw weight, or a crack opens; not along the lip cut,
+# which is meant to open.
+from collections import defaultdict
+spots = defaultdict(list)
+for i, p_ in enumerate(np.round(FW / 1e-5).astype(np.int64)):
+    spots[tuple(p_)].append(i)
+gj = face.vertex_groups["jaw"].index
+def wget(i):
+    return next((ge.weight for ge in face.data.vertices[i].groups if ge.group == gj), 0.0)
+merged = 0
+for ids in spots.values():
+    if len(ids) < 2:
+        continue
+    i0 = ids[0]
+    if abs(x[i0]) < (-cut_l if x[i0] < 0 else cut_r) + 0.002 and abs(z[i0] - zc[i0]) < 0.003:
+        continue
+    ws = [wget(i) for i in ids]
+    if max(ws) - min(ws) < 1e-4:
+        continue
+    m = sum(ws) / len(ws)
+    for i, w0 in zip(ids, ws):
+        v = face.data.vertices[i]
+        others = [ge for ge in v.groups if ge.group != gj]
+        tot = sum(ge.weight for ge in others)
+        for ge in others:
+            ge.weight = ge.weight / tot * (1 - m) if tot > 0 else ge.weight
+        if m > 0:
+            face.vertex_groups["jaw"].add([i], m, "REPLACE")
+        elif w0 > 0:
+            face.vertex_groups["jaw"].remove([i])
+    merged += 1
+print("seam spots evened", merged)
 
 # ---- 3. teeth and tongue
 print("lip front y", round(yf, 4))
@@ -308,16 +356,39 @@ def brow_band(ex, ez):
 brows = sum(brow_band(ex, ez) for ex, ez in EYES)
 inner = sum(brow_band(ex, ez) * ss(0.03, 0.005, np.abs(x)) for ex, ez in EYES)
 
+# Bold lip shapes (world): the mouth area widens or rounds, lips push forward, corners lift.
+mz = ss(HW * 1.9, HW * 0.45, np.hypot(x, (z - zc) * 1.5)) * ss(yf + 0.03, yf + 0.012, y)
+corner = ss(HW * 0.35, HW * 0.95, np.abs(x)) * ss(HW * 1.7, HW * 1.15, np.abs(x)) * ss(0.014, 0.004, np.abs(z - zc)) * ss(yf + 0.03, yf + 0.012, y)
+def widen(k):
+    return vec(D0=x * (k - 1), w=mz)
+def rounder(k, fwd):
+    return vec(D0=-x * (1 - k), w=mz) + vec(D1=-fwd, w=mz)
+# Skin only: hair and coat stay put (skin is warm in her texture, hair grey).
+cols = np.array([skin_at(i) for i in range(len(FW))])
+skin = ss(0.06, 0.14, cols[:, 0] - cols[:, 2])
+mz, corner, up_lip, lo_lip = mz * skin, corner * skin, up_lip * skin, lo_lip * skin
+# Nothing but skin hangs on the jaw.
+gjaw = face.vertex_groups["jaw"]
+for v in face.data.vertices:
+    if skin[v.index] >= 0.5:
+        continue
+    ws = [ge for ge in v.groups if ge.group == gjaw.index]
+    if not ws or ws[0].weight <= 0:
+        continue
+    wj = ws[0].weight
+    gjaw.remove([v.index])
+    for ge in v.groups:
+        ge.weight = ge.weight / max(1e-6, 1 - wj)
 plan = {
-    #             jaw deg, lip gain, extra (world)
-    "mouth_slight": (6, 1.0, vec(D2=0.0008, w=up_lip)),
-    "mouth_ah": (18, 1.0, vec(D2=0.003, w=up_lip)),
-    "mouth_ee": (3, 1.5, vec(D2=0.0028, w=up_lip) + vec(D2=-0.0025, w=lo_lip)),
-    "mouth_oh": (13, 1.3, vec(D1=-0.002, w=up_lip + lo_lip)),
-    "mouth_oo": (7, 1.45, vec(D1=-0.003, w=up_lip + lo_lip)),
-    "mouth_f": (3, 0.0, vec(D1=0.0035, D2=0.0032, w=lo_lip) + vec(D2=0.001, w=up_lip)),
-    "mouth_closed": (0, 0.0, vec(D2=-0.0012, D1=0.0008, w=up_lip) + vec(D2=0.0012, D1=0.0008, w=lo_lip)),
-    "jawOpen": (18, 0.0, 0),
+    #             jaw deg, old lip gain, extra (world)
+    "mouth_slight": (7, 0.0, vec(D2=0.0012, w=up_lip)),
+    "mouth_ah": (19, 0.0, widen(1.06) + vec(D2=0.003, w=up_lip)),
+    "mouth_ee": (3, 0.0, widen(1.28) + vec(D2=0.0035, w=up_lip) + vec(D2=-0.003, w=lo_lip) + vec(D2=0.0025, w=corner)),
+    "mouth_oh": (12, 0.0, rounder(0.70, 0.005) + vec(D2=0.001, w=up_lip)),
+    "mouth_oo": (5, 0.0, rounder(0.52, 0.009) + vec(D2=-0.0012, w=up_lip) + vec(D2=0.0012, w=lo_lip)),
+    "mouth_f": (2, 0.0, vec(D1=0.0038, D2=0.0036, w=lo_lip) + vec(D2=0.0012, w=up_lip)),
+    "mouth_closed": (0, 0.0, vec(D2=-0.0014, D1=0.001, w=up_lip) + vec(D2=0.0014, D1=0.001, w=lo_lip) + widen(0.96)),
+    "jawOpen": (19, 0.0, 0),
 }
 jaws = {d: jaw_deltas(d) for d in sorted({v[0] for v in plan.values()})}
 
